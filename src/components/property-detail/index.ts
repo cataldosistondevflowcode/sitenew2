@@ -1,0 +1,10 @@
+export { Breadcrumb } from './Breadcrumb';
+export { PropertyHeader } from './PropertyHeader';
+export { ImageGallery } from './ImageGallery';
+export { TabNavigation } from './TabNavigation';
+export { AuctionInfo } from './AuctionInfo';
+export { PropertyDescription } from './PropertyDescription';
+export { ContactSidebar } from './ContactSidebar';
+export { PropertySpecs } from './PropertySpecs';
+export { LegalDisclaimer } from './LegalDisclaimer';
+export { MainPropertyDetail } from './MainPropertyDetail'; 

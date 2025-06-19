@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Leeilo | Home</title>
+<style>
+body>*{
+    padding:1rem 2rem;
+    text-align:center;
+}
+main>ul{
+    display:grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap:1rem;
+    align-items:stretch;
+    justify-content:center;
+    list-style:none;
+    margin:0;
+    padding:0;
+}
+main>ul a{
+    display:flex;
+    padding:1rem;
+    background:#000;
+    color:#fff;
+    text-decoration:none;
+    border-radius:1rem;
+    justify-content:center;
+}
+</style>
+</head>
+<body>
+    <header>
+        <img src="https://leilaodeimoveis-cataldosiston.com/wp-content/themes/understrap-child-2021/images/logo-cataldo-siston-300x60.svg" width="300px" height="60px" alt="Cataldo Siston Advogados" />
+    </header>
+    <main>
+        <ul>
+            <li><a href="/consulta.php">Consulta por ID</a></li>
+            <li><a href="/lista.php">Lista por JSON</a></li>
+            <li><a href="/tabela.php">Lista por Tabela</a></li>
+            <li><a href="/planilha.php">Gerador de CSV</a></li>
+            <li><a href="/imoveis.csv">Download do CSV</a></li>
+        </ul>
+    </main>
+    <footer>
+        Cataldo Siston Advogados | Todos os direitos reservados
+    </footer>
+</body></html>

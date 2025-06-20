@@ -8,6 +8,7 @@ import { FeaturedVideos } from "@/components/FeaturedVideos";
 import { SuccessCases } from "@/components/SuccessCases";
 import { ArticlesSection } from "@/components/articles";
 import { VideoPlayerContainer } from "@/components/video";
+import { NewsletterSignup } from "@/components/newsletter2";
 import { TestimonialsSection } from "@/components/testimonials";
 import { PropertyDetailAuctionSteps } from "@/components/PropertyDetailAuctionSteps";
 import { Footer } from "@/components/Footer";
@@ -1353,6 +1354,9 @@ const Index = () => {
 
       {/* YouTube Video Section */}
       <VideoPlayerContainer />
+
+      {/* Newsletter Signup Section */}
+      <NewsletterSignup />
 
       {/* Featured Videos Section */}
       <FeaturedVideos />

@@ -6,6 +6,8 @@ import { PropertyCard } from "@/components/PropertyCard";
 import { PropertyPagination } from "@/components/PropertyPagination";
 import { FeaturedVideos } from "@/components/FeaturedVideos";
 import { SuccessCases } from "@/components/SuccessCases";
+import { ArticlesSection } from "@/components/articles";
+import { VideoPlayerContainer } from "@/components/video";
 import { TestimonialsSection } from "@/components/testimonials";
 import { PropertyDetailAuctionSteps } from "@/components/PropertyDetailAuctionSteps";
 import { Footer } from "@/components/Footer";
@@ -1349,6 +1351,9 @@ const Index = () => {
         </div>
       </section>
 
+      {/* YouTube Video Section */}
+      <VideoPlayerContainer />
+
       {/* Featured Videos Section */}
       <FeaturedVideos />
       
@@ -1357,6 +1362,9 @@ const Index = () => {
       
       {/* Success Cases Section */}
       <SuccessCases />
+
+      {/* Articles Section */}
+      <ArticlesSection />
 
       {/* Testimonials Section */}
       <TestimonialsSection />

@@ -1373,21 +1373,6 @@ const Index = () => {
       {/* Testimonials Section */}
       <TestimonialsSection />
 
-      {/* Horizontal Newsletter Section */}
-      <section className="py-16 bg-gray-100">
-        <div className="container">
-          <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-3xl font-bold mb-8">Inscreva-se para receber oportunidades de leilões de imóveis</h2>
-            <form className="flex flex-col md:flex-row gap-4 max-w-2xl mx-auto">
-              <input type="text" placeholder="Nome" className="flex-1 px-4 py-3 border-2 border-[#d68e08] rounded-md focus:outline-none focus:ring-2 focus:ring-[#d68e08]" />
-              <input type="email" placeholder="Email" className="flex-1 px-4 py-3 border-2 border-[#d68e08] rounded-md focus:outline-none focus:ring-2 focus:ring-[#d68e08]" />
-              <input type="tel" placeholder="Telefone" className="flex-1 px-4 py-3 border-2 border-[#d68e08] rounded-md focus:outline-none focus:ring-2 focus:ring-[#d68e08]" />
-              <button type="submit" className="px-8 py-3 bg-[#d68e08] hover:bg-[#b8780a] text-white font-bold rounded-md transition-colors">ENVIAR</button>
-            </form>
-          </div>
-        </div>
-      </section>
-
       {/* Vertical Newsletter Section */}
       <section className="py-16 bg-cover bg-center relative" style={{backgroundImage: 'url(/bg-newsletter.jpg.webp)'}}>
         <div className="absolute inset-0 bg-black/70"></div>

@@ -8,6 +8,8 @@ import { PropertyDescription } from './PropertyDescription';
 import { ContactSidebar } from './ContactSidebar';
 import { PropertySpecs } from './PropertySpecs';
 import { LegalDisclaimer } from './LegalDisclaimer';
+import { AuctionBenefitsSection } from '../AuctionBenefitsSection';
+import { FAQSection } from '../FAQSection';
 
 interface PropertyDetailData {
   id: number;
@@ -181,6 +183,10 @@ export const MainPropertyDetail: React.FC<MainPropertyDetailProps> = ({ property
         </div>
 
         <PropertySpecs specs={propertySpecs} />
+
+        <AuctionBenefitsSection />
+
+        <FAQSection />
 
         <LegalDisclaimer />
       </article>

@@ -16,8 +16,12 @@ interface ContactSidebarProps {
 export const ContactSidebar: React.FC<ContactSidebarProps> = ({ contactInfo }) => {
   return (
     <aside className="flex overflow-hidden flex-col items-center self-stretch pt-12 pb-7 m-auto w-full bg-white rounded-2xl shadow-sm max-md:mt-10">
-      <div className="px-5 pt-14 pb-24 text-5xl text-white bg-black aspect-square rounded-[200px] w-[200px] max-md:text-4xl">
-        CATALDO<span style={{color: 'rgba(213,142,6,1)'}}>SISTON</span>
+      <div className="flex items-center justify-center bg-black aspect-square rounded-[200px] w-[200px] h-[200px] overflow-hidden">
+        <img
+          src="/assets/logos/cataldo-siston-round-logo.png"
+          alt="Cataldo Siston Logo"
+          className="w-full h-full object-cover"
+        />
       </div>
       <h2 className="self-stretch px-1.5 pt-2 pb-6 mx-3 mt-8 text-3xl font-medium leading-tight text-center text-zinc-900 max-md:mx-2.5">
         CATALDO SISTON

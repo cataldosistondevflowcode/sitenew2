@@ -10,33 +10,57 @@ export const NewsletterForm: React.FC = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-wrap gap-4 mt-5 whitespace-nowrap max-md:max-w-full">
-      <InputField
-        label="Nome"
-        required
-        className="min-w-0"
-      />
+    <form onSubmit={handleSubmit} className="mt-6 sm:mt-8 w-full max-w-4xl mx-auto">
+      {/* Layout para mobile: todos os campos em coluna */}
+      <div className="block lg:hidden space-y-4">
+        <InputField
+          label="Nome"
+          required
+          className="w-full"
+        />
+        <InputField
+          label="Email"
+          type="email"
+          required
+          className="w-full"
+        />
+        <InputField
+          label="Telefone"
+          type="tel"
+          required
+          className="w-full"
+        />
+        <button
+          type="submit"
+          className="w-full px-6 py-3 bg-yellow-600 rounded-md text-white font-bold hover:bg-yellow-700 transition-colors text-base sm:text-lg"
+        >
+          ENVIAR
+        </button>
+      </div>
 
-      <div className="grow shrink-0 basis-0 w-fit max-md:max-w-full">
-        <div className="flex gap-5 justify-between max-w-full text-base leading-none w-[298px]">
-          <label>Email*</label>
-          <label>Telefone*</label>
-        </div>
-
-        <div className="flex flex-wrap gap-3.5 items-start mt-2.5 text-xl font-bold leading-none text-center max-md:max-w-full">
-          <input
+      {/* Layout para desktop: layout horizontal otimizado */}
+      <div className="hidden lg:block">
+        <div className="flex flex-wrap gap-4 items-end">
+          <InputField
+            label="Nome"
+            required
+            className="flex-1 min-w-[200px]"
+          />
+          <InputField
+            label="Email"
             type="email"
             required
-            className="h-10 rounded-md border border-yellow-600 border-solid w-[214px] px-3 bg-transparent text-white placeholder-gray-300"
+            className="flex-1 min-w-[250px]"
           />
-          <input
+          <InputField
+            label="Telefone"
             type="tel"
             required
-            className="h-10 rounded-md border border-yellow-600 border-solid w-[214px] px-3 bg-transparent text-white placeholder-gray-300"
+            className="flex-1 min-w-[200px]"
           />
           <button
             type="submit"
-            className="px-16 py-3 bg-yellow-600 rounded-md max-md:px-5 text-white font-bold hover:bg-yellow-700 transition-colors"
+            className="px-8 py-3 bg-yellow-600 rounded-md text-white font-bold hover:bg-yellow-700 transition-colors text-lg min-w-[120px] h-[40px] flex items-center justify-center"
           >
             ENVIAR
           </button>

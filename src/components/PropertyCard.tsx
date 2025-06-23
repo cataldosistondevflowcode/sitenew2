@@ -1,6 +1,6 @@
 import { MapPin, Calendar, DollarSign, SquareStack, Car, Share2 } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { loadGoogleMaps } from "../integrations/googlemaps/client";
 import { formatPropertyAddress } from "../utils/addressFormatter";
 
@@ -43,7 +43,7 @@ export const PropertyCard = ({
 }: PropertyCardProps) => {
   
   const mapRef = useRef<HTMLDivElement>(null);
-  const isImageNotFound = image.includes('/not-found');
+  const [isImageNotFound, setIsImageNotFound] = useState(image.includes('/not-found') || !image || image === '');
 
   // Initialize map when image is not found
   useEffect(() => {
@@ -51,6 +51,11 @@ export const PropertyCard = ({
       initializeMap();
     }
   }, [isImageNotFound, rawPropertyData]);
+
+  // Handle image load error
+  const handleImageError = () => {
+    setIsImageNotFound(true);
+  };
 
   const getFullAddress = () => {
     if (!rawPropertyData) return location;
@@ -172,7 +177,12 @@ export const PropertyCard = ({
               className="w-full h-40 sm:h-44 md:h-48 bg-gray-200"
             />
           ) : (
-            <img src={image} alt={title} className="w-full h-40 sm:h-44 md:h-48 object-cover" />
+            <img 
+              src={image} 
+              alt={title} 
+              className="w-full h-40 sm:h-44 md:h-48 object-cover" 
+              onError={handleImageError}
+            />
           )}
           <button 
             className="absolute top-2 sm:top-3 left-2 sm:left-3 bg-[#d68e08] text-white px-2 sm:px-3 py-1.5 sm:py-2 rounded text-xs sm:text-sm font-bold z-10 hover:bg-[#b8780a] transition-colors"

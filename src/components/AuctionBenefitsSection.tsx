@@ -17,51 +17,25 @@ export const AuctionBenefitsSection: React.FC = () => {
         </span>
       </SectionHeading>
 
-      <section className="flex flex-wrap items-start mb-px w-full max-w-[930px] max-md:max-w-full max-sm:flex-col">
-        <p className="text-lg leading-7 text-zinc-900 max-sm:text-base max-sm:leading-6">
-          A possibilidade de adquirir imóveis por preços fortemente descontados (
+      <div className="mb-10 w-full max-w-[930px] max-md:max-w-full">
+        <p className="text-lg leading-7 text-zinc-900 max-sm:text-base max-sm:leading-6 text-center">
+          A possibilidade de adquirir imóveis por preços fortemente descontados (<strong className="text-yellow-600">até pela metade do seu valor</strong>) faz com que esse tipo de <strong className="text-yellow-600">investimento imobiliário</strong> seja altamente vantajoso para quem deseja lucrar com a revenda ou locação, e também para aqueles que almejam comprar a casa própria ou melhorar o padrão residencial.
         </p>
-        <span className="flex justify-center items-center">
-          <strong className="text-lg font-bold leading-7 text-yellow-600 max-sm:text-base max-sm:leading-6">
-            até pela metade do seu valor
-          </strong>
-        </span>
-        <p className="text-lg leading-7 text-zinc-900 max-sm:text-base max-sm:leading-6">
-          ) faz com
-        </p>
-      </section>
-
-      <section className="flex flex-wrap items-start mb-px w-full max-w-[930px] max-md:max-w-full max-sm:flex-col">
-        <p className="text-lg leading-7 text-zinc-900 max-sm:text-base max-sm:leading-6">
-          que esse tipo de
-        </p>
-        <span className="flex justify-center items-center">
-          <strong className="text-lg font-bold leading-7 text-yellow-600 max-sm:text-base max-sm:leading-6">
-            investimento imobiliário
-          </strong>
-        </span>
-        <p className="text-lg leading-7 text-zinc-900 max-sm:text-base max-sm:leading-6">
-          seja altamente vantajoso para quem deseja lucrar com a revenda ou
-        </p>
-      </section>
-
-      <p className="mb-10 w-full text-lg leading-7 max-w-[930px] text-zinc-900 max-md:max-w-full max-sm:text-base max-sm:leading-6">
-        locação, e também para aqueles que almejam comprar a casa própria ou melhorar o padrão residencial.
-      </p>
+      </div>
 
       <section className="flex gap-9 justify-center mb-8 w-full max-w-[930px] max-md:flex-col max-md:gap-5 max-md:items-center">
         <BenefitCard
           number="1"
-          title="Alta rentabilidade na revenda\nou locação"
+          title="Alta rentabilidade na revenda ou locação"
         />
         <BenefitCard
           number="2"
-          title="Compra da moradia por valor\nmuito abaixo do mercado"
+          title="Compra da moradia por valor muito abaixo do mercado"
           hasGradient={true}
         />
         <BenefitCard
           number="3"
-          title="Segurança jurídica do\ninvestimento, se bem\nassessorado"
+          title="Segurança jurídica do investimento, se bem assessorado"
         />
       </section>
 
@@ -75,41 +49,11 @@ export const AuctionBenefitsSection: React.FC = () => {
         </span>
       </SectionHeading>
 
-      <section className="flex flex-wrap items-start mb-px w-full max-w-[930px] max-md:max-w-full max-sm:flex-col">
-        <p className="text-lg leading-7 text-zinc-900 max-sm:text-base max-sm:leading-6">
-          Os riscos inerentes aos leilões imobiliários caracterizam-se pela eventual
+      <div className="mb-10 w-full max-w-[930px] max-md:max-w-full">
+        <p className="text-lg leading-7 text-zinc-900 max-sm:text-base max-sm:leading-6 text-center">
+          Os riscos inerentes aos leilões imobiliários caracterizam-se pela eventual <strong>demora na finalização da arrematação</strong>, que se dará com a transferência da posse e da propriedade do imóvel, e pela <strong>posterior anulação do leilão realizado</strong>, que poderá ocorrer caso seja verificado algum vício no processo judicial ou no procedimento extrajudicial que levou o imóvel a leilão.
         </p>
-        <div className="flex flex-col">
-          <strong className="text-lg font-bold leading-7 text-zinc-900 max-sm:text-base max-sm:leading-6">
-            demora na ﬁnalização da
-          </strong>
-          <strong className="text-lg font-bold leading-7 text-zinc-900 max-sm:text-base max-sm:leading-6">
-            arrematação
-          </strong>
-        </div>
-      </section>
-
-      <section className="flex flex-wrap items-start mb-px w-full max-w-[930px] max-md:max-w-full max-sm:flex-col">
-        <p className="text-lg leading-7 text-zinc-900 max-sm:text-base max-sm:leading-6">
-          , que se dará com a transferência da posse e da propriedade do imóvel, e pela
-        </p>
-        <div className="flex flex-col">
-          <strong className="text-lg font-bold leading-7 text-zinc-900 max-sm:text-base max-sm:leading-6">
-            posterior anulação
-          </strong>
-          <strong className="text-lg font-bold leading-7 text-zinc-900 max-sm:text-base max-sm:leading-6">
-            do leilão realizado
-          </strong>
-        </div>
-      </section>
-
-      <p className="mb-px w-full text-lg leading-7 max-w-[930px] text-zinc-900 max-md:max-w-full max-sm:text-base max-sm:leading-6">
-        , que poderá ocorrer caso seja veriﬁcado algum vício no processo judicial ou no procedimento
-      </p>
-
-      <p className="mb-10 w-full text-lg leading-7 max-w-[930px] text-zinc-900 max-md:max-w-full max-sm:text-base max-sm:leading-6">
-        extrajudicial que levou o imóvel a leilão.
-      </p>
+      </div>
 
       <div className="w-full h-[50px]" />
 
@@ -121,42 +65,11 @@ export const AuctionBenefitsSection: React.FC = () => {
         </span>
       </SectionHeading>
 
-      <section className="flex flex-col gap-px mb-10 w-full max-w-[930px] max-md:max-w-full">
-        <p className="text-lg leading-7 text-zinc-900 max-sm:text-base max-sm:leading-6">
-          <span>Os</span>
-          <strong className="font-bold"> leilões de imóveis</strong>
-          <span> possuem procedimentos deﬁnidos em lei. Portanto, é extremamente importante destacar</span>
+      <div className="mb-10 w-full max-w-[930px] max-md:max-w-full">
+        <p className="text-lg leading-7 text-zinc-900 max-sm:text-base max-sm:leading-6 text-center">
+          Os <strong>leilões de imóveis</strong> possuem procedimentos definidos em lei. Portanto, é extremamente importante destacar que <strong>o principal fator de sucesso desse investimento é jurídico</strong>, motivo pelo qual somente um <strong>escritório de advocacia extremamente especializado e experiente</strong> na área consegue prover a necessária segurança jurídica e financeira de toda a operação, que inicia com o <strong>estudo prévio de viabilidade jurídica</strong> (due diligence) e só termina com a <strong>entrega da posse e da propriedade do imóvel ao arrematante</strong>, de forma livre e desembaraçada de débitos.
         </p>
-        <p className="text-lg leading-7 text-zinc-900 max-sm:text-base max-sm:leading-6">
-          <span>que</span>
-          <strong className="font-bold"> o principal fator de sucesso desse investimento é jurídico</strong>
-          <span>, motivo pelo qual somente um</span>
-        </p>
-        <div className="flex flex-col">
-          <strong className="text-lg font-bold leading-7 text-zinc-900 max-sm:text-base max-sm:leading-6">
-            escritório de
-          </strong>
-          <strong className="text-lg font-bold leading-7 text-zinc-900 max-sm:text-base max-sm:leading-6">
-            advocacia extremamente especializado e experiente
-          </strong>
-        </div>
-        <p className="text-lg leading-7 text-zinc-900 max-sm:text-base max-sm:leading-6">
-          na área consegue prover a necessária segurança jurídica
-        </p>
-        <p className="text-lg leading-7 text-zinc-900 max-sm:text-base max-sm:leading-6">
-          <span>e ﬁnanceira de toda a operação, que inicia com o</span>
-          <strong className="font-bold"> estudo prévio de viabilidade jurídica</strong>
-          <span> (due diligence) e só</span>
-        </p>
-        <p className="text-lg leading-7 text-zinc-900 max-sm:text-base max-sm:leading-6">
-          <span>termina com a</span>
-          <strong className="font-bold"> entrega da posse e da propriedade do imóvel ao arrematante</strong>
-          <span>, de forma livre e</span>
-        </p>
-        <p className="text-lg leading-7 text-zinc-900 max-sm:text-base max-sm:leading-6">
-          desembaraçada de débitos.
-        </p>
-      </section>
+      </div>
 
       <div className="w-full h-[50px]" />
 

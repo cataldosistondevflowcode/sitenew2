@@ -16,13 +16,8 @@ export const BenefitCard: React.FC<BenefitCardProps> = ({
       <div className="mb-5 text-4xl text-center text-yellow-600 leading-[54px]">
         {number}
       </div>
-      <p className="flex flex-col justify-center text-lg leading-7 text-center text-zinc-900 max-sm:text-base max-sm:leading-6">
-        {title.split('\n').map((line, index) => (
-          <span key={index}>
-            {line}
-            {index < title.split('\n').length - 1 && <br />}
-          </span>
-        ))}
+      <p className="flex flex-col justify-center text-lg leading-7 text-center text-zinc-900 max-sm:text-base max-sm:leading-6 hyphens-auto">
+        {title}
       </p>
       {hasGradient && (
         <div className="absolute bottom-0 left-0 h-8 w-[287px] bg-gradient-to-t from-yellow-100 to-transparent rounded-b-lg" />

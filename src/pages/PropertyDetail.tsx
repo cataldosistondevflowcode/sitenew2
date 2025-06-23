@@ -150,14 +150,16 @@ const PropertyDetail = () => {
       <SocialBar />
       <Header />
       
-      <main className="container mx-auto px-4 py-8">
-        <MainPropertyDetail 
-          property={formattedProperty} 
-          rawPropertyData={property}
-        />
-      </main>
-      
-      <TestimonialsSection />
+      <div className="w-full">
+        <main className="container mx-auto px-4 py-8 pb-0 mb-0">
+          <MainPropertyDetail 
+            property={formattedProperty} 
+            rawPropertyData={property}
+          />
+        </main>
+        
+        <TestimonialsSection />
+      </div>
       <NewsletterSignup />
       <Newsletter />
       <Footer />

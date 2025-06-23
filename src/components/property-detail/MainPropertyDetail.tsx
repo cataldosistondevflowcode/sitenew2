@@ -143,8 +143,8 @@ export const MainPropertyDetail: React.FC<MainPropertyDetailProps> = ({ property
   ];
 
   return (
-    <div className="flex justify-center w-full bg-white">
-      <article className="flex flex-col pr-7 max-w-[930px] max-md:pr-5 bg-white">
+    <div className="flex justify-center w-full bg-white mb-0">
+      <article className="flex flex-col pr-7 max-w-[930px] max-md:pr-5 bg-white mb-0">
         <div className="w-full max-w-[850px] max-md:max-w-full">
           <div className="flex gap-5 max-md:flex-col">
             <main className="w-[66%] max-md:ml-0 max-md:w-full">

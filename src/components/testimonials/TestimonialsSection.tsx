@@ -28,7 +28,7 @@ export const TestimonialsSection = () => {
         rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=Quicksand:wght@400&family=Inter:wght@400&display=swap"
       />
-      <section className="flex justify-center items-center self-stretch p-4 bg-neutral-100 min-h-[630px] max-md:p-4 max-md:min-h-[550px] max-sm:p-2.5 max-sm:min-h-[500px] relative">
+      <section className="flex justify-center items-center self-stretch px-4 pt-0 pb-4 bg-neutral-100 min-h-[630px] max-md:px-4 max-md:pt-0 max-md:pb-4 max-md:min-h-[550px] max-sm:px-2.5 max-sm:pt-0 max-sm:pb-2.5 max-sm:min-h-[500px] relative mt-0">
         <img
           src="/assets/bg/fundo-marmore.png"
           alt="Fundo mármore"

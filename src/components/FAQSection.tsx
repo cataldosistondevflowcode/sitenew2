@@ -56,8 +56,8 @@ export const FAQSection: React.FC = () => {
   ];
 
   return (
-    <section className="text-2xl text-white w-screen relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw]">
-      <div className="flex overflow-hidden relative flex-col justify-center items-center px-20 py-20 w-full min-h-[906px] max-md:px-5">
+    <section className="text-2xl text-white w-screen relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] mb-0">
+      <div className="flex overflow-hidden relative flex-col justify-center items-center px-20 pt-20 pb-[50px] w-full max-md:px-5 mb-0">
         <img
           src="https://cdn.builder.io/api/v1/image/assets/TEMP/4e2dcb22ef4841f771ed9d27b482af771f0de40a?placeholderIfAbsent=true&apiKey=ca38ae4db7a6428881f7c632440d043a"
           alt="Background"

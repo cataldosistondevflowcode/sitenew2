@@ -67,7 +67,7 @@ export const HeroSection = () => {
                 <div className="relative w-[560px] h-[315px] bg-black rounded-lg overflow-hidden">
                   {/* Iframe do YouTube */}
                   <iframe
-                    src="https://www.youtube.com/embed/IssSNAzj4ag"
+                    src="https://www.youtube.com/embed/H9-LPE3gRFg"
                     title="Como funciona nossa assessoria em leilões de imóveis"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowFullScreen

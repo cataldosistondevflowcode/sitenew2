@@ -47,6 +47,7 @@ export function SimilarPropertiesSection({
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1024);
 
   console.log('📍 SimilarPropertiesSection renderizado!');
 
@@ -77,6 +78,24 @@ export function SimilarPropertiesSection({
       currency: 'BRL'
     }).format(value);
   };
+
+  const getItemsPerPage = () => {
+    if (windowWidth < 640) return 1;
+    if (windowWidth < 1024) return 2;
+    return 3;
+  };
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+      setCurrentIndex(0);
+    };
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('resize', handleResize);
+      return () => window.removeEventListener('resize', handleResize);
+    }
+  }, []);
 
   useEffect(() => {
     const fetchSimilarProperties = async () => {
@@ -159,38 +178,36 @@ export function SimilarPropertiesSection({
 
   const handlePreviousClick = () => {
     setCurrentIndex((prev) => {
-      const newIndex = prev - 3;
-      return newIndex < 0 ? Math.max(0, properties.length - 3) : newIndex;
+      const itemsPerPage = getItemsPerPage();
+      const newIndex = prev - itemsPerPage;
+      return newIndex < 0 ? Math.max(0, properties.length - itemsPerPage) : newIndex;
     });
   };
 
   const handleNextClick = () => {
     setCurrentIndex((prev) => {
-      const newIndex = prev + 3;
+      const itemsPerPage = getItemsPerPage();
+      const newIndex = prev + itemsPerPage;
       return newIndex >= properties.length ? 0 : newIndex;
     });
   };
 
-  const visibleProperties = properties.slice(currentIndex, currentIndex + 3);
+  const itemsPerPage = getItemsPerPage();
+  const visibleProperties = properties.slice(currentIndex, currentIndex + itemsPerPage);
 
   if (loading) {
     return (
-      <section className="flex relative gap-4 justify-center items-start pt-10 pr-5 pb-0 pl-4 min-h-[430px]">
-        <div className="flex absolute inset-0 z-0 self-start bg-gray-200 w-full h-full" />
-        <div className="flex z-0 flex-col flex-1 shrink items-center my-auto basis-0 min-w-60 max-md:max-w-full">
-          <div className="px-4 max-w-full w-[960px]">
-            <div className="w-full max-md:max-w-full">
-              <header className="flex flex-col items-center w-full text-4xl font-medium leading-tight text-center text-black max-md:max-w-full">
-                <div className="flex flex-col py-4 pr-px pl-2.5 max-w-full w-[802px]">
-                  <h2 className="max-md:max-w-full">
-                    Imóveis Similares
-                  </h2>
-                  <div className="self-center mt-2 max-md:max-w-full text-lg">
-                    Carregando imóveis similares...
-                  </div>
-                </div>
-              </header>
-            </div>
+      <section className="py-8 sm:py-12 bg-gray-200">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-6xl mx-auto">
+            <header className="text-center mb-8 sm:mb-12">
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-medium text-black mb-2 sm:mb-4">
+                Imóveis Similares
+              </h2>
+              <p className="text-base sm:text-lg text-gray-600">
+                Carregando imóveis similares...
+              </p>
+            </header>
           </div>
         </div>
       </section>
@@ -203,75 +220,66 @@ export function SimilarPropertiesSection({
   }
 
   return (
-    <section className="flex relative gap-4 justify-center items-start pt-10 pr-5 pb-0 pl-4 min-h-[430px]">
-      <div className="flex absolute inset-0 z-0 self-start bg-gray-200 w-full h-full" />
-      <div className="flex z-0 flex-col flex-1 shrink items-center my-auto basis-0 min-w-60 max-md:max-w-full">
-        <div className="px-4 max-w-full w-[960px]">
-          <div className="w-full max-md:max-w-full">
-            <header className="flex flex-col items-center w-full text-4xl font-medium leading-tight text-center text-black max-md:max-w-full">
-              <div className="flex flex-col py-4 pr-px pl-2.5 max-w-full w-[802px]">
-                <h2 className="max-md:max-w-full">
-                  Imóveis Similares
-                </h2>
-                <div className="self-center mt-2 max-md:max-w-full text-lg">
-                  Confira outros imóveis que podem interessar você
-                </div>
-              </div>
-            </header>
-            <div className="flex relative flex-col items-start px-16 mt-2 w-full max-md:px-5 max-md:max-w-full">
-              <div className="overflow-hidden z-0 self-stretch pb-16 w-full max-md:max-w-full">
-                {properties.length > 0 ? (
-                  <div className="flex gap-6 min-h-[527px] justify-center">
-                    {visibleProperties.map((property) => (
-                      <div key={property.id} className="flex-1 max-w-[320px]">
-                        <PropertyCard
-                          id={property.id}
-                          image={property.imagem}
-                          title={property.titulo_propriedade}
-                          location={`${property.bairro}, ${property.cidade}/${property.estado}`}
-                          firstAuctionDate={formatDateToBrazilian(property.data_leilao_1)}
-                          firstAuctionValue={formatCurrency(property.leilao_1)}
-                          secondAuctionDate={formatDateToBrazilian(property.data_leilao_2)}
-                          secondAuctionValue={formatCurrency(property.leilao_2)}
-                          area={property.area_displayable}
-                          parkingSpots={property.parkingSpots}
-                          tipoLeilao={property.tipo_leilao}
-                          fgts={property.fgts}
-                          financiamento={property.financiamento}
-                          parcelamento={property.parcelamento}
-                        />
-                      </div>
-                    ))}
+    <section className="py-8 sm:py-12 bg-gray-200">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-6xl mx-auto">
+          <header className="text-center mb-8 sm:mb-12">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-medium text-black mb-2 sm:mb-4">
+              Imóveis Similares
+            </h2>
+            <p className="text-base sm:text-lg text-gray-600">
+              Confira outros imóveis que podem interessar você
+            </p>
+          </header>
+          
+          <div className="relative">
+            {properties.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                {visibleProperties.map((property) => (
+                  <div key={property.id} className="w-full">
+                    <PropertyCard
+                      id={property.id}
+                      image={property.imagem}
+                      title={property.titulo_propriedade}
+                      location={`${property.bairro}, ${property.cidade}/${property.estado}`}
+                      firstAuctionDate={formatDateToBrazilian(property.data_leilao_1)}
+                      firstAuctionValue={formatCurrency(property.leilao_1)}
+                      secondAuctionDate={formatDateToBrazilian(property.data_leilao_2)}
+                      secondAuctionValue={formatCurrency(property.leilao_2)}
+                      area={property.area_displayable}
+                      parkingSpots={property.parkingSpots}
+                      tipoLeilao={property.tipo_leilao}
+                      fgts={property.fgts}
+                      financiamento={property.financiamento}
+                      parcelamento={property.parcelamento}
+                    />
                   </div>
-                ) : (
-                  <div className="flex justify-center items-center min-h-[200px] text-gray-600">
-                    <p className="text-lg">Carregando imóveis similares...</p>
-                  </div>
-                )}
+                ))}
               </div>
-              
-              {/* Botões de navegação */}
-              {properties.length > 3 && (
-                <>
-                  <button 
-                    onClick={handlePreviousClick}
-                    className="absolute -left-12 top-1/2 transform -translate-y-1/2 z-10 bg-white rounded-full p-3 shadow-lg hover:shadow-xl transition-shadow border border-gray-200"
-                    aria-label="Imóveis anteriores"
-                    style={{ left: '-50px' }}
-                  >
-                    <ChevronLeft className="w-6 h-6 text-[#d68e08]" />
-                  </button>
-                  <button 
-                    onClick={handleNextClick}
-                    className="absolute -right-12 top-1/2 transform -translate-y-1/2 z-10 bg-white rounded-full p-3 shadow-lg hover:shadow-xl transition-shadow border border-gray-200"
-                    aria-label="Próximos imóveis"
-                    style={{ right: '-50px' }}
-                  >
-                    <ChevronRight className="w-6 h-6 text-[#d68e08]" />
-                  </button>
-                </>
-              )}
-            </div>
+            ) : (
+              <div className="flex justify-center items-center min-h-[200px] text-gray-600">
+                <p className="text-lg">Carregando imóveis similares...</p>
+              </div>
+            )}
+            
+            {properties.length > itemsPerPage && (
+              <>
+                <button 
+                  onClick={handlePreviousClick}
+                  className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-4 sm:-translate-x-6 z-10 bg-white rounded-full p-2 sm:p-3 shadow-lg hover:shadow-xl transition-all border border-gray-200 min-h-[44px] min-w-[44px]"
+                  aria-label="Imóveis anteriores"
+                >
+                  <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6 text-[#d68e08]" />
+                </button>
+                <button 
+                  onClick={handleNextClick}
+                  className="absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-4 sm:translate-x-6 z-10 bg-white rounded-full p-2 sm:p-3 shadow-lg hover:shadow-xl transition-all border border-gray-200 min-h-[44px] min-w-[44px]"
+                  aria-label="Próximos imóveis"
+                >
+                  <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6 text-[#d68e08]" />
+                </button>
+              </>
+            )}
           </div>
         </div>
       </div>

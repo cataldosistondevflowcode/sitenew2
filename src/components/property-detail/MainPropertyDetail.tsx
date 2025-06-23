@@ -143,12 +143,12 @@ export const MainPropertyDetail: React.FC<MainPropertyDetailProps> = ({ property
   ];
 
   return (
-    <div className="flex justify-center w-full bg-white mb-0">
-      <article className="flex flex-col pr-7 max-w-[930px] max-md:pr-5 bg-white mb-0">
-        <div className="w-full max-w-[850px] max-md:max-w-full">
-          <div className="flex gap-5 max-md:flex-col">
-            <main className="w-[66%] max-md:ml-0 max-md:w-full">
-              <div className="flex flex-col items-start w-full max-md:mt-2 max-md:max-w-full">
+    <div className="flex justify-center w-full bg-white mb-0 px-4 sm:px-6 lg:px-8">
+      <article className="flex flex-col w-full max-w-[930px] bg-white mb-0">
+        <div className="w-full">
+          <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
+            <main className="w-full lg:w-[66%]">
+              <div className="flex flex-col items-start w-full">
                 <Breadcrumb items={breadcrumbItems} />
 
                 <PropertyHeader
@@ -157,7 +157,7 @@ export const MainPropertyDetail: React.FC<MainPropertyDetailProps> = ({ property
                   locationIcon="https://cdn.builder.io/api/v1/image/assets/TEMP/ee1c5f3efaad98892884165349c5770eb58341b2?placeholderIfAbsent=true&apiKey=ca38ae4db7a6428881f7c632440d043a"
                 />
 
-                <div className="mt-2 w-full">
+                <div className="mt-4 w-full">
                   <PropertyMap 
                     property={{
                       image: property.image,
@@ -176,18 +176,26 @@ export const MainPropertyDetail: React.FC<MainPropertyDetailProps> = ({ property
               </div>
             </main>
 
-            <div className="ml-5 w-[34%] max-md:ml-0 max-md:w-full">
-              <ContactSidebar contactInfo={contactInfo} />
-            </div>
+            <aside className="w-full lg:w-[34%] mt-6 lg:mt-0">
+              <div className="lg:sticky lg:top-4">
+                <ContactSidebar contactInfo={contactInfo} />
+              </div>
+            </aside>
           </div>
         </div>
 
-        <PropertySpecs specs={propertySpecs} />
+        <div className="mt-8 sm:mt-12">
+          <PropertySpecs specs={propertySpecs} />
+        </div>
 
-        <AuctionBenefitsSection />
+        <div className="mt-8 sm:mt-12">
+          <AuctionBenefitsSection />
+        </div>
 
-        <FAQSection />
+        <div className="mt-8 sm:mt-12">
+          <FAQSection />
+        </div>
       </article>
     </div>
   );
-}; 
+};  

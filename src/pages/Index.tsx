@@ -866,29 +866,29 @@ const Index = () => {
       <section className="py-16 bg-background opportunities">
         <div className="container">
           {/* Filtros Container */}
-          <div className="mb-8">
+          <div className="mb-6 sm:mb-8">
             {/* Mobile Filter Button */}
-            {isMobile && (
+            <div className="block md:hidden mb-4">
               <Button 
-                className="w-full mb-4 flex items-center justify-center bg-teal-900 hover:bg-teal-800"
+                className="w-full flex items-center justify-center bg-teal-900 hover:bg-teal-800 text-white py-3 text-base font-medium"
                 onClick={() => setIsFilterOpen(!isFilterOpen)}
               >
                 {isFilterOpen ? (
                   <>
-                    <X className="mr-2" size={16} /> Fechar
+                    <X className="mr-2" size={18} /> Fechar Filtros
                   </>
                 ) : (
                   <>
-                    <Filter className="mr-2" size={16} /> Filtrar
+                    <Filter className="mr-2" size={18} /> Filtrar Imóveis
                   </>
                 )}
               </Button>
-            )}
+            </div>
 
             {/* Filtros */}
-            <div className={`${isMobile && !isFilterOpen ? 'hidden' : ''} bg-white p-5 rounded-lg shadow-md`}>
+            <div className={`${!isFilterOpen ? 'hidden md:block' : 'block'} bg-white p-4 sm:p-5 md:p-6 rounded-lg shadow-md`}>
               {/* Primeira linha de selects */}
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-4">
                 {/* Dropdown de Tipo de Imóvel */}
                 <div className="filter-dropdown relative">
                   <div 
@@ -1139,7 +1139,7 @@ const Index = () => {
               </div>
               
               {/* Segunda linha de selects */}
-              <div className="grid grid-cols-1 md:grid-cols-1 gap-4 mb-4">
+              <div className="grid grid-cols-1 gap-3 sm:gap-4 mb-4">
                 {/* Dropdown de Modalidade de Leilão */}
                 <div className="filter-dropdown relative">
                   <div 
@@ -1186,36 +1186,36 @@ const Index = () => {
               </div>
               
               {/* Campo de busca rápida */}
-              <div className="mb-4">
+              <div className="mb-4 sm:mb-6">
                 <input 
                   type="text" 
                   placeholder="Busca rápida, escreva o que procura" 
-                  className="w-full p-3 bg-[#fafafa] border border-gray-200 rounded-md text-sm focus:outline-none"
+                  className="w-full p-3 bg-[#fafafa] border border-gray-200 rounded-md text-sm focus:ring-2 focus:ring-primary focus:border-transparent focus:outline-none"
                   value={keywordInput}
                   onChange={(e) => setKeywordInput(e.target.value)}
                 />
               </div>
               
               {/* Botões de Buscar e Limpar */}
-              <div className="flex gap-4">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                 <Button 
-                  className="flex-1 py-3 bg-[#F44336] hover:bg-[#e53935] text-white font-bold"
+                  className="flex-1 py-3 sm:py-3 bg-[#F44336] hover:bg-[#e53935] text-white font-bold text-base"
                   onClick={clearAllFilters}
                 >
-                  Limpar
+                  Limpar Filtros
                 </Button>
                 <Button 
-                  className="flex-1 py-3 bg-[#d68e08] hover:bg-[#b8780a] text-white font-bold"
+                  className="flex-1 py-3 sm:py-3 bg-[#d68e08] hover:bg-[#b8780a] text-white font-bold text-base"
                   onClick={applyFilters}
                 >
-                  Buscar
+                  Buscar Imóveis
                 </Button>
               </div>
             </div>
             
             {/* Contagem de resultados e ordenação */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mt-6">
-              <div className="text-base font-bold mb-3 md:mb-0">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mt-4 sm:mt-6 px-1">
+              <div className="text-sm sm:text-base font-bold mb-3 sm:mb-0">
                 <span className="text-teal-800">{totalCount}</span> oportunidades encontradas
               </div>
             </div>
@@ -1238,7 +1238,7 @@ const Index = () => {
           {/* Property Grid */}
           {!loading && !error && (
             <>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 auto-rows-fr">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5 md:gap-6 auto-rows-fr">
                 {properties.length > 0 ? (
                   properties.map((property) => (
                     <PropertyCard
@@ -1260,9 +1260,9 @@ const Index = () => {
                     />
                   ))
                 ) : (
-                  <div className="col-span-full text-center py-10">
-                    <p className="text-gray-500 text-lg mb-6">Nenhum imóvel encontrado com os filtros selecionados.</p>
-                    <div className="flex flex-col md:flex-row gap-4 justify-center mb-6">
+                  <div className="col-span-full text-center py-8 sm:py-10 px-4">
+                    <p className="text-gray-500 text-base sm:text-lg mb-6">Nenhum imóvel encontrado com os filtros selecionados.</p>
+                    <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center mb-6 max-w-md mx-auto">
                       <Button
                         className="bg-yellow-600 hover:bg-yellow-700 text-white font-bold px-6 py-3"
                         onClick={() => {
@@ -1308,25 +1308,43 @@ const Index = () => {
                     </div>
                     {/* Modal de interesse */}
                     {showInterestModal && (
-                      <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-                        <div className="bg-white rounded-lg p-8 max-w-md w-full text-left">
-                          <h2 className="text-xl font-bold mb-4 text-gray-900">Quero acompanhar oportunidades</h2>
+                      <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 p-4">
+                        <div className="bg-white rounded-lg p-6 sm:p-8 max-w-md w-full text-left max-h-[90vh] overflow-y-auto">
+                          <h2 className="text-lg sm:text-xl font-bold mb-4 sm:mb-6 text-gray-900">Quero acompanhar oportunidades</h2>
                           <form onSubmit={handleInterestSubmit}>
-                            <div className="mb-3">
-                              <label className="block text-gray-700 mb-1">Nome</label>
-                              <input type="text" className="w-full border rounded p-2" value={interestName} onChange={e => setInterestName(e.target.value)} required />
+                            <div className="mb-4">
+                              <label className="block text-gray-700 mb-2 text-sm sm:text-base">Nome</label>
+                              <input 
+                                type="text" 
+                                className="w-full border border-gray-300 rounded-md p-3 text-sm sm:text-base focus:ring-2 focus:ring-primary focus:border-transparent" 
+                                value={interestName} 
+                                onChange={e => setInterestName(e.target.value)} 
+                                required 
+                              />
                             </div>
-                            <div className="mb-3">
-                              <label className="block text-gray-700 mb-1">Telefone</label>
-                              <input type="tel" className="w-full border rounded p-2" value={interestPhone} onChange={e => setInterestPhone(e.target.value)} required />
+                            <div className="mb-4">
+                              <label className="block text-gray-700 mb-2 text-sm sm:text-base">Telefone</label>
+                              <input 
+                                type="tel" 
+                                className="w-full border border-gray-300 rounded-md p-3 text-sm sm:text-base focus:ring-2 focus:ring-primary focus:border-transparent" 
+                                value={interestPhone} 
+                                onChange={e => setInterestPhone(e.target.value)} 
+                                required 
+                              />
                             </div>
-                            <div className="mb-3">
-                              <label className="block text-gray-700 mb-1">E-mail</label>
-                              <input type="email" className="w-full border rounded p-2" value={interestEmail} onChange={e => setInterestEmail(e.target.value)} required />
+                            <div className="mb-6">
+                              <label className="block text-gray-700 mb-2 text-sm sm:text-base">E-mail</label>
+                              <input 
+                                type="email" 
+                                className="w-full border border-gray-300 rounded-md p-3 text-sm sm:text-base focus:ring-2 focus:ring-primary focus:border-transparent" 
+                                value={interestEmail} 
+                                onChange={e => setInterestEmail(e.target.value)} 
+                                required 
+                              />
                             </div>
-                            <div className="flex gap-2 mt-4">
-                              <Button type="submit" className="bg-[#d68e08] hover:bg-[#b8780a] text-white font-bold flex-1">Enviar</Button>
-                              <Button type="button" className="bg-gray-300 text-gray-800 flex-1" onClick={() => setShowInterestModal(false)}>Cancelar</Button>
+                            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+                              <Button type="submit" className="bg-[#d68e08] hover:bg-[#b8780a] text-white font-bold flex-1 py-3">Enviar</Button>
+                              <Button type="button" className="bg-gray-300 hover:bg-gray-400 text-gray-800 flex-1 py-3" onClick={() => setShowInterestModal(false)}>Cancelar</Button>
                             </div>
                           </form>
                         </div>
@@ -1338,7 +1356,7 @@ const Index = () => {
 
               {/* Pagination */}
               {properties.length > 0 && (
-                <div className="mt-8 flex justify-center">
+                <div className="mt-6 sm:mt-8 flex justify-center px-4">
                   <PropertyPagination 
                     currentPage={currentPage}
                     totalPages={totalPages}
@@ -1370,46 +1388,67 @@ const Index = () => {
       <TestimonialsSection />
 
       {/* Vertical Newsletter Section */}
-      <section className="py-16 bg-cover bg-center relative" style={{backgroundImage: 'url(/bg-newsletter.jpg.webp)'}}>
+      <section className="py-12 sm:py-16 bg-cover bg-center relative" style={{backgroundImage: 'url(/bg-newsletter.jpg.webp)'}}>
         <div className="absolute inset-0 bg-black/70"></div>
-        <div className="container relative z-10">
+        <div className="container mx-auto relative z-10 px-4">
           <div className="max-w-6xl mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 items-center">
               <div className="text-white">
-                <h2 className="text-4xl font-bold mb-6">Receba nossa newsletter</h2>
+                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-6 text-center lg:text-left">Receba nossa newsletter</h2>
                 <form className="space-y-4">
-                  <input type="text" placeholder="Nome" className="w-full px-4 py-3 border-2 border-[#d68e08] rounded-md bg-transparent text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-[#d68e08]" />
-                  <input type="email" placeholder="Email" className="w-full px-4 py-3 border-2 border-[#d68e08] rounded-md bg-transparent text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-[#d68e08]" />
-                  <input type="tel" placeholder="Telefone" className="w-full px-4 py-3 border-2 border-[#d68e08] rounded-md bg-transparent text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-[#d68e08]" />
-                  <button type="submit" className="w-full px-8 py-3 bg-[#d68e08] hover:bg-[#b8780a] text-white font-bold rounded-md transition-colors">ENVIAR</button>
+                  <input 
+                    type="text" 
+                    placeholder="Nome" 
+                    className="w-full px-4 py-3 border-2 border-[#d68e08] rounded-md bg-transparent text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-[#d68e08] text-sm sm:text-base" 
+                  />
+                  <input 
+                    type="email" 
+                    placeholder="Email" 
+                    className="w-full px-4 py-3 border-2 border-[#d68e08] rounded-md bg-transparent text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-[#d68e08] text-sm sm:text-base" 
+                  />
+                  <input 
+                    type="tel" 
+                    placeholder="Telefone" 
+                    className="w-full px-4 py-3 border-2 border-[#d68e08] rounded-md bg-transparent text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-[#d68e08] text-sm sm:text-base" 
+                  />
+                  <button 
+                    type="submit" 
+                    className="w-full px-6 sm:px-8 py-3 bg-[#d68e08] hover:bg-[#b8780a] text-white font-bold rounded-md transition-colors text-sm sm:text-base"
+                  >
+                    ENVIAR
+                  </button>
                 </form>
                 
-                <div className="mt-12">
-                  <h3 className="text-2xl font-bold mb-6">Podemos ajudar a solucionar o seu caso!</h3>
-                  <div className="flex justify-center space-x-8">
+                <div className="mt-8 sm:mt-12">
+                  <h3 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-center lg:text-left">Podemos ajudar a solucionar o seu caso!</h3>
+                  <div className="flex justify-center lg:justify-start space-x-6 sm:space-x-8">
                     <a href="#" className="flex flex-col items-center text-[#d68e08] hover:text-[#b8780a] transition-colors">
-                      <svg className="w-8 h-8 mb-2" fill="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-6 h-6 sm:w-8 sm:h-8 mb-2" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
                       </svg>
-                      <span className="text-sm">WhatsApp</span>
+                      <span className="text-xs sm:text-sm">WhatsApp</span>
                     </a>
                     <a href="#" className="flex flex-col items-center text-[#d68e08] hover:text-[#b8780a] transition-colors">
-                      <svg className="w-8 h-8 mb-2" fill="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-6 h-6 sm:w-8 sm:h-8 mb-2" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
                       </svg>
-                      <span className="text-sm">Email</span>
+                      <span className="text-xs sm:text-sm">Email</span>
                     </a>
                     <a href="#" className="flex flex-col items-center text-[#d68e08] hover:text-[#b8780a] transition-colors">
-                      <svg className="w-8 h-8 mb-2" fill="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-6 h-6 sm:w-8 sm:h-8 mb-2" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
                       </svg>
-                      <span className="text-sm">Telefone</span>
+                      <span className="text-xs sm:text-sm">Telefone</span>
                     </a>
                   </div>
                 </div>
               </div>
-              <div className="flex justify-center">
-                <img src="/foto-recortada-cataldo.png.webp" alt="Advogado Cataldo" className="max-w-full h-auto rounded-lg" />
+              <div className="flex justify-center order-first lg:order-last">
+                <img 
+                  src="/foto-recortada-cataldo.png.webp" 
+                  alt="Advogado Cataldo" 
+                  className="max-w-full h-auto rounded-lg w-full max-w-sm sm:max-w-md lg:max-w-full" 
+                />
               </div>
             </div>
           </div>
@@ -1420,15 +1459,16 @@ const Index = () => {
       <Footer />
 
       {/* Floating Buttons */}
-      <div className="fixed bottom-20 right-4 z-40">
-        <Button className="bg-primary hover:bg-primary/90 font-bold">
-          Inscreva-se para oportunidades
+      <div className="fixed bottom-16 sm:bottom-20 right-2 sm:right-4 z-40">
+        <Button className="bg-primary hover:bg-primary/90 font-bold text-xs sm:text-sm px-3 sm:px-4 py-2 sm:py-3">
+          <span className="hidden sm:inline">Inscreva-se para oportunidades</span>
+          <span className="sm:hidden">Oportunidades</span>
         </Button>
       </div>
       
-      <div className="fixed bottom-4 right-4 z-40">
-        <Button className="w-14 h-14 rounded-full bg-[#25d366] hover:bg-[#25d366]/90">
-          <MessageCircle className="w-6 h-6" />
+      <div className="fixed bottom-2 sm:bottom-4 right-2 sm:right-4 z-40">
+        <Button className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-[#25d366] hover:bg-[#25d366]/90">
+          <MessageCircle className="w-5 h-5 sm:w-6 sm:h-6" />
         </Button>
       </div>
     </div>

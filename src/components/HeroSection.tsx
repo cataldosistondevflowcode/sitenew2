@@ -7,7 +7,7 @@ export const HeroSection = () => {
       {/* Primeira seção - Hero tradicional */}
       <section className="relative">
         <div 
-          className="bg-cover bg-center bg-no-repeat h-[500px] relative"
+          className="bg-cover bg-center bg-no-repeat h-[400px] sm:h-[450px] md:h-[500px] lg:h-[550px] relative"
           style={{
             backgroundImage: "url('/visao-panoramica-rio-janeiro.jpg')"
           }}
@@ -16,55 +16,61 @@ export const HeroSection = () => {
           <div className="absolute inset-0 bg-black/15"></div>
           
           {/* Conteúdo */}
-          <div className="relative z-10 container h-full flex items-center justify-center">
-            <div className="max-w-[960px] px-4 flex items-start gap-8">
-              <div className="flex-1 max-w-[512px]">
-                <div className="mb-4">
-                  <h1 className="text-white font-medium text-[44px] leading-[52.8px] mb-4" style={{ fontFamily: "Playfair Display, serif" }}>
-                    Imóveis em Leilão<br />
+          <div className="relative z-10 container mx-auto h-full flex items-center justify-center px-4">
+            <div className="max-w-[960px] w-full flex flex-col lg:flex-row items-center lg:items-start gap-6 lg:gap-8">
+              <div className="flex-1 max-w-[512px] text-center lg:text-left">
+                <div className="mb-4 sm:mb-6">
+                  <h1 
+                    className="text-white font-medium text-2xl sm:text-3xl md:text-4xl lg:text-[44px] leading-tight lg:leading-[52.8px] mb-4" 
+                    style={{ fontFamily: "Playfair Display, serif" }}
+                  >
+                    Imóveis em Leilão<br className="hidden sm:block" />
                     no Rio de Janeiro
                   </h1>
                 </div>
                 
-                <div className="mb-4">
-                  <p className="text-white font-bold text-xl leading-[30px]" style={{ fontFamily: "Quicksand, sans-serif" }}>
-                    Receba oportunidades de leilões personalizadas, de<br />
-                    acordo com o seu perfil.
+                <div className="mb-6 sm:mb-8">
+                  <p 
+                    className="text-white font-bold text-base sm:text-lg md:text-xl leading-relaxed" 
+                    style={{ fontFamily: "Quicksand, sans-serif" }}
+                  >
+                    Receba oportunidades de leilões personalizadas,<br className="hidden sm:block" />
+                    de acordo com o seu perfil.
                   </p>
                 </div>
                 
-                <div className="flex flex-wrap">
+                <div className="flex justify-center lg:justify-start">
                   <a
                     href="#"
-                    className="inline-flex items-center justify-center bg-gradient-to-r from-[#6d4403] via-[#b57309] to-[#d48d07] text-white rounded-full px-7 py-4 font-normal text-[19.8px] leading-[29.7px] hover:opacity-90 transition-opacity"
+                    className="inline-flex items-center justify-center bg-gradient-to-r from-[#6d4403] via-[#b57309] to-[#d48d07] text-white rounded-full px-4 sm:px-6 md:px-7 py-3 sm:py-4 font-normal text-sm sm:text-base md:text-[19.8px] leading-relaxed hover:opacity-90 transition-opacity"
                     style={{ fontFamily: "Quicksand, sans-serif" }}
                   >
-                    Quero receber novas oportunidades
-                    <ChevronRight className="ml-2 h-6 w-7" />
+                    <span className="text-center">Quero receber novas oportunidades</span>
+                    <ChevronRight className="ml-2 h-5 w-5 sm:h-6 sm:w-6 md:h-6 md:w-7 flex-shrink-0" />
                   </a>
                 </div>
               </div>
               
-              {/* Espaço para balanceamento */}
-              <div className="w-[383px] hidden lg:block"></div>
+              {/* Espaço para balanceamento - apenas em desktop */}
+              <div className="w-[383px] hidden xl:block"></div>
             </div>
           </div>
         </div>
       </section>
 
       {/* Segunda seção - Vídeo e títulos das oportunidades */}
-      <section className="relative -mt-20 pt-20">
+      <section className="relative -mt-16 sm:-mt-20 pt-16 sm:pt-20">
         <div 
-          className="bg-cover bg-center bg-no-repeat min-h-[506px] relative"
+          className="bg-cover bg-center bg-no-repeat min-h-[400px] sm:min-h-[450px] md:min-h-[506px] relative"
           style={{
             backgroundImage: "url('/fundo-marmore-1-webp.png')"
           }}
         >
-          <div className="container relative z-10 py-12">
-            <div className="max-w-[1170px] mx-auto px-4">
+          <div className="container mx-auto relative z-10 py-8 sm:py-10 md:py-12 px-4">
+            <div className="max-w-[1170px] mx-auto">
               {/* Player de vídeo */}
-              <div className="mb-8 flex justify-center">
-                <div className="relative w-[560px] h-[315px] bg-black rounded-lg overflow-hidden">
+              <div className="mb-6 sm:mb-8 flex justify-center">
+                <div className="relative w-full max-w-[560px] aspect-video bg-black rounded-lg overflow-hidden">
                   {/* Iframe do YouTube */}
                   <iframe
                     src="https://www.youtube.com/embed/H9-LPE3gRFg"
@@ -74,11 +80,11 @@ export const HeroSection = () => {
                     className="w-full h-full"
                   ></iframe>
                   
-                  {/* Overlay com informações do canal (se necessário) */}
-                  <div className="absolute bottom-0 left-0 bg-black/80 text-white px-3 py-2 rounded-tr-md">
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm">Assistir no</span>
-                      <svg className="w-16 h-4" viewBox="0 0 72 16" fill="white">
+                  {/* Overlay com informações do canal */}
+                  <div className="absolute bottom-0 left-0 bg-black/80 text-white px-2 sm:px-3 py-1 sm:py-2 rounded-tr-md">
+                    <div className="flex items-center gap-1 sm:gap-2">
+                      <span className="text-xs sm:text-sm">Assistir no</span>
+                      <svg className="w-12 sm:w-16 h-3 sm:h-4" viewBox="0 0 72 16" fill="white">
                         <path d="M27.9727 3.12324C27.6435 1.89323 26.6768 0.926623 25.4468 0.597366C23.2197 2.24288e-07 14.285 0 14.285 0C14.285 0 5.35042 2.24288e-07 3.12323 0.597366C1.89323 0.926623 0.926623 1.89323 0.597366 3.12324C2.24288e-07 5.35042 0 10 0 10C0 10 2.24288e-07 14.6496 0.597366 16.8768C0.926623 18.1068 1.89323 19.0734 3.12323 19.4026C5.35042 20 14.285 20 14.285 20C14.285 20 23.2197 20 25.4468 19.4026C26.6768 19.0734 27.6435 18.1068 27.9727 16.8768C28.5701 14.6496 28.5701 10 28.5701 10C28.5701 10 28.5701 5.35042 27.9727 3.12324Z" />
                         <path d="M11.4253 14.2854L18.8477 10.0004L11.4253 5.71533V14.2854Z" fill="black"/>
                       </svg>
@@ -88,11 +94,11 @@ export const HeroSection = () => {
               </div>
               
               {/* Títulos das oportunidades */}
-              <div className="max-w-[960px] mx-auto px-4">
+              <div className="max-w-[960px] mx-auto">
                 <div className="text-center">
                   {/* Título principal com ícones decorativos */}
-                  <div className="flex items-center justify-center mb-4">
-                    <div className="flex items-center gap-4">
+                  <div className="flex items-center justify-center mb-4 sm:mb-6">
+                    <div className="flex items-center gap-2 sm:gap-4">
                       {/* Ícones decorativos à esquerda */}
                       <div className="hidden md:flex items-center gap-2">
                         <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
@@ -101,7 +107,7 @@ export const HeroSection = () => {
                       </div>
                       
                       <h2 
-                        className="text-[#191919] font-medium text-2xl leading-4 text-center whitespace-nowrap"
+                        className="text-[#191919] font-medium text-lg sm:text-xl md:text-2xl text-center px-4"
                         style={{ fontFamily: "Playfair Display, serif" }}
                       >
                         OPORTUNIDADES DE IMÓVEIS EM LEILÃO
@@ -118,16 +124,16 @@ export const HeroSection = () => {
                   
                   {/* Subtítulo */}
                   <h3 
-                    className="text-[#191919] font-medium text-[40px] leading-4 text-center whitespace-nowrap mb-12"
+                    className="text-[#191919] font-medium text-xl sm:text-2xl md:text-3xl lg:text-[40px] text-center mb-8 sm:mb-10 md:mb-12 px-4"
                     style={{ fontFamily: "Playfair Display, serif" }}
                   >
                     Imóveis até 50% abaixo da sua avaliação
                   </h3>
                   
                   {/* Texto explicativo */}
-                  <div className="px-6">
+                  <div className="px-4 sm:px-6">
                     <p 
-                      className="text-[#191919] font-normal text-[17.6px] leading-[26.4px] text-center"
+                      className="text-[#191919] font-normal text-sm sm:text-base md:text-[17.6px] leading-relaxed text-center max-w-4xl mx-auto"
                       style={{ fontFamily: "Quicksand, sans-serif" }}
                     >
                       Os imóveis em leilão abaixo não foram objeto de análise jurídica prévia. 

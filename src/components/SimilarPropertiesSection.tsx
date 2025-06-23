@@ -252,6 +252,7 @@ export function SimilarPropertiesSection({
                       fgts={property.fgts}
                       financiamento={property.financiamento}
                       parcelamento={property.parcelamento}
+                      rawPropertyData={property}
                     />
                   </div>
                 ))}

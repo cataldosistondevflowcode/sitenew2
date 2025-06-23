@@ -12,7 +12,8 @@ interface PropertyMapProps {
 }
 
 export const PropertyMap: React.FC<PropertyMapProps> = ({ property, rawPropertyData }) => {
-  const [activeTab, setActiveTab] = useState<'foto' | 'mapa' | 'street'>('foto');
+  const isImageNotFound = property.image.includes('/not-found');
+  const [activeTab, setActiveTab] = useState<'foto' | 'mapa' | 'street'>(isImageNotFound ? 'mapa' : 'foto');
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [mapLoaded, setMapLoaded] = useState(false);
   const [streetViewLoaded, setStreetViewLoaded] = useState(false);
@@ -173,16 +174,18 @@ export const PropertyMap: React.FC<PropertyMapProps> = ({ property, rawPropertyD
   return (
     <div className="w-full">
       <div className="flex border-b border-gray-300 mb-4">
-        <button
-          onClick={() => setActiveTab('foto')}
-          className={`px-6 py-3 font-medium text-sm uppercase tracking-wide ${
-            activeTab === 'foto'
-              ? 'text-[#d68e08] border-b-2 border-[#d68e08] bg-gray-50'
-              : 'text-gray-600 hover:text-[#d68e08] hover:bg-gray-50'
-          }`}
-        >
-          Foto
-        </button>
+        {!isImageNotFound && (
+          <button
+            onClick={() => setActiveTab('foto')}
+            className={`px-6 py-3 font-medium text-sm uppercase tracking-wide ${
+              activeTab === 'foto'
+                ? 'text-[#d68e08] border-b-2 border-[#d68e08] bg-gray-50'
+                : 'text-gray-600 hover:text-[#d68e08] hover:bg-gray-50'
+            }`}
+          >
+            Foto
+          </button>
+        )}
         <button
           onClick={() => setActiveTab('mapa')}
           className={`px-6 py-3 font-medium text-sm uppercase tracking-wide ${
@@ -206,7 +209,7 @@ export const PropertyMap: React.FC<PropertyMapProps> = ({ property, rawPropertyD
       </div>
 
       <div className="relative rounded-lg overflow-hidden" style={{ height: '400px' }}>
-        {activeTab === 'foto' && (
+        {activeTab === 'foto' && !isImageNotFound && (
           <>
             <img 
               src={images[currentImageIndex]} 

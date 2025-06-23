@@ -1,5 +1,8 @@
 import { MapPin, Calendar, DollarSign, SquareStack, Car, Share2 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useEffect, useRef } from "react";
+import { loadGoogleMaps } from "../integrations/googlemaps/client";
+import { formatPropertyAddress } from "../utils/addressFormatter";
 
 interface PropertyCardProps {
   id: number;
@@ -17,6 +20,7 @@ interface PropertyCardProps {
   fgts?: boolean;
   financiamento?: boolean;
   parcelamento?: boolean;
+  rawPropertyData?: any;
 }
 
 export const PropertyCard = ({
@@ -35,7 +39,58 @@ export const PropertyCard = ({
   fgts,
   financiamento,
   parcelamento,
+  rawPropertyData,
 }: PropertyCardProps) => {
+  
+  const mapRef = useRef<HTMLDivElement>(null);
+  const isImageNotFound = image.includes('/not-found');
+
+  // Initialize map when image is not found
+  useEffect(() => {
+    if (isImageNotFound && mapRef.current && rawPropertyData) {
+      initializeMap();
+    }
+  }, [isImageNotFound, rawPropertyData]);
+
+  const getFullAddress = () => {
+    if (!rawPropertyData) return location;
+    return formatPropertyAddress(
+      rawPropertyData.endereco || '',
+      rawPropertyData.bairro || '',
+      rawPropertyData.cidade || '',
+      rawPropertyData.estado || ''
+    );
+  };
+
+  const initializeMap = async () => {
+    if (!mapRef.current) return;
+    
+    try {
+      const google = await loadGoogleMaps();
+      const geocoder = new google.maps.Geocoder();
+      const address = getFullAddress();
+
+      geocoder.geocode({ address }, (results, status) => {
+        if (status === 'OK' && results && results[0] && mapRef.current) {
+          const map = new google.maps.Map(mapRef.current, {
+            zoom: 15,
+            center: results[0].geometry.location,
+            mapTypeId: google.maps.MapTypeId.ROADMAP,
+            disableDefaultUI: true,
+            zoomControl: true,
+          });
+
+          new google.maps.Marker({
+            position: results[0].geometry.location,
+            map: map,
+            title: title,
+          });
+        }
+      });
+    } catch (error) {
+      console.error('Error loading Google Maps:', error);
+    }
+  };
   
   // Função para formatar data no padrão brasileiro
   const formatDateToBrazilian = (dateString: string) => {
@@ -109,9 +164,16 @@ export const PropertyCard = ({
   return (
     <Link to={`/imovel/${id}`} className="block cursor-pointer h-full property-card-container">
       <div className="bg-[#191919] rounded-lg shadow-lg overflow-hidden text-white hover:shadow-xl transition-shadow duration-300 property-card-layout">
-        {/* Imagem com altura fixa */}
+        {/* Imagem com altura fixa ou Mapa quando imagem não encontrada */}
         <div className="relative flex-shrink-0 property-card-header">
-          <img src={image} alt={title} className="w-full h-40 sm:h-44 md:h-48 object-cover" />
+          {isImageNotFound ? (
+            <div 
+              ref={mapRef} 
+              className="w-full h-40 sm:h-44 md:h-48 bg-gray-200"
+            />
+          ) : (
+            <img src={image} alt={title} className="w-full h-40 sm:h-44 md:h-48 object-cover" />
+          )}
           <button 
             className="absolute top-2 sm:top-3 left-2 sm:left-3 bg-[#d68e08] text-white px-2 sm:px-3 py-1.5 sm:py-2 rounded text-xs sm:text-sm font-bold z-10 hover:bg-[#b8780a] transition-colors"
             onClick={(e) => {

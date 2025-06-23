@@ -1257,6 +1257,7 @@ const Index = () => {
                       fgts={property.fgts}
                       financiamento={property.financiamento}
                       parcelamento={property.parcelamento}
+                      rawPropertyData={property}
                     />
                   ))
                 ) : (

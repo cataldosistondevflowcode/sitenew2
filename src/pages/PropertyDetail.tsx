@@ -159,13 +159,8 @@ const PropertyDetail = () => {
           />
         </main>
         
-{console.log('🏠 Renderizando SimilarPropertiesSection com dados:', {
-          currentPropertyId: property.id,
-          propertyType: property.tipo_propriedade,
-          city: property.cidade,
-          neighborhood: property.bairro,
-          auctionType: property.tipo_leilao
-        })}
+        <NewsletterSignup />
+        
         <SimilarPropertiesSection 
           currentPropertyId={property.id}
           propertyType={property.tipo_propriedade}
@@ -176,7 +171,6 @@ const PropertyDetail = () => {
         
         <TestimonialsSection />
       </div>
-      <NewsletterSignup />
       <Newsletter />
       <Footer />
       

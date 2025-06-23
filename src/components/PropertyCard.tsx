@@ -184,15 +184,13 @@ export const PropertyCard = ({
               onError={handleImageError}
             />
           )}
-          <button 
+          <Link 
+            to={`/imovel/${id}`}
             className="absolute top-2 sm:top-3 left-2 sm:left-3 bg-[#d68e08] text-white px-2 sm:px-3 py-1.5 sm:py-2 rounded text-xs sm:text-sm font-bold z-10 hover:bg-[#b8780a] transition-colors"
-            onClick={(e) => {
-              e.stopPropagation();
-              window.location.href = `/imovel/${id}`;
-            }}
+            onClick={(e) => e.stopPropagation()}
           >
             Saiba Mais
-          </button>
+          </Link>
           <a 
             href="#" 
             className="absolute top-2 sm:top-3 right-2 sm:right-3 bg-[#25d366] text-white px-2 sm:px-3 py-1.5 sm:py-2 rounded text-xs sm:text-sm font-bold z-10 hover:bg-[#20b858] transition-colors"

@@ -10,7 +10,6 @@ import { ArticlesSection } from "@/components/articles";
 import { VideoPlayerContainer } from "@/components/video";
 import { NewsletterSignup } from "@/components/newsletter2";
 import { TestimonialsSection } from "@/components/testimonials";
-import { PropertyDetailAuctionSteps } from "@/components/PropertyDetailAuctionSteps";
 import { Footer } from "@/components/Footer";
 import { Search, MessageCircle, Filter, X, MapPin, ChevronDown, Home, Building, Tractor, Trees, FileText, Globe, DollarSign, CalendarIcon, Car, SquareStack, Warehouse, Gavel } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -1360,9 +1359,6 @@ const Index = () => {
 
       {/* Featured Videos Section */}
       <FeaturedVideos />
-      
-      {/* Auction Steps Section */}
-      <PropertyDetailAuctionSteps />
       
       {/* Success Cases Section */}
       <SuccessCases />

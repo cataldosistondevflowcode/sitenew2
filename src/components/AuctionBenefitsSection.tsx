@@ -2,7 +2,6 @@
 import React from 'react';
 import { SectionHeading } from './SectionHeading';
 import { BenefitCard } from './BenefitCard';
-import { VideoCard } from './VideoCard';
 import { CallToActionButton } from './CallToActionButton';
 
 export const AuctionBenefitsSection: React.FC = () => {
@@ -161,30 +160,60 @@ export const AuctionBenefitsSection: React.FC = () => {
 
       <div className="w-full h-[50px]" />
 
-      <section className="flex gap-9 justify-center mb-9 w-full max-w-[930px] max-md:flex-col max-md:gap-8 max-md:items-center">
-        <VideoCard
-          phase="PRÉ-LEILÃO"
-          videoTitle="A importância do e…"
-          description="Estudo de viabilidade jurídica\ndo leilão imobiliário"
-          playButtonSvg='<svg width="69" height="49" viewBox="0 0 69 49" fill="none" xmlns="http://www.w3.org/2000/svg" class="play-button" style="width: 68px; height: 48px; position: absolute; left: 110px; top: 57px"> <path d="M67.02 7.82008C66.24 4.89008 64.53 2.41008 61.6 1.63008C56.29 0.210078 34.5 0.0800781 34.5 0.0800781C34.5 0.0800781 12.71 0.210078 7.4 1.63008C4.47 2.41008 2.77 4.89008 1.98 7.82008C0.56 13.1301 0.5 24.0801 0.5 24.0801C0.5 24.0801 0.56 35.0301 1.98 40.3401C2.76 43.2701 4.47 45.7501 7.4 46.5301C12.71 47.9501 34.5 48.0801 34.5 48.0801C34.5 48.0801 56.29 47.9501 61.6 46.5301C64.53 45.7501 66.24 43.2701 67.02 40.3401C68.44 35.0301 68.5 24.0801 68.5 24.0801C68.5 24.0801 68.44 13.1301 67.02 7.82008Z" fill="#FF0033"></path> <path d="M45.5 24.0801L27.5 14.0801V34.0801" fill="white"></path> </svg>'
-          menuIconSvg='<svg width="36" height="37" viewBox="0 0 36 37" fill="none" xmlns="http://www.w3.org/2000/svg" class="menu-icon" style="width: 36px; height: 36px"> <path d="M17 13.5801C18.1 13.5801 19 12.6801 19 11.5801C19 10.4801 18.1 9.58008 17 9.58008C15.9 9.58008 15 10.4801 15 11.5801C15 12.6801 15.9 13.5801 17 13.5801ZM17 15.5801C15.9 15.5801 15 16.4801 15 17.5801C15 18.6801 15.9 19.5801 17 19.5801C18.1 19.5801 19 18.6801 19 17.5801C19 16.4801 18.1 15.5801 17 15.5801ZM17 21.5801C15.9 21.5801 15 22.4801 15 23.5801C15 24.6801 15.9 25.5801 17 25.5801C18.1 25.5801 19 24.6801 19 23.5801C19 22.4801 18.1 21.5801 17 21.5801Z" fill="white"></path> </svg>'
-        />
-
-        <VideoCard
-          phase="DIA DO LEILÃO"
-          videoTitle="Como funciona no…"
-          description="Acompanhamento na\nrealização dos lances e\nassinatura do Auto de\nArrematação"
-          playButtonSvg='<svg width="69" height="49" viewBox="0 0 69 49" fill="none" xmlns="http://www.w3.org/2000/svg" class="play-button" style="width: 68px; height: 48px; position: absolute; left: 110px; top: 57px"> <path d="M66.75 7.82008C65.97 4.89008 64.26 2.41008 61.33 1.63008C56.02 0.210078 34.23 0.0800781 34.23 0.0800781C34.23 0.0800781 12.44 0.210078 7.12998 1.63008C4.19998 2.41008 2.49998 4.89008 1.70998 7.82008C0.289981 13.1301 0.22998 24.0801 0.22998 24.0801C0.22998 24.0801 0.289981 35.0301 1.70998 40.3401C2.48998 43.2701 4.19998 45.7501 7.12998 46.5301C12.44 47.9501 34.23 48.0801 34.23 48.0801C34.23 48.0801 56.02 47.9501 61.33 46.5301C64.26 45.7501 65.97 43.2701 66.75 40.3401C68.17 35.0301 68.23 24.0801 68.23 24.0801C68.23 24.0801 68.17 13.1301 66.75 7.82008Z" fill="#FF0033"></path> <path d="M45.23 24.0801L27.23 14.0801V34.0801" fill="white"></path> </svg>'
-          menuIconSvg='<svg width="37" height="37" viewBox="0 0 37 37" fill="none" xmlns="http://www.w3.org/2000/svg" class="menu-icon" style="width: 36px; height: 36px"> <path d="M17.73 13.5801C18.83 13.5801 19.73 12.6801 19.73 11.5801C19.73 10.4801 18.83 9.58008 17.73 9.58008C16.63 9.58008 15.73 10.4801 15.73 11.5801C15.73 12.6801 16.63 13.5801 17.73 13.5801ZM17.73 15.5801C16.63 15.5801 15.73 16.4801 15.73 17.5801C15.73 18.6801 16.63 19.5801 17.73 19.5801C18.83 19.5801 19.73 18.6801 19.73 17.5801C19.73 16.4801 18.83 15.5801 17.73 15.5801ZM17.73 21.5801C16.63 21.5801 15.73 22.4801 15.73 23.5801C15.73 24.6801 16.63 25.5801 17.73 25.5801C18.83 25.5801 19.73 24.6801 19.73 23.5801C19.73 22.4801 18.83 21.5801 17.73 21.5801Z" fill="white"></path> </svg>'
-        />
-
-        <VideoCard
-          phase="VENCENDO O LEILÃO"
-          videoTitle="Burocracia pós-leil…"
-          description="Desocupação do imóvel,\nregularização e registro do\ntítulo de propriedade"
-          playButtonSvg='<svg width="69" height="49" viewBox="0 0 69 49" fill="none" xmlns="http://www.w3.org/2000/svg" class="play-button" style="width: 68px; height: 48px; position: absolute; left: 110px; top: 57px"> <path d="M67.49 7.82008C66.71 4.89008 65 2.41008 62.07 1.63008C56.76 0.210078 34.97 0.0800781 34.97 0.0800781C34.97 0.0800781 13.18 0.210078 7.86997 1.63008C4.93997 2.41008 3.23997 4.89008 2.44997 7.82008C1.02997 13.1301 0.969971 24.0801 0.969971 24.0801C0.969971 24.0801 1.02997 35.0301 2.44997 40.3401C3.22997 43.2701 4.93997 45.7501 7.86997 46.5301C13.18 47.9501 34.97 48.0801 34.97 48.0801C34.97 48.0801 56.76 47.9501 62.07 46.5301C65 45.7501 66.71 43.2701 67.49 40.3401C68.91 35.0301 68.97 24.0801 68.97 24.0801C68.97 24.0801 68.91 13.1301 67.49 7.82008Z" fill="#FF0033"></path> <path d="M45.97 24.0801L27.97 14.0801V34.0801" fill="white"></path> </svg>'
-          menuIconSvg='<svg width="37" height="37" viewBox="0 0 37 37" fill="none" xmlns="http://www.w3.org/2000/svg" class="menu-icon" style="width: 36px; height: 36px"> <path d="M17.47 13.5801C18.57 13.5801 19.47 12.6801 19.47 11.5801C19.47 10.4801 18.57 9.58008 17.47 9.58008C16.37 9.58008 15.47 10.4801 15.47 11.5801C15.47 12.6801 16.37 13.5801 17.47 13.5801ZM17.47 15.5801C16.37 15.5801 15.47 16.4801 15.47 17.5801C15.47 18.6801 16.37 19.5801 17.47 19.5801C18.57 19.5801 19.47 18.6801 19.47 17.5801C19.47 16.4801 18.57 15.5801 17.47 15.5801ZM17.47 21.5801C16.37 21.5801 15.47 22.4801 15.47 23.5801C15.47 24.6801 16.37 25.5801 17.47 25.5801C18.57 25.5801 19.47 24.6801 19.47 23.5801C19.47 22.4801 18.57 21.5801 17.47 21.5801Z" fill="white"></path> </svg>'
-        />
+      {/* Seção de vídeos do YouTube com os links movidos do PropertyDetailAuctionSteps */}
+      <section className="w-full max-w-[930px]">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="bg-[#d68e08] text-white p-8 rounded-lg">
+            <h3 className="text-2xl font-bold mb-4 text-center">PRÉ-LEILÃO</h3>
+            <div className="aspect-w-16 aspect-h-9 mb-4">
+              <iframe
+                src="https://www.youtube.com/embed/_UvtOSXGFSg"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                title="A importância do estudo prévio do processo em leilões de imóveis"
+                className="w-full h-56 rounded"
+              ></iframe>
+            </div>
+            <p className="text-center mt-4">
+              Estudo de viabilidade jurídica do leilão imobiliário
+            </p>
+          </div>
+          
+          <div className="bg-[#333] text-white p-8 rounded-lg">
+            <h3 className="text-2xl font-bold mb-4 text-center">DIA DO LEILÃO</h3>
+            <div className="aspect-w-16 aspect-h-9 mb-4">
+              <iframe
+                src="https://www.youtube.com/embed/5AuJmevvCHA"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                title="Como funciona nossa assessoria no dia do leilão?"
+                className="w-full h-56 rounded"
+              ></iframe>
+            </div>
+            <p className="text-center mt-4">
+              Acompanhamento na realização dos lances e assinatura do Auto de Arrematação
+            </p>
+          </div>
+          
+          <div className="bg-[#d68e08] text-white p-8 rounded-lg">
+            <h3 className="text-2xl font-bold mb-4 text-center">PÓS-LEILÃO</h3>
+            <div className="aspect-w-16 aspect-h-9 mb-4">
+              <iframe
+                src="https://www.youtube.com/embed/uISCy7wT-G4"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                title="Burocracia pós-leilão: o que fazer após arrematar um imóvel?"
+                className="w-full h-56 rounded"
+              ></iframe>
+            </div>
+            <p className="text-center mt-4">
+              Desocupação do imóvel, regularização e registro do título de propriedade
+            </p>
+          </div>
+        </div>
       </section>
 
       <div className="w-full h-[35px]" />

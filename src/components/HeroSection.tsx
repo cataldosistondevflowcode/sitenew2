@@ -13,7 +13,7 @@ export const HeroSection = () => {
           }}
         >
           {/* Overlay escuro */}
-          <div className="absolute inset-0 bg-black/50"></div>
+          <div className="absolute inset-0 bg-black/15"></div>
           
           {/* Conteúdo */}
           <div className="relative z-10 container h-full flex items-center justify-center">

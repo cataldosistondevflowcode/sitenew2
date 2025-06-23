@@ -28,11 +28,11 @@ export const TestimonialsSection = () => {
         rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=Quicksand:wght@400&family=Inter:wght@400&display=swap"
       />
-      <section className="flex justify-center items-center self-stretch p-4 bg-neutral-100 min-h-[430px] max-md:p-4 max-md:min-h-[350px] max-sm:p-2.5 max-sm:min-h-[300px] relative">
+      <section className="flex justify-center items-center self-stretch p-4 bg-neutral-100 min-h-[630px] max-md:p-4 max-md:min-h-[550px] max-sm:p-2.5 max-sm:min-h-[500px] relative">
         <img
-          src=""
-          alt=""
-          className="object-cover absolute inset-0 z-0 h-[526.9px] w-[1420px]"
+          src="/assets/bg/fundo-marmore.png"
+          alt="Fundo mármore"
+          className="object-cover absolute inset-0 z-0 w-full h-full"
         />
 
         <div className="flex flex-col items-center flex-[1_0_0] z-[1] relative">

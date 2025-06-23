@@ -162,54 +162,54 @@ export const AuctionBenefitsSection: React.FC = () => {
 
       {/* Seção de vídeos do YouTube com os links movidos do PropertyDetailAuctionSteps */}
       <section className="w-full max-w-[930px]">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="bg-[#d68e08] text-white p-8 rounded-lg">
-            <h3 className="text-2xl font-bold mb-4 text-center">PRÉ-LEILÃO</h3>
-            <div className="aspect-w-16 aspect-h-9 mb-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="bg-[#d68e08] text-white p-4 rounded-lg max-h-[320px] flex flex-col">
+            <h3 className="text-xl font-bold mb-3 text-center">PRÉ-LEILÃO</h3>
+            <div className="aspect-w-16 aspect-h-9 mb-3 flex-grow">
               <iframe
                 src="https://www.youtube.com/embed/_UvtOSXGFSg"
                 frameBorder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
                 title="A importância do estudo prévio do processo em leilões de imóveis"
-                className="w-full h-56 rounded"
+                className="w-full h-40 rounded"
               ></iframe>
             </div>
-            <p className="text-center mt-4">
+            <p className="text-center text-sm mt-auto leading-snug">
               Estudo de viabilidade jurídica do leilão imobiliário
             </p>
           </div>
           
-          <div className="bg-[#333] text-white p-8 rounded-lg">
-            <h3 className="text-2xl font-bold mb-4 text-center">DIA DO LEILÃO</h3>
-            <div className="aspect-w-16 aspect-h-9 mb-4">
+          <div className="bg-[#333] text-white p-4 rounded-lg max-h-[320px] flex flex-col">
+            <h3 className="text-xl font-bold mb-3 text-center">DIA DO LEILÃO</h3>
+            <div className="aspect-w-16 aspect-h-9 mb-3 flex-grow">
               <iframe
                 src="https://www.youtube.com/embed/5AuJmevvCHA"
                 frameBorder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
                 title="Como funciona nossa assessoria no dia do leilão?"
-                className="w-full h-56 rounded"
+                className="w-full h-40 rounded"
               ></iframe>
             </div>
-            <p className="text-center mt-4">
+            <p className="text-center text-sm mt-auto leading-snug">
               Acompanhamento na realização dos lances e assinatura do Auto de Arrematação
             </p>
           </div>
           
-          <div className="bg-[#d68e08] text-white p-8 rounded-lg">
-            <h3 className="text-2xl font-bold mb-4 text-center">PÓS-LEILÃO</h3>
-            <div className="aspect-w-16 aspect-h-9 mb-4">
+          <div className="bg-[#d68e08] text-white p-4 rounded-lg max-h-[320px] flex flex-col">
+            <h3 className="text-xl font-bold mb-3 text-center">PÓS-LEILÃO</h3>
+            <div className="aspect-w-16 aspect-h-9 mb-3 flex-grow">
               <iframe
                 src="https://www.youtube.com/embed/uISCy7wT-G4"
                 frameBorder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
                 title="Burocracia pós-leilão: o que fazer após arrematar um imóvel?"
-                className="w-full h-56 rounded"
+                className="w-full h-40 rounded"
               ></iframe>
             </div>
-            <p className="text-center mt-4">
+            <p className="text-center text-sm mt-auto leading-snug">
               Desocupação do imóvel, regularização e registro do título de propriedade
             </p>
           </div>

@@ -28,13 +28,11 @@ export const NewsletterForm: React.FC = () => {
             type="email"
             required
             className="h-10 rounded-md border border-yellow-600 border-solid w-[214px] px-3 bg-transparent text-white placeholder-gray-300"
-            placeholder="seu@email.com"
           />
           <input
             type="tel"
             required
             className="h-10 rounded-md border border-yellow-600 border-solid w-[214px] px-3 bg-transparent text-white placeholder-gray-300"
-            placeholder="(11) 99999-9999"
           />
           <button
             type="submit"

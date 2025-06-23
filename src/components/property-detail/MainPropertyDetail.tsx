@@ -7,7 +7,7 @@ import { AuctionInfo } from './AuctionInfo';
 import { PropertyDescription } from './PropertyDescription';
 import { ContactSidebar } from './ContactSidebar';
 import { PropertySpecs } from './PropertySpecs';
-import { LegalDisclaimer } from './LegalDisclaimer';
+
 import { AuctionBenefitsSection } from '../AuctionBenefitsSection';
 import { FAQSection } from '../FAQSection';
 
@@ -187,8 +187,6 @@ export const MainPropertyDetail: React.FC<MainPropertyDetailProps> = ({ property
         <AuctionBenefitsSection />
 
         <FAQSection />
-
-        <LegalDisclaimer />
       </article>
     </div>
   );

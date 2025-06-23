@@ -10,6 +10,7 @@ import { TestimonialsSection } from "@/components/testimonials";
 import { NewsletterSignup } from "@/components/newsletter/NewsletterSignup";
 import { Footer } from "@/components/Footer";
 import { WhatsAppButton } from "@/components/WhatsAppButton";
+import { SimilarPropertiesSection } from "@/components/SimilarPropertiesSection";
 
 interface Property {
   id: number;
@@ -157,6 +158,21 @@ const PropertyDetail = () => {
             rawPropertyData={property}
           />
         </main>
+        
+{console.log('🏠 Renderizando SimilarPropertiesSection com dados:', {
+          currentPropertyId: property.id,
+          propertyType: property.tipo_propriedade,
+          city: property.cidade,
+          neighborhood: property.bairro,
+          auctionType: property.tipo_leilao
+        })}
+        <SimilarPropertiesSection 
+          currentPropertyId={property.id}
+          propertyType={property.tipo_propriedade}
+          city={property.cidade}
+          neighborhood={property.bairro}
+          auctionType={property.tipo_leilao}
+        />
         
         <TestimonialsSection />
       </div>

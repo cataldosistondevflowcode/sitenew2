@@ -36,8 +36,8 @@ export function ArticlesSection() {
   };
 
   return (
-    <section className="flex relative gap-4 justify-center items-start pt-10 pr-5 pb-12 pl-4 min-h-[430px]">
-      <div className="flex absolute inset-0 z-0 self-start bg-gray-200 min-h-[787px] w-[1420px] max-md:max-w-full" />
+    <section className="flex relative gap-4 justify-center items-start pt-10 pr-5 pb-0 pl-4 min-h-[430px]">
+      <div className="flex absolute inset-0 z-0 self-start bg-gray-200 w-full h-full" />
       <div className="flex z-0 flex-col flex-1 shrink items-center my-auto basis-0 min-w-60 max-md:max-w-full">
         <div className="px-4 max-w-full w-[960px]">
           <div className="w-full max-md:max-w-full">

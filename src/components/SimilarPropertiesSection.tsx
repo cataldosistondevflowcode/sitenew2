@@ -244,15 +244,14 @@ export function SimilarPropertiesSection({
                       location={`${property.bairro}, ${property.cidade}/${property.estado}`}
                       firstAuctionDate={formatDateToBrazilian(property.data_leilao_1)}
                       firstAuctionValue={formatCurrency(property.leilao_1)}
-                      secondAuctionDate={formatDateToBrazilian(property.data_leilao_2)}
-                      secondAuctionValue={formatCurrency(property.leilao_2)}
+                      secondAuctionDate={formatDateToBrazilian(property.data_leilao_2 || property.data_leilao_1)}
+                      secondAuctionValue={formatCurrency(property.leilao_2 || property.leilao_1)}
                       area={property.area_displayable}
                       parkingSpots={property.parkingSpots}
                       tipoLeilao={property.tipo_leilao}
                       fgts={property.fgts}
                       financiamento={property.financiamento}
                       parcelamento={property.parcelamento}
-                      rawPropertyData={property}
                     />
                   </div>
                 ))}

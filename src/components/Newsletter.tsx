@@ -1,6 +1,104 @@
 import React from 'react';
 
 export const Newsletter = () => {
+  const nameRef = React.useRef<HTMLInputElement>(null);
+  const emailRef = React.useRef<HTMLInputElement>(null);
+  const phoneRef = React.useRef<HTMLInputElement>(null);
+  
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [submitMessage, setSubmitMessage] = React.useState<string>("");
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setSubmitMessage("");
+
+    try {
+      const name = nameRef.current?.value || "";
+      const email = emailRef.current?.value || "";
+      const phone = phoneRef.current?.value || "";
+
+      // Validação básica
+      if (!name || !email || !phone) {
+        setSubmitMessage("Por favor, preencha todos os campos obrigatórios.");
+        return;
+      }
+
+      // Envia dados diretamente para a API do RDStation
+      const formData = new FormData();
+      formData.append('name', name);
+      formData.append('email', email);
+      formData.append('personal_phone', phone);
+      formData.append('token_rdstation', 'de34ae318d19588a9ae8');
+      formData.append('identificador', 'newsletter-site-de34ae318d19588a9ae8');
+
+      const response = await fetch('https://api.rd.services/platform/conversions', {
+        method: 'POST',
+        body: formData,
+        mode: 'no-cors' // Necessário para CORS
+      });
+
+      // Como usamos no-cors, não podemos verificar a resposta, então assumimos sucesso
+      setSubmitMessage("Obrigado! Sua inscrição foi realizada com sucesso!");
+      
+      // Limpa os campos
+      if (nameRef.current) nameRef.current.value = "";
+      if (emailRef.current) emailRef.current.value = "";
+      if (phoneRef.current) phoneRef.current.value = "";
+      
+    } catch (error) {
+      console.error('Erro ao enviar formulário:', error);
+      
+      // Fallback: tenta via formulário oculto
+      try {
+        const form = document.createElement('form');
+        form.style.display = 'none';
+        form.method = 'POST';
+        form.action = 'https://api.rd.services/platform/conversions';
+        form.target = '_blank';
+        
+        const name = nameRef.current?.value || "";
+        const email = emailRef.current?.value || "";
+        const phone = phoneRef.current?.value || "";
+        
+        const inputs = [
+          { name: 'name', value: name },
+          { name: 'email', value: email },
+          { name: 'personal_phone', value: phone },
+          { name: 'token_rdstation', value: 'de34ae318d19588a9ae8' },
+          { name: 'identificador', value: 'newsletter-site-de34ae318d19588a9ae8' }
+        ];
+        
+        inputs.forEach(({ name, value }) => {
+          const input = document.createElement('input');
+          input.type = 'hidden';
+          input.name = name;
+          input.value = value;
+          form.appendChild(input);
+        });
+        
+        document.body.appendChild(form);
+        form.submit();
+        document.body.removeChild(form);
+        
+        setSubmitMessage("Obrigado! Sua inscrição foi realizada com sucesso!");
+        
+        // Limpa os campos
+        if (nameRef.current) nameRef.current.value = "";
+        if (emailRef.current) emailRef.current.value = "";
+        if (phoneRef.current) phoneRef.current.value = "";
+        
+      } catch (fallbackError) {
+        console.error('Erro no fallback:', fallbackError);
+        setSubmitMessage("Ops! Houve um erro. Tente novamente em instantes.");
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const buttonText = isSubmitting ? "ENVIANDO..." : "ENVIAR";
+
   return (
     <section className="py-12 sm:py-16 bg-cover bg-center relative" style={{backgroundImage: 'url(/bg-newsletter.jpg.webp)'}}>
       <div className="absolute inset-0 bg-black/70"></div>
@@ -10,27 +108,48 @@ export const Newsletter = () => {
             <div className="text-white">
               <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-6 text-center lg:text-left">Receba nossa newsletter</h2>
               <p className="text-base sm:text-lg mb-6 sm:mb-8 text-center lg:text-left">Oportunidades de negócios, dicas sobre leilões, artigos e casos etc</p>
-              <form className="space-y-4">
+              
+              {submitMessage && (
+                <div className={`mb-4 p-3 rounded-md text-center ${
+                  submitMessage.includes("sucesso") 
+                    ? "bg-green-600/20 text-green-200 border border-green-600" 
+                    : "bg-red-600/20 text-red-200 border border-red-600"
+                }`}>
+                  {submitMessage}
+                </div>
+              )}
+              
+              <form onSubmit={handleSubmit} className="space-y-4">
                 <input 
+                  ref={nameRef}
                   type="text" 
+                  name="name"
                   placeholder="Nome*" 
+                  required
                   className="w-full px-4 py-3 border-2 border-[#d68e08] rounded-md bg-transparent text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-[#d68e08] text-sm sm:text-base" 
                 />
                 <input 
+                  ref={emailRef}
                   type="email" 
+                  name="email"
                   placeholder="Email*" 
+                  required
                   className="w-full px-4 py-3 border-2 border-[#d68e08] rounded-md bg-transparent text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-[#d68e08] text-sm sm:text-base" 
                 />
                 <input 
+                  ref={phoneRef}
                   type="tel" 
+                  name="personal_phone"
                   placeholder="Telefone*" 
+                  required
                   className="w-full px-4 py-3 border-2 border-[#d68e08] rounded-md bg-transparent text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-[#d68e08] text-sm sm:text-base" 
                 />
                 <button 
                   type="submit" 
-                  className="w-full px-6 sm:px-8 py-3 bg-[#d68e08] hover:bg-[#b8780a] text-white font-bold rounded-md transition-colors text-sm sm:text-base"
+                  disabled={isSubmitting}
+                  className="w-full px-6 sm:px-8 py-3 bg-[#d68e08] hover:bg-[#b8780a] text-white font-bold rounded-md transition-colors text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  ENVIAR
+                  {buttonText}
                 </button>
               </form>
               <p className="text-xs sm:text-sm mt-4 text-gray-300 text-center lg:text-left">

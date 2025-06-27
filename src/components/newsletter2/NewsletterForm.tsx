@@ -195,6 +195,6 @@ export const NewsletterForm: React.FC = () => {
           </button>
         </div>
       </form>
-    </div>
+      </div>
   );
 }; 

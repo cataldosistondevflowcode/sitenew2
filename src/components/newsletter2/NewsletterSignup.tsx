@@ -2,171 +2,49 @@
 import * as React from "react";
 
 export const NewsletterSignup: React.FC = () => {
-  const [formHtml, setFormHtml] = React.useState('');
-  const [isLoading, setIsLoading] = React.useState(true);
+  const containerRef = React.useRef<HTMLDivElement>(null);
+  const [isFormLoaded, setIsFormLoaded] = React.useState(false);
 
   React.useEffect(() => {
-    console.log('Iniciando carregamento do formulário RDStation...');
-    
-    // Cria o HTML do formulário com um ID único para evitar conflitos
-    const uniqueId = `newsletter-site-de34ae318d19588a9ae8-${Date.now()}`;
-    
-    const rdStationHtml = `
-      <div style="margin-top: 1.5rem; width: 100%; max-width: 64rem; margin-left: auto; margin-right: auto;">
-        <div role="main" id="newsletter-site-de34ae318d19588a9ae8"></div>
-      </div>
-      <script type="text/javascript" src="https://d335luupugsy2.cloudfront.net/js/rdstation-forms/stable/rdstation-forms.min.js"></script>
-      <script type="text/javascript">
-        console.log('Script RDStation carregado, tentando criar formulário...');
+    const loadForm = () => {
+      if (containerRef.current) {
+        // Código HTML e JavaScript direto do RDStation
+        const formHTML = `
+          <div role="main" id="newsletter-site-de34ae318d19588a9ae8"></div>
+          <script type="text/javascript" src="https://d335luupugsy2.cloudfront.net/js/rdstation-forms/stable/rdstation-forms.min.js"></script>
+          <script type="text/javascript">
+            setTimeout(function() {
+              try {
+                new RDStationForms('newsletter-site-de34ae318d19588a9ae8', 'UA-150032078-1').createForm();
+                console.log('RDStation Form criado com sucesso');
+              } catch (error) {
+                console.error('Erro ao criar RDStation Form:', error);
+              }
+            }, 1000);
+          </script>
+        `;
         
-        function tentarCriarFormulario() {
-          if (typeof RDStationForms !== 'undefined') {
-            try {
-              console.log('RDStationForms encontrado, criando formulário...');
-              new RDStationForms('newsletter-site-de34ae318d19588a9ae8', 'UA-150032078-1').createForm();
-              console.log('Formulário RDStation criado com sucesso!');
-              
-              // Aplica estilos customizados após criar o formulário
-              setTimeout(function() {
-                aplicarEstilosCustomizados();
-              }, 500);
-              
-            } catch (error) {
-              console.error('Erro ao criar formulário RDStation:', error);
-              setTimeout(tentarCriarFormulario, 1000);
-            }
+        containerRef.current.innerHTML = formHTML;
+        
+        // Executa os scripts manualmente
+        const scripts = containerRef.current.querySelectorAll('script');
+        scripts.forEach((script) => {
+          const newScript = document.createElement('script');
+          if (script.src) {
+            newScript.src = script.src;
+            newScript.onload = () => {
+              console.log('Script RDStation carregado');
+              setIsFormLoaded(true);
+            };
           } else {
-            console.log('RDStationForms ainda não está disponível, tentando novamente...');
-            setTimeout(tentarCriarFormulario, 500);
+            newScript.textContent = script.textContent;
           }
-        }
-        
-        function aplicarEstilosCustomizados() {
-          console.log('Aplicando estilos customizados...');
-          
-          const style = document.createElement('style');
-          style.id = 'rdstation-custom-styles';
-          
-          // Remove estilo anterior se existir
-          const existingStyle = document.getElementById('rdstation-custom-styles');
-          if (existingStyle) {
-            existingStyle.remove();
-          }
-          
-          style.textContent = \`
-            #newsletter-site-de34ae318d19588a9ae8 {
-              margin-top: 0 !important;
-              width: 100% !important;
-              max-width: 64rem !important;
-              margin-left: auto !important;
-              margin-right: auto !important;
-            }
-            
-            #newsletter-site-de34ae318d19588a9ae8 .rdstation-form {
-              background: transparent !important;
-              border: none !important;
-              box-shadow: none !important;
-              padding: 0 !important;
-            }
-            
-            #newsletter-site-de34ae318d19588a9ae8 .rdstation-form .form-field {
-              margin-bottom: 1rem !important;
-            }
-            
-            #newsletter-site-de34ae318d19588a9ae8 .rdstation-form .form-field label {
-              color: white !important;
-              font-weight: 500 !important;
-              margin-bottom: 0.5rem !important;
-              display: block !important;
-              font-size: 0.875rem !important;
-            }
-            
-            #newsletter-site-de34ae318d19588a9ae8 .rdstation-form .form-field input {
-              width: 100% !important;
-              height: 2.5rem !important;
-              border-radius: 0.375rem !important;
-              border: 2px solid #d68e08 !important;
-              padding: 0.5rem 0.75rem !important;
-              background: transparent !important;
-              color: white !important;
-              font-size: 0.875rem !important;
-            }
-            
-            #newsletter-site-de34ae318d19588a9ae8 .rdstation-form .form-field input::placeholder {
-              color: #d1d5db !important;
-            }
-            
-            #newsletter-site-de34ae318d19588a9ae8 .rdstation-form .form-field input:focus {
-              outline: none !important;
-              border-color: #d68e08 !important;
-              box-shadow: 0 0 0 2px rgba(214, 142, 8, 0.2) !important;
-            }
-            
-            #newsletter-site-de34ae318d19588a9ae8 .rdstation-form .form-submit {
-              width: 100% !important;
-              margin-top: 0.5rem !important;
-            }
-            
-            #newsletter-site-de34ae318d19588a9ae8 .rdstation-form .form-submit input,
-            #newsletter-site-de34ae318d19588a9ae8 .rdstation-form .form-submit button {
-              width: 100% !important;
-              padding: 0.75rem 1.5rem !important;
-              background-color: #d68e08 !important;
-              color: white !important;
-              font-weight: bold !important;
-              border-radius: 0.375rem !important;
-              border: none !important;
-              cursor: pointer !important;
-              transition: background-color 0.2s !important;
-              font-size: 0.875rem !important;
-            }
-            
-            #newsletter-site-de34ae318d19588a9ae8 .rdstation-form .form-submit input:hover,
-            #newsletter-site-de34ae318d19588a9ae8 .rdstation-form .form-submit button:hover {
-              background-color: #b8780a !important;
-            }
-            
-            @media (min-width: 1024px) {
-              #newsletter-site-de34ae318d19588a9ae8 .rdstation-form .form-fields {
-                display: flex !important;
-                flex-wrap: wrap !important;
-                gap: 1rem !important;
-                align-items: end !important;
-              }
-              
-              #newsletter-site-de34ae318d19588a9ae8 .rdstation-form .form-field {
-                flex: 1 !important;
-                min-width: 200px !important;
-                margin-bottom: 0 !important;
-              }
-              
-              #newsletter-site-de34ae318d19588a9ae8 .rdstation-form .form-submit {
-                flex: 0 0 auto !important;
-                min-width: 120px !important;
-                margin-top: 0 !important;
-              }
-              
-              #newsletter-site-de34ae318d19588a9ae8 .rdstation-form .form-submit input,
-              #newsletter-site-de34ae318d19588a9ae8 .rdstation-form .form-submit button {
-                height: 2.5rem !important;
-                padding: 0.5rem 2rem !important;
-                font-size: 1.125rem !important;
-              }
-            }
-          \`;
-          
-          document.head.appendChild(style);
-          console.log('Estilos customizados aplicados!');
-        }
-        
-        // Inicia o processo de criação do formulário
-        setTimeout(tentarCriarFormulario, 1000);
-      </script>
-    `;
-    
-    setFormHtml(rdStationHtml);
-    setIsLoading(false);
-    console.log('HTML do formulário definido');
+          document.head.appendChild(newScript);
+        });
+      }
+    };
+
+    loadForm();
   }, []);
 
   // Adiciona estilos customizados para o formulário do RDStation

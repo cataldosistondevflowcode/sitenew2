@@ -7,7 +7,7 @@ import { CookieBar } from "@/components/CookieBar";
 import { MainPropertyDetail } from "@/components/property-detail/MainPropertyDetail";
 import { Newsletter } from "@/components/Newsletter";
 import { TestimonialsSection } from "@/components/testimonials";
-import { NewsletterSignup } from "@/components/newsletter/NewsletterSignup";
+import { NewsletterSignup } from "@/components/newsletter2/NewsletterSignup";
 import { Footer } from "@/components/Footer";
 import { WhatsAppButton } from "@/components/WhatsAppButton";
 import { SimilarPropertiesSection } from "@/components/SimilarPropertiesSection";

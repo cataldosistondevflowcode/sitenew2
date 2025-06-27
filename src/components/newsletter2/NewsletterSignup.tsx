@@ -1,181 +1,199 @@
 "use client";
 import * as React from "react";
 
+declare global {
+  interface Window {
+    RDStationForms: any;
+  }
+}
+
 export const NewsletterSignup: React.FC = () => {
   const containerRef = React.useRef<HTMLDivElement>(null);
   const [isFormLoaded, setIsFormLoaded] = React.useState(false);
+  
+  // Estados para os campos da máscara visual
+  const [formData, setFormData] = React.useState({
+    name: '',
+    email: '',
+    phone: ''
+  });
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [isSuccess, setIsSuccess] = React.useState(false);
 
   React.useEffect(() => {
     const loadForm = () => {
       if (containerRef.current) {
+        // Limpa qualquer conteúdo anterior
+        containerRef.current.innerHTML = '';
+        
+        // Verifica se já existe um script do RDStation carregado
+        const existingScript = document.querySelector('script[src*="rdstation-forms"]');
+        const existingContainer = document.getElementById('shortcode3-e67a38fad5973ddb16a8');
+        
+        // Remove elementos duplicados se existirem
+        if (existingContainer && existingContainer !== containerRef.current.querySelector('#shortcode3-e67a38fad5973ddb16a8')) {
+          existingContainer.remove();
+        }
+        
         // Código HTML e JavaScript direto do RDStation
         const formHTML = `
-          <div role="main" id="newsletter-site-de34ae318d19588a9ae8"></div>
-          <script type="text/javascript" src="https://d335luupugsy2.cloudfront.net/js/rdstation-forms/stable/rdstation-forms.min.js"></script>
-          <script type="text/javascript">
-            setTimeout(function() {
-              try {
-                new RDStationForms('newsletter-site-de34ae318d19588a9ae8', 'UA-150032078-1').createForm();
-                console.log('RDStation Form criado com sucesso');
-              } catch (error) {
-                console.error('Erro ao criar RDStation Form:', error);
-              }
-            }, 1000);
-          </script>
+          <div role="main" id="shortcode3-e67a38fad5973ddb16a8" style="display: none;"></div>
         `;
         
         containerRef.current.innerHTML = formHTML;
         
-        // Executa os scripts manualmente
-        const scripts = containerRef.current.querySelectorAll('script');
-        scripts.forEach((script) => {
-          const newScript = document.createElement('script');
-          if (script.src) {
-            newScript.src = script.src;
-            newScript.onload = () => {
-              console.log('Script RDStation carregado');
-              setIsFormLoaded(true);
-            };
-          } else {
-            newScript.textContent = script.textContent;
-          }
-          document.head.appendChild(newScript);
-        });
+        // Carrega o script apenas se não existir
+        if (!existingScript) {
+          const script = document.createElement('script');
+          script.type = 'text/javascript';
+          script.src = 'https://d335luupugsy2.cloudfront.net/js/rdstation-forms/stable/rdstation-forms.min.js';
+          script.onload = () => {
+            console.log('Script RDStation carregado');
+            initializeRDStationForm();
+          };
+          script.onerror = () => {
+            console.error('Erro ao carregar script do RDStation');
+          };
+          document.head.appendChild(script);
+        } else {
+          // Se o script já existe, apenas inicializa o formulário
+          initializeRDStationForm();
+        }
       }
+    };
+    
+    const initializeRDStationForm = () => {
+      setTimeout(() => {
+        try {
+          if (window.RDStationForms) {
+            new window.RDStationForms('shortcode3-e67a38fad5973ddb16a8', 'UA-150032078-1').createForm();
+            console.log('RDStation Form criado com sucesso');
+            setIsFormLoaded(true);
+          } else {
+            console.error('RDStationForms não disponível');
+          }
+        } catch (error) {
+          console.error('Erro ao criar RDStation Form:', error);
+        }
+      }, 1000);
     };
 
     loadForm();
   }, []);
 
-  // Adiciona estilos customizados para o formulário do RDStation
-  React.useEffect(() => {
-    if (isFormLoaded) {
-      const style = document.createElement('style');
-      style.textContent = `
-        #newsletter-site-de34ae318d19588a9ae8 {
-          margin-top: 0 !important;
-          width: 100% !important;
-          max-width: 64rem !important;
-          margin-left: auto !important;
-          margin-right: auto !important;
-        }
-        
-        #newsletter-site-de34ae318d19588a9ae8 .rdstation-form {
-          background: transparent !important;
-          border: none !important;
-          box-shadow: none !important;
-          padding: 0 !important;
-        }
-        
-        #newsletter-site-de34ae318d19588a9ae8 .rdstation-form .form-field {
-          margin-bottom: 1rem !important;
-        }
-        
-        #newsletter-site-de34ae318d19588a9ae8 .rdstation-form .form-field label {
-          color: white !important;
-          font-weight: 500 !important;
-          margin-bottom: 0.5rem !important;
-          display: block !important;
-          font-size: 0.875rem !important;
-        }
-        
-        #newsletter-site-de34ae318d19588a9ae8 .rdstation-form .form-field input {
-          width: 100% !important;
-          height: 2.5rem !important;
-          border-radius: 0.375rem !important;
-          border: 2px solid #d68e08 !important;
-          padding: 0.5rem 0.75rem !important;
-          background: transparent !important;
-          color: white !important;
-          font-size: 0.875rem !important;
-        }
-        
-        #newsletter-site-de34ae318d19588a9ae8 .rdstation-form .form-field input::placeholder {
-          color: #d1d5db !important;
-        }
-        
-        #newsletter-site-de34ae318d19588a9ae8 .rdstation-form .form-field input:focus {
-          outline: none !important;
-          ring: 2px !important;
-          ring-color: #d68e08 !important;
-          border-color: #d68e08 !important;
-        }
-        
-        #newsletter-site-de34ae318d19588a9ae8 .rdstation-form .form-submit {
-          width: 100% !important;
-          margin-top: 0.5rem !important;
-        }
-        
-        #newsletter-site-de34ae318d19588a9ae8 .rdstation-form .form-submit input,
-        #newsletter-site-de34ae318d19588a9ae8 .rdstation-form .form-submit button {
-          width: 100% !important;
-          padding: 0.75rem 1.5rem !important;
-          background-color: #d68e08 !important;
-          color: white !important;
-          font-weight: bold !important;
-          border-radius: 0.375rem !important;
-          border: none !important;
-          cursor: pointer !important;
-          transition: background-color 0.2s !important;
-          font-size: 0.875rem !important;
-        }
-        
-        #newsletter-site-de34ae318d19588a9ae8 .rdstation-form .form-submit input:hover,
-        #newsletter-site-de34ae318d19588a9ae8 .rdstation-form .form-submit button:hover {
-          background-color: #b8780a !important;
-        }
-        
-        /* Layout responsivo para desktop */
-        @media (min-width: 1024px) {
-          #newsletter-site-de34ae318d19588a9ae8 .rdstation-form .form-fields {
-            display: flex !important;
-            flex-wrap: wrap !important;
-            gap: 1rem !important;
-            align-items: end !important;
-          }
-          
-          #newsletter-site-de34ae318d19588a9ae8 .rdstation-form .form-field {
-            flex: 1 !important;
-            min-width: 200px !important;
-            margin-bottom: 0 !important;
-          }
-          
-          #newsletter-site-de34ae318d19588a9ae8 .rdstation-form .form-submit {
-            flex: 0 0 auto !important;
-            min-width: 120px !important;
-            margin-top: 0 !important;
-          }
-          
-          #newsletter-site-de34ae318d19588a9ae8 .rdstation-form .form-submit input,
-          #newsletter-site-de34ae318d19588a9ae8 .rdstation-form .form-submit button {
-            height: 2.5rem !important;
-            padding: 0.5rem 2rem !important;
-            font-size: 1.125rem !important;
-          }
-        }
-        
-        /* Estilo para mobile */
-        @media (max-width: 1023px) {
-          #newsletter-site-de34ae318d19588a9ae8 .rdstation-form .form-field {
-            margin-bottom: 1rem !important;
-          }
-          
-          #newsletter-site-de34ae318d19588a9ae8 .rdstation-form .form-submit input,
-          #newsletter-site-de34ae318d19588a9ae8 .rdstation-form .form-submit button {
-            font-size: 1rem !important;
-            padding: 0.75rem 1.5rem !important;
-          }
-        }
-      `;
-      document.head.appendChild(style);
-      
-      return () => {
-        if (document.head.contains(style)) {
-          document.head.removeChild(style);
-        }
-      };
+  // Função para enviar dados através do formulário RDStation oculto
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!formData.name || !formData.email || !formData.phone) {
+      // Não usar alert, apenas destacar campos vazios
+      return;
     }
-  }, [isFormLoaded]);
+
+    setIsSubmitting(true);
+
+    try {
+      // Aguarda o formulário RDStation estar carregado
+      if (!isFormLoaded) {
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Debug: vamos ver o que tem no container
+      const container = document.querySelector('#shortcode3-e67a38fad5973ddb16a8');
+      console.log('Container encontrado:', container);
+      console.log('HTML do container:', container?.innerHTML);
+
+      // Procura o formulário RDStation de diferentes formas
+      const rdForm = container?.querySelector('form') || 
+                     document.querySelector('#shortcode3-e67a38fad5973ddb16a8 form') ||
+                     document.querySelector('form[data-rd-form]') ||
+                     document.querySelector('.rdstation-form form');
+      
+      console.log('Formulário encontrado:', rdForm);
+
+      if (rdForm) {
+        console.log('HTML do formulário:', rdForm.innerHTML);
+        
+        // Procura campos por diferentes atributos
+        const nameField = rdForm.querySelector('input[name*="name"], input[name*="nome"], input[placeholder*="nome"], input[placeholder*="name"]') as HTMLInputElement;
+        const emailField = rdForm.querySelector('input[name*="email"], input[type="email"], input[placeholder*="email"]') as HTMLInputElement;
+        const phoneField = rdForm.querySelector('input[name*="phone"], input[name*="telefone"], input[name*="celular"], input[type="tel"], input[placeholder*="telefone"]') as HTMLInputElement;
+
+        console.log('Campos encontrados:', { nameField, emailField, phoneField });
+
+        // Preenche os campos se encontrados
+        if (nameField) {
+          nameField.value = formData.name;
+          nameField.dispatchEvent(new Event('input', { bubbles: true }));
+          nameField.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+        if (emailField) {
+          emailField.value = formData.email;
+          emailField.dispatchEvent(new Event('input', { bubbles: true }));
+          emailField.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+        if (phoneField) {
+          phoneField.value = formData.phone;
+          phoneField.dispatchEvent(new Event('input', { bubbles: true }));
+          phoneField.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+
+        // Procura o botão de submit de diferentes formas
+        const submitButton = rdForm.querySelector('input[type="submit"]') ||
+                            rdForm.querySelector('button[type="submit"]') ||
+                            rdForm.querySelector('button') ||
+                            rdForm.querySelector('.submit-button') ||
+                            rdForm.querySelector('[role="button"]');
+
+        console.log('Botão de submit encontrado:', submitButton);
+
+        if (submitButton) {
+          // Tenta diferentes formas de enviar
+          if (submitButton instanceof HTMLInputElement || submitButton instanceof HTMLButtonElement) {
+            submitButton.click();
+          } else {
+            submitButton.dispatchEvent(new Event('click', { bubbles: true }));
+          }
+          
+          // Reset form após envio - SEM alert
+          setTimeout(() => {
+            setFormData({ name: '', email: '', phone: '' });
+            setIsSubmitting(false);
+            setIsSuccess(true);
+            // Remove mensagem de sucesso após 5 segundos
+            setTimeout(() => setIsSuccess(false), 5000);
+          }, 1000);
+        } else {
+          // Se não encontrou botão, tenta enviar o form diretamente
+          console.log('Tentando enviar formulário diretamente');
+          
+          // Dispara evento de submit no formulário
+          rdForm.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+          
+          // Ou usa o método submit se disponível
+          if (rdForm instanceof HTMLFormElement) {
+            rdForm.submit();
+          }
+          
+          setTimeout(() => {
+            setFormData({ name: '', email: '', phone: '' });
+            setIsSubmitting(false);
+            setIsSuccess(true);
+            // Remove mensagem de sucesso após 5 segundos
+            setTimeout(() => setIsSuccess(false), 5000);
+          }, 1000);
+        }
+      } else {
+        // Se não encontrou o formulário, apenas remove loading
+        console.log('Formulário não encontrado');
+        setIsSubmitting(false);
+      }
+    } catch (error) {
+      console.error('Erro ao enviar formulário:', error);
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <section 
@@ -192,37 +210,92 @@ export const NewsletterSignup: React.FC = () => {
           </h1>
         </header>
         
-        {/* Container para o formulário RDStation */}
+        {/* Formulário Visual Customizado */}
+        <form 
+          onSubmit={handleSubmit}
+          className="mt-6 sm:mt-8 w-full max-w-4xl mx-auto"
+        >
+          <div className="space-y-4 lg:space-y-0 lg:flex lg:gap-4 lg:items-end">
+            {/* Campo Nome */}
+            <div className="flex-1">
+              <label htmlFor="name" className="block text-white font-medium mb-2 text-sm">
+                Nome *
+              </label>
+              <input
+                type="text"
+                id="name"
+                value={formData.name}
+                onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                placeholder="Seu nome completo"
+                required
+                className="w-full h-10 border-2 border-yellow-600 rounded-md px-3 bg-transparent text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-all"
+              />
+            </div>
+
+            {/* Campo Email */}
+            <div className="flex-1">
+              <label htmlFor="email" className="block text-white font-medium mb-2 text-sm">
+                E-mail *
+              </label>
+              <input
+                type="email"
+                id="email"
+                value={formData.email}
+                onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                placeholder="seuemail@exemplo.com"
+                required
+                className="w-full h-10 border-2 border-yellow-600 rounded-md px-3 bg-transparent text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-all"
+              />
+            </div>
+
+            {/* Campo Telefone */}
+            <div className="flex-1">
+              <label htmlFor="phone" className="block text-white font-medium mb-2 text-sm">
+                Telefone *
+              </label>
+              <input
+                type="tel"
+                id="phone"
+                value={formData.phone}
+                onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
+                placeholder="(11) 99999-9999"
+                required
+                className="w-full h-10 border-2 border-yellow-600 rounded-md px-3 bg-transparent text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-all"
+              />
+            </div>
+
+            {/* Botão Submit */}
+            <div className="lg:min-w-[120px]">
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full h-10 bg-yellow-600 hover:bg-yellow-700 disabled:bg-yellow-600/50 disabled:cursor-not-allowed text-white font-bold rounded-md transition-colors px-8"
+              >
+                {isSubmitting ? 'Enviando...' : 'Inscrever-se'}
+              </button>
+            </div>
+          </div>
+        </form>
+        
+        {/* Mensagem de Sucesso */}
+        {isSuccess && (
+          <div className="mt-4 p-4 bg-green-600 bg-opacity-20 border border-green-500 rounded-md">
+            <p className="text-white text-center font-medium">
+              ✅ Inscrição realizada com sucesso! Você receberá as oportunidades de leilões em breve.
+            </p>
+          </div>
+        )}
+        
+        {/* Container oculto para o formulário RDStation */}
         <div 
           ref={containerRef}
-          className="mt-6 sm:mt-8 w-full max-w-4xl mx-auto"
+          style={{ display: 'none' }}
         ></div>
         
-        {/* Loading placeholder */}
+        {/* Loading placeholder apenas enquanto carrega o RDStation */}
         {!isFormLoaded && (
-          <div className="mt-6 sm:mt-8 w-full max-w-4xl mx-auto">
-            <div className="text-white text-center mb-4">
-              Carregando formulário...
-            </div>
-            <div className="animate-pulse">
-              <div className="space-y-4 lg:space-y-0 lg:flex lg:gap-4 lg:items-end">
-                <div className="flex-1">
-                  <div className="h-4 bg-gray-600 rounded w-16 mb-2"></div>
-                  <div className="h-10 bg-gray-600 rounded"></div>
-                </div>
-                <div className="flex-1">
-                  <div className="h-4 bg-gray-600 rounded w-16 mb-2"></div>
-                  <div className="h-10 bg-gray-600 rounded"></div>
-                </div>
-                <div className="flex-1">
-                  <div className="h-4 bg-gray-600 rounded w-20 mb-2"></div>
-                  <div className="h-10 bg-gray-600 rounded"></div>
-                </div>
-                <div className="lg:min-w-[120px]">
-                  <div className="h-10 bg-yellow-600 rounded"></div>
-                </div>
-              </div>
-            </div>
+          <div className="mt-4 text-center text-gray-400 text-sm">
+            Inicializando sistema de inscrição...
           </div>
         )}
       </div>

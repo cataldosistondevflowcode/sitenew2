@@ -19,8 +19,6 @@ export const AuctionBenefitsSection: React.FC = () => {
         transform: 'translateX(-50%)'
       }}
     >
-      <div className="w-full h-[68px]" />
-
       <SectionHeading>
         <span>
           <span>Benefícios dos</span>
@@ -150,8 +148,6 @@ export const AuctionBenefitsSection: React.FC = () => {
           console.log('CTA button clicked');
         }}
       />
-
-      <div className="w-full h-[35px]" />
     </main>
   );
 };

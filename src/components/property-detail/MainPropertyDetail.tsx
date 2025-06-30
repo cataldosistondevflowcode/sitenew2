@@ -250,7 +250,7 @@ export const MainPropertyDetail: React.FC<MainPropertyDetailProps> = ({ property
           <AuctionBenefitsSection />
         </div>
 
-        <div className="mt-8 sm:mt-12">
+        <div>
           <FAQSection />
         </div>
       </article>

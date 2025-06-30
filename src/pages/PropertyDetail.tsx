@@ -161,8 +161,6 @@ const PropertyDetail = () => {
           />
         </main>
         
-        <NewsletterSignup />
-        
         <SimilarPropertiesSection 
           currentPropertyId={property.id}
           propertyType={property.tipo_propriedade}
@@ -170,6 +168,8 @@ const PropertyDetail = () => {
           neighborhood={property.bairro}
           auctionType={property.tipo_leilao}
         />
+        
+        <NewsletterSignup />
         
         <TestimonialsSection />
       </div>

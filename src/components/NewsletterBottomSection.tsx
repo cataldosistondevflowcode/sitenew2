@@ -28,16 +28,16 @@ export const NewsletterBottomSection: React.FC = () => {
         
         // Verifica se já existe um script do RDStation carregado
         const existingScript = document.querySelector('script[src*="rdstation-forms"]');
-        const existingContainer = document.getElementById('shortcode3-e67a38fad5973ddb16a8-bottom');
+        const existingContainer = document.getElementById('shortcode3-e67a38fad5973ddb16a8');
         
         // Remove elementos duplicados se existirem
-        if (existingContainer && existingContainer !== containerRef.current.querySelector('#shortcode3-e67a38fad5973ddb16a8-bottom')) {
+        if (existingContainer && existingContainer !== containerRef.current.querySelector('#shortcode3-e67a38fad5973ddb16a8')) {
           existingContainer.remove();
         }
         
         // Código HTML e JavaScript direto do RDStation
         const formHTML = `
-          <div role="main" id="shortcode3-e67a38fad5973ddb16a8-bottom" style="display: none;"></div>
+          <div role="main" id="shortcode3-e67a38fad5973ddb16a8" style="display: none;"></div>
         `;
         
         containerRef.current.innerHTML = formHTML;
@@ -48,11 +48,11 @@ export const NewsletterBottomSection: React.FC = () => {
           script.type = 'text/javascript';
           script.src = 'https://d335luupugsy2.cloudfront.net/js/rdstation-forms/stable/rdstation-forms.min.js';
           script.onload = () => {
-            console.log('Script RDStation carregado (bottom)');
+            console.log('Script RDStation carregado');
             initializeRDStationForm();
           };
           script.onerror = () => {
-            console.error('Erro ao carregar script do RDStation (bottom)');
+            console.error('Erro ao carregar script do RDStation');
           };
           document.head.appendChild(script);
         } else {
@@ -66,14 +66,14 @@ export const NewsletterBottomSection: React.FC = () => {
       setTimeout(() => {
         try {
           if (window.RDStationForms) {
-            new window.RDStationForms('shortcode3-e67a38fad5973ddb16a8-bottom', 'UA-150032078-1').createForm();
-            console.log('RDStation Form criado com sucesso (bottom)');
+            new window.RDStationForms('shortcode3-e67a38fad5973ddb16a8', 'UA-150032078-1').createForm();
+            console.log('RDStation Form criado com sucesso');
             setIsFormLoaded(true);
           } else {
-            console.error('RDStationForms não disponível (bottom)');
+            console.error('RDStationForms não disponível');
           }
         } catch (error) {
-          console.error('Erro ao criar RDStation Form (bottom):', error);
+          console.error('Erro ao criar RDStation Form:', error);
         }
       }, 1000);
     };
@@ -100,27 +100,27 @@ export const NewsletterBottomSection: React.FC = () => {
       }
 
       // Debug: vamos ver o que tem no container
-      const container = document.querySelector('#shortcode3-e67a38fad5973ddb16a8-bottom');
-      console.log('Container encontrado (bottom):', container);
-      console.log('HTML do container (bottom):', container?.innerHTML);
+      const container = document.querySelector('#shortcode3-e67a38fad5973ddb16a8');
+      console.log('Container encontrado:', container);
+      console.log('HTML do container:', container?.innerHTML);
 
       // Procura o formulário RDStation de diferentes formas
       const rdForm = container?.querySelector('form') || 
-                     document.querySelector('#shortcode3-e67a38fad5973ddb16a8-bottom form') ||
+                     document.querySelector('#shortcode3-e67a38fad5973ddb16a8 form') ||
                      document.querySelector('form[data-rd-form]') ||
                      document.querySelector('.rdstation-form form');
       
-      console.log('Formulário encontrado (bottom):', rdForm);
+      console.log('Formulário encontrado:', rdForm);
 
       if (rdForm) {
-        console.log('HTML do formulário (bottom):', rdForm.innerHTML);
+        console.log('HTML do formulário:', rdForm.innerHTML);
         
         // Procura campos por diferentes atributos
         const nameField = rdForm.querySelector('input[name*="name"], input[name*="nome"], input[placeholder*="nome"], input[placeholder*="name"]') as HTMLInputElement;
         const emailField = rdForm.querySelector('input[name*="email"], input[type="email"], input[placeholder*="email"]') as HTMLInputElement;
         const phoneField = rdForm.querySelector('input[name*="phone"], input[name*="telefone"], input[name*="celular"], input[type="tel"], input[placeholder*="telefone"]') as HTMLInputElement;
 
-        console.log('Campos encontrados (bottom):', { nameField, emailField, phoneField });
+        console.log('Campos encontrados:', { nameField, emailField, phoneField });
 
         // Preenche os campos se encontrados
         if (nameField) {
@@ -146,7 +146,7 @@ export const NewsletterBottomSection: React.FC = () => {
                             rdForm.querySelector('.submit-button') ||
                             rdForm.querySelector('[role="button"]');
 
-        console.log('Botão de submit encontrado (bottom):', submitButton);
+        console.log('Botão de submit encontrado:', submitButton);
 
         if (submitButton) {
           // Tenta diferentes formas de enviar
@@ -166,7 +166,7 @@ export const NewsletterBottomSection: React.FC = () => {
           }, 1000);
         } else {
           // Se não encontrou botão, tenta enviar o form diretamente
-          console.log('Tentando enviar formulário diretamente (bottom)');
+          console.log('Tentando enviar formulário diretamente');
           
           // Dispara evento de submit no formulário
           rdForm.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
@@ -186,11 +186,11 @@ export const NewsletterBottomSection: React.FC = () => {
         }
       } else {
         // Se não encontrou o formulário, apenas remove loading
-        console.log('Formulário não encontrado (bottom)');
+        console.log('Formulário não encontrado');
         setIsSubmitting(false);
       }
     } catch (error) {
-      console.error('Erro ao enviar formulário (bottom):', error);
+      console.error('Erro ao enviar formulário:', error);
       setIsSubmitting(false);
     }
   };
@@ -289,4 +289,4 @@ export const NewsletterBottomSection: React.FC = () => {
       ></div>
     </section>
   );
-}; 
+};  

@@ -6,7 +6,19 @@ import { CallToActionButton } from './CallToActionButton';
 
 export const AuctionBenefitsSection: React.FC = () => {
   return (
-    <main className="flex relative flex-col items-center p-8 mx-auto my-0 w-full bg-neutral-50 max-w-[1920px] max-md:px-5 max-md:py-6 max-md:max-w-[991px] max-sm:px-4 max-sm:py-4 max-sm:max-w-screen-sm">
+    <main 
+      className="flex relative flex-col items-center p-8 w-full min-h-screen max-md:px-5 max-md:py-6 max-sm:px-4 max-sm:py-4"
+      style={{
+        backgroundImage: 'url(/assets/bg/fundo-marmore.png)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        backgroundAttachment: 'fixed',
+        width: '100vw',
+        marginLeft: '50%',
+        transform: 'translateX(-50%)'
+      }}
+    >
       <div className="w-full h-[68px]" />
 
       <SectionHeading>

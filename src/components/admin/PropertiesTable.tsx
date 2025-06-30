@@ -13,34 +13,62 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Search, Filter, Eye, RefreshCw } from 'lucide-react';
+import { Search, Filter, Eye, RefreshCw, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 type Property = Tables<'leiloes_imoveis'>;
 
 const PropertiesTable = () => {
   const [properties, setProperties] = useState<Property[]>([]);
-  const [filteredProperties, setFilteredProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [cityFilter, setCityFilter] = useState('all');
   const [typeFilter, setTypeFilter] = useState('all');
   const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalCount, setTotalCount] = useState(0);
+  const [allCities, setAllCities] = useState<string[]>([]);
+  const [allTypes, setAllTypes] = useState<string[]>([]);
+  
+  const pageSize = 1000;
 
-  const fetchProperties = async () => {
+  const fetchProperties = async (page = 0) => {
     try {
       setLoading(true);
       setError(null);
       
-      const { data, error } = await supabase
+      const from = page * pageSize;
+      const to = from + pageSize - 1;
+
+      // Construir query base
+      let query = supabase
         .from('leiloes_imoveis')
-        .select('*')
+        .select('*', { count: 'exact' })
         .order('id', { ascending: false });
+
+      // Aplicar filtros
+      if (searchTerm) {
+        query = query.or(`titulo_propriedade.ilike.%${searchTerm}%,endereco.ilike.%${searchTerm}%,bairro.ilike.%${searchTerm}%,numero_processo.ilike.%${searchTerm}%`);
+      }
+
+      if (cityFilter && cityFilter !== 'all') {
+        query = query.eq('cidade', cityFilter);
+      }
+
+      if (typeFilter && typeFilter !== 'all') {
+        query = query.eq('tipo_propriedade', typeFilter);
+      }
+
+      // Aplicar paginação
+      const { data, error, count } = await query.range(from, to);
 
       if (error) throw error;
 
       setProperties(data || []);
-      setFilteredProperties(data || []);
+      setTotalCount(count || 0);
+      setCurrentPage(page);
+      
+      console.log(`Página ${page + 1}: ${data?.length || 0} registros de ${count || 0} totais`);
     } catch (err) {
       console.error('Erro ao buscar propriedades:', err);
       setError('Erro ao carregar propriedades');
@@ -49,35 +77,40 @@ const PropertiesTable = () => {
     }
   };
 
+  const fetchMetadata = async () => {
+    try {
+      // Buscar cidades únicas
+      const { data: citiesData } = await supabase
+        .from('leiloes_imoveis')
+        .select('cidade')
+        .not('cidade', 'is', null);
+
+      // Buscar tipos únicos
+      const { data: typesData } = await supabase
+        .from('leiloes_imoveis')
+        .select('tipo_propriedade')
+        .not('tipo_propriedade', 'is', null);
+
+      const uniqueCities = Array.from(new Set(citiesData?.map(item => item.cidade))).filter(Boolean).sort();
+      const uniqueTypes = Array.from(new Set(typesData?.map(item => item.tipo_propriedade))).filter(Boolean).sort();
+
+      setAllCities(uniqueCities);
+      setAllTypes(uniqueTypes);
+    } catch (err) {
+      console.error('Erro ao buscar metadados:', err);
+    }
+  };
+
   useEffect(() => {
-    fetchProperties();
+    fetchProperties(0);
+    fetchMetadata();
   }, []);
 
   useEffect(() => {
-    let filtered = properties;
-
-    // Filtro por termo de busca
-    if (searchTerm) {
-      filtered = filtered.filter(property =>
-        property.titulo_propriedade?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        property.endereco?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        property.bairro?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        property.numero_processo?.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-
-    // Filtro por cidade
-    if (cityFilter && cityFilter !== 'all') {
-      filtered = filtered.filter(property => property.cidade === cityFilter);
-    }
-
-    // Filtro por tipo
-    if (typeFilter && typeFilter !== 'all') {
-      filtered = filtered.filter(property => property.tipo_propriedade === typeFilter);
-    }
-
-    setFilteredProperties(filtered);
-  }, [searchTerm, cityFilter, typeFilter, properties]);
+    // Quando filtros mudam, voltar para primeira página
+    setCurrentPage(0);
+    fetchProperties(0);
+  }, [searchTerm, cityFilter, typeFilter]);
 
   const formatCurrency = (value: number | null) => {
     if (!value) return 'N/A';
@@ -92,8 +125,9 @@ const PropertiesTable = () => {
     return new Date(dateString).toLocaleDateString('pt-BR');
   };
 
-  const uniqueCities = Array.from(new Set(properties.map(p => p.cidade))).filter(Boolean).sort();
-  const uniqueTypes = Array.from(new Set(properties.map(p => p.tipo_propriedade))).filter(Boolean).sort();
+  const totalPages = Math.ceil(totalCount / pageSize);
+  const startRecord = currentPage * pageSize + 1;
+  const endRecord = Math.min((currentPage + 1) * pageSize, totalCount);
 
   if (loading) {
     return (
@@ -127,7 +161,7 @@ const PropertiesTable = () => {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Eye className="h-5 w-5" />
-          Propriedades ({filteredProperties.length} de {properties.length})
+          Propriedades ({startRecord}-{endRecord} de {totalCount})
         </CardTitle>
         
         {/* Filtros */}
@@ -148,7 +182,7 @@ const PropertiesTable = () => {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Todas as cidades</SelectItem>
-              {uniqueCities.map(city => (
+              {allCities.map(city => (
                 <SelectItem key={city} value={city}>{city}</SelectItem>
               ))}
             </SelectContent>
@@ -160,7 +194,7 @@ const PropertiesTable = () => {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Todos os tipos</SelectItem>
-              {uniqueTypes.map(type => (
+              {allTypes.map(type => (
                 <SelectItem key={type} value={type}>{type}</SelectItem>
               ))}
             </SelectContent>
@@ -175,7 +209,10 @@ const PropertiesTable = () => {
             Limpar Filtros
           </Button>
 
-          <Button variant="outline" onClick={fetchProperties}>
+          <Button variant="outline" onClick={() => {
+            fetchProperties(currentPage);
+            fetchMetadata();
+          }}>
             <RefreshCw className="h-4 w-4 mr-2" />
             Atualizar
           </Button>
@@ -200,7 +237,7 @@ const PropertiesTable = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredProperties.map((property) => (
+              {properties.map((property) => (
                 <TableRow key={property.id}>
                   <TableCell className="font-medium">{property.id}</TableCell>
                   <TableCell className="max-w-48">
@@ -243,15 +280,66 @@ const PropertiesTable = () => {
             </TableBody>
           </Table>
           
-          {filteredProperties.length === 0 && (
+          {properties.length === 0 && (
             <div className="text-center py-8 text-gray-500">
-              {properties.length === 0 
+              {totalCount === 0 
                 ? 'Nenhuma propriedade encontrada no banco de dados'
                 : 'Nenhuma propriedade corresponde aos filtros aplicados'
               }
             </div>
           )}
         </div>
+        
+        {/* Controles de Paginação */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between mt-6">
+            <div className="text-sm text-gray-600">
+              Mostrando {startRecord} a {endRecord} de {totalCount} registros
+            </div>
+            
+            <div className="flex items-center space-x-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => fetchProperties(currentPage - 1)}
+                disabled={currentPage === 0 || loading}
+              >
+                <ChevronLeft className="h-4 w-4 mr-1" />
+                Anterior
+              </Button>
+              
+              <div className="flex items-center space-x-1">
+                {[...Array(Math.min(5, totalPages))].map((_, index) => {
+                  const pageNumber = currentPage < 3 ? index : currentPage - 2 + index;
+                  if (pageNumber >= totalPages) return null;
+                  
+                  return (
+                    <Button
+                      key={pageNumber}
+                      variant={pageNumber === currentPage ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => fetchProperties(pageNumber)}
+                      disabled={loading}
+                      className="w-10"
+                    >
+                      {pageNumber + 1}
+                    </Button>
+                  );
+                })}
+              </div>
+              
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => fetchProperties(currentPage + 1)}
+                disabled={currentPage >= totalPages - 1 || loading}
+              >
+                Próximo
+                <ChevronRight className="h-4 w-4 ml-1" />
+              </Button>
+            </div>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

@@ -95,9 +95,7 @@ export const MainPropertyDetail: React.FC<MainPropertyDetailProps> = ({ property
       tags.push({ label: "Extrajudicial", color: "yellow" as const });
     }
     
-    if (property.fgts) {
-      tags.push({ label: "FGTS", color: "green" as const });
-    }
+    // Tag FGTS removida - não é mais necessária
     
     if (property.financiamento) {
       tags.push({ label: "Financiável", color: "green" as const });

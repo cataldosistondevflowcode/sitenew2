@@ -153,13 +153,7 @@ export const PropertyCard = ({
       });
     }
     
-    // 4. Badge FGTS adicional para casos onde fgts = true
-    if (fgts === true) {
-      badges.push({
-        text: "FGTS",
-        color: "bg-[#d68e08]"
-      });
-    }
+    // Badge FGTS removido - não é mais necessário
     
     return badges;
   };

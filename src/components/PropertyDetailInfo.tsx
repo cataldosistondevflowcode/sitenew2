@@ -56,12 +56,7 @@ export const PropertyDetailInfo = ({ property, rawPropertyData }: PropertyDetail
       });
     }
     
-    if (property.fgts === true) {
-      badges.push({
-        text: "FGTS",
-        color: "bg-[#d68e08]"
-      });
-    }
+    // Badge FGTS removido - não é mais necessário
     
     return badges;
   };

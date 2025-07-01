@@ -162,7 +162,7 @@ export const PropertyCard = ({
   const badges = getBadges();
 
   return (
-    <Link to={createPropertyUrl(id, title)} className="block cursor-pointer h-full property-card-container">
+    <Link to={createPropertyUrl(id, title)} target="_blank" rel="noopener noreferrer" className="block cursor-pointer h-full property-card-container">
       <div className="bg-[#191919] rounded-lg shadow-lg overflow-hidden text-white hover:shadow-xl transition-shadow duration-300 property-card-layout">
         {/* Imagem com altura fixa ou Mapa quando imagem não encontrada */}
         <div className="relative flex-shrink-0 property-card-header">
@@ -181,6 +181,8 @@ export const PropertyCard = ({
           )}
           <Link 
             to={createPropertyUrl(id, title)}
+            target="_blank"
+            rel="noopener noreferrer"
             className="absolute top-2 sm:top-3 left-2 sm:left-3 bg-[#d68e08] text-white px-2 sm:px-3 py-1.5 sm:py-2 rounded text-xs sm:text-sm font-bold z-10 hover:bg-[#b8780a] transition-colors"
             onClick={(e) => e.stopPropagation()}
           >

@@ -113,7 +113,7 @@ const Admin = () => {
                   <Button 
                     onClick={handleWhatsAppConnect}
                     disabled
-                    className="ml-4"
+                    className="ml-4 bg-gray-100 text-gray-600 border-gray-300 hover:bg-gray-200"
                     variant="outline"
                   >
                     <MessageCircle className="h-4 w-4 mr-2" />

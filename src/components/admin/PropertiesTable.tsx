@@ -200,19 +200,27 @@ const PropertiesTable = () => {
             </SelectContent>
           </Select>
 
-          <Button variant="outline" onClick={() => {
-            setSearchTerm('');
-            setCityFilter('all');
-            setTypeFilter('all');
-          }}>
+          <Button 
+            variant="outline" 
+            className="bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+            onClick={() => {
+              setSearchTerm('');
+              setCityFilter('all');
+              setTypeFilter('all');
+            }}
+          >
             <Filter className="h-4 w-4 mr-2" />
             Limpar Filtros
           </Button>
 
-          <Button variant="outline" onClick={() => {
-            fetchProperties(currentPage);
-            fetchMetadata();
-          }}>
+          <Button 
+            variant="outline" 
+            className="bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+            onClick={() => {
+              fetchProperties(currentPage);
+              fetchMetadata();
+            }}
+          >
             <RefreshCw className="h-4 w-4 mr-2" />
             Atualizar
           </Button>
@@ -301,6 +309,7 @@ const PropertiesTable = () => {
               <Button
                 variant="outline"
                 size="sm"
+                className="bg-white text-gray-700 border-gray-300 hover:bg-gray-50 disabled:bg-gray-100 disabled:text-gray-400"
                 onClick={() => fetchProperties(currentPage - 1)}
                 disabled={currentPage === 0 || loading}
               >
@@ -320,7 +329,11 @@ const PropertiesTable = () => {
                       size="sm"
                       onClick={() => fetchProperties(pageNumber)}
                       disabled={loading}
-                      className="w-10"
+                      className={`w-10 ${
+                        pageNumber === currentPage 
+                          ? "bg-blue-600 text-white border-blue-600 hover:bg-blue-700" 
+                          : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+                      } disabled:bg-gray-100 disabled:text-gray-400`}
                     >
                       {pageNumber + 1}
                     </Button>

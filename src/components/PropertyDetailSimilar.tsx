@@ -1,4 +1,5 @@
 import React from 'react';
+import { createPropertyUrl } from '../utils/slugUtils';
 
 export const PropertyDetailSimilar = () => {
   const similarProperties = [
@@ -86,7 +87,7 @@ export const PropertyDetailSimilar = () => {
                 
                 <div className="flex justify-end mt-4">
                   <a
-                    href={`/imovel/${property.id}`}
+                    href={createPropertyUrl(property.id, property.title)}
                     className="bg-[#d68e08] text-white px-4 py-2 rounded mr-2 hover:bg-[#b8780a]"
                   >
                     Saiba Mais

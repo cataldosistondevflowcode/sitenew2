@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { extractPropertyIdFromUrl } from "@/utils/slugUtils";
 import { SocialBar } from "@/components/SocialBar";
 import { Header } from "@/components/Header";
 import { CookieBar } from "@/components/CookieBar";
@@ -38,9 +39,13 @@ interface Property {
 
 const PropertyDetail = () => {
   const { id } = useParams<{ id: string }>();
+  const location = useLocation();
   const [property, setProperty] = useState<Property | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  // Extrai ID da URL (compatível com formato antigo e novo)
+  const propertyId = id || extractPropertyIdFromUrl(location.pathname);
 
   // Função para formatar datas no padrão brasileiro
   const formatDateToBrazilian = (dateString: string) => {
@@ -73,7 +78,7 @@ const PropertyDetail = () => {
         const { data, error } = await supabase
           .from('leiloes_imoveis')
           .select('*')
-          .eq('id', Number(id))
+          .eq('id', Number(propertyId))
           .single();
           
         if (error) throw error;
@@ -87,10 +92,10 @@ const PropertyDetail = () => {
       }
     };
 
-    if (id) {
+    if (propertyId) {
       fetchProperty();
     }
-  }, [id]);
+  }, [propertyId]);
 
   if (loading) {
     return (

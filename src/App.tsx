@@ -23,6 +23,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/imovel/:id" element={<PropertyDetail />} />
+            <Route path="/imovel/:id/:slug" element={<PropertyDetail />} />
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route path="/admin" element={
               <AdminRoute>

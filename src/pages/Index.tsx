@@ -1421,14 +1421,15 @@ const Index = () => {
       <Footer />
 
       {/* Floating Buttons */}
-      <div className="fixed bottom-16 sm:bottom-20 right-2 sm:right-4 z-40">
-        <Button className="bg-primary hover:bg-primary/90 font-bold text-xs sm:text-sm px-3 sm:px-4 py-2 sm:py-3">
+      <div className="fixed bottom-2 sm:bottom-4 right-2 sm:right-4 z-40 flex flex-col sm:flex-row gap-2 sm:gap-3 items-end">
+        <Button 
+          className="bg-primary hover:bg-primary/90 font-bold text-xs sm:text-sm px-3 sm:px-4 py-2 sm:py-3"
+          onClick={() => setShowOpportunityPopup(true)}
+        >
           <span className="hidden sm:inline">Inscreva-se para oportunidades</span>
           <span className="sm:hidden">Oportunidades</span>
         </Button>
-      </div>
-      
-      <div className="fixed bottom-2 sm:bottom-4 right-2 sm:right-4 z-40">
+        
         <Button className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-[#25d366] hover:bg-[#25d366]/90">
           <MessageCircle className="w-5 h-5 sm:w-6 sm:h-6" />
         </Button>

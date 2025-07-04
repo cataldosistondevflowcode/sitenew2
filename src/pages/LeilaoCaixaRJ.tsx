@@ -55,7 +55,6 @@ interface Filters {
     min?: number;
     max?: number;
   };
-  auctionType?: string; // Filtro para tipo de leilão (inclui EXTRAJUDICIAL_CUSTOM)
   financiamento?: boolean; // Filtro para leilão com financiamento
   fgts?: boolean; // Filtro para leilão que aceita FGTS
   parcelamento?: boolean; // Filtro para parcelamento
@@ -146,14 +145,12 @@ const LeilaoCaixaRJ = () => {
   const [showCityMenu, setShowCityMenu] = useState(false);
   const [showNeighborhoodMenu, setShowNeighborhoodMenu] = useState(false);
   const [showPriceMenu, setShowPriceMenu] = useState(false);
-  const [showAuctionTypeMenu, setShowAuctionTypeMenu] = useState(false);
   
   // Estados para armazenar as seleções
   const [selectedType, setSelectedType] = useState<SelectedType>({ label: "Todos os imóveis", icon: <Globe className="h-4 w-4" /> });
   const [selectedCity, setSelectedCity] = useState("Selecione a cidade");
   const [selectedNeighborhood, setSelectedNeighborhood] = useState("Selecione o bairro");
   const [selectedPriceRange, setSelectedPriceRange] = useState<PriceRange>({ label: "Todos os preços" });
-  const [selectedAuctionType, setSelectedAuctionType] = useState("Todos os tipos de leilão");
   
   // Estado para filtrar imóveis com segundo leilão
   const [filterSecondAuction, setFilterSecondAuction] = useState(false);
@@ -353,7 +350,8 @@ const LeilaoCaixaRJ = () => {
         let query = supabase
           .from('leiloes_imoveis')
           .select('*', { count: 'exact' })
-          .eq('estado', 'RJ');
+          .eq('estado', 'RJ')
+          .eq('leiloeiro_nome', 'Caixa Economica Federal');
           
         // Adicionar filtros se existirem
         if (filters.city) {
@@ -404,15 +402,7 @@ const LeilaoCaixaRJ = () => {
           }
         }
         
-        // Filtrar por tipo de leilão
-        if (filters.auctionType) {
-          if (filters.auctionType === "EXTRAJUDICIAL_CUSTOM") {
-            // EXTRAJUDICIAL: tipo_leilao != "Judicial"
-            query = query.neq('tipo_leilao', 'Judicial');
-          } else {
-            query = query.eq('tipo_leilao', filters.auctionType);
-          }
-        }
+
         
         // Filtrar por financiamento (agora usado pelos badges específicos)
         if (filters.financiamento === true) {
@@ -612,19 +602,7 @@ const LeilaoCaixaRJ = () => {
     }
     
     // Adicionar filtro de tipo de leilão conforme as novas regras
-    if (selectedAuctionType && selectedAuctionType !== "Todos os tipos de leilão") {
-      if (selectedAuctionType === AUCTION_TYPE_JUDICIAL) {
-        // JUDICIAL: tipo_leilao = "Judicial"
-        newFilters.auctionType = "Judicial";
-      } else if (selectedAuctionType === AUCTION_TYPE_EXTRAJUDICIAL_FINANCIAMENTO) {
-        // EXTRAJUDICIAL FINANCIÁVEL: tipo_leilao != "Judicial" && financiamento = true
-        newFilters.auctionType = "EXTRAJUDICIAL_CUSTOM";
-        newFilters.financiamento = true;
-      } else if (selectedAuctionType === AUCTION_TYPE_EXTRAJUDICIAL) {
-        // EXTRAJUDICIAL: tipo_leilao != "Judicial"
-        newFilters.auctionType = "EXTRAJUDICIAL_CUSTOM";
-      }
-    }
+
     
     // Aplicar filtros
     setFilters(newFilters);
@@ -658,14 +636,13 @@ const LeilaoCaixaRJ = () => {
     
     // Fechar menus ao clicar fora deles
     const handleClickOutside = (event: MouseEvent) => {
-      if (showTypeMenu || showCityMenu || showNeighborhoodMenu || showPriceMenu || showAuctionTypeMenu) {
+      if (showTypeMenu || showCityMenu || showNeighborhoodMenu || showPriceMenu) {
         const target = event.target as HTMLElement;
         if (!target.closest('.filter-dropdown')) {
           setShowTypeMenu(false);
           setShowCityMenu(false);
           setShowNeighborhoodMenu(false);
           setShowPriceMenu(false);
-          setShowAuctionTypeMenu(false);
           setCitySearchTerm("");
           setNeighborhoodSearchTerm("");
         }
@@ -678,7 +655,7 @@ const LeilaoCaixaRJ = () => {
       window.removeEventListener('resize', checkScreenSize);
       document.removeEventListener('click', handleClickOutside);
     };
-  }, [showTypeMenu, showCityMenu, showNeighborhoodMenu, showPriceMenu, showAuctionTypeMenu]);
+  }, [showTypeMenu, showCityMenu, showNeighborhoodMenu, showPriceMenu]);
   
   // Funções para manipular os menus
   const toggleTypeMenu = (e: React.MouseEvent) => {
@@ -687,7 +664,6 @@ const LeilaoCaixaRJ = () => {
     setShowCityMenu(false);
     setShowNeighborhoodMenu(false);
     setShowPriceMenu(false);
-    setShowAuctionTypeMenu(false);
   };
   
   const toggleCityMenu = (e: React.MouseEvent) => {
@@ -696,7 +672,6 @@ const LeilaoCaixaRJ = () => {
     setShowTypeMenu(false);
     setShowNeighborhoodMenu(false);
     setShowPriceMenu(false);
-    setShowAuctionTypeMenu(false);
     if (showCityMenu) {
       setCitySearchTerm("");
     }
@@ -1200,52 +1175,7 @@ Gostaria de saber mais sobre os leilões de imóveis.`;
                 </div>
               </div>
               
-              {/* Segunda linha de selects */}
-              <div className="grid grid-cols-1 gap-3 sm:gap-4 mb-4">
-                {/* Dropdown de Modalidade de Leilão */}
-                <div className="filter-dropdown relative">
-                  <div 
-                    className="flex items-center justify-between w-full p-3 bg-[#fafafa] border border-gray-200 rounded-md cursor-pointer text-sm"
-                    onClick={toggleAuctionTypeMenu}
-                  >
-                    <div className="flex items-center">
-                      <Gavel className="h-4 w-4 mr-2 text-gray-500" />
-                      <span>{selectedAuctionType}</span>
-                    </div>
-                    <ChevronDown className="h-4 w-4 text-gray-500" />
-                  </div>
-                  
-                  {showAuctionTypeMenu && (
-                    <div className="absolute z-40 w-full bg-white border border-gray-200 rounded-md shadow-md mt-1 py-2 max-h-[400px] overflow-y-auto">
-                      <div className="border-b border-gray-200 py-2 px-4 font-bold bg-gray-50 text-gray-700">MODALIDADE DE LEILÃO</div>
-                      <div 
-                        className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                        onClick={() => selectAuctionType("Todos os tipos de leilão")}
-                      >
-                        Todos os tipos de leilão
-                      </div>
-                      <div 
-                        className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                        onClick={() => selectAuctionType(AUCTION_TYPE_JUDICIAL)}
-                      >
-                        {AUCTION_TYPE_JUDICIAL}
-                      </div>
-                      <div 
-                        className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                        onClick={() => selectAuctionType(AUCTION_TYPE_EXTRAJUDICIAL)}
-                      >
-                        {AUCTION_TYPE_EXTRAJUDICIAL}
-                      </div>
-                      <div 
-                        className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                        onClick={() => selectAuctionType(AUCTION_TYPE_EXTRAJUDICIAL_FINANCIAMENTO)}
-                      >
-                        {AUCTION_TYPE_EXTRAJUDICIAL_FINANCIAMENTO}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
+
               
               {/* Campo de busca rápida */}
               <div className="mb-4 sm:mb-6">
@@ -1435,11 +1365,11 @@ Gostaria de saber mais sobre os leilões de imóveis.`;
       {/* YouTube Video Section */}
       <VideoPlayerContainer />
 
-      {/* Newsletter Signup Section */}
-      <NewsletterSignup />
-
       {/* Featured Videos Section */}
       <FeaturedVideos />
+
+      {/* Newsletter Signup Section */}
+      <NewsletterSignup />
       
       {/* Success Cases Section */}
       <SuccessCases />

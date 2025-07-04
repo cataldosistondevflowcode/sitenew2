@@ -1435,11 +1435,11 @@ Gostaria de saber mais sobre os leilões de imóveis.`;
       {/* YouTube Video Section */}
       <VideoPlayerContainer />
 
-      {/* Newsletter Signup Section */}
-      <NewsletterSignup />
-
       {/* Featured Videos Section */}
       <FeaturedVideos />
+
+      {/* Newsletter Signup Section */}
+      <NewsletterSignup />
       
       {/* Success Cases Section */}
       <SuccessCases />

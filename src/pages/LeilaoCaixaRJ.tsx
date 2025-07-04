@@ -897,7 +897,7 @@ Gostaria de saber mais sobre os leilões de imóveis.`;
       <CookieBar />
       <SocialBar />
       <Header />
-              <HeroSectionCaixaRJ />
+              <HeroSectionCaixaRJ onOpportunityClick={() => setShowOpportunityPopup(true)} />
       
       {/* Properties Section - Movida para cima */}
       <section className="py-16 bg-background opportunities">

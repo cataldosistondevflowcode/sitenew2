@@ -1,7 +1,11 @@
 import React from 'react';
 import { ChevronRight, Play } from "lucide-react";
 
-export const HeroSection = () => {
+interface HeroSectionProps {
+  onOpportunityClick?: () => void;
+}
+
+export const HeroSection = ({ onOpportunityClick }: HeroSectionProps) => {
   return (
     <>
       {/* Primeira seção - Hero tradicional */}
@@ -40,14 +44,14 @@ export const HeroSection = () => {
                 </div>
                 
                 <div className="flex justify-center lg:justify-start">
-                  <a
-                    href="#"
-                    className="inline-flex items-center justify-center bg-gradient-to-r from-[#6d4403] via-[#b57309] to-[#d48d07] text-white rounded-full px-4 sm:px-6 md:px-7 py-3 sm:py-4 font-normal text-sm sm:text-base md:text-[19.8px] leading-relaxed hover:opacity-90 transition-opacity"
+                  <button
+                    onClick={onOpportunityClick}
+                    className="inline-flex items-center justify-center bg-gradient-to-r from-[#6d4403] via-[#b57309] to-[#d48d07] text-white rounded-full px-4 sm:px-6 md:px-7 py-3 sm:py-4 font-normal text-sm sm:text-base md:text-[19.8px] leading-relaxed hover:opacity-90 transition-opacity cursor-pointer"
                     style={{ fontFamily: "Quicksand, sans-serif" }}
                   >
                     <span className="text-center">Quero receber novas oportunidades</span>
                     <ChevronRight className="ml-2 h-5 w-5 sm:h-6 sm:w-6 md:h-6 md:w-7 flex-shrink-0" />
-                  </a>
+                  </button>
                 </div>
               </div>
               

@@ -206,6 +206,12 @@ const Index = () => {
   // Estado para controlar o popup de oportunidades
   const [showOpportunityPopup, setShowOpportunityPopup] = useState(false);
 
+  // Função para fechar o popup de oportunidades
+  const closeOpportunityPopup = () => {
+    setShowOpportunityPopup(false);
+    // Não remover o sessionStorage para evitar que o popup apareça novamente na mesma sessão
+  };
+
   // Adicionar estados e função para o modal de interesse
   const [showInterestModal, setShowInterestModal] = useState(false);
   const [interestName, setInterestName] = useState("");
@@ -214,11 +220,17 @@ const Index = () => {
 
   // Mostrar popup de oportunidades quando a página carregar
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowOpportunityPopup(true);
-    }, 2000); // Mostrar após 2 segundos
+    // Verificar se o popup já foi exibido na sessão atual
+    const popupShown = sessionStorage.getItem('opportunity-popup-shown');
+    
+    if (!popupShown) {
+      const timer = setTimeout(() => {
+        setShowOpportunityPopup(true);
+        sessionStorage.setItem('opportunity-popup-shown', 'true');
+      }, 3000); // Mostrar após 3 segundos
 
-    return () => clearTimeout(timer);
+      return () => clearTimeout(timer);
+    }
   }, []);
 
   // Carregar as cidades do estado RJ
@@ -1425,7 +1437,7 @@ const Index = () => {
       {/* Popup de Oportunidades */}
       <OpportunityPopup 
         isOpen={showOpportunityPopup} 
-        onClose={() => setShowOpportunityPopup(false)} 
+        onClose={closeOpportunityPopup} 
       />
     </div>
   );

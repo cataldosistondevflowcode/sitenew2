@@ -1,5 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
+
+declare global {
+  interface Window {
+    RDStationForms: any;
+  }
+}
 
 interface OpportunityPopupProps {
   isOpen: boolean;
@@ -7,74 +13,198 @@ interface OpportunityPopupProps {
 }
 
 const OpportunityPopup: React.FC<OpportunityPopupProps> = ({ isOpen, onClose }) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [isFormLoaded, setIsFormLoaded] = useState(false);
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     phone: ''
   });
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+    // Carregar formulário RD Station quando o popup abre
+  useEffect(() => {
+    if (isOpen) {
+      const loadForm = () => {
+        if (containerRef.current) {
+          // Limpa qualquer conteúdo anterior
+          containerRef.current.innerHTML = '';
+          
+          // Verifica se já existe um script do RDStation carregado
+          const existingScript = document.querySelector('script[src*="rdstation-forms"]');
+          const existingContainer = document.getElementById('shortcode3-e67a38fad5973ddb16a8');
+          
+          // Remove elementos duplicados se existirem
+          if (existingContainer && existingContainer !== containerRef.current.querySelector('#shortcode3-e67a38fad5973ddb16a8')) {
+            existingContainer.remove();
+          }
+          
+          // Código HTML e JavaScript direto do RDStation (MESMO ID que funciona)
+          const formHTML = `
+            <div role="main" id="shortcode3-e67a38fad5973ddb16a8" style="display: none;"></div>
+          `;
+          
+          containerRef.current.innerHTML = formHTML;
+          
+          // Carrega o script apenas se não existir
+          if (!existingScript) {
+            const script = document.createElement('script');
+            script.type = 'text/javascript';
+            script.src = 'https://d335luupugsy2.cloudfront.net/js/rdstation-forms/stable/rdstation-forms.min.js';
+            script.onload = () => {
+              console.log('Script RDStation carregado para popup');
+              initializeRDStationForm();
+            };
+            script.onerror = () => {
+              console.error('Erro ao carregar script do RDStation para popup');
+            };
+            document.head.appendChild(script);
+          } else {
+            // Se o script já existe, apenas inicializa o formulário
+            initializeRDStationForm();
+          }
+        }
+      };
+      
+      const initializeRDStationForm = () => {
+        setTimeout(() => {
+          try {
+            if (window.RDStationForms) {
+              new window.RDStationForms('shortcode3-e67a38fad5973ddb16a8', 'UA-150032078-1').createForm();
+              console.log('RDStation Form do popup criado com sucesso');
+              setIsFormLoaded(true);
+            } else {
+              console.error('RDStationForms não disponível para popup');
+            }
+          } catch (error) {
+            console.error('Erro ao criar RDStation Form do popup:', error);
+          }
+        }, 1000);
+      };
+
+      loadForm();
+    }
+  }, [isOpen]);
+
+  // Função para enviar dados através do formulário RDStation oculto (MESMA implementação do NewsletterBottomSection)
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Validação básica
     if (!formData.name || !formData.email || !formData.phone) {
-      alert('Por favor, preencha todos os campos obrigatórios.');
       return;
     }
 
-    // Criar um form invisível para submit para RD Station
-    const form = document.createElement('form');
-    form.method = 'post';
-    form.action = 'https://cta-redirect.rdstation.com/v2/conversions';
-    form.style.display = 'none';
+    setIsSubmitting(true);
 
-    // Adicionar campos ocultos
-    const tokenField = document.createElement('input');
-    tokenField.type = 'hidden';
-    tokenField.name = 'token_rdstation';
-    tokenField.value = 'eb5ee2e30e652ab024e478924164239b';
-    form.appendChild(tokenField);
+    try {
+      // Aguarda o formulário RDStation estar carregado
+      if (!isFormLoaded) {
+        setIsSubmitting(false);
+        return;
+      }
 
-    const identifierField = document.createElement('input');
-    identifierField.type = 'hidden';
-    identifierField.name = 'conversion_identifier';
-    identifierField.value = 'inscricao-na-newsletter';
-    form.appendChild(identifierField);
+      // Debug: vamos ver o que tem no container
+      const container = document.querySelector('#shortcode3-e67a38fad5973ddb16a8');
+      console.log('Container do popup encontrado:', container);
+      console.log('HTML do container do popup:', container?.innerHTML);
 
-    // Adicionar campos do formulário
-    const nameField = document.createElement('input');
-    nameField.type = 'hidden';
-    nameField.name = 'name';
-    nameField.value = formData.name;
-    form.appendChild(nameField);
+      // Procura o formulário RDStation de diferentes formas
+      const rdForm = container?.querySelector('form') || 
+                     document.querySelector('#shortcode3-e67a38fad5973ddb16a8 form') ||
+                     document.querySelector('form[data-rd-form]');
+      
+      console.log('Formulário do popup encontrado:', rdForm);
 
-    const emailField = document.createElement('input');
-    emailField.type = 'hidden';
-    emailField.name = 'email';
-    emailField.value = formData.email;
-    form.appendChild(emailField);
+      if (rdForm) {
+        console.log('HTML do formulário do popup:', rdForm.innerHTML);
+        
+        // Procura campos por diferentes atributos
+        const nameField = rdForm.querySelector('input[name*="name"], input[name*="nome"], input[placeholder*="nome"], input[placeholder*="name"]') as HTMLInputElement;
+        const emailField = rdForm.querySelector('input[name*="email"], input[type="email"], input[placeholder*="email"]') as HTMLInputElement;
+        const phoneField = rdForm.querySelector('input[name*="phone"], input[name*="telefone"], input[name*="celular"], input[type="tel"], input[placeholder*="telefone"]') as HTMLInputElement;
 
-    const phoneField = document.createElement('input');
-    phoneField.type = 'hidden';
-    phoneField.name = 'personal_phone';
-    phoneField.value = formData.phone;
-    form.appendChild(phoneField);
+        console.log('Campos do popup encontrados:', { nameField, emailField, phoneField });
 
-    // Adicionar ao DOM e enviar
-    document.body.appendChild(form);
-    form.submit();
-    document.body.removeChild(form);
+        // Preenche os campos se encontrados
+        if (nameField) {
+          nameField.value = formData.name;
+          nameField.dispatchEvent(new Event('input', { bubbles: true }));
+          nameField.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+        if (emailField) {
+          emailField.value = formData.email;
+          emailField.dispatchEvent(new Event('input', { bubbles: true }));
+          emailField.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+        if (phoneField) {
+          phoneField.value = formData.phone;
+          phoneField.dispatchEvent(new Event('input', { bubbles: true }));
+          phoneField.dispatchEvent(new Event('change', { bubbles: true }));
+        }
 
-    // Fechar o popup após o envio
-    onClose();
+        // Procura o botão de submit de diferentes formas
+        const submitButton = rdForm.querySelector('input[type="submit"]') ||
+                            rdForm.querySelector('button[type="submit"]') ||
+                            rdForm.querySelector('button') ||
+                            rdForm.querySelector('.submit-button') ||
+                            rdForm.querySelector('[role="button"]');
+
+        console.log('Botão de submit do popup encontrado:', submitButton);
+
+        if (submitButton) {
+          // Tenta diferentes formas de enviar
+          if (submitButton instanceof HTMLInputElement || submitButton instanceof HTMLButtonElement) {
+            submitButton.click();
+          } else {
+            submitButton.dispatchEvent(new Event('click', { bubbles: true }));
+          }
+          
+          // Reset form após envio
+          setTimeout(() => {
+            setFormData({ name: '', email: '', phone: '' });
+            setIsSubmitting(false);
+            setIsSuccess(true);
+            // Fechar popup após sucesso
+            setTimeout(() => {
+              setIsSuccess(false);
+              onClose();
+            }, 2000);
+          }, 1000);
+        } else {
+          // Se não encontrou botão, tenta enviar o form diretamente
+          console.log('Tentando enviar formulário do popup diretamente');
+          
+          // Dispara evento de submit no formulário
+          rdForm.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+          
+          // Ou usa o método submit se disponível
+          if (rdForm instanceof HTMLFormElement) {
+            rdForm.submit();
+          }
+          
+          setTimeout(() => {
+            setFormData({ name: '', email: '', phone: '' });
+            setIsSubmitting(false);
+            setIsSuccess(true);
+            // Fechar popup após sucesso
+            setTimeout(() => {
+              setIsSuccess(false);
+              onClose();
+            }, 2000);
+          }, 1000);
+        }
+      } else {
+        // Se não encontrou o formulário, apenas remove loading
+        console.log('Formulário do popup não encontrado');
+        setIsSubmitting(false);
+      }
+    } catch (error) {
+      console.error('Erro ao enviar formulário do popup:', error);
+      setIsSubmitting(false);
+    }
   };
 
   if (!isOpen) return null;
@@ -133,6 +263,13 @@ const OpportunityPopup: React.FC<OpportunityPopupProps> = ({ isOpen, onClose }) 
                 </p>
               </div>
 
+              {/* Mensagem de sucesso */}
+              {isSuccess && (
+                <div className="mb-4 p-3 rounded-md text-center text-sm bg-green-100 text-green-800 border border-green-300">
+                  ✅ Obrigado! Sua inscrição foi realizada com sucesso!
+                </div>
+              )}
+
               {/* Formulário */}
               <form onSubmit={handleSubmit} className="space-y-3">
                 <div>
@@ -141,9 +278,10 @@ const OpportunityPopup: React.FC<OpportunityPopupProps> = ({ isOpen, onClose }) 
                     name="name"
                     placeholder="Nome *"
                     value={formData.name}
-                    onChange={handleInputChange}
+                    onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-[#d68e08]"
                     required
+                    disabled={isSubmitting}
                   />
                 </div>
                 <div>
@@ -152,9 +290,10 @@ const OpportunityPopup: React.FC<OpportunityPopupProps> = ({ isOpen, onClose }) 
                     name="email"
                     placeholder="Email *"
                     value={formData.email}
-                    onChange={handleInputChange}
+                    onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-[#d68e08]"
                     required
+                    disabled={isSubmitting}
                   />
                 </div>
                 <div className="flex">
@@ -170,18 +309,26 @@ const OpportunityPopup: React.FC<OpportunityPopupProps> = ({ isOpen, onClose }) 
                     name="phone"
                     placeholder="Telefone *"
                     value={formData.phone}
-                    onChange={handleInputChange}
+                    onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
                     className="flex-1 px-3 py-2 border border-gray-300 rounded-r-md bg-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-[#d68e08]"
                     required
+                    disabled={isSubmitting}
                   />
                 </div>
                 <button
                   type="submit"
-                  className="w-full bg-[#d68e08] text-white font-bold py-3 px-4 rounded-md hover:bg-[#b8790a] transition-colors"
+                  disabled={isSubmitting}
+                  className="w-full bg-[#d68e08] text-white font-bold py-3 px-4 rounded-md hover:bg-[#b8790a] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Receber Novidades
+                  {isSubmitting ? "Enviando..." : "Receber Novidades"}
                 </button>
               </form>
+
+              {/* Container oculto para o formulário RDStation */}
+              <div 
+                ref={containerRef}
+                style={{ display: 'none' }}
+              ></div>
             </div>
           </div>
         </div>

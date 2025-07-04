@@ -273,7 +273,7 @@ export const NewsletterBottomSection: React.FC = () => {
             </div>
             <div className="flex justify-center order-first lg:order-last">
               <img 
-                src="/foto-recortada-cataldo.png.webp" 
+                src="/foto-recortada-cataldo.png" 
                 alt="Advogado Cataldo" 
                 className="max-w-full h-auto rounded-lg w-full max-w-sm sm:max-w-md lg:max-w-full" 
               />

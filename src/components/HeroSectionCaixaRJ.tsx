@@ -1,19 +1,22 @@
 import React from 'react';
-import { ChevronRight, Play } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 
-export const HeroSection = () => {
+export const HeroSectionCaixaRJ = () => {
   return (
     <>
       {/* Primeira seção - Hero tradicional */}
       <section className="relative">
-        <div 
-          className="bg-cover bg-center bg-no-repeat h-[400px] sm:h-[450px] md:h-[500px] lg:h-[550px] relative"
-          style={{
-            backgroundImage: "url('/visao-panoramica-rio-janeiro.jpg')"
-          }}
-        >
+        <div className="h-[400px] sm:h-[450px] md:h-[500px] lg:h-[550px] relative">
+          {/* Imagem de fundo com filtro grayscale */}
+          <div 
+            className="absolute inset-0 bg-cover bg-center bg-no-repeat grayscale"
+            style={{
+              backgroundImage: "url('/edificio-caixa-economica-federal-800x479.webp')"
+            }}
+          ></div>
+          
           {/* Overlay escuro */}
-          <div className="absolute inset-0 bg-black/15"></div>
+          <div className="absolute inset-0 bg-black/50"></div>
           
           {/* Conteúdo */}
           <div className="relative z-10 container mx-auto h-full flex items-center justify-center px-4">
@@ -24,8 +27,8 @@ export const HeroSection = () => {
                     className="text-white font-medium text-2xl sm:text-3xl md:text-4xl lg:text-[44px] leading-tight lg:leading-[52.8px] mb-4" 
                     style={{ fontFamily: "Playfair Display, serif" }}
                   >
-                    Imóveis em Leilão<br className="hidden sm:block" />
-                    no Rio de Janeiro
+                    Leilões Caixa RJ<br className="hidden sm:block" />
+                    Imóveis da Caixa Econômica
                   </h1>
                 </div>
                 
@@ -34,8 +37,8 @@ export const HeroSection = () => {
                     className="text-white font-bold text-base sm:text-lg md:text-xl leading-relaxed" 
                     style={{ fontFamily: "Quicksand, sans-serif" }}
                   >
-                    Receba oportunidades de leilões personalizadas,<br className="hidden sm:block" />
-                    de acordo com o seu perfil.
+                    Oportunidades exclusivas de imóveis da Caixa<br className="hidden sm:block" />
+                    Econômica Federal no Rio de Janeiro.
                   </p>
                 </div>
                 
@@ -110,7 +113,7 @@ export const HeroSection = () => {
                         className="text-[#191919] font-medium text-lg sm:text-xl md:text-2xl text-center px-4"
                         style={{ fontFamily: "Playfair Display, serif" }}
                       >
-                        OPORTUNIDADES DE IMÓVEIS EM LEILÃO
+                        LEILÕES CAIXA ECONÔMICA FEDERAL RJ
                       </h2>
                       
                       {/* Ícones decorativos à direita */}
@@ -127,7 +130,7 @@ export const HeroSection = () => {
                     className="text-[#191919] font-medium text-xl sm:text-2xl md:text-3xl lg:text-[40px] text-center mb-8 sm:mb-10 md:mb-12 px-4"
                     style={{ fontFamily: "Playfair Display, serif" }}
                   >
-                    Imóveis até 50% abaixo da sua avaliação
+                    Imóveis da Caixa até 50% abaixo da avaliação
                   </h3>
                   
                   {/* Texto explicativo */}
@@ -136,7 +139,7 @@ export const HeroSection = () => {
                       className="text-[#191919] font-normal text-sm sm:text-base md:text-[17.6px] leading-relaxed text-center max-w-4xl mx-auto"
                       style={{ fontFamily: "Quicksand, sans-serif" }}
                     >
-                      Os imóveis em leilão abaixo não foram objeto de análise jurídica prévia. 
+                      Os imóveis da Caixa Econômica Federal em leilão abaixo não foram objeto de análise jurídica prévia. 
                       Entenda como funciona o nosso{" "}
                       <span className="font-bold">estudo de viabilidade jurídica</span>{" "}
                       clicando{" "}
@@ -154,4 +157,4 @@ export const HeroSection = () => {
       </section>
     </>
   );
-};
+}; 

@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import AdminRoute from "@/components/AdminRoute";
 import Index from "./pages/Index";
+import LeilaoCaixaRJ from "./pages/LeilaoCaixaRJ";
 import NotFound from "./pages/NotFound";
 import PropertyDetail from "./pages/PropertyDetail";
 import AdminLogin from "./pages/AdminLogin";
@@ -22,6 +23,7 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/leilao-caixa-rj" element={<LeilaoCaixaRJ />} />
             <Route path="/imovel/:id" element={<PropertyDetail />} />
             <Route path="/imovel/:id/:slug" element={<PropertyDetail />} />
             <Route path="/admin/login" element={<AdminLogin />} />

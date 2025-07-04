@@ -12,6 +12,7 @@ import { NewsletterSignup } from "@/components/newsletter2";
 import { TestimonialsSection } from "@/components/testimonials";
 import { NewsletterBottomSection } from "@/components/NewsletterBottomSection";
 import { Footer } from "@/components/Footer";
+import OpportunityPopup from "@/components/OpportunityPopup";
 import { Search, MessageCircle, Filter, X, MapPin, ChevronDown, Home, Building, Tractor, Trees, FileText, Globe, DollarSign, CalendarIcon, Car, SquareStack, Warehouse, Gavel } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -202,11 +203,23 @@ const Index = () => {
   const [citySearchTerm, setCitySearchTerm] = useState("");
   const [neighborhoodSearchTerm, setNeighborhoodSearchTerm] = useState("");
 
+  // Estado para controlar o popup de oportunidades
+  const [showOpportunityPopup, setShowOpportunityPopup] = useState(false);
+
   // Adicionar estados e função para o modal de interesse
   const [showInterestModal, setShowInterestModal] = useState(false);
   const [interestName, setInterestName] = useState("");
   const [interestPhone, setInterestPhone] = useState("");
   const [interestEmail, setInterestEmail] = useState("");
+
+  // Mostrar popup de oportunidades quando a página carregar
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowOpportunityPopup(true);
+    }, 2000); // Mostrar após 2 segundos
+
+    return () => clearTimeout(timer);
+  }, []);
 
   // Carregar as cidades do estado RJ
   useEffect(() => {
@@ -1408,6 +1421,12 @@ const Index = () => {
           <MessageCircle className="w-5 h-5 sm:w-6 sm:h-6" />
         </Button>
       </div>
+
+      {/* Popup de Oportunidades */}
+      <OpportunityPopup 
+        isOpen={showOpportunityPopup} 
+        onClose={() => setShowOpportunityPopup(false)} 
+      />
     </div>
   );
 };

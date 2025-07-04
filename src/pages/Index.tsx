@@ -13,7 +13,8 @@ import { TestimonialsSection } from "@/components/testimonials";
 import { NewsletterBottomSection } from "@/components/NewsletterBottomSection";
 import { Footer } from "@/components/Footer";
 import OpportunityPopup from "@/components/OpportunityPopup";
-import { Search, MessageCircle, Filter, X, MapPin, ChevronDown, Home, Building, Tractor, Trees, FileText, Globe, DollarSign, CalendarIcon, Car, SquareStack, Warehouse, Gavel } from "lucide-react";
+import { Search, MessageCircle, Filter, X, MapPin, ChevronDown, Home, Building, Tractor, Trees, FileText, Globe, DollarSign, CalendarIcon, Car, SquareStack, Warehouse, Gavel, Mail } from "lucide-react";
+import { WhatsAppIcon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState, useEffect } from "react";
@@ -217,6 +218,12 @@ const Index = () => {
   const [interestName, setInterestName] = useState("");
   const [interestPhone, setInterestPhone] = useState("");
   const [interestEmail, setInterestEmail] = useState("");
+
+  // Estados para o modal do WhatsApp
+  const [showWhatsAppModal, setShowWhatsAppModal] = useState(false);
+  const [whatsAppName, setWhatsAppName] = useState("");
+  const [whatsAppEmail, setWhatsAppEmail] = useState("");
+  const [whatsAppPhone, setWhatsAppPhone] = useState("");
 
   // Mostrar popup de oportunidades quando a página carregar
   useEffect(() => {
@@ -881,6 +888,35 @@ const Index = () => {
     toast.success('Seus dados foram registrados! Entraremos em contato caso apareça um imóvel com esse perfil.');
   };
 
+  // Função para o modal do WhatsApp
+  const handleWhatsAppSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Construir a mensagem para o WhatsApp
+    const message = `Olá! Preenchi os campos abaixo para iniciar a conversa no WhatsApp:
+
+*Nome:* ${whatsAppName}
+*E-mail:* ${whatsAppEmail}
+*Telefone:* ${whatsAppPhone}
+
+Gostaria de saber mais sobre os leilões de imóveis.`;
+
+    // Número do WhatsApp (substitua pelo seu número)
+    const phoneNumber = "5521977294848";
+    
+    // Criar o link do WhatsApp
+    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+    
+    // Abrir o WhatsApp
+    window.open(whatsappUrl, '_blank');
+    
+    // Fechar o modal e limpar os campos
+    setShowWhatsAppModal(false);
+    setWhatsAppName("");
+    setWhatsAppEmail("");
+    setWhatsAppPhone("");
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <CookieBar />
@@ -1423,15 +1459,19 @@ const Index = () => {
       {/* Floating Buttons */}
       <div className="fixed bottom-2 sm:bottom-4 right-2 sm:right-4 z-40 flex flex-col sm:flex-row gap-2 sm:gap-3 items-end">
         <Button 
-          className="bg-primary hover:bg-primary/90 font-bold text-xs sm:text-sm px-3 sm:px-4 py-2 sm:py-3"
+          className="bg-primary hover:bg-primary/90 font-bold text-xs sm:text-sm px-3 sm:px-4 py-2 sm:py-3 flex items-center gap-2"
           onClick={() => setShowOpportunityPopup(true)}
         >
+          <Mail className="w-4 h-4" />
           <span className="hidden sm:inline">Inscreva-se para oportunidades</span>
           <span className="sm:hidden">Oportunidades</span>
         </Button>
         
-        <Button className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-[#25d366] hover:bg-[#25d366]/90">
-          <MessageCircle className="w-5 h-5 sm:w-6 sm:h-6" />
+        <Button 
+          className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-white hover:bg-gray-100 border border-gray-200"
+          onClick={() => setShowWhatsAppModal(true)}
+        >
+          <WhatsAppIcon />
         </Button>
       </div>
 
@@ -1440,6 +1480,81 @@ const Index = () => {
         isOpen={showOpportunityPopup} 
         onClose={closeOpportunityPopup} 
       />
+
+      {/* Modal do WhatsApp */}
+      {showWhatsAppModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto">
+            {/* Cabeçalho */}
+            <div className="bg-[#25d366] text-white p-4 rounded-t-lg relative">
+              <button 
+                onClick={() => setShowWhatsAppModal(false)}
+                className="absolute top-2 right-2 text-white hover:text-gray-200"
+              >
+                <X className="w-6 h-6" />
+              </button>
+              <h2 className="text-lg font-bold">Olá! Preencha os campos abaixo para iniciar a conversa no WhatsApp</h2>
+            </div>
+            
+            {/* Corpo do modal */}
+            <div className="p-6">
+              <form onSubmit={handleWhatsAppSubmit} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Nome *
+                  </label>
+                  <input
+                    type="text"
+                    value={whatsAppName}
+                    onChange={(e) => setWhatsAppName(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#25d366] focus:border-transparent"
+                    required
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    E-mail *
+                  </label>
+                  <input
+                    type="email"
+                    value={whatsAppEmail}
+                    onChange={(e) => setWhatsAppEmail(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#25d366] focus:border-transparent"
+                    required
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Telefone
+                  </label>
+                  <div className="flex">
+                    <select className="px-3 py-2 border border-gray-300 rounded-l-md bg-gray-50 text-gray-600 focus:outline-none focus:ring-2 focus:ring-[#25d366] focus:border-transparent">
+                      <option value="+55">🇧🇷 +55</option>
+                    </select>
+                    <input
+                      type="tel"
+                      value={whatsAppPhone}
+                      onChange={(e) => setWhatsAppPhone(e.target.value)}
+                      className="flex-1 px-3 py-2 border border-l-0 border-gray-300 rounded-r-md focus:outline-none focus:ring-2 focus:ring-[#25d366] focus:border-transparent"
+                      placeholder="21 99999-9999"
+                    />
+                  </div>
+                </div>
+                
+                <button
+                  type="submit"
+                  className="w-full bg-[#25d366] hover:bg-[#128c7e] text-white font-bold py-3 px-4 rounded-md transition-colors duration-200 flex items-center justify-center gap-2"
+                >
+                  <MessageCircle className="w-5 h-5" />
+                  Iniciar a conversa
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

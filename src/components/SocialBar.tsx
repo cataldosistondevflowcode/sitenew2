@@ -39,13 +39,22 @@ export const ContactInfo: React.FC = () => {
   );
 };
 
-export const ContactButton: React.FC = () => {
+interface ContactButtonProps {
+  onWhatsAppClick?: () => void;
+}
+
+export const ContactButton: React.FC<ContactButtonProps> = ({ onWhatsAppClick }) => {
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (onWhatsAppClick) {
+      onWhatsAppClick();
+    }
+  };
+
   return (
-    <a
-      href="https://wa.me/552131733795"
-      target="_blank"
-      rel="noopener noreferrer"
-      className="flex items-center gap-2 justify-center px-3 py-2 rounded-md bg-transparent hover:bg-neutral-600 transition-colors min-h-[44px] w-full sm:w-auto"
+    <button
+      onClick={handleClick}
+      className="flex items-center gap-2 justify-center px-3 py-2 rounded-md bg-transparent hover:bg-neutral-600 transition-colors min-h-[44px] w-full sm:w-auto cursor-pointer"
     >
       <div className="flex-shrink-0 w-5 h-5">
         <WhatsAppIcon />
@@ -53,7 +62,7 @@ export const ContactButton: React.FC = () => {
       <span className="text-sm sm:text-base font-bold text-white">
         Fale Conosco
       </span>
-    </a>
+    </button>
   );
 };
 
@@ -98,14 +107,18 @@ export const SocialMediaLinks: React.FC = () => {
   );
 };
 
-export const SocialBar: React.FC = () => {
+interface SocialBarProps {
+  onWhatsAppClick?: () => void;
+}
+
+export const SocialBar: React.FC<SocialBarProps> = ({ onWhatsAppClick }) => {
   return (
     <header className="w-full bg-neutral-700 py-2 sm:py-3">
       <div className="container mx-auto px-4">
         <div className="flex flex-col lg:flex-row items-center justify-between gap-3 lg:gap-6">
           <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 lg:gap-6 w-full lg:w-auto">
             <ContactInfo />
-            <ContactButton />
+            <ContactButton onWhatsAppClick={onWhatsAppClick} />
           </div>
           <SocialMediaLinks />
         </div>

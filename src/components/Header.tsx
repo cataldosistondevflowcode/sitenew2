@@ -2,7 +2,11 @@ import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Menu, X, ChevronDown } from "lucide-react";
 
-export const Header = () => {
+interface HeaderProps {
+  onContactClick?: () => void;
+}
+
+export const Header = ({ onContactClick }: HeaderProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
@@ -13,7 +17,7 @@ export const Header = () => {
     { label: "Direito Imobiliário", href: "#" },
     { label: "Casos Reais", href: "#" },
     { label: "Blog", href: "#" },
-    { label: "Contato", href: "#" },
+    { label: "Contato", href: "#", isContact: true },
   ];
 
   const dropdownItems = [
@@ -86,6 +90,18 @@ export const Header = () => {
                         </div>
                       )}
                     </div>
+                  ) : item.isContact ? (
+                    <button
+                      onClick={() => {
+                        setIsMenuOpen(false);
+                        onContactClick?.();
+                      }}
+                      className={`block py-3 lg:py-2 px-2 text-sm lg:text-base text-secondary hover:text-primary transition-colors rounded lg:rounded-none hover:bg-gray-50 lg:hover:bg-transparent cursor-pointer ${
+                        item.active ? 'text-primary font-medium relative lg:after:content-[""] lg:after:absolute lg:after:bottom-0 lg:after:left-0 lg:after:w-full lg:after:h-0.5 lg:after:bg-primary' : ''
+                      }`}
+                    >
+                      {item.label}
+                    </button>
                   ) : (
                     <a
                       href={item.href}

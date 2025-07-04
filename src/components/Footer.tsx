@@ -90,7 +90,7 @@ export const Footer: React.FC = () => {
         {/* Copyright */}
         <div className="border-t border-gray-300 mt-8 pt-6 text-center">
           <p className="text-sm text-gray-600">
-            © 2024 Cataldo Siston Advogados. Todos os direitos reservados.
+            © 2025 Cataldo Siston Advogados. Todos os direitos reservados.
           </p>
         </div>
       </div>

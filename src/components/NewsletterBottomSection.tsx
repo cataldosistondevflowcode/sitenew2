@@ -196,7 +196,7 @@ export const NewsletterBottomSection: React.FC = () => {
   };
 
   return (
-    <section className="py-12 sm:py-16 bg-cover bg-center relative" style={{backgroundImage: 'url(/bg-newsletter.jpg.webp)'}}>
+    <section className="pt-8 sm:pt-12 pb-0 sm:pb-0 bg-cover bg-center relative" style={{backgroundImage: 'url(/bg-newsletter.jpg.webp)'}}>
       <div className="absolute inset-0 bg-black/70"></div>
       <div className="container mx-auto relative z-10 px-4">
         <div className="max-w-6xl mx-auto">

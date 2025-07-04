@@ -197,7 +197,7 @@ export const NewsletterSignup: React.FC = () => {
 
   return (
     <section 
-      className="flex flex-col justify-center items-center px-4 sm:px-8 md:px-12 lg:px-20 py-8 sm:py-12 md:py-14 max-w-full text-white bg-cover bg-center relative w-full"
+      className="flex flex-col justify-center items-center px-4 sm:px-8 md:px-12 lg:px-20 pt-8 sm:pt-12 md:pt-12 pb-0 sm:pb-0 md:pb-0 max-w-full text-white bg-cover bg-center relative w-full"
       style={{backgroundImage: 'url(/assets/bg/mesa-cataldo.png)'}}
     >
       <div className="absolute inset-0 bg-black/70"></div>

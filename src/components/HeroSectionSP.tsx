@@ -9,18 +9,21 @@ export const HeroSectionSP = ({ onOpportunityClick }: HeroSectionSPProps) => {
   return (
     <>
       {/* Primeira seção - Hero tradicional */}
-      <section className="relative">
+      <section className="relative h-[400px] sm:h-[450px] md:h-[500px] lg:h-[550px]">
+        {/* Imagem de fundo com filtro */}
         <div 
-          className="bg-cover bg-center bg-no-repeat h-[400px] sm:h-[450px] md:h-[500px] lg:h-[550px] relative"
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{
-            backgroundImage: "url('/assets/ponte-estaiada-octavio-frias-sao-paulo.jpg')"
+            backgroundImage: "url('/assets/ponte-estaiada-octavio-frias-sao-paulo.jpg')",
+            filter: "grayscale(100%)"
           }}
-        >
-          {/* Overlay escuro */}
-          <div className="absolute inset-0 bg-black/15"></div>
-          
-          {/* Conteúdo */}
-          <div className="relative z-10 container mx-auto h-full flex items-center justify-center px-4">
+        ></div>
+        
+        {/* Overlay escuro */}
+        <div className="absolute inset-0 bg-black/50"></div>
+        
+        {/* Conteúdo */}
+        <div className="relative z-10 container mx-auto h-full flex items-center justify-center px-4">
             <div className="max-w-[960px] w-full flex flex-col lg:flex-row items-center lg:items-start gap-6 lg:gap-8">
               <div className="flex-1 max-w-[512px] text-center lg:text-left lg:ml-[100px]">
                 <div className="mb-4 sm:mb-6">
@@ -59,7 +62,6 @@ export const HeroSectionSP = ({ onOpportunityClick }: HeroSectionSPProps) => {
               <div className="w-[383px] hidden xl:block"></div>
             </div>
           </div>
-        </div>
       </section>
 
       {/* Segunda seção - Vídeo e títulos das oportunidades */}

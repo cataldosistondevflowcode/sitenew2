@@ -78,41 +78,22 @@ interface SelectedType {
 
 const ITEMS_PER_PAGE = 40;
 
-// Definição dos bairros por zona do Rio de Janeiro
-const bairrosPorZonaRJ: Record<string, string[]> = {
+// Definição dos bairros por zona de São Paulo
+const bairrosPorZonaSP: Record<string, string[]> = {
   'Zona Central': [
-    'Benfica', 'Caju', 'Catumbi', 'Centro', 'Cidade Nova', 'Estácio', 'Gamboa', 'Glória', 'Lapa', 'Paquetá', 'Rio Comprido', 'Santa Teresa', 'Santo Cristo', 'São Cristóvão', 'Saúde'
+    'Bela Vista', 'Bom Retiro', 'Cambuci', 'Consolação', 'Higienópolis', 'Liberdade', 'República', 'Santa Cecília', 'Sé'
+  ],
+  'Zona Leste': [
+    'Água Rasa', 'Aricanduva', 'Artur Alvim', 'Belém', 'Brás', 'Cangaíba', 'Carrão', 'Cidade Líder', 'Cidade Tiradentes', 'Ermelino Matarazzo', 'Guaianases', 'Itaim Paulista', 'Itaquera', 'Jardim Helena', 'José Bonifácio', 'Lajeado', 'Mooca', 'Pari', 'Parque do Carmo', 'Penha', 'Ponte Rasa', 'São Lucas', 'São Mateus', 'São Miguel', 'São Rafael', 'Sapopemba', 'Tatuapé', 'Vila Curuçá', 'Vila Formosa', 'Vila Jacuí', 'Vila Matilde', 'Vila Prudente'
   ],
   'Zona Norte': [
-    'Abolição', 'Acari', 'Água Santa', 'Alto da Boa Vista', 'Anchieta', 'Andaraí', 'Barros Filho', 'Bento Ribeiro', 'Bonsucesso', 'Brás de Pina', 'Cachambi', 'Campinho', 'Cascadura', 'Cavalcanti', 'Cidade Universitária', 'Coelho Neto', 'Colégio', 'Cordovil', 'Costa Barros', 'Del Castilho', 'Encantado', 'Engenheiro Leal', 'Engenho da Rainha', 'Engenho de Dentro', 'Engenho Novo', 'Grajaú', 'Guadalupe', 'Higienópolis', 'Honório Gurgel', 
-    // Ilha do Governador (mantida na busca principal com sub-bairros)
-    'Ilha do Governador', 'Bancários', 'Cacuia', 'Cocotá', 'Freguesia', 'Galeão', 'Jardim Carioca', 'Jardim Guanabara', 'Moneró', 'Pitangueiras', 'Portuguesa', 'Praia da Bandeira', 'Ribeira', 'Tauá', 'Zumbi',
-    'Inhaúma', 'Irajá', 'Jacaré', 'Jardim América', 'Lins de Vasconcelos', 'Madureira', 'Mangueira', 'Manguinhos', 'Maracanã', 'Marechal Hermes', 'Maria da Graça', 'Méier', 'Olaria', 'Oswaldo Cruz', 'Parada de Lucas', 'Pavuna', 'Penha', 'Penha Circular', 'Piedade', 'Pilares', 'Praça da Bandeira', 'Quintino Bocaiuva', 'Ramos', 'Riachuelo', 'Ricardo de Albuquerque', 'Rocha', 'Rocha Miranda', 'Sampaio', 'São Francisco Xavier', 'Tijuca', 'Todos os Santos', 'Tomás Coelho', 'Turiaçu', 'Vaz Lobo', 'Vicente de Carvalho', 'Vila da Penha', 'Vila Isabel', 'Vista Alegre'
+    'Anhanguera', 'Brasilândia', 'Cachoeirinha', 'Casa Verde', 'Freguesia do Ó', 'Jaçanã', 'Jaraguá', 'Limão', 'Mandaqui', 'Perus', 'Pirituba', 'Santana', 'São Domingos', 'Tremembé', 'Tucuruvi', 'Vila Guilherme', 'Vila Maria', 'Vila Medeiros'
   ],
   'Zona Oeste': [
-    'Bangu', 'Barra da Tijuca', 'Barra de Guaratiba',
-    // Barra Olímpica (mantida na busca principal com sub-bairros)
-    'Barra Olímpica', 'Camorim',
-    'Campo dos Afonsos', 'Campo Grande', 'Cosmos', 'Deodoro', 'Grumari', 'Guaratiba', 'Inhoaíba', 'Itanhangá',
-    // Jacarepaguá (mantida na busca principal com sub-bairros)
-    'Jacarepaguá', 'Anil', 'Curicica', 'Freguesia', 'Pechincha', 'Praça Seca', 'Tanque', 'Taquara', 'Vila Valqueire',
-    'Jardim Sulacap', 'Joá', 'Magalhães Bastos', 'Paciência', 'Padre Miguel', 'Pedra de Guaratiba', 'Realengo', 'Recreio dos Bandeirantes', 'Santa Cruz', 'Santíssimo', 'Senador Camará', 'Senador Vasconcelos', 'Sepetiba', 'Vargem Grande', 'Vargem Pequena', 'Vila Militar'
+    'Alto de Pinheiros', 'Barra Funda', 'Butantã', 'Jaguará', 'Itaim Bibi', 'Jardim América', 'Jardim Europa', 'Jardim Paulista', 'Jardim Paulistano', 'Lapa', 'Morumbi', 'Perdizes', 'Pinheiros', 'Raposo Tavares', 'Rio Pequeno', 'Vila Leopoldina', 'Vila Madalena', 'Vila Sônia'
   ],
   'Zona Sul': [
-    'Botafogo', 'Catete', 'Copacabana', 'Cosme Velho', 'Flamengo', 'Gávea', 'Humaitá', 'Ipanema', 'Jardim Botânico', 'Lagoa', 'Laranjeiras', 'Leblon', 'Leme', 'São Conrado', 'Urca'
-  ]
-};
-
-// Definição das áreas especiais e seus sub-bairros
-const areasEspeciaisRJ: Record<string, string[]> = {
-  'Ilha do Governador': [
-    'Ilha do Governador', 'Bancários', 'Cacuia', 'Cocotá', 'Freguesia', 'Galeão', 'Jardim Carioca', 'Jardim Guanabara', 'Moneró', 'Pitangueiras', 'Portuguesa', 'Praia da Bandeira', 'Ribeira', 'Tauá', 'Zumbi'
-  ],
-  'Barra Olímpica': [
-    'Barra Olímpica', 'Barra da Tijuca', 'Camorim', 'Jacarepaguá'
-  ],
-  'Jacarepaguá': [
-    'Jacarepaguá', 'Anil', 'Curicica', 'Freguesia', 'Pechincha', 'Praça Seca', 'Tanque', 'Taquara', 'Vila Valqueire'
+    'Campo Belo', 'Campo Limpo', 'Capão Redondo', 'Cidade Ademar', 'Cidade Dutra', 'Cursino', 'Grajaú', 'Ipiranga', 'Jabaquara', 'Jardim Ângela', 'Jardim São Luís', 'Marsilac', 'Moema', 'Parelheiros', 'Pedreira', 'Sacomã', 'Socorro', 'Santo Amaro', 'Saúde', 'Vila Andrade', 'Vila Mariana', 'Vila Olímpia'
   ]
 };
 
@@ -120,17 +101,7 @@ const AUCTION_TYPE_JUDICIAL = "JUDICIAL";
 const AUCTION_TYPE_EXTRAJUDICIAL = "EXTRAJUDICIAL";
 const AUCTION_TYPE_EXTRAJUDICIAL_FINANCIAMENTO = "EXTRAJUDICIAL FINANCIÁVEL";
 
-// Definição das cidades por região do RJ
-const cidadesPorRegiaoRJ: Record<string, string[]> = {
-  "Região Capital": ["Rio de Janeiro"],
-  "Região Serrana": ["Petrópolis", "Três Rios", "Nova Friburgo", "Teresópolis", "Magé"],
-  "Região Norte Fluminense": ["Campos dos Goytacazes", "Itaperuna", "Macaé"],
-  "Região Sul Fluminense": ["Volta Redonda", "Resende", "Angra dos Reis", "Barra do Piraí"],
-  "Região Baixada Fluminense": ["São João de Meriti", "Duque de Caxias", "Nova Iguaçu"],
-  "Região Niterói e Baixada Litorânea": ["Niterói", "Itaboraí", "São Pedro da Aldeia", "São Gonçalo"]
-};
-
-const Index = () => {
+const LeilaoSP = () => {
   // Estados para os imóveis e paginação
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
@@ -238,76 +209,20 @@ const Index = () => {
     }
   }, []);
 
-  // Carregar as cidades do estado RJ
+  // Inicializar São Paulo e carregar dados
   useEffect(() => {
-    const fetchRjCities = async () => {
-      try {
-        // Iniciar um objeto para contagem de cidades
-        const cityCount: Record<string, number> = {};
-        
-        // Buscar todos os registros com paginação
-        let page = 0;
-        const pageSize = 1000;
-        let hasMore = true;
-        
-        while (hasMore) {
-          const from = page * pageSize;
-          const to = from + pageSize - 1;
-          
-          const { data, error, count } = await supabase
-            .from('leiloes_imoveis')
-            .select('cidade', { count: 'exact' })
-            .eq('estado', 'RJ')
-            .order('cidade')
-            .not('cidade', 'is', null)
-            .range(from, to);
-          
-          if (error) throw error;
-          
-          // Processar os dados desta página
-          data.forEach(item => {
-            if (item.cidade && item.cidade.trim() !== '') {
-              cityCount[item.cidade] = (cityCount[item.cidade] || 0) + 1;
-            }
-          });
-          
-          // Verificar se há mais páginas
-          hasMore = data.length === pageSize;
-          page++;
-          
-          // Segurança para evitar loops infinitos
-          if (page > 50) break;
-        }
-        
-        // Converter para array para usar no dropdown
-        const citiesArray = Object.keys(cityCount)
-          .map(city => ({
-            city,
-            count: cityCount[city]
-          }))
-          .sort((a, b) => {
-            // Primeiro ordenar por contagem decrescente
-            if (b.count !== a.count) {
-              return b.count - a.count;
-            }
-            // Se a contagem for igual, ordenar alfabeticamente
-            return a.city.localeCompare(b.city, 'pt-BR');
-          });
-        
-        console.log(`Total de cidades encontradas: ${citiesArray.length}`);
-        setRjCities(citiesArray);
-      } catch (err) {
-        console.error('Erro ao buscar cidades do RJ:', err);
-      }
-    };
-
+    // Definir São Paulo como cidade selecionada automaticamente
+    setSelectedCity("São Paulo");
+    setSelectedCityName("São Paulo");
+    setSelectedCities(["São Paulo"]);
+    
     // Buscar tipos de propriedade
     const fetchPropertyTypes = async () => {
       try {
         const { data, error } = await supabase
           .from('leiloes_imoveis')
           .select('tipo_propriedade')
-          .eq('estado', 'RJ')
+          .eq('estado', 'SP')
           .not('tipo_propriedade', 'is', null);
           
         if (error) throw error;
@@ -337,7 +252,8 @@ const Index = () => {
 
 
 
-    fetchRjCities();
+    // Carregar os bairros de São Paulo automaticamente
+    fetchNeighborhoodsByCity();
     fetchPropertyTypes();
   }, []);
 
@@ -351,7 +267,7 @@ const Index = () => {
         let query = supabase
           .from('leiloes_imoveis')
           .select('*', { count: 'exact' })
-          .eq('estado', 'RJ');
+          .eq('estado', 'SP');
           
         // Adicionar filtros se existirem
         if (filters.city) {
@@ -743,38 +659,30 @@ const Index = () => {
     setSelectedRegion(null);
     setSelectedNeighborhood("Selecione o bairro");
     setSelectedNeighborhoods([]);
-    fetchNeighborhoodsByCity(city);
+    fetchNeighborhoodsByCity();
   };
   
   const selectRegion = (region: string) => {
-    const cidades = cidadesPorRegiaoRJ[region] || [];
-    setSelectedCity(`${region} (todos)`);
-    setSelectedCityName(region);
-    setSelectedCities(cidades);
+    // Para SP, não temos regiões múltiplas - sempre será São Paulo
+    setSelectedCity("São Paulo");
+    setSelectedCityName("São Paulo");
+    setSelectedCities(["São Paulo"]);
     setShowRegionMenu(false);
     setSelectedRegion(null);
     setSelectedNeighborhood("Selecione o bairro");
     setSelectedNeighborhoods([]);
-    // Não buscar bairros, pois não é uma cidade única
   };
   
   const selectNeighborhood = (neighborhood: string) => {
-    // Verificar se é uma área especial
-    if (areasEspeciaisRJ[neighborhood]) {
-      // Se for área especial, incluir todos os sub-bairros
-      setSelectedNeighborhood(neighborhood);
-      setSelectedNeighborhoods(areasEspeciaisRJ[neighborhood]);
-    } else {
-      // Comportamento normal para bairros individuais
-      setSelectedNeighborhood(neighborhood);
-      setSelectedNeighborhoods([neighborhood]);
-    }
+    // Para SP, comportamento normal para bairros individuais
+    setSelectedNeighborhood(neighborhood);
+    setSelectedNeighborhoods([neighborhood]);
     setShowNeighborhoodMenu(false);
   };
   
   const selectZone = (zone: string) => {
     // Seleciona todos os bairros da zona
-    const bairros = bairrosPorZonaRJ[zone] || [];
+    const bairros = bairrosPorZonaSP[zone] || [];
     setSelectedNeighborhood(`${zone} (todos)`);
     setSelectedNeighborhoods(bairros);
     setShowNeighborhoodMenu(false);
@@ -790,15 +698,14 @@ const Index = () => {
     setShowAuctionTypeMenu(false);
   };
 
-  // Função para buscar bairros por cidade
-  const fetchNeighborhoodsByCity = async (cityName: string) => {
-    if (!cityName) return;
+  // Função para buscar bairros de São Paulo
+  const fetchNeighborhoodsByCity = async () => {
     try {
       const { data, error } = await supabase
         .from('leiloes_imoveis')
         .select('bairro')
-        .eq('estado', 'RJ')
-        .eq('cidade', cityName)
+        .eq('estado', 'SP')
+        .eq('cidade', 'São Paulo')
         .order('bairro')
         .not('bairro', 'is', null);
       if (error) throw error;
@@ -808,48 +715,34 @@ const Index = () => {
           neighborhoodCount[item.bairro] = (neighborhoodCount[item.bairro] || 0) + 1;
         }
       });
-      // Se for Rio de Janeiro, mostrar todos os bairros da lista fixa
-      if (cityName.toLowerCase() === 'rio de janeiro') {
-        const bairrosAgrupados: Record<string, { neighborhood: string, count: number }[]> = {};
-        Object.keys(bairrosPorZonaRJ).forEach(zona => {
-          bairrosAgrupados[zona] = bairrosPorZonaRJ[zona].map(bairro => ({
-            neighborhood: bairro,
-            count: neighborhoodCount[bairro] || 0
-          }));
-        });
-        // Adicionar bairros "Outros" que estão no banco mas não na lista fixa
-        Object.keys(neighborhoodCount).forEach(bairro => {
-          let found = false;
-          for (const zona in bairrosPorZonaRJ) {
-            if (bairrosPorZonaRJ[zona].map(b => b.toLowerCase()).includes(bairro.toLowerCase())) {
-              found = true;
-              break;
-            }
+      
+      // Mostrar todos os bairros organizados por zona
+      const bairrosAgrupados: Record<string, { neighborhood: string, count: number }[]> = {};
+      Object.keys(bairrosPorZonaSP).forEach(zona => {
+        bairrosAgrupados[zona] = bairrosPorZonaSP[zona].map(bairro => ({
+          neighborhood: bairro,
+          count: neighborhoodCount[bairro] || 0
+        }));
+      });
+      
+      // Adicionar bairros "Outros" que estão no banco mas não na lista fixa
+      Object.keys(neighborhoodCount).forEach(bairro => {
+        let found = false;
+        for (const zona in bairrosPorZonaSP) {
+          if (bairrosPorZonaSP[zona].map(b => b.toLowerCase()).includes(bairro.toLowerCase())) {
+            found = true;
+            break;
           }
-          if (!found) {
-            if (!bairrosAgrupados['Outros']) bairrosAgrupados['Outros'] = [];
-            bairrosAgrupados['Outros'].push({ neighborhood: bairro, count: neighborhoodCount[bairro] });
-          }
-        });
-        setRjNeighborhoods(bairrosAgrupados as any);
-      } else {
-        // Normal, lista simples
-        const neighborhoodsArray = Object.keys(neighborhoodCount)
-          .filter(neighborhood => neighborhood.trim() !== '')
-          .map(neighborhood => ({
-            neighborhood,
-            count: neighborhoodCount[neighborhood]
-          }))
-          .sort((a, b) => {
-            if (b.count !== a.count) {
-              return b.count - a.count;
-            }
-            return a.neighborhood.localeCompare(b.neighborhood, 'pt-BR');
-          });
-        setRjNeighborhoods(neighborhoodsArray);
-      }
+        }
+        if (!found) {
+          if (!bairrosAgrupados['Outros']) bairrosAgrupados['Outros'] = [];
+          bairrosAgrupados['Outros'].push({ neighborhood: bairro, count: neighborhoodCount[bairro] });
+        }
+      });
+      
+      setRjNeighborhoods(bairrosAgrupados as any);
     } catch (err) {
-      console.error(`Erro ao buscar bairros de ${cityName}:`, err);
+      console.error('Erro ao buscar bairros de São Paulo:', err);
     }
   };
 
@@ -985,64 +878,15 @@ const Index = () => {
                   )}
                 </div>
                 
-                {/* Dropdown de Cidades */}
+                {/* Cidade fixa: São Paulo */}
                 <div className="filter-dropdown relative">
-                  <div 
-                    className="flex items-center justify-between w-full p-3 bg-[#fafafa] border border-gray-200 rounded-md cursor-pointer text-sm"
-                    onClick={() => setShowRegionMenu(!showRegionMenu)}
-                  >
-                    <span>{selectedCity}</span>
-                    <ChevronDown className="h-4 w-4 text-gray-500" />
-                  </div>
-                  {showRegionMenu && (
-                    <div className="absolute z-40 w-full bg-white border border-gray-200 rounded-md shadow-md mt-1 max-h-[400px] overflow-y-auto">
-                      <div className="border-b border-gray-200 py-2 px-4 font-bold bg-gray-50 text-gray-700">CIDADES DO RIO DE JANEIRO</div>
-                      <div className="p-2 border-b border-gray-200">
-                        <input
-                          type="text"
-                          placeholder="Procurar..."
-                          value={citySearchTerm}
-                          onChange={(e) => setCitySearchTerm(e.target.value)}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                          onClick={(e) => e.stopPropagation()}
-                        />
-                      </div>
-                      {Object.keys(cidadesPorRegiaoRJ)
-                        .filter(regiao => 
-                          citySearchTerm === '' || 
-                          regiao.toLowerCase().includes(citySearchTerm.toLowerCase()) ||
-                          cidadesPorRegiaoRJ[regiao].some(cidade => 
-                            cidade.toLowerCase().includes(citySearchTerm.toLowerCase())
-                          )
-                        )
-                        .map((regiao) => (
-                        <div key={regiao}>
-                          {(citySearchTerm === '' || regiao.toLowerCase().includes(citySearchTerm.toLowerCase())) && (
-                            <div
-                              className="py-2 px-4 font-bold text-primary bg-gray-100 border-b border-gray-200 cursor-pointer hover:bg-yellow-100"
-                              onClick={() => selectRegion(regiao)}
-                            >
-                              {regiao} (todos)
-                            </div>
-                          )}
-                          {cidadesPorRegiaoRJ[regiao]
-                            .filter(cidade => 
-                              citySearchTerm === '' || 
-                              cidade.toLowerCase().includes(citySearchTerm.toLowerCase())
-                            )
-                            .map((cidade) => (
-                            <div
-                              key={cidade}
-                              className="py-2 px-4 hover:bg-gray-100 cursor-pointer"
-                              onClick={() => selectCity(cidade)}
-                            >
-                              {cidade}
-                            </div>
-                          ))}
-                        </div>
-                      ))}
+                  <div className="flex items-center justify-between w-full p-3 bg-[#f0f0f0] border border-gray-200 rounded-md text-sm opacity-70">
+                    <div className="flex items-center">
+                      <MapPin className="h-4 w-4 mr-2 text-gray-500" />
+                      <span>São Paulo</span>
                     </div>
-                  )}
+                    <span className="text-xs text-gray-500">(fixo)</span>
+                  </div>
                 </div>
 
                 {/* Dropdown de Bairros */}
@@ -1068,7 +912,7 @@ const Index = () => {
                           onClick={(e) => e.stopPropagation()}
                         />
                       </div>
-                      {selectedCityName.toLowerCase() === 'rio de janeiro' ? (
+                      {selectedCityName.toLowerCase() === 'são paulo' ? (
                         Object.keys(rjNeighborhoods)
                           .filter(zona => {
                             if (neighborhoodSearchTerm === '') return true;
@@ -1301,19 +1145,19 @@ const Index = () => {
                         className="bg-yellow-600 hover:bg-yellow-700 text-white font-bold px-6 py-3"
                         onClick={() => {
                           // Buscar nas proximidades: redefine o filtro de bairro para todos da zona ou cidade
-                          if (selectedCityName && selectedNeighborhood && selectedCityName.toLowerCase() === 'rio de janeiro') {
+                          if (selectedCityName && selectedNeighborhood && selectedCityName.toLowerCase() === 'são paulo') {
                             // Descobrir a zona do bairro selecionado
                             let zonaDoBairro = null;
-                            for (const zona in bairrosPorZonaRJ) {
-                              if (bairrosPorZonaRJ[zona].includes(selectedNeighborhood)) {
+                            for (const zona in bairrosPorZonaSP) {
+                              if (bairrosPorZonaSP[zona].includes(selectedNeighborhood)) {
                                 zonaDoBairro = zona;
                                 break;
                               }
                             }
                             if (zonaDoBairro) {
                               setSelectedNeighborhood(`${zonaDoBairro} (todos)`);
-                              setSelectedNeighborhoods(bairrosPorZonaRJ[zonaDoBairro]);
-                              setFilters((prev) => ({ ...prev, neighborhood: bairrosPorZonaRJ[zonaDoBairro].join(',') }));
+                              setSelectedNeighborhoods(bairrosPorZonaSP[zonaDoBairro]);
+                              setFilters((prev) => ({ ...prev, neighborhood: bairrosPorZonaSP[zonaDoBairro].join(',') }));
                               setCurrentPage(1);
                               toast.success('Buscando imóveis em todos os bairros da zona selecionada!');
                             }
@@ -1463,4 +1307,4 @@ const Index = () => {
   );
 };
 
-export default Index;
+export default LeilaoSP;

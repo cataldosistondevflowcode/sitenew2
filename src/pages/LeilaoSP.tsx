@@ -814,7 +814,7 @@ const LeilaoSP = () => {
             {/* Filtros */}
             <div className={`${!isFilterOpen ? 'hidden md:block' : 'block'} bg-white p-4 sm:p-5 md:p-6 rounded-lg shadow-md`}>
               {/* Primeira linha de selects */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-4">
                 {/* Dropdown de Tipo de Imóvel */}
                 <div className="filter-dropdown relative">
                   <div 
@@ -878,16 +878,7 @@ const LeilaoSP = () => {
                   )}
                 </div>
                 
-                {/* Cidade fixa: São Paulo */}
-                <div className="filter-dropdown relative">
-                  <div className="flex items-center justify-between w-full p-3 bg-[#f0f0f0] border border-gray-200 rounded-md text-sm opacity-70">
-                    <div className="flex items-center">
-                      <MapPin className="h-4 w-4 mr-2 text-gray-500" />
-                      <span>São Paulo</span>
-                    </div>
-                    <span className="text-xs text-gray-500">(fixo)</span>
-                  </div>
-                </div>
+
 
                 {/* Dropdown de Bairros */}
                 <div className="filter-dropdown relative">

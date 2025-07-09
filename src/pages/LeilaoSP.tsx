@@ -687,6 +687,14 @@ const LeilaoSP = () => {
     setSelectedNeighborhoods(bairros);
     setShowNeighborhoodMenu(false);
   };
+
+  const selectAllSaoPaulo = () => {
+    // Seleciona todos os bairros de todas as zonas de São Paulo
+    const todosBairros = Object.values(bairrosPorZonaSP).flat();
+    setSelectedNeighborhood("Toda São Paulo");
+    setSelectedNeighborhoods(todosBairros);
+    setShowNeighborhoodMenu(false);
+  };
   
   const selectPriceRange = (priceRange: PriceRange) => {
     setSelectedPriceRange(priceRange);
@@ -904,40 +912,53 @@ const LeilaoSP = () => {
                         />
                       </div>
                       {selectedCityName.toLowerCase() === 'são paulo' ? (
-                        Object.keys(rjNeighborhoods)
-                          .filter(zona => {
-                            if (neighborhoodSearchTerm === '') return true;
-                            return zona.toLowerCase().includes(neighborhoodSearchTerm.toLowerCase()) ||
-                              rjNeighborhoods[zona].some((neighborhoodData: any) => 
-                                neighborhoodData.neighborhood.toLowerCase().includes(neighborhoodSearchTerm.toLowerCase())
-                              );
-                          })
-                          .map((zona) => (
-                          <div key={zona}>
-                            {(neighborhoodSearchTerm === '' || zona.toLowerCase().includes(neighborhoodSearchTerm.toLowerCase())) && (
-                              <div
-                                className="py-2 px-4 font-bold text-primary bg-gray-100 border-b border-gray-200 cursor-pointer hover:bg-yellow-100"
-                                onClick={() => selectZone(zona)}
-                              >
-                                {zona} (todos)
-                              </div>
-                            )}
-                            {rjNeighborhoods[zona]
-                              .filter((neighborhoodData: any) => 
-                                neighborhoodSearchTerm === '' || 
-                                neighborhoodData.neighborhood.toLowerCase().includes(neighborhoodSearchTerm.toLowerCase())
-                              )
-                              .map((neighborhoodData: any, index: number) => (
+                        <>
+                          {/* Opção "Toda São Paulo" */}
+                          {(neighborhoodSearchTerm === '' || 'toda são paulo'.includes(neighborhoodSearchTerm.toLowerCase())) && (
+                            <div
+                              className="py-2 px-4 font-bold text-white bg-[#d68e08] border-b border-gray-200 cursor-pointer hover:bg-[#b8780a]"
+                              onClick={() => selectAllSaoPaulo()}
+                            >
+                              Toda São Paulo
+                            </div>
+                          )}
+                          
+                          {/* Zonas de São Paulo */}
+                          {Object.keys(rjNeighborhoods)
+                            .filter(zona => {
+                              if (neighborhoodSearchTerm === '') return true;
+                              return zona.toLowerCase().includes(neighborhoodSearchTerm.toLowerCase()) ||
+                                rjNeighborhoods[zona].some((neighborhoodData: any) => 
+                                  neighborhoodData.neighborhood.toLowerCase().includes(neighborhoodSearchTerm.toLowerCase())
+                                );
+                            })
+                            .map((zona) => (
+                            <div key={zona}>
+                              {(neighborhoodSearchTerm === '' || zona.toLowerCase().includes(neighborhoodSearchTerm.toLowerCase())) && (
                                 <div
-                                  key={neighborhoodData.neighborhood}
-                                  className="py-2 px-4 hover:bg-gray-100 cursor-pointer"
-                                  onClick={() => selectNeighborhood(neighborhoodData.neighborhood)}
+                                  className="py-2 px-4 font-bold text-primary bg-gray-100 border-b border-gray-200 cursor-pointer hover:bg-yellow-100"
+                                  onClick={() => selectZone(zona)}
                                 >
-                                  {neighborhoodData.neighborhood}
+                                  {zona} (todos)
                                 </div>
-                              ))}
-                          </div>
-                        ))
+                              )}
+                              {rjNeighborhoods[zona]
+                                .filter((neighborhoodData: any) => 
+                                  neighborhoodSearchTerm === '' || 
+                                  neighborhoodData.neighborhood.toLowerCase().includes(neighborhoodSearchTerm.toLowerCase())
+                                )
+                                .map((neighborhoodData: any, index: number) => (
+                                  <div
+                                    key={neighborhoodData.neighborhood}
+                                    className="py-2 px-4 hover:bg-gray-100 cursor-pointer"
+                                    onClick={() => selectNeighborhood(neighborhoodData.neighborhood)}
+                                  >
+                                    {neighborhoodData.neighborhood}
+                                  </div>
+                                ))}
+                            </div>
+                          ))}
+                        </>
                       ) : (
                         rjNeighborhoods.length > 0 ? (
                           rjNeighborhoods
@@ -959,16 +980,25 @@ const LeilaoSP = () => {
                         )
                       )}
                       {neighborhoodSearchTerm !== '' && (
-                        (selectedCityName.toLowerCase() === 'rio de janeiro' ? 
+                        (selectedCityName.toLowerCase() === 'são paulo' ? 
+                          // Para São Paulo, verificar se não há resultados em nenhuma zona
+                          !'toda são paulo'.includes(neighborhoodSearchTerm.toLowerCase()) &&
                           Object.keys(rjNeighborhoods).every(zona => 
                             !zona.toLowerCase().includes(neighborhoodSearchTerm.toLowerCase()) &&
                             !rjNeighborhoods[zona].some((neighborhoodData: any) => 
                               neighborhoodData.neighborhood.toLowerCase().includes(neighborhoodSearchTerm.toLowerCase())
                             )
                           ) :
-                          !rjNeighborhoods.some((neighborhoodData: any) => 
-                            neighborhoodData.neighborhood.toLowerCase().includes(neighborhoodSearchTerm.toLowerCase())
-                          )
+                          selectedCityName.toLowerCase() === 'rio de janeiro' ? 
+                            Object.keys(rjNeighborhoods).every(zona => 
+                              !zona.toLowerCase().includes(neighborhoodSearchTerm.toLowerCase()) &&
+                              !rjNeighborhoods[zona].some((neighborhoodData: any) => 
+                                neighborhoodData.neighborhood.toLowerCase().includes(neighborhoodSearchTerm.toLowerCase())
+                              )
+                            ) :
+                            Array.isArray(rjNeighborhoods) && !rjNeighborhoods.some((neighborhoodData: any) => 
+                              neighborhoodData.neighborhood.toLowerCase().includes(neighborhoodSearchTerm.toLowerCase())
+                            )
                         ) && (
                           <div className="py-2 px-4 text-gray-500">Nenhum resultado encontrado</div>
                         )
@@ -1137,6 +1167,11 @@ const LeilaoSP = () => {
                         onClick={() => {
                           // Buscar nas proximidades: redefine o filtro de bairro para todos da zona ou cidade
                           if (selectedCityName && selectedNeighborhood && selectedCityName.toLowerCase() === 'são paulo') {
+                            // Se já é "Toda São Paulo", não pode expandir mais
+                            if (selectedNeighborhood === 'Toda São Paulo') {
+                              return;
+                            }
+                            
                             // Descobrir a zona do bairro selecionado
                             let zonaDoBairro = null;
                             for (const zona in bairrosPorZonaSP) {
@@ -1151,6 +1186,14 @@ const LeilaoSP = () => {
                               setFilters((prev) => ({ ...prev, neighborhood: bairrosPorZonaSP[zonaDoBairro].join(',') }));
                               setCurrentPage(1);
                               toast.success('Buscando imóveis em todos os bairros da zona selecionada!');
+                            } else {
+                              // Se não encontrou zona ou já é uma zona (todos), expandir para Toda São Paulo
+                              setSelectedNeighborhood('Toda São Paulo');
+                              const todosBairros = Object.values(bairrosPorZonaSP).flat();
+                              setSelectedNeighborhoods(todosBairros);
+                              setFilters((prev) => ({ ...prev, neighborhood: todosBairros.join(',') }));
+                              setCurrentPage(1);
+                              toast.success('Buscando imóveis em toda São Paulo!');
                             }
                           } else if (selectedCityName && selectedNeighborhood) {
                             // Se não for Rio, buscar todos os bairros da cidade

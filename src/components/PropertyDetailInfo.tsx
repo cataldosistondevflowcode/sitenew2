@@ -127,7 +127,7 @@ export const PropertyDetailInfo = ({ property, rawPropertyData }: PropertyDetail
             </div>
             
             <div className="space-y-3">
-              <a href="tel:+552131733795" className="flex items-center justify-center text-[#d68e08] hover:text-[#b8780a] font-semibold text-sm">
+              <a href="tel:+552131733795" className="flex items-center justify-center text-[#d68e08] hover:text-[#b8780a] font-semibold text-sm whitespace-nowrap">
                 📞 +55 (21) 3173-3795
               </a>
               <a href="mailto:contato@cataldosiston-adv.com.br" className="flex items-center justify-center text-[#d68e08] hover:text-[#b8780a] font-semibold text-sm break-all">

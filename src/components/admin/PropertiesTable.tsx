@@ -332,11 +332,6 @@ const PropertiesTable = () => {
       </CardHeader>
       
       <CardContent>
-        {/* Top horizontal scroll */}
-        <div className="rounded-md border overflow-x-auto mb-2">
-          <div style={{ width: '100%', minWidth: '1200px', height: '1px' }}></div>
-        </div>
-        
         <div className="rounded-md border overflow-x-auto">
           <Table>
             <TableHeader>
@@ -580,4 +575,4 @@ const PropertiesTable = () => {
   );
 };
 
-export default PropertiesTable;  
+export default PropertiesTable; 

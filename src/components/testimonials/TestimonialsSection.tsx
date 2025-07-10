@@ -178,7 +178,7 @@ export const TestimonialsSection = () => {
                 />
 
                 <div className="flex-1 h-[620px] max-md:h-[550px] max-sm:h-[500px] flex items-center justify-center max-sm:order-1">
-                  <TestimonialCard
+                <TestimonialCard
                     content={currentTestimonial.content}
                     authorName={currentTestimonial.authorName}
                     authorTitle={currentTestimonial.authorTitle}

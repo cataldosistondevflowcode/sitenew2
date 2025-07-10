@@ -13,8 +13,9 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Search, Filter, Eye, RefreshCw, ChevronLeft, ChevronRight, Download, Edit } from 'lucide-react';
+import { Search, Filter, Eye, RefreshCw, ChevronLeft, ChevronRight, Download, Edit, ExternalLink } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { createPropertyUrl } from '@/utils/slugUtils';
 
 type Property = Tables<'leiloes_imoveis'>;
 
@@ -154,6 +155,8 @@ const PropertiesTable = () => {
     setCurrentPage(0);
     fetchProperties(0);
   }, [searchTerm, cityFilter, stateFilter, typeFilter, auctionTypeFilter, fgtsFilter, financingFilter]);
+
+
 
   const formatCurrency = (value: number | null) => {
     if (!value) return 'N/A';
@@ -357,7 +360,17 @@ const PropertiesTable = () => {
             <TableBody>
               {properties.map((property) => (
                 <TableRow key={property.id} className="hover:bg-gray-50">
-                  <TableCell className="font-medium text-xs">{property.id}</TableCell>
+                  <TableCell className="font-medium text-xs">
+                    <a 
+                      href={createPropertyUrl(property.id, property.titulo_propriedade || 'Imóvel')} 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="flex items-center hover:underline text-blue-600 hover:text-blue-800"
+                    >
+                      {property.id}
+                      <ExternalLink className="h-3 w-3 ml-1" />
+                    </a>
+                  </TableCell>
                   <TableCell className="max-w-64">
                     <div className="truncate text-xs" title={property.titulo_propriedade || 'N/A'}>
                       {property.titulo_propriedade || 'N/A'}

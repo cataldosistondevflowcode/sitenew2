@@ -72,8 +72,8 @@ export const PropertyDetailTestimonials = () => {
           <div className="bg-[#333] p-6 rounded-lg shadow-md relative flex-1 flex flex-col justify-center">
             <div className="flex flex-col gap-4 mb-6">
               <blockquote className="text-white text-base leading-5 max-md:text-sm max-md:leading-4">
-                "{testimonials[currentIndex].content}"
-              </blockquote>
+              "{testimonials[currentIndex].content}"
+            </blockquote>
             </div>
             
             <div className="flex items-center">

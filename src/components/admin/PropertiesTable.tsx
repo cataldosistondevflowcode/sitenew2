@@ -13,7 +13,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Search, Filter, Eye, RefreshCw, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Search, Filter, Eye, RefreshCw, ChevronLeft, ChevronRight, Download, Edit } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 type Property = Tables<'leiloes_imoveis'>;
@@ -23,14 +23,21 @@ const PropertiesTable = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [cityFilter, setCityFilter] = useState('all');
+  const [stateFilter, setStateFilter] = useState('all');
   const [typeFilter, setTypeFilter] = useState('all');
+  const [auctionTypeFilter, setAuctionTypeFilter] = useState('all');
+  const [fgtsFilter, setFgtsFilter] = useState('all');
+  const [financingFilter, setFinancingFilter] = useState('all');
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
   const [allCities, setAllCities] = useState<string[]>([]);
+  const [allStates, setAllStates] = useState<string[]>([]);
   const [allTypes, setAllTypes] = useState<string[]>([]);
+  const [allAuctionTypes, setAllAuctionTypes] = useState<string[]>([]);
   
-  const pageSize = 1000;
+  // Mudança: paginação de 100 em 100 ao invés de 1000
+  const pageSize = 100;
 
   const fetchProperties = async (page = 0) => {
     try {
@@ -48,15 +55,35 @@ const PropertiesTable = () => {
 
       // Aplicar filtros
       if (searchTerm) {
-        query = query.or(`titulo_propriedade.ilike.%${searchTerm}%,endereco.ilike.%${searchTerm}%,bairro.ilike.%${searchTerm}%,numero_processo.ilike.%${searchTerm}%`);
+        query = query.or(`titulo_propriedade.ilike.%${searchTerm}%,endereco.ilike.%${searchTerm}%,bairro.ilike.%${searchTerm}%,numero_processo.ilike.%${searchTerm}%,descricao.ilike.%${searchTerm}%,leiloeiro_nome.ilike.%${searchTerm}%`);
       }
 
       if (cityFilter && cityFilter !== 'all') {
         query = query.eq('cidade', cityFilter);
       }
 
+      if (stateFilter && stateFilter !== 'all') {
+        query = query.eq('estado', stateFilter);
+      }
+
       if (typeFilter && typeFilter !== 'all') {
         query = query.eq('tipo_propriedade', typeFilter);
+      }
+
+      if (auctionTypeFilter && auctionTypeFilter !== 'all') {
+        query = query.eq('tipo_leilao', auctionTypeFilter);
+      }
+
+      if (fgtsFilter === 'true') {
+        query = query.eq('fgts', true);
+      } else if (fgtsFilter === 'false') {
+        query = query.eq('fgts', false);
+      }
+
+      if (financingFilter === 'true') {
+        query = query.eq('financiamento', true);
+      } else if (financingFilter === 'false') {
+        query = query.eq('financiamento', false);
       }
 
       // Aplicar paginação
@@ -85,17 +112,33 @@ const PropertiesTable = () => {
         .select('cidade')
         .not('cidade', 'is', null);
 
+      // Buscar estados únicos
+      const { data: statesData } = await supabase
+        .from('leiloes_imoveis')
+        .select('estado')
+        .not('estado', 'is', null);
+
       // Buscar tipos únicos
       const { data: typesData } = await supabase
         .from('leiloes_imoveis')
         .select('tipo_propriedade')
         .not('tipo_propriedade', 'is', null);
 
+      // Buscar tipos de leilão únicos
+      const { data: auctionTypesData } = await supabase
+        .from('leiloes_imoveis')
+        .select('tipo_leilao')
+        .not('tipo_leilao', 'is', null);
+
       const uniqueCities = Array.from(new Set(citiesData?.map(item => item.cidade))).filter(Boolean).sort();
+      const uniqueStates = Array.from(new Set(statesData?.map(item => item.estado))).filter(Boolean).sort();
       const uniqueTypes = Array.from(new Set(typesData?.map(item => item.tipo_propriedade))).filter(Boolean).sort();
+      const uniqueAuctionTypes = Array.from(new Set(auctionTypesData?.map(item => item.tipo_leilao))).filter(Boolean).sort();
 
       setAllCities(uniqueCities);
+      setAllStates(uniqueStates);
       setAllTypes(uniqueTypes);
+      setAllAuctionTypes(uniqueAuctionTypes);
     } catch (err) {
       console.error('Erro ao buscar metadados:', err);
     }
@@ -110,7 +153,7 @@ const PropertiesTable = () => {
     // Quando filtros mudam, voltar para primeira página
     setCurrentPage(0);
     fetchProperties(0);
-  }, [searchTerm, cityFilter, typeFilter]);
+  }, [searchTerm, cityFilter, stateFilter, typeFilter, auctionTypeFilter, fgtsFilter, financingFilter]);
 
   const formatCurrency = (value: number | null) => {
     if (!value) return 'N/A';
@@ -123,6 +166,16 @@ const PropertiesTable = () => {
   const formatDate = (dateString: string | null) => {
     if (!dateString) return 'N/A';
     return new Date(dateString).toLocaleDateString('pt-BR');
+  };
+
+  const clearAllFilters = () => {
+    setSearchTerm('');
+    setCityFilter('all');
+    setStateFilter('all');
+    setTypeFilter('all');
+    setAuctionTypeFilter('all');
+    setFgtsFilter('all');
+    setFinancingFilter('all');
   };
 
   const totalPages = Math.ceil(totalCount / pageSize);
@@ -146,7 +199,7 @@ const PropertiesTable = () => {
         <CardContent className="flex items-center justify-center h-64">
           <div className="text-center">
             <p className="text-red-500 mb-4">{error}</p>
-            <Button onClick={fetchProperties}>
+            <Button onClick={() => fetchProperties(currentPage)}>
               <RefreshCw className="h-4 w-4 mr-2" />
               Tentar Novamente
             </Button>
@@ -165,65 +218,113 @@ const PropertiesTable = () => {
         </CardTitle>
         
         {/* Filtros */}
-        <div className="flex flex-wrap gap-4 mt-4">
-          <div className="relative flex-1 min-w-64">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-            <Input
-              placeholder="Buscar por título, endereço, bairro ou processo..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
-            />
+        <div className="space-y-4 mt-4">
+          {/* Primeira linha de filtros */}
+          <div className="flex flex-wrap gap-4">
+            <div className="relative flex-1 min-w-64">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Input
+                placeholder="Buscar por título, endereço, bairro, processo, leiloeiro..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+            
+            <Select value={stateFilter} onValueChange={setStateFilter}>
+              <SelectTrigger className="w-40">
+                <SelectValue placeholder="Estado" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos os estados</SelectItem>
+                {allStates.map(state => (
+                  <SelectItem key={state} value={state}>{state}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <Select value={cityFilter} onValueChange={setCityFilter}>
+              <SelectTrigger className="w-48">
+                <SelectValue placeholder="Cidade" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todas as cidades</SelectItem>
+                {allCities.map(city => (
+                  <SelectItem key={city} value={city}>{city}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <Select value={typeFilter} onValueChange={setTypeFilter}>
+              <SelectTrigger className="w-48">
+                <SelectValue placeholder="Tipo" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos os tipos</SelectItem>
+                {allTypes.map(type => (
+                  <SelectItem key={type} value={type}>{type}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
-          
-          <Select value={cityFilter} onValueChange={setCityFilter}>
-            <SelectTrigger className="w-48">
-              <SelectValue placeholder="Filtrar por cidade" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todas as cidades</SelectItem>
-              {allCities.map(city => (
-                <SelectItem key={city} value={city}>{city}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
 
-          <Select value={typeFilter} onValueChange={setTypeFilter}>
-            <SelectTrigger className="w-48">
-              <SelectValue placeholder="Filtrar por tipo" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todos os tipos</SelectItem>
-              {allTypes.map(type => (
-                <SelectItem key={type} value={type}>{type}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          {/* Segunda linha de filtros */}
+          <div className="flex flex-wrap gap-4">
+            <Select value={auctionTypeFilter} onValueChange={setAuctionTypeFilter}>
+              <SelectTrigger className="w-48">
+                <SelectValue placeholder="Tipo Leilão" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos os tipos</SelectItem>
+                {allAuctionTypes.map(type => (
+                  <SelectItem key={type} value={type}>{type}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
 
-          <Button 
-            variant="outline" 
-            className="bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
-            onClick={() => {
-              setSearchTerm('');
-              setCityFilter('all');
-              setTypeFilter('all');
-            }}
-          >
-            <Filter className="h-4 w-4 mr-2" />
-            Limpar Filtros
-          </Button>
+            <Select value={fgtsFilter} onValueChange={setFgtsFilter}>
+              <SelectTrigger className="w-32">
+                <SelectValue placeholder="FGTS" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos</SelectItem>
+                <SelectItem value="true">Com FGTS</SelectItem>
+                <SelectItem value="false">Sem FGTS</SelectItem>
+              </SelectContent>
+            </Select>
 
-          <Button 
-            variant="outline" 
-            className="bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
-            onClick={() => {
-              fetchProperties(currentPage);
-              fetchMetadata();
-            }}
-          >
-            <RefreshCw className="h-4 w-4 mr-2" />
-            Atualizar
-          </Button>
+            <Select value={financingFilter} onValueChange={setFinancingFilter}>
+              <SelectTrigger className="w-40">
+                <SelectValue placeholder="Financ." />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos</SelectItem>
+                <SelectItem value="true">Com Financ.</SelectItem>
+                <SelectItem value="false">Sem Financ.</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <Button 
+              variant="outline" 
+              className="bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+              onClick={clearAllFilters}
+            >
+              <Filter className="h-4 w-4 mr-2" />
+              Limpar
+            </Button>
+
+            <Button 
+              variant="outline" 
+              className="bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+              onClick={() => {
+                fetchProperties(currentPage);
+                fetchMetadata();
+              }}
+            >
+              <RefreshCw className="h-4 w-4 mr-2" />
+              Atualizar
+            </Button>
+          </div>
         </div>
       </CardHeader>
       
@@ -232,76 +333,109 @@ const PropertiesTable = () => {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>ID</TableHead>
-                <TableHead>Título</TableHead>
-                <TableHead>Endereço</TableHead>
-                <TableHead>Cidade/Estado</TableHead>
-                <TableHead>Tipo</TableHead>
-                <TableHead>Leilão 1</TableHead>
-                <TableHead>Leilão 2</TableHead>
-                <TableHead>Data Leilão 1</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Leiloeiro</TableHead>
+                <TableHead className="w-16">ID</TableHead>
+                <TableHead className="min-w-64">Título</TableHead>
+                <TableHead className="min-w-48">Endereço</TableHead>
+                <TableHead className="w-24">Bairro</TableHead>
+                <TableHead className="w-24">Cidade</TableHead>
+                <TableHead className="w-16">UF</TableHead>
+                <TableHead className="min-w-32">Tipo</TableHead>
+                <TableHead className="w-32">Leilão 1</TableHead>
+                <TableHead className="w-32">Leilão 2</TableHead>
+                <TableHead className="w-28">Data 1º</TableHead>
+                <TableHead className="w-28">Data 2º</TableHead>
+                <TableHead className="min-w-32">Tipo Leilão</TableHead>
+                <TableHead className="w-24">FGTS</TableHead>
+                <TableHead className="w-24">Financ.</TableHead>
+                <TableHead className="w-24">Parcel.</TableHead>
+                <TableHead className="w-24">Consórc.</TableHead>
+                <TableHead className="min-w-48">Leiloeiro</TableHead>
+                <TableHead className="min-w-32">Processo</TableHead>
+                <TableHead className="min-w-64">Descrição</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {properties.map((property) => (
-                <TableRow key={property.id}>
-                  <TableCell className="font-medium">{property.id}</TableCell>
-                  <TableCell className="max-w-48">
-                    <div className="truncate" title={property.titulo_propriedade || 'N/A'}>
+                <TableRow key={property.id} className="hover:bg-gray-50">
+                  <TableCell className="font-medium text-xs">{property.id}</TableCell>
+                  <TableCell className="max-w-64">
+                    <div className="truncate text-xs" title={property.titulo_propriedade || 'N/A'}>
                       {property.titulo_propriedade || 'N/A'}
                     </div>
                   </TableCell>
                   <TableCell className="max-w-48">
-                    <div className="truncate" title={`${property.endereco || ''}, ${property.bairro || ''}`}>
-                      {property.endereco && property.bairro 
-                        ? `${property.endereco}, ${property.bairro}`
-                        : property.endereco || property.bairro || 'N/A'
-                      }
+                    <div className="truncate text-xs" title={property.endereco || 'N/A'}>
+                      {property.endereco || 'N/A'}
                     </div>
                   </TableCell>
-                  <TableCell>{property.cidade}/{property.estado}</TableCell>
+                  <TableCell className="text-xs">{property.bairro || 'N/A'}</TableCell>
+                  <TableCell className="text-xs">{property.cidade || 'N/A'}</TableCell>
+                  <TableCell className="text-xs">{property.estado || 'N/A'}</TableCell>
                   <TableCell>
                     {property.tipo_propriedade ? (
                       <Badge 
                         variant="secondary" 
-                        className="bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-200"
+                        className="text-xs bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-200"
                       >
                         {property.tipo_propriedade}
                       </Badge>
                     ) : 'N/A'}
                   </TableCell>
-                  <TableCell>{formatCurrency(property.leilao_1)}</TableCell>
-                  <TableCell>{formatCurrency(property.leilao_2)}</TableCell>
-                  <TableCell>{formatDate(property.data_leilao_1)}</TableCell>
+                  <TableCell className="text-xs">{formatCurrency(property.leilao_1)}</TableCell>
+                  <TableCell className="text-xs">{formatCurrency(property.leilao_2)}</TableCell>
+                  <TableCell className="text-xs">{formatDate(property.data_leilao_1)}</TableCell>
+                  <TableCell className="text-xs">{formatDate(property.data_leilao_2)}</TableCell>
                   <TableCell>
-                    <div className="flex gap-1 flex-wrap">
-                      {property.fgts && (
-                        <Badge className="text-xs bg-green-100 text-green-800 border-green-200 hover:bg-green-200">
-                          FGTS
-                        </Badge>
-                      )}
-                      {property.financiamento && (
-                        <Badge className="text-xs bg-orange-100 text-orange-800 border-orange-200 hover:bg-orange-200">
-                          Financ.
-                        </Badge>
-                      )}
-                      {property.consorcio && (
-                        <Badge className="text-xs bg-purple-100 text-purple-800 border-purple-200 hover:bg-purple-200">
-                          Consórcio
-                        </Badge>
-                      )}
-                      {property.parcelamento && (
-                        <Badge className="text-xs bg-yellow-100 text-yellow-800 border-yellow-200 hover:bg-yellow-200">
-                          Parcelamento
-                        </Badge>
-                      )}
+                    {property.tipo_leilao ? (
+                      <Badge 
+                        variant="outline" 
+                        className="text-xs"
+                      >
+                        {property.tipo_leilao}
+                      </Badge>
+                    ) : 'N/A'}
+                  </TableCell>
+                  <TableCell>
+                    {property.fgts ? (
+                      <Badge className="text-xs bg-green-100 text-green-800 border-green-200">✓</Badge>
+                    ) : (
+                      <Badge variant="outline" className="text-xs text-gray-500">✗</Badge>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    {property.financiamento ? (
+                      <Badge className="text-xs bg-orange-100 text-orange-800 border-orange-200">✓</Badge>
+                    ) : (
+                      <Badge variant="outline" className="text-xs text-gray-500">✗</Badge>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    {property.parcelamento ? (
+                      <Badge className="text-xs bg-yellow-100 text-yellow-800 border-yellow-200">✓</Badge>
+                    ) : (
+                      <Badge variant="outline" className="text-xs text-gray-500">✗</Badge>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    {property.consorcio ? (
+                      <Badge className="text-xs bg-purple-100 text-purple-800 border-purple-200">✓</Badge>
+                    ) : (
+                      <Badge variant="outline" className="text-xs text-gray-500">✗</Badge>
+                    )}
+                  </TableCell>
+                  <TableCell className="max-w-48">
+                    <div className="truncate text-xs" title={property.leiloeiro_nome || 'N/A'}>
+                      {property.leiloeiro_nome || 'N/A'}
                     </div>
                   </TableCell>
                   <TableCell className="max-w-32">
-                    <div className="truncate" title={property.leiloeiro_nome || 'N/A'}>
-                      {property.leiloeiro_nome || 'N/A'}
+                    <div className="truncate text-xs" title={property.numero_processo || 'N/A'}>
+                      {property.numero_processo || 'N/A'}
+                    </div>
+                  </TableCell>
+                  <TableCell className="max-w-64">
+                    <div className="truncate text-xs" title={property.descricao || 'N/A'}>
+                      {property.descricao || 'N/A'}
                     </div>
                   </TableCell>
                 </TableRow>
@@ -323,10 +457,20 @@ const PropertiesTable = () => {
         {totalPages > 1 && (
           <div className="flex items-center justify-between mt-6">
             <div className="text-sm text-gray-600">
-              Mostrando {startRecord} a {endRecord} de {totalCount} registros
+              Mostrando {startRecord} a {endRecord} de {totalCount} registros (Página {currentPage + 1} de {totalPages})
             </div>
             
             <div className="flex items-center space-x-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="bg-white text-gray-700 border-gray-300 hover:bg-gray-50 disabled:bg-gray-100 disabled:text-gray-400"
+                onClick={() => fetchProperties(0)}
+                disabled={currentPage === 0 || loading}
+              >
+                Primeira
+              </Button>
+              
               <Button
                 variant="outline"
                 size="sm"
@@ -339,37 +483,76 @@ const PropertiesTable = () => {
               </Button>
               
               <div className="flex items-center space-x-1">
-                {[...Array(Math.min(5, totalPages))].map((_, index) => {
-                  const pageNumber = currentPage < 3 ? index : currentPage - 2 + index;
-                  if (pageNumber >= totalPages) return null;
+                {(() => {
+                  const maxPages = 7;
+                  const pages = [];
                   
-                  return (
-                    <Button
-                      key={pageNumber}
-                      variant={pageNumber === currentPage ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => fetchProperties(pageNumber)}
-                      disabled={loading}
-                      className={`w-10 ${
-                        pageNumber === currentPage 
-                          ? "bg-blue-600 text-white border-blue-600 hover:bg-blue-700" 
-                          : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
-                      } disabled:bg-gray-100 disabled:text-gray-400`}
-                    >
-                      {pageNumber + 1}
-                    </Button>
-                  );
-                })}
+                  if (totalPages <= maxPages) {
+                    for (let i = 0; i < totalPages; i++) {
+                      pages.push(i);
+                    }
+                  } else {
+                    if (currentPage < 3) {
+                      for (let i = 0; i < 5; i++) pages.push(i);
+                      pages.push(-1); // Separator
+                      pages.push(totalPages - 1);
+                    } else if (currentPage > totalPages - 4) {
+                      pages.push(0);
+                      pages.push(-1); // Separator
+                      for (let i = totalPages - 5; i < totalPages; i++) pages.push(i);
+                    } else {
+                      pages.push(0);
+                      pages.push(-1); // Separator
+                      for (let i = currentPage - 1; i <= currentPage + 1; i++) pages.push(i);
+                      pages.push(-1); // Separator
+                      pages.push(totalPages - 1);
+                    }
+                  }
+                  
+                  return pages.map((pageNumber, index) => {
+                    if (pageNumber === -1) {
+                      return <span key={`sep-${index}`} className="px-2 text-gray-400">...</span>;
+                    }
+                    
+                    return (
+                      <Button
+                        key={pageNumber}
+                        variant={pageNumber === currentPage ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => fetchProperties(pageNumber)}
+                        disabled={loading}
+                        className={`w-10 ${
+                          pageNumber === currentPage 
+                            ? "bg-blue-600 text-white border-blue-600 hover:bg-blue-700" 
+                            : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+                        } disabled:bg-gray-100 disabled:text-gray-400`}
+                      >
+                        {pageNumber + 1}
+                      </Button>
+                    );
+                  });
+                })()}
               </div>
               
               <Button
                 variant="outline"
                 size="sm"
+                className="bg-white text-gray-700 border-gray-300 hover:bg-gray-50 disabled:bg-gray-100 disabled:text-gray-400"
                 onClick={() => fetchProperties(currentPage + 1)}
                 disabled={currentPage >= totalPages - 1 || loading}
               >
                 Próximo
                 <ChevronRight className="h-4 w-4 ml-1" />
+              </Button>
+
+              <Button
+                variant="outline"
+                size="sm"
+                className="bg-white text-gray-700 border-gray-300 hover:bg-gray-50 disabled:bg-gray-100 disabled:text-gray-400"
+                onClick={() => fetchProperties(totalPages - 1)}
+                disabled={currentPage >= totalPages - 1 || loading}
+              >
+                Última
               </Button>
             </div>
           </div>

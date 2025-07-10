@@ -264,7 +264,12 @@ const PropertiesTable = () => {
                   <TableCell>{property.cidade}/{property.estado}</TableCell>
                   <TableCell>
                     {property.tipo_propriedade ? (
-                      <Badge variant="secondary">{property.tipo_propriedade}</Badge>
+                      <Badge 
+                        variant="secondary" 
+                        className="bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-200"
+                      >
+                        {property.tipo_propriedade}
+                      </Badge>
                     ) : 'N/A'}
                   </TableCell>
                   <TableCell>{formatCurrency(property.leilao_1)}</TableCell>
@@ -272,10 +277,26 @@ const PropertiesTable = () => {
                   <TableCell>{formatDate(property.data_leilao_1)}</TableCell>
                   <TableCell>
                     <div className="flex gap-1 flex-wrap">
-                      {property.fgts && <Badge variant="outline" className="text-xs">FGTS</Badge>}
-                      {property.financiamento && <Badge variant="outline" className="text-xs">Financ.</Badge>}
-                      {property.consorcio && <Badge variant="outline" className="text-xs">Consórcio</Badge>}
-                      {property.parcelamento && <Badge variant="outline" className="text-xs">Parcelamento</Badge>}
+                      {property.fgts && (
+                        <Badge className="text-xs bg-green-100 text-green-800 border-green-200 hover:bg-green-200">
+                          FGTS
+                        </Badge>
+                      )}
+                      {property.financiamento && (
+                        <Badge className="text-xs bg-orange-100 text-orange-800 border-orange-200 hover:bg-orange-200">
+                          Financ.
+                        </Badge>
+                      )}
+                      {property.consorcio && (
+                        <Badge className="text-xs bg-purple-100 text-purple-800 border-purple-200 hover:bg-purple-200">
+                          Consórcio
+                        </Badge>
+                      )}
+                      {property.parcelamento && (
+                        <Badge className="text-xs bg-yellow-100 text-yellow-800 border-yellow-200 hover:bg-yellow-200">
+                          Parcelamento
+                        </Badge>
+                      )}
                     </div>
                   </TableCell>
                   <TableCell className="max-w-32">

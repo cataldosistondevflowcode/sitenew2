@@ -40,7 +40,7 @@ const Admin = () => {
             </div>
             
             <div className="flex items-center space-x-4">
-              <Badge variant="outline" className="flex items-center gap-2">
+              <Badge className="flex items-center gap-2 bg-gray-100 text-gray-800 border-gray-300">
                 <User className="h-3 w-3" />
                 {user?.email}
               </Badge>
@@ -101,8 +101,8 @@ const Admin = () => {
                       Conecte sua conta do WhatsApp Business para receber leads diretamente no seu celular.
                     </p>
                     <div className="flex items-center gap-2">
-                      <Badge variant="outline" className="flex items-center gap-1">
-                        <AlertTriangle className="h-3 w-3 text-orange-500" />
+                      <Badge className="flex items-center gap-1 bg-orange-100 text-orange-800 border-orange-200">
+                        <AlertTriangle className="h-3 w-3 text-orange-600" />
                         Em Manutenção
                       </Badge>
                       <span className="text-xs text-gray-500">
@@ -170,11 +170,11 @@ const Admin = () => {
                 <div className="space-y-3 text-sm">
                   <div className="flex justify-between">
                     <span className="text-gray-600">Versão:</span>
-                    <Badge variant="secondary">v1.0.0</Badge>
+                    <Badge className="bg-blue-100 text-blue-800 border-blue-200">v1.0.0</Badge>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Banco de Dados:</span>
-                    <Badge className="bg-green-500">Conectado</Badge>
+                    <Badge className="bg-green-500 text-white border-green-600">Conectado</Badge>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Última Atualização:</span>
@@ -184,7 +184,7 @@ const Admin = () => {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Ambiente:</span>
-                    <Badge variant="outline">Produção</Badge>
+                    <Badge className="bg-purple-100 text-purple-800 border-purple-200">Produção</Badge>
                   </div>
                 </div>
               </CardContent>

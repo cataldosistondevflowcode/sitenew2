@@ -33,34 +33,39 @@ const DashboardStats = () => {
     try {
       setLoading(true);
       
-      const { data: properties, error } = await supabase
+      // Obter contagem total de propriedades
+      const { count: totalProperties, error: countError } = await supabase
         .from('leiloes_imoveis')
-        .select('*');
+        .select('*', { count: 'exact', head: true });
 
-      if (error) throw error;
+      if (countError) throw countError;
 
-      const now = new Date();
-      const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+      // Obter dados específicos para estatísticas (com FGTS, financiamento)
+      const { data: propertiesData, error: dataError } = await supabase
+        .from('leiloes_imoveis')
+        .select('fgts, financiamento, leilao_1, cidade')
+        .limit(10000); // Aumentar limite para garantir que pegue todos os registros necessários
 
-      const totalProperties = properties?.length || 0;
-      const propertiesWithFGTS = properties?.filter(p => p.fgts).length || 0;
-      const propertiesWithFinancing = properties?.filter(p => p.financiamento).length || 0;
+      if (dataError) throw dataError;
+
+      const propertiesWithFGTS = propertiesData?.filter(p => p.fgts).length || 0;
+      const propertiesWithFinancing = propertiesData?.filter(p => p.financiamento).length || 0;
       
       // Calcular preço médio do primeiro leilão
-      const pricesLeilao1 = properties?.filter(p => p.leilao_1).map(p => p.leilao_1!) || [];
+      const pricesLeilao1 = propertiesData?.filter(p => p.leilao_1).map(p => p.leilao_1!) || [];
       const averagePrice = pricesLeilao1.length > 0 
         ? pricesLeilao1.reduce((sum, price) => sum + price, 0) / pricesLeilao1.length
         : 0;
 
       // Contar cidades únicas
-      const uniqueCities = new Set(properties?.map(p => p.cidade));
+      const uniqueCities = new Set(propertiesData?.map(p => p.cidade));
       const citiesCount = uniqueCities.size;
 
       // Propriedades recentes (simulado - não temos data de criação)
-      const recentProperties = Math.floor(totalProperties * 0.1);
+      const recentProperties = Math.floor((totalProperties || 0) * 0.1);
 
       setStats({
-        totalProperties,
+        totalProperties: totalProperties || 0,
         propertiesWithFGTS,
         propertiesWithFinancing,
         averagePrice,
@@ -159,19 +164,19 @@ const DashboardStats = () => {
             <div className="space-y-3">
               <div className="flex justify-between items-center">
                 <span className="text-sm">Com FGTS</span>
-                <Badge variant="secondary">
+                <Badge className="bg-green-100 text-green-800 border-green-200">
                   {loading ? '...' : stats.propertiesWithFGTS}
                 </Badge>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm">Com Financiamento</span>
-                <Badge variant="secondary">
+                <Badge className="bg-orange-100 text-orange-800 border-orange-200">
                   {loading ? '...' : stats.propertiesWithFinancing}
                 </Badge>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm">Adicionados Recentemente</span>
-                <Badge variant="outline">
+                <Badge className="bg-blue-100 text-blue-800 border-blue-200">
                   {loading ? '...' : stats.recentProperties}
                 </Badge>
               </div>
@@ -190,7 +195,7 @@ const DashboardStats = () => {
             <div className="space-y-3">
               <div className="flex justify-between items-center">
                 <span className="text-sm">Status do Sistema</span>
-                <Badge className="bg-green-500">Online</Badge>
+                <Badge className="bg-green-500 text-white border-green-600">Online</Badge>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm">Última Atualização</span>

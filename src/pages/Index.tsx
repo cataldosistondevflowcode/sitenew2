@@ -116,6 +116,25 @@ const areasEspeciaisRJ: Record<string, string[]> = {
   ]
 };
 
+// Definição dos bairros por região de Niterói
+const bairrosPorRegiaoNiteroi: Record<string, string[]> = {
+  'Região Norte e Central': [
+    'Baldeador', 'Barreto', 'Caramujo', 'Cubango', 'Engenhoca', 'Fonseca', 'Ilha da Conceição', 'Santa Bárbara', 'Santana', 'São Lourenço', 'Tenente Jardim', 'Viçoso Jardim'
+  ],
+  'Região Praias da Baía': [
+    'Bairro de Fátima', 'Boa Viagem', 'Cachoeiras', 'Centro', 'Charitas', 'Gragoatá', 'Icaraí', 'Ingá', 'Jurujuba', 'Pé Pequeno', 'Santa Rosa', 'São Domingos', 'São Francisco', 'Viradouro', 'Vital Brazil'
+  ],
+  'Região Oceânica': [
+    'Cafubá', 'Camboinhas', 'Engenho do Mato', 'Itacoatiara', 'Itaipu', 'Jacaré', 'Jardim Imbuí', 'Maravista', 'Piratininga', 'Santo Antônio', 'Serra Grande'
+  ],
+  'Região de Pendotiba': [
+    'Badu', 'Cantagalo', 'Ititioca', 'Largo da Batalha', 'Maceió', 'Maria Paula', 'Matapaca', 'Sapê', 'Vila Progresso'
+  ],
+  'Região Leste': [
+    'Muriqui', 'Rio do Ouro', 'Várzea das Moças'
+  ]
+};
+
 const AUCTION_TYPE_JUDICIAL = "JUDICIAL";
 const AUCTION_TYPE_EXTRAJUDICIAL = "EXTRAJUDICIAL";
 const AUCTION_TYPE_EXTRAJUDICIAL_FINANCIAMENTO = "EXTRAJUDICIAL FINANCIÁVEL";
@@ -757,6 +776,14 @@ const Index = () => {
     setSelectedNeighborhoods([]);
     // Não buscar bairros, pois não é uma cidade única
   };
+
+  const selectRegionNiteroi = (region: string) => {
+    // Seleciona todos os bairros da região de Niterói
+    const bairros = bairrosPorRegiaoNiteroi[region] || [];
+    setSelectedNeighborhood(`${region} (todos)`);
+    setSelectedNeighborhoods(bairros);
+    setShowNeighborhoodMenu(false);
+  };
   
   const selectNeighborhood = (neighborhood: string) => {
     // Verificar se é uma área especial
@@ -830,6 +857,16 @@ const Index = () => {
             if (!bairrosAgrupados['Outros']) bairrosAgrupados['Outros'] = [];
             bairrosAgrupados['Outros'].push({ neighborhood: bairro, count: neighborhoodCount[bairro] });
           }
+        });
+        setRjNeighborhoods(bairrosAgrupados as any);
+      } else if (cityName.toLowerCase() === 'niterói') {
+        // Se for Niterói, mostrar todos os bairros da lista fixa por região
+        const bairrosAgrupados: Record<string, { neighborhood: string, count: number }[]> = {};
+        Object.keys(bairrosPorRegiaoNiteroi).forEach(regiao => {
+          bairrosAgrupados[regiao] = bairrosPorRegiaoNiteroi[regiao].map(bairro => ({
+            neighborhood: bairro,
+            count: neighborhoodCount[bairro] || 0
+          }));
         });
         setRjNeighborhoods(bairrosAgrupados as any);
       } else {
@@ -1103,6 +1140,41 @@ const Index = () => {
                               ))}
                           </div>
                         ))
+                      ) : selectedCityName.toLowerCase() === 'niterói' ? (
+                        Object.keys(rjNeighborhoods)
+                          .filter(regiao => {
+                            if (neighborhoodSearchTerm === '') return true;
+                            return regiao.toLowerCase().includes(neighborhoodSearchTerm.toLowerCase()) ||
+                              rjNeighborhoods[regiao].some((neighborhoodData: any) => 
+                                neighborhoodData.neighborhood.toLowerCase().includes(neighborhoodSearchTerm.toLowerCase())
+                              );
+                          })
+                          .map((regiao) => (
+                          <div key={regiao}>
+                            {(neighborhoodSearchTerm === '' || regiao.toLowerCase().includes(neighborhoodSearchTerm.toLowerCase())) && (
+                              <div
+                                className="py-2 px-4 font-bold text-primary bg-gray-100 border-b border-gray-200 cursor-pointer hover:bg-yellow-100"
+                                onClick={() => selectRegionNiteroi(regiao)}
+                              >
+                                {regiao} (todos)
+                              </div>
+                            )}
+                            {rjNeighborhoods[regiao]
+                              .filter((neighborhoodData: any) => 
+                                neighborhoodSearchTerm === '' || 
+                                neighborhoodData.neighborhood.toLowerCase().includes(neighborhoodSearchTerm.toLowerCase())
+                              )
+                              .map((neighborhoodData: any, index: number) => (
+                                <div
+                                  key={neighborhoodData.neighborhood}
+                                  className="py-2 px-4 hover:bg-gray-100 cursor-pointer"
+                                  onClick={() => selectNeighborhood(neighborhoodData.neighborhood)}
+                                >
+                                  {neighborhoodData.neighborhood}
+                                </div>
+                              ))}
+                          </div>
+                        ))
                       ) : (
                         rjNeighborhoods.length > 0 ? (
                           rjNeighborhoods
@@ -1128,6 +1200,13 @@ const Index = () => {
                           Object.keys(rjNeighborhoods).every(zona => 
                             !zona.toLowerCase().includes(neighborhoodSearchTerm.toLowerCase()) &&
                             !rjNeighborhoods[zona].some((neighborhoodData: any) => 
+                              neighborhoodData.neighborhood.toLowerCase().includes(neighborhoodSearchTerm.toLowerCase())
+                            )
+                          ) :
+                          selectedCityName.toLowerCase() === 'niterói' ?
+                          Object.keys(rjNeighborhoods).every(regiao => 
+                            !regiao.toLowerCase().includes(neighborhoodSearchTerm.toLowerCase()) &&
+                            !rjNeighborhoods[regiao].some((neighborhoodData: any) => 
                               neighborhoodData.neighborhood.toLowerCase().includes(neighborhoodSearchTerm.toLowerCase())
                             )
                           ) :
@@ -1300,7 +1379,7 @@ const Index = () => {
                       <Button
                         className="bg-yellow-600 hover:bg-yellow-700 text-white font-bold px-6 py-3"
                         onClick={() => {
-                          // Buscar nas proximidades: redefine o filtro de bairro para todos da zona ou cidade
+                          // Buscar nas proximidades: redefine o filtro de bairro para todos da zona ou região
                           if (selectedCityName && selectedNeighborhood && selectedCityName.toLowerCase() === 'rio de janeiro') {
                             // Descobrir a zona do bairro selecionado
                             let zonaDoBairro = null;
@@ -1317,8 +1396,24 @@ const Index = () => {
                               setCurrentPage(1);
                               toast.success('Buscando imóveis em todos os bairros da zona selecionada!');
                             }
+                          } else if (selectedCityName && selectedNeighborhood && selectedCityName.toLowerCase() === 'niterói') {
+                            // Descobrir a região do bairro selecionado
+                            let regiaoDoBairro = null;
+                            for (const regiao in bairrosPorRegiaoNiteroi) {
+                              if (bairrosPorRegiaoNiteroi[regiao].includes(selectedNeighborhood)) {
+                                regiaoDoBairro = regiao;
+                                break;
+                              }
+                            }
+                            if (regiaoDoBairro) {
+                              setSelectedNeighborhood(`${regiaoDoBairro} (todos)`);
+                              setSelectedNeighborhoods(bairrosPorRegiaoNiteroi[regiaoDoBairro]);
+                              setFilters((prev) => ({ ...prev, neighborhood: bairrosPorRegiaoNiteroi[regiaoDoBairro].join(',') }));
+                              setCurrentPage(1);
+                              toast.success('Buscando imóveis em todos os bairros da região selecionada!');
+                            }
                           } else if (selectedCityName && selectedNeighborhood) {
-                            // Se não for Rio, buscar todos os bairros da cidade
+                            // Se não for Rio nem Niterói, buscar todos os bairros da cidade
                             setSelectedNeighborhood('Todos os bairros');
                             setSelectedNeighborhoods([]);
                             setFilters((prev) => {

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Menu, X, ChevronDown } from "lucide-react";
 
@@ -9,6 +9,8 @@ interface HeaderProps {
 export const Header = ({ onContactClick }: HeaderProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const navItems = [
     { label: "Quem somos", href: "#" },
@@ -24,6 +26,46 @@ export const Header = ({ onContactClick }: HeaderProps) => {
     { label: "Imóveis em Leilão RJ", href: "/" },
     { label: "Imóveis Leilão SP", href: "/leilao-sp" },
   ];
+
+  // Função para abrir o dropdown
+  const handleDropdownOpen = () => {
+    if (dropdownTimeoutRef.current) {
+      clearTimeout(dropdownTimeoutRef.current);
+      dropdownTimeoutRef.current = null;
+    }
+    setIsDropdownOpen(true);
+  };
+
+  // Função para fechar o dropdown com delay
+  const handleDropdownClose = () => {
+    dropdownTimeoutRef.current = setTimeout(() => {
+      setIsDropdownOpen(false);
+    }, 400); // 400ms de delay - mais tempo para navegar
+  };
+
+  // Função para toggle do dropdown (para clique)
+  const handleDropdownToggle = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDropdownOpen(!isDropdownOpen);
+  };
+
+  // Fechar dropdown quando clicar fora
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      if (dropdownTimeoutRef.current) {
+        clearTimeout(dropdownTimeoutRef.current);
+      }
+    };
+  }, []);
 
   return (
     <header className="sticky top-0 bg-white shadow-md z-50">
@@ -55,22 +97,28 @@ export const Header = ({ onContactClick }: HeaderProps) => {
                 <li key={item.label} className="relative">
                   {item.hasDropdown ? (
                     <div 
+                      ref={dropdownRef}
                       className="relative"
-                      onMouseEnter={() => setIsDropdownOpen(true)}
-                      onMouseLeave={() => setIsDropdownOpen(false)}
+                      onMouseEnter={handleDropdownOpen}
+                      onMouseLeave={handleDropdownClose}
                     >
                       <button
+                        onClick={handleDropdownToggle}
                         className={`flex items-center gap-1 py-3 lg:py-2 px-2 text-sm lg:text-base text-secondary hover:text-primary transition-colors rounded lg:rounded-none hover:bg-gray-50 lg:hover:bg-transparent ${
                           item.active ? 'text-primary font-medium relative lg:after:content-[""] lg:after:absolute lg:after:bottom-0 lg:after:left-0 lg:after:w-full lg:after:h-0.5 lg:after:bg-primary' : ''
                         }`}
                       >
                         {item.label}
-                        <ChevronDown className="h-4 w-4" />
+                        <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`} />
                       </button>
                       
                       {/* Dropdown Menu */}
                       {isDropdownOpen && (
-                        <div className="absolute top-full left-0 mt-1 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-50">
+                        <div 
+                          className="absolute top-full left-0 mt-1 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-50"
+                          onMouseEnter={handleDropdownOpen}
+                          onMouseLeave={handleDropdownClose}
+                        >
                           <ul className="py-1">
                             {dropdownItems.map((dropdownItem) => (
                               <li key={dropdownItem.label}>
@@ -80,6 +128,9 @@ export const Header = ({ onContactClick }: HeaderProps) => {
                                   onClick={() => {
                                     setIsMenuOpen(false);
                                     setIsDropdownOpen(false);
+                                    if (dropdownTimeoutRef.current) {
+                                      clearTimeout(dropdownTimeoutRef.current);
+                                    }
                                   }}
                                 >
                                   {dropdownItem.label}

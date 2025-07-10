@@ -150,9 +150,6 @@ export const PropertyDetailInfo = ({ property, rawPropertyData }: PropertyDetail
                 <a href="#" className="text-[#d68e08] hover:text-[#b8780a] p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors" title="LinkedIn">
                   <Linkedin size={18} />
                 </a>
-                <a href="#" className="text-green-600 hover:text-green-700 p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors" title="WhatsApp">
-                  <MessageCircle size={18} />
-                </a>
                 <a href="#" className="text-red-500 hover:text-red-600 p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors" title="E-mail">
                   <Mail size={18} />
                 </a>

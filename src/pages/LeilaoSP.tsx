@@ -14,13 +14,14 @@ import { NewsletterBottomSection } from "@/components/NewsletterBottomSection";
 import { Footer } from "@/components/Footer";
 import OpportunityPopup from "@/components/OpportunityPopup";
 import WhatsAppModal from "@/components/WhatsAppModal";
-import { Search, MessageCircle, Filter, X, MapPin, ChevronDown, Home, Building, Tractor, Trees, FileText, Globe, DollarSign, CalendarIcon, Car, SquareStack, Warehouse, Gavel, Mail } from "lucide-react";
+import { Search, MessageCircle, Filter, X, MapPin, ChevronDown, Home, Building, Tractor, Trees, FileText, Globe, DollarSign, CalendarIcon, Car, SquareStack, Warehouse, Gavel, Mail, Share2, Copy } from "lucide-react";
 import { WhatsAppIcon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useFilterParams } from "@/hooks/useFilterParams";
 
 // Interface para os dados dos imóveis
 interface Property {
@@ -60,6 +61,8 @@ interface Filters {
   financiamento?: boolean; // Filtro para leilão com financiamento
   fgts?: boolean; // Filtro para leilão que aceita FGTS
   parcelamento?: boolean; // Filtro para parcelamento
+  neighborhoods?: string[]; // Para múltiplos bairros
+  cities?: string[]; // Para múltiplas cidades
 }
 
 // Interface para as faixas de preço
@@ -102,6 +105,9 @@ const AUCTION_TYPE_EXTRAJUDICIAL = "EXTRAJUDICIAL";
 const AUCTION_TYPE_EXTRAJUDICIAL_FINANCIAMENTO = "EXTRAJUDICIAL FINANCIÁVEL";
 
 const LeilaoSP = () => {
+  // Hook para gerenciar filtros na URL
+  const { parseFiltersFromURL, updateURL, clearFiltersFromURL, getShareableURL, createShareableURL } = useFilterParams();
+
   // Estados para os imóveis e paginação
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
@@ -208,6 +214,103 @@ const LeilaoSP = () => {
       return () => clearTimeout(timer);
     }
   }, []);
+
+  // Carregar filtros da URL quando a página carrega
+  useEffect(() => {
+    const urlFilters = parseFiltersFromURL();
+    
+    if (Object.keys(urlFilters).length > 0) {
+      // Aplicar filtros da URL ao estado
+      if (urlFilters.cities && urlFilters.cities.length > 0) {
+        setSelectedCities(urlFilters.cities);
+        if (urlFilters.cities.length === 1) {
+          setSelectedCity(urlFilters.cities[0]);
+          setSelectedCityName(urlFilters.cities[0]);
+        } else {
+          setSelectedCity(`Várias cidades (${urlFilters.cities.length})`);
+        }
+      } else if (urlFilters.city) {
+        setSelectedCity(urlFilters.city);
+        setSelectedCityName(urlFilters.city);
+        setSelectedCities([urlFilters.city]);
+      }
+      
+      if (urlFilters.neighborhoods && urlFilters.neighborhoods.length > 0) {
+        setSelectedNeighborhoods(urlFilters.neighborhoods);
+        if (urlFilters.neighborhoods.length === 1) {
+          setSelectedNeighborhood(urlFilters.neighborhoods[0]);
+        } else {
+          setSelectedNeighborhood(`Vários bairros (${urlFilters.neighborhoods.length})`);
+        }
+      } else if (urlFilters.neighborhood) {
+        setSelectedNeighborhood(urlFilters.neighborhood);
+        setSelectedNeighborhoods([urlFilters.neighborhood]);
+      }
+      
+      if (urlFilters.type) {
+        // Encontrar o tipo correspondente e aplicar
+        const propertyTypeData = propertyTypes.find(p => p.type === urlFilters.type);
+        if (propertyTypeData) {
+          const formattedTypeName = propertyTypeData.type.charAt(0).toUpperCase() + propertyTypeData.type.slice(1).toLowerCase();
+          let icon = <Globe className="h-4 w-4" />;
+          const typeLC = propertyTypeData.type.toLowerCase();
+          
+          if (typeLC === 'apartamento' || typeLC === 'comercial' || typeLC === 'prédio' || typeLC === 'galpão') {
+            icon = <Building className="h-4 w-4" />;
+          } else if (typeLC === 'casa') {
+            icon = <Home className="h-4 w-4" />;
+          } else if (typeLC === 'terreno') {
+            icon = <Trees className="h-4 w-4" />;
+          } else if (typeLC === 'rural' || typeLC === 'fazenda' || typeLC === 'chácara') {
+            icon = <Tractor className="h-4 w-4" />;
+          } else if (typeLC === 'estacionamento') {
+            icon = <Car className="h-4 w-4" />;
+          } else if (typeLC === 'área') {
+            icon = <SquareStack className="h-4 w-4" />;
+          } else {
+            icon = <FileText className="h-4 w-4" />;
+          }
+          
+          setSelectedType({ label: formattedTypeName, icon, originalValue: propertyTypeData.type });
+        }
+      }
+      
+      if (urlFilters.location) {
+        setLocationInput(urlFilters.location);
+      }
+      
+      if (urlFilters.keyword) {
+        setKeywordInput(urlFilters.keyword);
+      }
+      
+      if (urlFilters.hasSecondAuction) {
+        setFilterSecondAuction(true);
+      }
+      
+      if (urlFilters.priceRange) {
+        // Encontrar a faixa de preço correspondente
+        const priceRange = priceRanges.find(range => 
+          range.min === urlFilters.priceRange?.min && range.max === urlFilters.priceRange?.max
+        );
+        if (priceRange) {
+          setSelectedPriceRange(priceRange);
+        }
+      }
+      
+      if (urlFilters.auctionType) {
+        if (urlFilters.auctionType === "Judicial") {
+          setSelectedAuctionType(AUCTION_TYPE_JUDICIAL);
+        } else if (urlFilters.auctionType === "EXTRAJUDICIAL_CUSTOM" && urlFilters.financiamento) {
+          setSelectedAuctionType(AUCTION_TYPE_EXTRAJUDICIAL_FINANCIAMENTO);
+        } else if (urlFilters.auctionType === "EXTRAJUDICIAL_CUSTOM") {
+          setSelectedAuctionType(AUCTION_TYPE_EXTRAJUDICIAL);
+        }
+      }
+      
+      // Aplicar os filtros
+      setFilters(urlFilters);
+    }
+  }, [parseFiltersFromURL, propertyTypes]); // Dependência nos propertyTypes para garantir que estejam carregados
 
   // Inicializar São Paulo e carregar dados
   useEffect(() => {
@@ -481,6 +584,7 @@ const LeilaoSP = () => {
     // Verificar se há cidade selecionada
     if (selectedCities.length > 0) {
       newFilters.city = selectedCities.join(','); // Passa como string separada por vírgula
+      newFilters.cities = selectedCities; // Para URL params
     } else if (selectedCity && selectedCity !== "Selecione a cidade") {
       // Compatibilidade: se só uma cidade foi selecionada pelo modo antigo
       const cityName = selectedCity.split(" (")[0];
@@ -496,6 +600,7 @@ const LeilaoSP = () => {
     // Verificar se há bairros selecionados (pode ser 1 ou vários)
     if (selectedNeighborhoods.length > 0) {
       newFilters.neighborhood = selectedNeighborhoods.join(','); // Passa como string separada por vírgula
+      newFilters.neighborhoods = selectedNeighborhoods; // Para URL params
     } else if (selectedNeighborhood && selectedNeighborhood !== "Selecione o bairro") {
       // Compatibilidade: se só um bairro foi selecionado pelo modo antigo
       const neighborhoodName = selectedNeighborhood.split(" (")[0];
@@ -542,6 +647,9 @@ const LeilaoSP = () => {
     
     // Aplicar filtros
     setFilters(newFilters);
+    
+    // Atualizar URL com os filtros aplicados
+    updateURL(newFilters);
     
     // Resetar para a primeira página quando aplicar filtros
     setCurrentPage(1);
@@ -773,6 +881,9 @@ const LeilaoSP = () => {
     setFilters({});
     setCurrentPage(1);
     
+    // Limpar filtros da URL
+    clearFiltersFromURL();
+    
     // Notificação de filtros limpos
     toast.success('Filtros limpos com sucesso!');
   };
@@ -785,6 +896,61 @@ const LeilaoSP = () => {
     setInterestPhone("");
     setInterestEmail("");
     toast.success('Seus dados foram registrados! Entraremos em contato caso apareça um imóvel com esse perfil.');
+  };
+
+  // Função para compartilhar o link dos filtros atuais
+  const shareCurrentFilters = () => {
+    const currentUrl = getShareableURL();
+    
+    if (navigator.share) {
+      // Usar Web Share API se disponível (mobile)
+      navigator.share({
+        title: 'Filtros de Leilões - São Paulo',
+        text: 'Confira estes imóveis em leilão com os filtros que selecionei!',
+        url: currentUrl
+      }).catch(() => {
+        // Se falhar, copiar para clipboard
+        copyToClipboard(currentUrl);
+      });
+    } else {
+      // Copiar para clipboard
+      copyToClipboard(currentUrl);
+    }
+  };
+
+  // Função para copiar texto para a área de transferência
+  const copyToClipboard = (text: string) => {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text).then(() => {
+        toast.success('Link copiado para a área de transferência!');
+      }).catch(() => {
+        // Fallback para navegadores mais antigos
+        fallbackCopyTextToClipboard(text);
+      });
+    } else {
+      fallbackCopyTextToClipboard(text);
+    }
+  };
+
+  // Fallback para copiar texto
+  const fallbackCopyTextToClipboard = (text: string) => {
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    textArea.style.top = "0";
+    textArea.style.left = "0";
+    textArea.style.position = "fixed";
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    
+    try {
+      document.execCommand('copy');
+      toast.success('Link copiado para a área de transferência!');
+    } catch (err) {
+      toast.error('Não foi possível copiar o link.');
+    }
+    
+    document.body.removeChild(textArea);
   };
 
 
@@ -1095,18 +1261,29 @@ const LeilaoSP = () => {
               </div>
               
               {/* Botões de Buscar e Limpar */}
-              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+              <div className="flex flex-col gap-3 sm:gap-4">
+                <div className="flex gap-3 sm:gap-4">
+                  <Button 
+                    className="flex-1 py-3 sm:py-3 bg-[#F44336] hover:bg-[#e53935] text-white font-bold text-base"
+                    onClick={clearAllFilters}
+                  >
+                    Limpar Filtros
+                  </Button>
+                  <Button 
+                    className="flex-1 py-3 sm:py-3 bg-[#d68e08] hover:bg-[#b8780a] text-white font-bold text-base"
+                    onClick={applyFilters}
+                  >
+                    Buscar Imóveis
+                  </Button>
+                </div>
+                
+                {/* Botão de compartilhar filtros */}
                 <Button 
-                  className="flex-1 py-3 sm:py-3 bg-[#F44336] hover:bg-[#e53935] text-white font-bold text-base"
-                  onClick={clearAllFilters}
+                  className="w-full py-3 sm:py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm flex items-center justify-center gap-2"
+                  onClick={shareCurrentFilters}
                 >
-                  Limpar Filtros
-                </Button>
-                <Button 
-                  className="flex-1 py-3 sm:py-3 bg-[#d68e08] hover:bg-[#b8780a] text-white font-bold text-base"
-                  onClick={applyFilters}
-                >
-                  Buscar Imóveis
+                  <Share2 className="h-4 w-4" />
+                  Compartilhar Link dos Filtros
                 </Button>
               </div>
             </div>

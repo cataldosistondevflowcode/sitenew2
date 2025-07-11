@@ -78,28 +78,81 @@ interface SelectedType {
 
 const ITEMS_PER_PAGE = 40;
 
-// Definição dos bairros por zona do Rio de Janeiro
+// Definição dos bairros por zona do Rio de Janeiro e principais cidades do RJ
 const bairrosPorZonaRJ: Record<string, string[]> = {
-  'Zona Central': [
-    'Benfica', 'Caju', 'Catumbi', 'Centro', 'Cidade Nova', 'Estácio', 'Gamboa', 'Glória', 'Lapa', 'Paquetá', 'Rio Comprido', 'Santa Teresa', 'Santo Cristo', 'São Cristóvão', 'Saúde'
+  'Zona Central (Rio de Janeiro)': [
+    'Benfica', 'Caju', 'Catumbi', 'Centro', 'Cidade Nova', 'Estácio', 'Gamboa', 'Glória', 'Lapa', 'Paquetá', 'Rio Comprido', 'Santa Teresa', 'Santo Cristo', 'São Cristóvão', 'Saúde', 'Vasco da Gama'
   ],
-  'Zona Norte': [
+  'Zona Norte (Rio de Janeiro)': [
     'Abolição', 'Acari', 'Água Santa', 'Alto da Boa Vista', 'Anchieta', 'Andaraí', 'Barros Filho', 'Bento Ribeiro', 'Bonsucesso', 'Brás de Pina', 'Cachambi', 'Campinho', 'Cascadura', 'Cavalcanti', 'Cidade Universitária', 'Coelho Neto', 'Colégio', 'Cordovil', 'Costa Barros', 'Del Castilho', 'Encantado', 'Engenheiro Leal', 'Engenho da Rainha', 'Engenho de Dentro', 'Engenho Novo', 'Grajaú', 'Guadalupe', 'Higienópolis', 'Honório Gurgel', 
     // Ilha do Governador (mantida na busca principal com sub-bairros)
     'Ilha do Governador', 'Bancários', 'Cacuia', 'Cocotá', 'Freguesia', 'Galeão', 'Jardim Carioca', 'Jardim Guanabara', 'Moneró', 'Pitangueiras', 'Portuguesa', 'Praia da Bandeira', 'Ribeira', 'Tauá', 'Zumbi',
-    'Inhaúma', 'Irajá', 'Jacaré', 'Jardim América', 'Lins de Vasconcelos', 'Madureira', 'Mangueira', 'Manguinhos', 'Maracanã', 'Marechal Hermes', 'Maria da Graça', 'Méier', 'Olaria', 'Oswaldo Cruz', 'Parada de Lucas', 'Pavuna', 'Penha', 'Penha Circular', 'Piedade', 'Pilares', 'Praça da Bandeira', 'Quintino Bocaiuva', 'Ramos', 'Riachuelo', 'Ricardo de Albuquerque', 'Rocha', 'Rocha Miranda', 'Sampaio', 'São Francisco Xavier', 'Tijuca', 'Todos os Santos', 'Tomás Coelho', 'Turiaçu', 'Vaz Lobo', 'Vicente de Carvalho', 'Vila da Penha', 'Vila Isabel', 'Vista Alegre'
+    'Inhaúma', 'Irajá', 'Jacaré', 'Jardim América', 'Lins de Vasconcelos', 'Madureira', 'Mangueira', 'Manguinhos', 'Maracanã', 'Marechal Hermes', 'Maria da Graça', 'Méier', 'Olaria', 'Oswaldo Cruz', 'Parada de Lucas', 'Pavuna', 'Penha', 'Penha Circular', 'Piedade', 'Pilares', 'Praça da Bandeira', 'Quintino Bocaiuva', 'Ramos', 'Riachuelo', 'Ricardo de Albuquerque', 'Rocha', 'Rocha Miranda', 'Sampaio', 'São Francisco Xavier', 'Tijuca', 'Todos os Santos', 'Tomás Coelho', 'Turiaçu', 'Vaz Lobo', 'Vicente de Carvalho', 'Vila da Penha', 'Vila Isabel', 'Vista Alegre', 'Vigário Geral', 'Complexo do Alemão', 'Maré'
   ],
-  'Zona Oeste': [
+  'Zona Oeste (Rio de Janeiro)': [
     'Bangu', 'Barra da Tijuca', 'Barra de Guaratiba',
     // Barra Olímpica (mantida na busca principal com sub-bairros)
     'Barra Olímpica', 'Camorim',
     'Campo dos Afonsos', 'Campo Grande', 'Cosmos', 'Deodoro', 'Grumari', 'Guaratiba', 'Inhoaíba', 'Itanhangá',
     // Jacarepaguá (mantida na busca principal com sub-bairros)
     'Jacarepaguá', 'Anil', 'Curicica', 'Freguesia', 'Pechincha', 'Praça Seca', 'Tanque', 'Taquara', 'Vila Valqueire',
-    'Jardim Sulacap', 'Joá', 'Magalhães Bastos', 'Paciência', 'Padre Miguel', 'Pedra de Guaratiba', 'Realengo', 'Recreio dos Bandeirantes', 'Santa Cruz', 'Santíssimo', 'Senador Camará', 'Senador Vasconcelos', 'Sepetiba', 'Vargem Grande', 'Vargem Pequena', 'Vila Militar'
+    'Jardim Sulacap', 'Joá', 'Magalhães Bastos', 'Paciência', 'Padre Miguel', 'Pedra de Guaratiba', 'Realengo', 'Recreio dos Bandeirantes', 'Santa Cruz', 'Santíssimo', 'Senador Camará', 'Senador Vasconcelos', 'Sepetiba', 'Vargem Grande', 'Vargem Pequena', 'Vila Militar', 'Vila Kennedy', 'Cidade de Deus', 'Gardênia Azul', 'Gericinó'
   ],
-  'Zona Sul': [
-    'Botafogo', 'Catete', 'Copacabana', 'Cosme Velho', 'Flamengo', 'Gávea', 'Humaitá', 'Ipanema', 'Jardim Botânico', 'Lagoa', 'Laranjeiras', 'Leblon', 'Leme', 'São Conrado', 'Urca'
+  'Zona Sul (Rio de Janeiro)': [
+    'Botafogo', 'Catete', 'Copacabana', 'Cosme Velho', 'Flamengo', 'Gávea', 'Humaitá', 'Ipanema', 'Jardim Botânico', 'Lagoa', 'Laranjeiras', 'Leblon', 'Leme', 'São Conrado', 'Urca', 'Rocinha', 'Vidigal'
+  ],
+  'Niterói - Região Norte e Central': [
+    'Baldeador', 'Barreto', 'Caramujo', 'Cubango', 'Engenhoca', 'Fonseca', 'Ilha da Conceição', 'Santa Bárbara', 'Santana', 'São Lourenço', 'Tenente Jardim', 'Viçoso Jardim', 'Centro'
+  ],
+  'Niterói - Região Praias da Baía': [
+    'Bairro de Fátima', 'Boa Viagem', 'Cachoeiras', 'Charitas', 'Gragoatá', 'Icaraí', 'Ingá', 'Jurujuba', 'Pé Pequeno', 'Santa Rosa', 'São Domingos', 'São Francisco', 'Viradouro', 'Vital Brazil'
+  ],
+  'Niterói - Região Oceânica': [
+    'Cafubá', 'Camboinhas', 'Engenho do Mato', 'Itacoatiara', 'Itaipu', 'Jacaré', 'Jardim Imbuí', 'Maravista', 'Piratininga', 'Santo Antônio', 'Serra Grande'
+  ],
+  'Niterói - Região de Pendotiba': [
+    'Badu', 'Cantagalo', 'Ititioca', 'Largo da Batalha', 'Maceió', 'Maria Paula', 'Matapaca', 'Sapê', 'Vila Progresso'
+  ],
+  'Niterói - Região Leste': [
+    'Muriqui', 'Rio do Ouro', 'Várzea das Moças'
+  ],
+  'São Gonçalo': [
+    'Alcântara', 'Arsenal', 'Brasilândia', 'Gradim', 'Ipiíba', 'Itaóca', 'Jóquei Club', 'Laranjal', 'Luiz Caçador', 'Marambaia', 'Monjolos', 'Mutuá', 'Mutuapira', 'Neves', 'Nova Cidade', 'Palmeiras', 'Paraíso', 'Patronato', 'Porto da Madama', 'Porto da Pedra', 'Porto do Rosa', 'Rocha', 'Salgueiro', 'Santa Catarina', 'Santa Isabel', 'Santa Luzia', 'Tiradentes', 'Tribobó', 'Trindade', 'Venda da Cruz', 'Vista Alegre', 'Zé Garoto'
+  ],
+  'Duque de Caxias': [
+    'Água Santa', 'Amapá', 'Bar dos Cavaleiros', 'Barro Branco', 'Campos Elíseos', 'Capivari', 'Chácaras Arcampo', 'Cidade dos Meninos', 'Copacabana', 'Doutor Laureano', 'Figueira', 'Gramacho', 'Imbariê', 'Jardim 25 de Agosto', 'Jardim Anhangá', 'Jardim Gramacho', 'Jardim Primavera', 'Lamarão', 'Parada Angélica', 'Parada Morabi', 'Parque Duque', 'Periquitos', 'Pilar', 'Santa Cruz da Serra', 'Santa Lúcia', 'Saracuruna', 'Thomaz Coelho', 'Vila São Luís', 'Xerém'
+  ],
+  'Nova Iguaçu': [
+    'Austin', 'Cabuçu', 'Centro', 'Comendador Soares', 'Danon', 'Grama', 'Jardim Alvorada', 'Jardim Nova Era', 'Km 32', 'Luz', 'Miguel Couto', 'Posse', 'Rancho Novo', 'Tinguá', 'União', 'Vila de Cava'
+  ],
+  'São João de Meriti': [
+    'Agostinho Porto', 'Centro', 'Coelho da Rocha', 'Éden', 'Jardim Meriti', 'Tomazinho', 'Vilar dos Teles'
+  ],
+  'Belford Roxo': [
+    'Areia Branca', 'Babi', 'Heliópolis', 'Lote XV', 'Nova Aurora', 'Parque Amorim', 'São Bento', 'Wona'
+  ],
+  'Cabo Frio': [
+    'Algodoal', 'Braga', 'Centro', 'Jacaré', 'Jardim Caiçara', 'Jardim Esperança', 'Jardim Excelsior', 'Maria Joaquina', 'Novo Portinho', 'Palmeiras', 'Parque Burle', 'Passagem', 'Peró', 'Portinho', 'Praia do Forte', 'Praia do Siqueira', 'São Bento da Lagoa', 'Tamoios', 'Unamar'
+  ],
+  'Campos dos Goytacazes': [
+    'Centro', 'Guarus', 'Pelinca', 'Parque Califórnia', 'Parque Riachuelo', 'Parque Santo Amaro', 'Parque Tamandaré', 'Ururaí', 'Jardim Carioca', 'Horto', 'Parque Leopoldina', 'Parque Imperial'
+  ],
+  'Petrópolis': [
+    'Centro', 'Cascatinha', 'Corrêas', 'Itaipava', 'Nogueira', 'Pedro do Rio', 'Posse', 'Quitandinha', 'Retiro', 'Valparaíso', 'Alto da Serra'
+  ],
+  'Volta Redonda': [
+    'Água Limpa', 'Aterrado', 'Bela Vista', 'Belmonte', 'Casa de Pedra', 'Centro', 'Conforto', 'Eucaliptal', 'Jardim Amália', 'Jardim Belvedere', 'Jardim Cidade do Aço', 'Jardim Paraíba', 'Jardim Suíça', 'Laranjal', 'Monte Castelo', 'Niterói', 'Nova Primavera', 'Ponte Alta', 'Retiro', 'Roma', 'Santa Cruz', 'São Geraldo', 'São João', 'São Luiz', 'Sessenta', 'Siderlândia', 'Três Poços', 'Vale Verde', 'Vila Brasília', 'Vila Santa Cecília', 'Voldac'
+  ],
+  'Macaé': [
+    'Ajuda', 'Aroeira', 'Barra de Macaé', 'Botafogo', 'Cabiúnas', 'Cajueiros', 'Centro', 'Glória', 'Imbetiba', 'Lagomar', 'Malvinas', 'Miramar', 'Parque Aeroporto', 'Praia Campista', 'Riviera Fluminense', 'Sol y Mar', 'Virgem Santa'
+  ],
+  'Outras Cidades': [
+    'Angra dos Reis - Centro', 'Angra dos Reis - Japuíba', 'Angra dos Reis - Paraty Mirim',
+    'Resende - Centro', 'Resende - Jardim Jalisco', 'Resende - Vila Julieta',
+    'Barra Mansa - Centro', 'Barra Mansa - Vila Elmira', 'Barra Mansa - Ano Bom',
+    'Nova Friburgo - Centro', 'Nova Friburgo - Conselheiro Paulino', 'Nova Friburgo - Olaria',
+    'Teresópolis - Centro', 'Teresópolis - Várzea', 'Teresópolis - Alto',
+    'Três Rios - Centro', 'Três Rios - Caixa D\'Água Velha'
   ]
 };
 
@@ -139,14 +192,41 @@ const AUCTION_TYPE_JUDICIAL = "JUDICIAL";
 const AUCTION_TYPE_EXTRAJUDICIAL = "EXTRAJUDICIAL";
 const AUCTION_TYPE_EXTRAJUDICIAL_FINANCIAMENTO = "EXTRAJUDICIAL FINANCIÁVEL";
 
-// Definição das cidades por região do RJ
+// Definição das cidades por região do RJ (todas as 92 cidades)
 const cidadesPorRegiaoRJ: Record<string, string[]> = {
-  "Região Capital": ["Rio de Janeiro"],
-  "Região Serrana": ["Petrópolis", "Três Rios", "Nova Friburgo", "Teresópolis", "Magé"],
-  "Região Norte Fluminense": ["Campos dos Goytacazes", "Itaperuna", "Macaé"],
-  "Região Sul Fluminense": ["Volta Redonda", "Resende", "Angra dos Reis", "Barra do Piraí"],
-  "Região Baixada Fluminense": ["São João de Meriti", "Duque de Caxias", "Nova Iguaçu"],
-  "Região Niterói e Baixada Litorânea": ["Niterói", "Itaboraí", "São Pedro da Aldeia", "São Gonçalo"]
+  "Região Metropolitana": [
+    "Rio de Janeiro", "Niterói", "São Gonçalo", "Duque de Caxias", "Nova Iguaçu", "São João de Meriti", 
+    "Belford Roxo", "Nilópolis", "Itaboraí", "Maricá", "Magé", "Guapimirim", "Queimados", "Japeri", 
+    "Seropédica", "Paracambi", "Itaguaí", "Mangaratiba", "Mesquita", "Tanguá", "Cachoeiras de Macacu", 
+    "Rio Bonito"
+  ],
+  "Região dos Lagos": [
+    "Cabo Frio", "Búzios", "Arraial do Cabo", "São Pedro da Aldeia", "Araruama", "Saquarema", 
+    "Iguaba Grande", "Silva Jardim", "Casimiro de Abreu"
+  ],
+  "Região Norte Fluminense": [
+    "Campos dos Goytacazes", "Macaé", "Rio das Ostras", "São João da Barra", "São Fidélis", 
+    "Conceição de Macabu", "Carapebus", "Quissamã", "São Francisco de Itabapoana"
+  ],
+  "Região Serrana": [
+    "Petrópolis", "Nova Friburgo", "Teresópolis", "Friburgo", "Cantagalo", "Cordeiro", "Macuco", 
+    "Bom Jardim", "Duas Barras", "Santa Maria Madalena", "São José do Vale do Rio Preto", 
+    "São Sebastião do Alto", "Sumidouro", "Trajano de Moraes", "Carmo"
+  ],
+  "Região Sul Fluminense": [
+    "Volta Redonda", "Barra Mansa", "Resende", "Angra dos Reis", "Paraty", "Barra do Piraí", 
+    "Valença", "Rio Claro", "Piraí", "Rio das Flores", "Pinheiral", "Porto Real", "Quatis", 
+    "Itatiaia"
+  ],
+  "Região Centro-Sul Fluminense": [
+    "Três Rios", "Paraíba do Sul", "Vassouras", "Miguel Pereira", "Paty do Alferes", "Mendes", 
+    "Engenheiro Paulo de Frontin", "Sapucaia", "Areal", "Comendador Levy Gasparian"
+  ],
+  "Região Noroeste Fluminense": [
+    "Itaperuna", "Bom Jesus do Itabapoana", "Porciúncula", "Varre-Sai", "Natividade", 
+    "Laje do Muriaé", "Cambuci", "Aperibé", "Santo Antônio de Pádua", "Miracema", 
+    "São José de Ubá", "Itaocara", "Cardoso Moreira", "Italva"
+  ]
 };
 
 const Index = () => {
@@ -835,20 +915,25 @@ const Index = () => {
           neighborhoodCount[item.bairro] = (neighborhoodCount[item.bairro] || 0) + 1;
         }
       });
-      // Se for Rio de Janeiro, mostrar todos os bairros da lista fixa
+      
+      // Se for Rio de Janeiro, mostrar todos os bairros da lista fixa por zona
       if (cityName.toLowerCase() === 'rio de janeiro') {
         const bairrosAgrupados: Record<string, { neighborhood: string, count: number }[]> = {};
-        Object.keys(bairrosPorZonaRJ).forEach(zona => {
-          bairrosAgrupados[zona] = bairrosPorZonaRJ[zona].map(bairro => ({
-            neighborhood: bairro,
-            count: neighborhoodCount[bairro] || 0
-          }));
+        // Usar apenas as zonas do Rio de Janeiro
+        const zonasRJ = ['Zona Central (Rio de Janeiro)', 'Zona Norte (Rio de Janeiro)', 'Zona Sul (Rio de Janeiro)', 'Zona Oeste (Rio de Janeiro)'];
+        zonasRJ.forEach(zona => {
+          if (bairrosPorZonaRJ[zona]) {
+            bairrosAgrupados[zona] = bairrosPorZonaRJ[zona].map(bairro => ({
+              neighborhood: bairro,
+              count: neighborhoodCount[bairro] || 0
+            }));
+          }
         });
         // Adicionar bairros "Outros" que estão no banco mas não na lista fixa
         Object.keys(neighborhoodCount).forEach(bairro => {
           let found = false;
-          for (const zona in bairrosPorZonaRJ) {
-            if (bairrosPorZonaRJ[zona].map(b => b.toLowerCase()).includes(bairro.toLowerCase())) {
+          for (const zona of zonasRJ) {
+            if (bairrosPorZonaRJ[zona] && bairrosPorZonaRJ[zona].map(b => b.toLowerCase()).includes(bairro.toLowerCase())) {
               found = true;
               break;
             }
@@ -859,8 +944,9 @@ const Index = () => {
           }
         });
         setRjNeighborhoods(bairrosAgrupados as any);
-      } else if (cityName.toLowerCase() === 'niterói') {
-        // Se for Niterói, mostrar todos os bairros da lista fixa por região
+      } 
+      // Se for Niterói, mostrar todos os bairros da lista fixa por região
+      else if (cityName.toLowerCase() === 'niterói') {
         const bairrosAgrupados: Record<string, { neighborhood: string, count: number }[]> = {};
         Object.keys(bairrosPorRegiaoNiteroi).forEach(regiao => {
           bairrosAgrupados[regiao] = bairrosPorRegiaoNiteroi[regiao].map(bairro => ({
@@ -868,9 +954,48 @@ const Index = () => {
             count: neighborhoodCount[bairro] || 0
           }));
         });
+        // Adicionar bairros "Outros" se houver
+        Object.keys(neighborhoodCount).forEach(bairro => {
+          let found = false;
+          for (const regiao in bairrosPorRegiaoNiteroi) {
+            if (bairrosPorRegiaoNiteroi[regiao].map(b => b.toLowerCase()).includes(bairro.toLowerCase())) {
+              found = true;
+              break;
+            }
+          }
+          if (!found) {
+            if (!bairrosAgrupados['Outros']) bairrosAgrupados['Outros'] = [];
+            bairrosAgrupados['Outros'].push({ neighborhood: bairro, count: neighborhoodCount[bairro] });
+          }
+        });
         setRjNeighborhoods(bairrosAgrupados as any);
-      } else {
-        // Normal, lista simples
+      }
+      // Se for uma das principais cidades com bairros pré-definidos
+      else if (bairrosPorZonaRJ[cityName]) {
+        const bairrosArray = bairrosPorZonaRJ[cityName].map(bairro => ({
+          neighborhood: bairro,
+          count: neighborhoodCount[bairro] || 0
+        }));
+        
+        // Adicionar bairros do banco que não estão na lista fixa
+        Object.keys(neighborhoodCount).forEach(bairro => {
+          if (!bairrosPorZonaRJ[cityName].map(b => b.toLowerCase()).includes(bairro.toLowerCase())) {
+            bairrosArray.push({ neighborhood: bairro, count: neighborhoodCount[bairro] });
+          }
+        });
+        
+        // Ordenar por contagem decrescente
+        bairrosArray.sort((a, b) => {
+          if (b.count !== a.count) {
+            return b.count - a.count;
+          }
+          return a.neighborhood.localeCompare(b.neighborhood, 'pt-BR');
+        });
+        
+        setRjNeighborhoods(bairrosArray);
+      }
+      // Para outras cidades, usar lista simples do banco de dados
+      else {
         const neighborhoodsArray = Object.keys(neighborhoodCount)
           .filter(neighborhood => neighborhood.trim() !== '')
           .map(neighborhood => ({

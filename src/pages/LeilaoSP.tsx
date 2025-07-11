@@ -14,7 +14,7 @@ import { NewsletterBottomSection } from "@/components/NewsletterBottomSection";
 import { Footer } from "@/components/Footer";
 import OpportunityPopup from "@/components/OpportunityPopup";
 import WhatsAppModal from "@/components/WhatsAppModal";
-import { Search, MessageCircle, Filter, X, MapPin, ChevronDown, Home, Building, Tractor, Trees, FileText, Globe, DollarSign, CalendarIcon, Car, SquareStack, Warehouse, Gavel, Mail, Share2, Copy } from "lucide-react";
+import { Search, MessageCircle, Filter, X, MapPin, ChevronDown, Home, Building, Tractor, Trees, FileText, Globe, DollarSign, CalendarIcon, Car, SquareStack, Warehouse, Gavel, Mail } from "lucide-react";
 import { WhatsAppIcon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -106,7 +106,7 @@ const AUCTION_TYPE_EXTRAJUDICIAL_FINANCIAMENTO = "EXTRAJUDICIAL FINANCIÁVEL";
 
 const LeilaoSP = () => {
   // Hook para gerenciar filtros na URL
-  const { parseFiltersFromURL, updateURL, clearFiltersFromURL, getShareableURL, createShareableURL } = useFilterParams();
+  const { parseFiltersFromURL, updateURL, clearFiltersFromURL } = useFilterParams();
 
   // Estados para os imóveis e paginação
   const [properties, setProperties] = useState<Property[]>([]);
@@ -898,60 +898,7 @@ const LeilaoSP = () => {
     toast.success('Seus dados foram registrados! Entraremos em contato caso apareça um imóvel com esse perfil.');
   };
 
-  // Função para compartilhar o link dos filtros atuais
-  const shareCurrentFilters = () => {
-    const currentUrl = getShareableURL();
-    
-    if (navigator.share) {
-      // Usar Web Share API se disponível (mobile)
-      navigator.share({
-        title: 'Filtros de Leilões - São Paulo',
-        text: 'Confira estes imóveis em leilão com os filtros que selecionei!',
-        url: currentUrl
-      }).catch(() => {
-        // Se falhar, copiar para clipboard
-        copyToClipboard(currentUrl);
-      });
-    } else {
-      // Copiar para clipboard
-      copyToClipboard(currentUrl);
-    }
-  };
 
-  // Função para copiar texto para a área de transferência
-  const copyToClipboard = (text: string) => {
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(text).then(() => {
-        toast.success('Link copiado para a área de transferência!');
-      }).catch(() => {
-        // Fallback para navegadores mais antigos
-        fallbackCopyTextToClipboard(text);
-      });
-    } else {
-      fallbackCopyTextToClipboard(text);
-    }
-  };
-
-  // Fallback para copiar texto
-  const fallbackCopyTextToClipboard = (text: string) => {
-    const textArea = document.createElement("textarea");
-    textArea.value = text;
-    textArea.style.top = "0";
-    textArea.style.left = "0";
-    textArea.style.position = "fixed";
-    document.body.appendChild(textArea);
-    textArea.focus();
-    textArea.select();
-    
-    try {
-      document.execCommand('copy');
-      toast.success('Link copiado para a área de transferência!');
-    } catch (err) {
-      toast.error('Não foi possível copiar o link.');
-    }
-    
-    document.body.removeChild(textArea);
-  };
 
 
 
@@ -1277,14 +1224,7 @@ const LeilaoSP = () => {
                   </Button>
                 </div>
                 
-                {/* Botão de compartilhar filtros */}
-                <Button 
-                  className="w-full py-3 sm:py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm flex items-center justify-center gap-2"
-                  onClick={shareCurrentFilters}
-                >
-                  <Share2 className="h-4 w-4" />
-                  Compartilhar Link dos Filtros
-                </Button>
+
               </div>
             </div>
             

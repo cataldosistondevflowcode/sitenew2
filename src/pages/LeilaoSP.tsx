@@ -312,6 +312,126 @@ const LeilaoSP = () => {
     }
   }, [parseFiltersFromURL, propertyTypes]); // Dependência nos propertyTypes para garantir que estejam carregados
 
+  // Função para buscar cidades de SP
+  const fetchSpCities = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('leiloes_imoveis')
+        .select('cidade')
+        .eq('estado', 'SP')
+        .not('cidade', 'is', null);
+      
+      if (error) throw error;
+      
+      // Contar ocorrências de cada cidade
+      const cityCount: Record<string, number> = {};
+      data.forEach(item => {
+        if (item.cidade && item.cidade.trim() !== '') {
+          cityCount[item.cidade] = (cityCount[item.cidade] || 0) + 1;
+        }
+      });
+      
+      // Converter para array e ordenar
+      const citiesArray = Object.keys(cityCount)
+        .map(city => ({
+          city,
+          count: cityCount[city]
+        }))
+        .sort((a, b) => a.city.localeCompare(b.city, 'pt-BR'));
+      
+      console.log(`Total de cidades de SP encontradas: ${citiesArray.length}`);
+      setRjCities(citiesArray);
+    } catch (err) {
+      console.error('Erro ao buscar cidades de SP:', err);
+    }
+  };
+
+  // Função para buscar bairros de uma cidade específica de SP
+  const fetchNeighborhoodsByCity = async (cityName?: string) => {
+    const targetCity = cityName || selectedCityName || 'São Paulo';
+    
+    try {
+      const { data, error } = await supabase
+        .from('leiloes_imoveis')
+        .select('bairro')
+        .eq('estado', 'SP')
+        .eq('cidade', targetCity)
+        .not('bairro', 'is', null);
+      
+      if (error) throw error;
+      
+      // Contar ocorrências de cada bairro
+      const neighborhoodCount: Record<string, number> = {};
+      data.forEach(item => {
+        if (item.bairro && item.bairro.trim() !== '') {
+          neighborhoodCount[item.bairro] = (neighborhoodCount[item.bairro] || 0) + 1;
+        }
+      });
+      
+      // Se for São Paulo capital, manter a estrutura por zonas para os bairros que conhecemos
+      if (targetCity === 'São Paulo') {
+        // Mostrar todos os bairros organizados por zona
+        const bairrosAgrupados: Record<string, { neighborhood: string, count: number }[]> = {};
+        
+        // Primeiro, adicionar bairros conhecidos organizados por zona
+        Object.keys(bairrosPorZonaSP).forEach(zona => {
+          bairrosAgrupados[zona] = [];
+          bairrosPorZonaSP[zona].forEach(bairro => {
+            if (neighborhoodCount[bairro]) {
+              bairrosAgrupados[zona].push({
+                neighborhood: bairro,
+                count: neighborhoodCount[bairro]
+              });
+            }
+          });
+        });
+        
+        // Adicionar bairros "Outros" que estão no banco mas não na lista fixa de zonas
+        const bairrosOutros: { neighborhood: string, count: number }[] = [];
+        Object.keys(neighborhoodCount).forEach(bairro => {
+          let found = false;
+          for (const zona in bairrosPorZonaSP) {
+            if (bairrosPorZonaSP[zona].some(b => b.toLowerCase() === bairro.toLowerCase())) {
+              found = true;
+              break;
+            }
+          }
+          if (!found) {
+            bairrosOutros.push({ neighborhood: bairro, count: neighborhoodCount[bairro] });
+          }
+        });
+        
+        // Se houver bairros "outros", adicionar à estrutura
+        if (bairrosOutros.length > 0) {
+          bairrosAgrupados['Outros Bairros'] = bairrosOutros.sort((a, b) => 
+            a.neighborhood.localeCompare(b.neighborhood, 'pt-BR')
+          );
+        }
+        
+        // Remover zonas vazias
+        Object.keys(bairrosAgrupados).forEach(zona => {
+          if (bairrosAgrupados[zona].length === 0) {
+            delete bairrosAgrupados[zona];
+          }
+        });
+        
+        setRjNeighborhoods(bairrosAgrupados as any);
+      } else {
+        // Para outras cidades, usar lista simples
+        const neighborhoodsArray = Object.keys(neighborhoodCount)
+          .map(neighborhood => ({
+            neighborhood,
+            count: neighborhoodCount[neighborhood]
+          }))
+          .sort((a, b) => a.neighborhood.localeCompare(b.neighborhood, 'pt-BR'));
+        
+        setRjNeighborhoods(neighborhoodsArray as any);
+      }
+    } catch (err) {
+      console.error(`Erro ao buscar bairros de ${targetCity}:`, err);
+    }
+  };
+
   // Inicializar São Paulo e carregar dados
   useEffect(() => {
     // Definir São Paulo como cidade selecionada automaticamente
@@ -353,10 +473,9 @@ const LeilaoSP = () => {
       }
     };
 
-
-
-    // Carregar os bairros de São Paulo automaticamente
-    fetchNeighborhoodsByCity();
+    // Carregar cidades de SP e bairros de São Paulo automaticamente
+    fetchSpCities();
+    fetchNeighborhoodsByCity('São Paulo');
     fetchPropertyTypes();
   }, []);
 
@@ -767,7 +886,7 @@ const LeilaoSP = () => {
     setSelectedRegion(null);
     setSelectedNeighborhood("Selecione o bairro");
     setSelectedNeighborhoods([]);
-    fetchNeighborhoodsByCity();
+    fetchNeighborhoodsByCity(city);
   };
   
   const selectRegion = (region: string) => {
@@ -812,54 +931,6 @@ const LeilaoSP = () => {
   const selectAuctionType = (auctionType: string) => {
     setSelectedAuctionType(auctionType);
     setShowAuctionTypeMenu(false);
-  };
-
-  // Função para buscar bairros de São Paulo
-  const fetchNeighborhoodsByCity = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('leiloes_imoveis')
-        .select('bairro')
-        .eq('estado', 'SP')
-        .eq('cidade', 'São Paulo')
-        .order('bairro')
-        .not('bairro', 'is', null);
-      if (error) throw error;
-      const neighborhoodCount: Record<string, number> = {};
-      data.forEach(item => {
-        if (item.bairro && item.bairro.trim() !== '') {
-          neighborhoodCount[item.bairro] = (neighborhoodCount[item.bairro] || 0) + 1;
-        }
-      });
-      
-      // Mostrar todos os bairros organizados por zona
-      const bairrosAgrupados: Record<string, { neighborhood: string, count: number }[]> = {};
-      Object.keys(bairrosPorZonaSP).forEach(zona => {
-        bairrosAgrupados[zona] = bairrosPorZonaSP[zona].map(bairro => ({
-          neighborhood: bairro,
-          count: neighborhoodCount[bairro] || 0
-        }));
-      });
-      
-      // Adicionar bairros "Outros" que estão no banco mas não na lista fixa
-      Object.keys(neighborhoodCount).forEach(bairro => {
-        let found = false;
-        for (const zona in bairrosPorZonaSP) {
-          if (bairrosPorZonaSP[zona].map(b => b.toLowerCase()).includes(bairro.toLowerCase())) {
-            found = true;
-            break;
-          }
-        }
-        if (!found) {
-          if (!bairrosAgrupados['Outros']) bairrosAgrupados['Outros'] = [];
-          bairrosAgrupados['Outros'].push({ neighborhood: bairro, count: neighborhoodCount[bairro] });
-        }
-      });
-      
-      setRjNeighborhoods(bairrosAgrupados as any);
-    } catch (err) {
-      console.error('Erro ao buscar bairros de São Paulo:', err);
-    }
   };
 
   // Função para limpar todos os filtros
@@ -935,7 +1006,7 @@ const LeilaoSP = () => {
             {/* Filtros */}
             <div className={`${!isFilterOpen ? 'hidden md:block' : 'block'} bg-white p-4 sm:p-5 md:p-6 rounded-lg shadow-md`}>
               {/* Primeira linha de selects */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-4">
                 {/* Dropdown de Tipo de Imóvel */}
                 <div className="filter-dropdown relative">
                   <div 
@@ -999,7 +1070,54 @@ const LeilaoSP = () => {
                   )}
                 </div>
                 
-
+                {/* Dropdown de Cidades */}
+                <div className="filter-dropdown relative">
+                  <div 
+                    className="flex items-center justify-between w-full p-3 bg-[#fafafa] border border-gray-200 rounded-md cursor-pointer text-sm"
+                    onClick={toggleCityMenu}
+                  >
+                    <div className="flex items-center">
+                      <MapPin className="h-4 w-4 mr-2 text-gray-500" />
+                      <span>{selectedCity}</span>
+                    </div>
+                    <ChevronDown className="h-4 w-4 text-gray-500" />
+                  </div>
+                  
+                  {showCityMenu && (
+                    <div className="absolute z-40 w-full bg-white border border-gray-200 rounded-md shadow-md mt-1 max-h-[400px] overflow-y-auto">
+                      <div className="border-b border-gray-200 py-2 px-4 font-bold bg-gray-50 text-gray-700">CIDADES DE SÃO PAULO</div>
+                      <div className="p-2 border-b border-gray-200">
+                        <input
+                          type="text"
+                          placeholder="Procurar..."
+                          value={citySearchTerm}
+                          onChange={(e) => setCitySearchTerm(e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          onClick={(e) => e.stopPropagation()}
+                        />
+                      </div>
+                      {rjCities
+                        .filter(cityData => 
+                          citySearchTerm === '' || 
+                          cityData.city.toLowerCase().includes(citySearchTerm.toLowerCase())
+                        )
+                        .map((cityData, index) => (
+                        <div
+                          key={index}
+                          className="py-2 px-4 hover:bg-gray-100 cursor-pointer"
+                          onClick={() => selectCity(cityData.city)}
+                        >
+                          {cityData.city}
+                        </div>
+                      ))}
+                      {citySearchTerm !== '' && !rjCities.some(cityData => 
+                        cityData.city.toLowerCase().includes(citySearchTerm.toLowerCase())
+                      ) && (
+                        <div className="py-2 px-4 text-gray-500">Nenhuma cidade encontrada</div>
+                      )}
+                    </div>
+                  )}
+                </div>
 
                 {/* Dropdown de Bairros */}
                 <div className="filter-dropdown relative">
@@ -1149,7 +1267,7 @@ const LeilaoSP = () => {
                 </div>
               </div>
               
-              {/* Segunda linha de selects */}
+              {/* Segunda linha - Modalidade de Leilão */}
               <div className="grid grid-cols-1 gap-3 sm:gap-4 mb-4">
                 {/* Dropdown de Modalidade de Leilão */}
                 <div className="filter-dropdown relative">

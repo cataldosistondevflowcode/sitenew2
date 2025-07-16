@@ -41,7 +41,6 @@ export const AuctionBenefitsSection: React.FC = () => {
         <BenefitCard
           number="2"
           title="Compra da moradia por valor muito abaixo do mercado"
-          hasGradient={true}
         />
         <BenefitCard
           number="3"

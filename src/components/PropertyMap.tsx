@@ -173,14 +173,14 @@ export const PropertyMap: React.FC<PropertyMapProps> = ({ property, rawPropertyD
 
   return (
     <div className="w-full">
-      <div className="flex border-b border-gray-300 mb-4">
+      <div className="flex gap-1 mb-4">
         {!isImageNotFound && (
           <button
             onClick={() => setActiveTab('foto')}
-            className={`px-6 py-3 font-medium text-sm uppercase tracking-wide ${
+            className={`px-6 py-3 font-semibold text-sm uppercase tracking-wide rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl bg-gradient-to-r text-white ${
               activeTab === 'foto'
-                ? 'text-[#d68e08] border-b-2 border-[#d68e08] bg-gray-50'
-                : 'text-gray-600 hover:text-[#d68e08] hover:bg-gray-50'
+                ? 'from-[#d68e08] via-[#e6a010] to-[#d68e08]'
+                : 'from-[#b8780a] via-[#c8920e] to-[#b8780a] opacity-80 hover:opacity-100'
             }`}
           >
             Foto
@@ -188,20 +188,20 @@ export const PropertyMap: React.FC<PropertyMapProps> = ({ property, rawPropertyD
         )}
         <button
           onClick={() => setActiveTab('mapa')}
-          className={`px-6 py-3 font-medium text-sm uppercase tracking-wide ${
+          className={`px-6 py-3 font-semibold text-sm uppercase tracking-wide rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl bg-gradient-to-r text-white ${
             activeTab === 'mapa'
-              ? 'text-[#d68e08] border-b-2 border-[#d68e08] bg-gray-50'
-              : 'text-gray-600 hover:text-[#d68e08] hover:bg-gray-50'
+              ? 'from-[#d68e08] via-[#e6a010] to-[#d68e08]'
+              : 'from-[#b8780a] via-[#c8920e] to-[#b8780a] opacity-80 hover:opacity-100'
           }`}
         >
           Mapa
         </button>
         <button
           onClick={() => setActiveTab('street')}
-          className={`px-6 py-3 font-medium text-sm uppercase tracking-wide ${
+          className={`px-6 py-3 font-semibold text-sm uppercase tracking-wide rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl bg-gradient-to-r text-white ${
             activeTab === 'street'
-              ? 'text-[#d68e08] border-b-2 border-[#d68e08] bg-gray-50'
-              : 'text-gray-600 hover:text-[#d68e08] hover:bg-gray-50'
+              ? 'from-[#d68e08] via-[#e6a010] to-[#d68e08]'
+              : 'from-[#b8780a] via-[#c8920e] to-[#b8780a] opacity-80 hover:opacity-100'
           }`}
         >
           Visão da rua
@@ -210,32 +210,11 @@ export const PropertyMap: React.FC<PropertyMapProps> = ({ property, rawPropertyD
 
       <div className="relative rounded-lg overflow-hidden" style={{ height: '400px' }}>
         {activeTab === 'foto' && !isImageNotFound && (
-          <>
-            <img 
-              src={images[currentImageIndex]} 
-              alt={property.title} 
-              className="w-full h-full object-cover"
-            />
-            <button 
-              className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-70 text-white p-2 rounded-full"
-              onClick={prevImage}
-              aria-label="Imagem anterior"
-            >
-              <ChevronLeft size={24} />
-            </button>
-            
-            <button 
-              className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-70 text-white p-2 rounded-full"
-              onClick={nextImage}
-              aria-label="Próxima imagem"
-            >
-              <ChevronRight size={24} />
-            </button>
-            
-            <button className="absolute bottom-4 left-4 bg-black bg-opacity-70 text-white px-4 py-2 rounded flex items-center">
-              <span className="mr-2">Foto {currentImageIndex + 1}/{images.length}</span>
-            </button>
-          </>
+          <img 
+            src={images[currentImageIndex]} 
+            alt={property.title} 
+            className="w-full h-full object-cover"
+          />
         )}
 
         {activeTab === 'mapa' && (

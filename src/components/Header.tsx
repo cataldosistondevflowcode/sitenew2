@@ -13,13 +13,13 @@ export const Header = ({ onContactClick }: HeaderProps) => {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const navItems = [
-    { label: "Quem somos", href: "#" },
+    { label: "Quem somos", href: "https://leilaodeimoveis-cataldosiston.com/escritorio/" },
     { label: "Imóveis em Leilão", href: "/", active: true, hasDropdown: true },
-    { label: "Assessoria em leilões", href: "#" },
-    { label: "Direito Imobiliário", href: "#" },
-    { label: "Casos Reais", href: "#" },
-    { label: "Blog", href: "#" },
-    { label: "Contato", href: "#", isContact: true },
+    { label: "Assessoria em leilões", href: "https://leilaodeimoveis-cataldosiston.com/leilao-de-imoveis/" },
+    { label: "Direito Imobiliário", href: "https://leilaodeimoveis-cataldosiston.com/direito-imobiliario/" },
+    { label: "Casos Reais", href: "https://leilaodeimoveis-cataldosiston.com/casos-reais/" },
+    { label: "Blog", href: "https://leilaodeimoveis-cataldosiston.com/blog-leilao-de-imoveis/" },
+    { label: "Contato", href: "https://leilaodeimoveis-cataldosiston.com/contato/", isContact: true },
   ];
 
   const dropdownItems = [

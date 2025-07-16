@@ -61,6 +61,21 @@ const PropertyDetail = () => {
     setShowOpportunityPopup(false);
   };
 
+  // Mostrar popup de oportunidades quando a página carregar
+  useEffect(() => {
+    // Verificar se o popup já foi exibido na sessão atual
+    const popupShown = sessionStorage.getItem('opportunity-popup-shown');
+    
+    if (!popupShown) {
+      const timer = setTimeout(() => {
+        setShowOpportunityPopup(true);
+        sessionStorage.setItem('opportunity-popup-shown', 'true');
+      }, 3000); // Mostrar após 3 segundos
+
+      return () => clearTimeout(timer);
+    }
+  }, []);
+
   // Função para formatar datas no padrão brasileiro
   const formatDateToBrazilian = (dateString: string) => {
     if (!dateString) return '';

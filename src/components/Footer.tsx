@@ -1,5 +1,6 @@
 "use client";
 import * as React from "react";
+import { Link } from "react-router-dom";
 
 export const Footer: React.FC = () => {
   return (
@@ -31,10 +32,12 @@ export const Footer: React.FC = () => {
             </h3>
             <ul className="text-sm text-gray-700 space-y-2">
               <li className="hover:text-[#d68e08] cursor-pointer transition-colors">Quem Somos</li>
-              <li className="hover:text-[#d68e08] cursor-pointer transition-colors">Imóveis em Leilão RJ</li>
-              <li className="hover:text-[#d68e08] cursor-pointer transition-colors">Imóveis em Leilão SP</li>
-              <li className="hover:text-[#d68e08] cursor-pointer transition-colors">Leilões da Caixa – RJ</li>
-              <li className="hover:text-[#d68e08] cursor-pointer transition-colors">Leilões da Caixa – SP</li>
+              <li className="hover:text-[#d68e08] cursor-pointer transition-colors">
+                <Link to="/" onClick={() => window.scrollTo(0, 0)}>Imóveis em Leilão RJ</Link>
+              </li>
+              <li className="hover:text-[#d68e08] cursor-pointer transition-colors">
+                <Link to="/leilao-sp" onClick={() => window.scrollTo(0, 0)}>Imóveis em Leilão SP</Link>
+              </li>
               <li className="hover:text-[#d68e08] cursor-pointer transition-colors">Assessoria em leilões</li>
               <li className="hover:text-[#d68e08] cursor-pointer transition-colors">Direito Imobiliário</li>
               <li className="hover:text-[#d68e08] cursor-pointer transition-colors">Distrato imobiliário</li>

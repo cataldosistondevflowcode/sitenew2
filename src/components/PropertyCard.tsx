@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { loadGoogleMaps } from "../integrations/googlemaps/client";
 import { formatPropertyAddress } from "../utils/addressFormatter";
 import { createPropertyUrl } from "../utils/slugUtils";
+import { ShareModal } from "./ShareModal";
 
 interface PropertyCardProps {
   id: number;
@@ -47,6 +48,7 @@ export const PropertyCard = ({
   
   const mapRef = useRef<HTMLDivElement>(null);
   const [isImageNotFound, setIsImageNotFound] = useState(image.includes('/not-found') || !image || image === '');
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
   // Initialize map when image is not found
   useEffect(() => {
@@ -281,13 +283,24 @@ export const PropertyCard = ({
         <div className="p-2 sm:p-3 text-right border-t border-[#444] property-card-footer">
           <button 
             className="text-base sm:text-lg ml-2 sm:ml-3 text-[#d68e08] hover:text-[#b8780a] transition-colors p-1"
-            onClick={(e) => e.stopPropagation()}
+            onClick={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
+              setIsShareModalOpen(true);
+            }}
             title="Compartilhar"
           >
             <Share2 size={16} className="sm:w-[18px] sm:h-[18px]" />
           </button>
         </div>
       </div>
+      
+      <ShareModal
+        isOpen={isShareModalOpen}
+        onClose={() => setIsShareModalOpen(false)}
+        propertyUrl={createPropertyUrl(id, title)}
+        propertyTitle={title}
+      />
     </Link>
   );
 };

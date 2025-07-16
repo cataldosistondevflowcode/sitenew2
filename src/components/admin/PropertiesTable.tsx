@@ -238,7 +238,7 @@ const PropertiesTable = () => {
               <SelectTrigger className="w-40">
                 <SelectValue placeholder="Estado" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-white">
                 <SelectItem value="all">Todos os estados</SelectItem>
                 {allStates.map(state => (
                   <SelectItem key={state} value={state}>{state}</SelectItem>
@@ -250,7 +250,7 @@ const PropertiesTable = () => {
               <SelectTrigger className="w-48">
                 <SelectValue placeholder="Cidade" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-white">
                 <SelectItem value="all">Todas as cidades</SelectItem>
                 {allCities.map(city => (
                   <SelectItem key={city} value={city}>{city}</SelectItem>
@@ -262,7 +262,7 @@ const PropertiesTable = () => {
               <SelectTrigger className="w-48">
                 <SelectValue placeholder="Tipo" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-white">
                 <SelectItem value="all">Todos os tipos</SelectItem>
                 {allTypes.map(type => (
                   <SelectItem key={type} value={type}>{type}</SelectItem>
@@ -277,7 +277,7 @@ const PropertiesTable = () => {
               <SelectTrigger className="w-48">
                 <SelectValue placeholder="Tipo Leilão" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-white">
                 <SelectItem value="all">Todos os tipos</SelectItem>
                 {allAuctionTypes.map(type => (
                   <SelectItem key={type} value={type}>{type}</SelectItem>
@@ -289,7 +289,7 @@ const PropertiesTable = () => {
               <SelectTrigger className="w-32">
                 <SelectValue placeholder="FGTS" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-white">
                 <SelectItem value="all">Todos</SelectItem>
                 <SelectItem value="true">Com FGTS</SelectItem>
                 <SelectItem value="false">Sem FGTS</SelectItem>
@@ -300,7 +300,7 @@ const PropertiesTable = () => {
               <SelectTrigger className="w-40">
                 <SelectValue placeholder="Financ." />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-white">
                 <SelectItem value="all">Todos</SelectItem>
                 <SelectItem value="true">Com Financ.</SelectItem>
                 <SelectItem value="false">Sem Financ.</SelectItem>

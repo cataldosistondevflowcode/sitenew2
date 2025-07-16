@@ -591,20 +591,14 @@ const LeilaoSP = () => {
           query = query.eq('parcelamento', false);
         }
 
-        // Filtrar por data de encerramento do segundo leilão (até a data especificada)
-        if (filters.dataFimSegundoLeilao) {
-          query = query.lte('data_leilao_2', filters.dataFimSegundoLeilao);
-        }
         
         // Obter a data atual para comparação no servidor
         const currentDateForFilter = new Date();
         
         let countQuery = query;
         
-        // Adicionar filtro de data para considerar apenas leilões futuros APENAS se não há filtro de data do segundo leilão
-        if (!filters.dataFimSegundoLeilao) {
-          countQuery = countQuery.or(`data_leilao_1.is.null,data_leilao_1.gte.${currentDateForFilter.toISOString()}`);
-        }
+        // Adicionar filtro de data para considerar apenas leilões futuros
+        countQuery = countQuery.or(`data_leilao_1.is.null,data_leilao_1.gte.${currentDateForFilter.toISOString()}`);
         
         // Obter a contagem total para calcular o número de páginas
         const countResult = await countQuery;
@@ -622,10 +616,8 @@ const LeilaoSP = () => {
         const from = (currentPage - 1) * ITEMS_PER_PAGE;
         const to = from + ITEMS_PER_PAGE - 1;
 
-        // Aplicar o mesmo filtro de data na query principal APENAS se não há filtro de data do segundo leilão
-        if (!filters.dataFimSegundoLeilao) {
-          query = query.or(`data_leilao_1.is.null,data_leilao_1.gte.${currentDateForFilter.toISOString()}`);
-        }
+        // Aplicar o mesmo filtro de data na query principal
+        query = query.or(`data_leilao_1.is.null,data_leilao_1.gte.${currentDateForFilter.toISOString()}`);
 
         const { data, error } = await query
           .range(from, to)
@@ -668,6 +660,7 @@ const LeilaoSP = () => {
               imagem: item.imagem || 'https://kmiblhbe.manus.space/imovel_sao_goncalo.jpeg', // Imagem padrão caso não tenha
               descricao: item.descricao,
               data_leilao_1_original: data_leilao_1_final, // Guardar a data final para ordenação
+              data_leilao_2_original: data_leilao_2, // Guardar a data do segundo leilão para filtro
               tipo_leilao: item.tipo_leilao,
               fgts: item.fgts,
               financiamento: item.financiamento,
@@ -686,7 +679,18 @@ const LeilaoSP = () => {
             return dateA.getTime() - dateB.getTime();
           });
 
-        setProperties(formattedProperties);
+        let filteredProperties = formattedProperties;
+        if (filters.dataFimSegundoLeilao) {
+          const filterDate = new Date(filters.dataFimSegundoLeilao);
+          filteredProperties = formattedProperties.filter(property => {
+            const effectiveDate = property.data_leilao_2_original || property.data_leilao_1_original;
+            if (!effectiveDate) return false;
+            const propertyDate = new Date(effectiveDate);
+            return propertyDate <= filterDate;
+          });
+        }
+
+        setProperties(filteredProperties);
       } catch (err) {
         console.error('Erro ao buscar imóveis:', err);
         setError('Não foi possível carregar os imóveis. Tente novamente mais tarde.');

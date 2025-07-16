@@ -554,8 +554,10 @@ const LeilaoCaixaRJ = () => {
         
         let countQuery = query;
         
-        // Adicionar filtro de data para considerar apenas leilões futuros ou sem data na contagem
-        countQuery = countQuery.or(`data_leilao_1.is.null,data_leilao_1.gte.${currentDateForFilter.toISOString()}`);
+        // Adicionar filtro de data para considerar apenas leilões futuros APENAS se não há filtro de data do segundo leilão
+        if (!filters.dataFimSegundoLeilao) {
+          countQuery = countQuery.or(`data_leilao_1.is.null,data_leilao_1.gte.${currentDateForFilter.toISOString()}`);
+        }
         
         // Obter a contagem total para calcular o número de páginas
         const countResult = await countQuery;
@@ -573,8 +575,10 @@ const LeilaoCaixaRJ = () => {
         const from = (currentPage - 1) * ITEMS_PER_PAGE;
         const to = from + ITEMS_PER_PAGE - 1;
 
-        // Aplicar o mesmo filtro de data na query principal
-        query = query.or(`data_leilao_1.is.null,data_leilao_1.gte.${currentDateForFilter.toISOString()}`);
+        // Aplicar o mesmo filtro de data na query principal APENAS se não há filtro de data do segundo leilão
+        if (!filters.dataFimSegundoLeilao) {
+          query = query.or(`data_leilao_1.is.null,data_leilao_1.gte.${currentDateForFilter.toISOString()}`);
+        }
 
         const { data, error } = await query
           .range(from, to)

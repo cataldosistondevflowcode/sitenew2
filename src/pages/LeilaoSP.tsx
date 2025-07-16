@@ -228,14 +228,24 @@ const LeilaoSP = () => {
       if (urlFilters.cities && urlFilters.cities.length > 0) {
         setSelectedCities(urlFilters.cities);
         if (urlFilters.cities.length === 1) {
-          setSelectedCity(urlFilters.cities[0]);
-          setSelectedCityName(urlFilters.cities[0]);
+          if (urlFilters.cities[0] === "TODO_SP_STATE") {
+            setSelectedCity("Toda SP");
+            setSelectedCityName("TODO_SP_STATE");
+          } else {
+            setSelectedCity(urlFilters.cities[0]);
+            setSelectedCityName(urlFilters.cities[0]);
+          }
         } else {
           setSelectedCity(`Várias cidades (${urlFilters.cities.length})`);
         }
       } else if (urlFilters.city) {
-        setSelectedCity(urlFilters.city);
-        setSelectedCityName(urlFilters.city);
+        if (urlFilters.city === "TODO_SP_STATE") {
+          setSelectedCity("Toda SP");
+          setSelectedCityName("TODO_SP_STATE");
+        } else {
+          setSelectedCity(urlFilters.city);
+          setSelectedCityName(urlFilters.city);
+        }
         setSelectedCities([urlFilters.city]);
       }
       
@@ -501,7 +511,7 @@ const LeilaoSP = () => {
           .eq('estado', 'SP');
           
         // Adicionar filtros se existirem
-        if (filters.city) {
+        if (filters.city && filters.city !== "TODO_SP_STATE") {
           const cidades = filters.city.split(',').map(c => c.trim()).filter(Boolean);
           if (cidades.length > 1) {
             query = query.in('cidade', cidades);
@@ -509,6 +519,7 @@ const LeilaoSP = () => {
             query = query.eq('cidade', filters.city);
           }
         }
+        // Se for "TODO_SP_STATE", não aplicar filtro de cidade (já está limitado a SP)
         
         if (filters.type && filters.type !== "Todos os imóveis") {
           // Usar diretamente o valor original do tipo_propriedade sem converter para minúsculas
@@ -590,8 +601,10 @@ const LeilaoSP = () => {
         
         let countQuery = query;
         
-        // Adicionar filtro de data para considerar apenas leilões futuros ou sem data na contagem
-        countQuery = countQuery.or(`data_leilao_1.is.null,data_leilao_1.gte.${currentDateForFilter.toISOString()}`);
+        // Adicionar filtro de data para considerar apenas leilões futuros APENAS se não há filtro de data do segundo leilão
+        if (!filters.dataFimSegundoLeilao) {
+          countQuery = countQuery.or(`data_leilao_1.is.null,data_leilao_1.gte.${currentDateForFilter.toISOString()}`);
+        }
         
         // Obter a contagem total para calcular o número de páginas
         const countResult = await countQuery;
@@ -609,8 +622,10 @@ const LeilaoSP = () => {
         const from = (currentPage - 1) * ITEMS_PER_PAGE;
         const to = from + ITEMS_PER_PAGE - 1;
 
-        // Aplicar o mesmo filtro de data na query principal
-        query = query.or(`data_leilao_1.is.null,data_leilao_1.gte.${currentDateForFilter.toISOString()}`);
+        // Aplicar o mesmo filtro de data na query principal APENAS se não há filtro de data do segundo leilão
+        if (!filters.dataFimSegundoLeilao) {
+          query = query.or(`data_leilao_1.is.null,data_leilao_1.gte.${currentDateForFilter.toISOString()}`);
+        }
 
         const { data, error } = await query
           .range(from, to)
@@ -715,14 +730,15 @@ const LeilaoSP = () => {
     const newFilters: Filters = {};
     
     // Verificar se há cidade selecionada
-    if (selectedCities.length > 0) {
+    if (selectedCities.length > 0 && selectedCities[0] !== "TODO_SP_STATE") {
       newFilters.city = selectedCities.join(','); // Passa como string separada por vírgula
       newFilters.cities = selectedCities; // Para URL params
-    } else if (selectedCity && selectedCity !== "Selecione a cidade") {
+    } else if (selectedCity && selectedCity !== "Selecione a cidade" && selectedCity !== "Toda SP") {
       // Compatibilidade: se só uma cidade foi selecionada pelo modo antigo
       const cityName = selectedCity.split(" (")[0];
       newFilters.city = cityName;
     }
+    // Se for "Toda SP" (TODO_SP_STATE), não aplicar filtro de cidade - apenas o estado='SP' já presente na query
     
     // Verificar se há tipo selecionado
     if (selectedType && selectedType.label !== "Todos os imóveis") {
@@ -906,6 +922,18 @@ const LeilaoSP = () => {
     setSelectedNeighborhood("Selecione o bairro");
     setSelectedNeighborhoods([]);
     fetchNeighborhoodsByCity(city);
+    setShowCityMenu(false);
+  };
+  
+  const selectAllStateSP = () => {
+    setSelectedCity("Toda SP");
+    setSelectedCityName("TODO_SP_STATE"); // Valor especial para identificar que é todo o estado
+    setSelectedCities(["TODO_SP_STATE"]);
+    setShowRegionMenu(false);
+    setSelectedRegion(null);
+    setSelectedNeighborhood("Selecione o bairro");
+    setSelectedNeighborhoods([]);
+    setShowCityMenu(false);
   };
   
   const selectRegion = (region: string) => {
@@ -1106,6 +1134,7 @@ const LeilaoSP = () => {
                   {showCityMenu && (
                     <div className="absolute z-40 w-full bg-white border border-gray-200 rounded-md shadow-md mt-1 max-h-[400px] overflow-y-auto">
                       <div className="border-b border-gray-200 py-2 px-4 font-bold bg-gray-50 text-gray-700">CIDADES DE SÃO PAULO</div>
+                      
                       <div className="p-2 border-b border-gray-200">
                         <input
                           type="text"
@@ -1116,6 +1145,14 @@ const LeilaoSP = () => {
                           onClick={(e) => e.stopPropagation()}
                         />
                       </div>
+                      
+                                             {/* Opção para todo o estado */}
+                       <div
+                         className="py-2 px-4 hover:bg-blue-50 cursor-pointer font-semibold text-blue-700 border-b border-gray-100"
+                         onClick={() => selectAllStateSP()}
+                       >
+                         Toda SP
+                       </div>
                       {rjCities
                         .filter(cityData => 
                           citySearchTerm === '' || 

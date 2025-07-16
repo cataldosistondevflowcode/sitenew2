@@ -60,6 +60,7 @@ interface Filters {
   financiamento?: boolean; // Filtro para leilão com financiamento
   fgts?: boolean; // Filtro para leilão que aceita FGTS
   parcelamento?: boolean; // Filtro para parcelamento
+  dataFimSegundoLeilao?: string; // Data final do filtro de data de encerramento do segundo leilão
 }
 
 // Interface para as faixas de preço
@@ -276,6 +277,9 @@ const Index = () => {
   // Estado para armazenar os valores dos inputs
   const [locationInput, setLocationInput] = useState("");
   const [keywordInput, setKeywordInput] = useState("");
+  
+  // Estado para filtro de data
+  const [dataFimSegundoLeilao, setDataFimSegundoLeilao] = useState("");
 
   // Adicionar novo estado para bairros selecionados (pode ser 1 bairro ou vários de uma zona)
   const [selectedNeighborhoods, setSelectedNeighborhoods] = useState<string[]>([]);
@@ -532,13 +536,20 @@ const Index = () => {
           query = query.eq('parcelamento', false);
         }
         
+        // Filtrar por data final do segundo leilão
+        if (filters.dataFimSegundoLeilao) {
+          query = query.lte('data_leilao_2', filters.dataFimSegundoLeilao);
+        }
+        
         // Obter a data atual para comparação no servidor
         const currentDateForFilter = new Date();
         
         let countQuery = query;
         
-        // Adicionar filtro de data para considerar apenas leilões futuros ou sem data na contagem
-        countQuery = countQuery.or(`data_leilao_1.is.null,data_leilao_1.gte.${currentDateForFilter.toISOString()}`);
+        // Adicionar filtro de data para considerar apenas leilões futuros APENAS se não há filtro de data do segundo leilão
+        if (!filters.dataFimSegundoLeilao) {
+          countQuery = countQuery.or(`data_leilao_1.is.null,data_leilao_1.gte.${currentDateForFilter.toISOString()}`);
+        }
         
         // Obter a contagem total para calcular o número de páginas
         const countResult = await countQuery;
@@ -556,8 +567,10 @@ const Index = () => {
         const from = (currentPage - 1) * ITEMS_PER_PAGE;
         const to = from + ITEMS_PER_PAGE - 1;
 
-        // Aplicar o mesmo filtro de data na query principal
-        query = query.or(`data_leilao_1.is.null,data_leilao_1.gte.${currentDateForFilter.toISOString()}`);
+        // Aplicar o mesmo filtro de data na query principal APENAS se não há filtro de data do segundo leilão
+        if (!filters.dataFimSegundoLeilao) {
+          query = query.or(`data_leilao_1.is.null,data_leilao_1.gte.${currentDateForFilter.toISOString()}`);
+        }
 
         const { data, error } = await query
           .range(from, to)
@@ -698,6 +711,11 @@ const Index = () => {
     // Adicionar filtro de segundo leilão
     if (filterSecondAuction) {
       newFilters.hasSecondAuction = true;
+    }
+    
+    // Adicionar filtro de data final do segundo leilão
+    if (dataFimSegundoLeilao) {
+      newFilters.dataFimSegundoLeilao = dataFimSegundoLeilao;
     }
     
     // Adicionar filtro de faixa de preço
@@ -1029,6 +1047,7 @@ const Index = () => {
     setSelectedCityName("");
     setRjNeighborhoods([]);
     setSelectedCities([]);
+    setDataFimSegundoLeilao(""); // Limpar data final
     
     // Limpar os filtros e atualizar a exibição
     setFilters({});
@@ -1419,6 +1438,26 @@ const Index = () => {
                       </div>
                     </div>
                   )}
+                </div>
+              </div>
+              
+              {/* Filtro de Data de Encerramento do 2º Leilão */}
+              <div className="border-t border-gray-200 pt-4 mb-4">
+                <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center">
+                  <CalendarIcon className="h-4 w-4 mr-2" />
+                  Filtrar por Data de Encerramento (2º Leilão)
+                </h4>
+                <div className="grid grid-cols-1 gap-3 sm:gap-4">
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600 mb-1">Mostrar leilões até a data:</label>
+                    <input
+                      type="date"
+                      value={dataFimSegundoLeilao}
+                      onChange={(e) => setDataFimSegundoLeilao(e.target.value)}
+                      className="w-full p-3 bg-[#fafafa] border border-gray-200 rounded-md text-sm focus:ring-2 focus:ring-primary focus:border-transparent focus:outline-none"
+                      placeholder="Data limite"
+                    />
+                  </div>
                 </div>
               </div>
               

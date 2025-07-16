@@ -12,7 +12,10 @@ interface PropertyMapProps {
 }
 
 export const PropertyMap: React.FC<PropertyMapProps> = ({ property, rawPropertyData }) => {
-  const isImageNotFound = property.image.includes('/not-found');
+  const isImageNotFound = property.image.includes('/not-found') || 
+                          !property.image || 
+                          property.image === '' ||
+                          property.image === 'https://kmiblhbe.manus.space/imovel_sao_goncalo.jpeg';
   const [activeTab, setActiveTab] = useState<'foto' | 'mapa' | 'street'>(isImageNotFound ? 'mapa' : 'foto');
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [mapLoaded, setMapLoaded] = useState(false);

@@ -47,7 +47,12 @@ export const PropertyCard = ({
 }: PropertyCardProps) => {
   
   const mapRef = useRef<HTMLDivElement>(null);
-  const [isImageNotFound, setIsImageNotFound] = useState(image.includes('/not-found') || !image || image === '');
+  const [isImageNotFound, setIsImageNotFound] = useState(
+    image.includes('/not-found') || 
+    !image || 
+    image === '' ||
+    image === 'https://kmiblhbe.manus.space/imovel_sao_goncalo.jpeg'
+  );
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
   // Initialize map when image is not found

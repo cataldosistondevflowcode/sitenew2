@@ -13,6 +13,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Search, Filter, Eye, RefreshCw, ChevronLeft, ChevronRight, Download, Edit, ExternalLink } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { createPropertyUrl } from '@/utils/slugUtils';
@@ -22,23 +23,27 @@ type Property = Tables<'leiloes_imoveis'>;
 const PropertiesTable = () => {
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalCount, setTotalCount] = useState(0);
   const [searchTerm, setSearchTerm] = useState('');
-  const [cityFilter, setCityFilter] = useState('all');
+  
+  // Estados dos filtros
   const [stateFilter, setStateFilter] = useState('all');
+  const [cityFilter, setCityFilter] = useState('all');
   const [typeFilter, setTypeFilter] = useState('all');
   const [auctionTypeFilter, setAuctionTypeFilter] = useState('all');
   const [fgtsFilter, setFgtsFilter] = useState('all');
   const [financingFilter, setFinancingFilter] = useState('all');
-  const [error, setError] = useState<string | null>(null);
-  const [currentPage, setCurrentPage] = useState(0);
-  const [totalCount, setTotalCount] = useState(0);
-  const [allCities, setAllCities] = useState<string[]>([]);
+  const [showCurrentOnly, setShowCurrentOnly] = useState(false); // Novo estado para filtro "Atual"
+  
+  // Estados para metadados
   const [allStates, setAllStates] = useState<string[]>([]);
+  const [allCities, setAllCities] = useState<string[]>([]);
   const [allTypes, setAllTypes] = useState<string[]>([]);
   const [allAuctionTypes, setAllAuctionTypes] = useState<string[]>([]);
-  
-  // Mudança: paginação de 100 em 100 ao invés de 1000
-  const pageSize = 100;
+
+  const pageSize = 20;
 
   const fetchProperties = async (page = 0) => {
     try {
@@ -85,6 +90,12 @@ const PropertiesTable = () => {
         query = query.eq('financiamento', true);
       } else if (financingFilter === 'false') {
         query = query.eq('financiamento', false);
+      }
+
+      // Filtro "Atual" - apenas leilões que ainda não passaram
+      if (showCurrentOnly) {
+        const currentDateForFilter = new Date();
+        query = query.or(`data_leilao_1.is.null,data_leilao_1.gte.${currentDateForFilter.toISOString()}`);
       }
 
       // Aplicar paginação
@@ -154,7 +165,7 @@ const PropertiesTable = () => {
     // Quando filtros mudam, voltar para primeira página
     setCurrentPage(0);
     fetchProperties(0);
-  }, [searchTerm, cityFilter, stateFilter, typeFilter, auctionTypeFilter, fgtsFilter, financingFilter]);
+  }, [searchTerm, cityFilter, stateFilter, typeFilter, auctionTypeFilter, fgtsFilter, financingFilter, showCurrentOnly]);
 
 
 
@@ -173,12 +184,15 @@ const PropertiesTable = () => {
 
   const clearAllFilters = () => {
     setSearchTerm('');
-    setCityFilter('all');
     setStateFilter('all');
+    setCityFilter('all');
     setTypeFilter('all');
     setAuctionTypeFilter('all');
     setFgtsFilter('all');
     setFinancingFilter('all');
+    setShowCurrentOnly(false); // Limpar também o filtro "Atual"
+    setCurrentPage(0);
+    fetchProperties(0);
   };
 
   const totalPages = Math.ceil(totalCount / pageSize);
@@ -306,6 +320,18 @@ const PropertiesTable = () => {
                 <SelectItem value="false">Sem Financ.</SelectItem>
               </SelectContent>
             </Select>
+
+            <div className="flex items-center space-x-2 bg-white px-3 py-2 rounded-md border border-gray-200">
+              <Checkbox
+                id="show-current-only"
+                checked={showCurrentOnly}
+                onCheckedChange={(checked) => setShowCurrentOnly(checked as boolean)}
+              />
+              <Eye className="h-4 w-4 text-gray-500" />
+              <label htmlFor="show-current-only" className="text-sm text-gray-700 cursor-pointer">
+                Apenas atuais
+              </label>
+            </div>
 
             <Button 
               variant="outline" 

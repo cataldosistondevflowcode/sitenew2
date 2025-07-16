@@ -32,7 +32,7 @@ export const ContactSidebar: React.FC<ContactSidebarProps> = ({ contactInfo }) =
           alt="Email"
           className="object-contain shrink-0 w-4 h-4 mt-0.5"
         />
-        <div className="grow text-left break-all leading-tight">
+        <div className="grow text-left leading-tight whitespace-nowrap">
           {contactInfo.email}
         </div>
       </div>

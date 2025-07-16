@@ -31,21 +31,45 @@ export const Footer: React.FC = () => {
               Mapa do Site
             </h3>
             <ul className="text-sm text-gray-700 space-y-2">
-              <li className="hover:text-[#d68e08] cursor-pointer transition-colors">Quem Somos</li>
+              <li className="hover:text-[#d68e08] cursor-pointer transition-colors">
+                <a href="https://leilaodeimoveis-cataldosiston.com/escritorio/" target="_blank" rel="noopener noreferrer">Quem Somos</a>
+              </li>
               <li className="hover:text-[#d68e08] cursor-pointer transition-colors">
                 <Link to="/" onClick={() => window.scrollTo(0, 0)}>Imóveis em Leilão RJ</Link>
               </li>
               <li className="hover:text-[#d68e08] cursor-pointer transition-colors">
                 <Link to="/leilao-sp" onClick={() => window.scrollTo(0, 0)}>Imóveis em Leilão SP</Link>
               </li>
-              <li className="hover:text-[#d68e08] cursor-pointer transition-colors">Assessoria em leilões</li>
-              <li className="hover:text-[#d68e08] cursor-pointer transition-colors">Direito Imobiliário</li>
-              <li className="hover:text-[#d68e08] cursor-pointer transition-colors">Distrato imobiliário</li>
-              <li className="hover:text-[#d68e08] cursor-pointer transition-colors">Direito civil</li>
-              <li className="hover:text-[#d68e08] cursor-pointer transition-colors">Casos Reais</li>
-              <li className="hover:text-[#d68e08] cursor-pointer transition-colors">Blog</li>
-              <li className="hover:text-[#d68e08] cursor-pointer transition-colors">Contato</li>
-              <li className="hover:text-[#d68e08] cursor-pointer transition-colors">Política de Privacidade</li>
+              <li className="hover:text-[#d68e08] cursor-pointer transition-colors">
+                <a href="https://leilaodeimoveis-cataldosiston.com/leilao-caixa-rj/" target="_blank" rel="noopener noreferrer">Leilões da Caixa – RJ</a>
+              </li>
+              <li className="hover:text-[#d68e08] cursor-pointer transition-colors">
+                <a href="https://leilaodeimoveis-cataldosiston.com/leilao-caixa-sp/" target="_blank" rel="noopener noreferrer">Leilões da Caixa – SP</a>
+              </li>
+              <li className="hover:text-[#d68e08] cursor-pointer transition-colors">
+                <a href="https://leilaodeimoveis-cataldosiston.com/leilao-de-imoveis/" target="_blank" rel="noopener noreferrer">Assessoria em leilões</a>
+              </li>
+              <li className="hover:text-[#d68e08] cursor-pointer transition-colors">
+                <a href="https://leilaodeimoveis-cataldosiston.com/direito-imobiliario/" target="_blank" rel="noopener noreferrer">Direito Imobiliário</a>
+              </li>
+              <li className="hover:text-[#d68e08] cursor-pointer transition-colors">
+                <a href="https://leilaodeimoveis-cataldosiston.com/distrato-imobiliario/" target="_blank" rel="noopener noreferrer">Distrato imobiliário</a>
+              </li>
+              <li className="hover:text-[#d68e08] cursor-pointer transition-colors">
+                <a href="https://leilaodeimoveis-cataldosiston.com/?page_id=1052" target="_blank" rel="noopener noreferrer">Direito civil</a>
+              </li>
+              <li className="hover:text-[#d68e08] cursor-pointer transition-colors">
+                <a href="https://leilaodeimoveis-cataldosiston.com/casos-reais/" target="_blank" rel="noopener noreferrer">Casos Reais</a>
+              </li>
+              <li className="hover:text-[#d68e08] cursor-pointer transition-colors">
+                <a href="https://leilaodeimoveis-cataldosiston.com/blog-leilao-de-imoveis/" target="_blank" rel="noopener noreferrer">Blog</a>
+              </li>
+              <li className="hover:text-[#d68e08] cursor-pointer transition-colors">
+                <a href="https://leilaodeimoveis-cataldosiston.com/contato/" target="_blank" rel="noopener noreferrer">Contato</a>
+              </li>
+              <li className="hover:text-[#d68e08] cursor-pointer transition-colors">
+                <a href="https://leilaodeimoveis-cataldosiston.com/privacidade/" target="_blank" rel="noopener noreferrer">Política de Privacidade</a>
+              </li>
             </ul>
           </div>
 
@@ -66,26 +90,34 @@ export const Footer: React.FC = () => {
             
             {/* Social Links */}
             <div className="flex gap-3 mt-4">
-              <img
-                src="https://cdn.builder.io/api/v1/image/assets/ca38ae4db7a6428881f7c632440d043a/72d95d25980c13a7793be843a3be119eac9a23d4?placeholderIfAbsent=true"
-                className="w-8 h-8 object-contain hover:opacity-80 cursor-pointer transition-opacity"
-                alt="Social media link"
-              />
-              <img
-                src="https://cdn.builder.io/api/v1/image/assets/ca38ae4db7a6428881f7c632440d043a/244b9c45e595799dda32400ab0c739ab1dcf1e36?placeholderIfAbsent=true"
-                className="w-8 h-8 object-contain hover:opacity-80 cursor-pointer transition-opacity"
-                alt="Social media link"
-              />
-              <img
-                src="https://cdn.builder.io/api/v1/image/assets/ca38ae4db7a6428881f7c632440d043a/2ed2ac661a8abd87a2ab346c9f25dcece7dbc7df?placeholderIfAbsent=true"
-                className="w-8 h-8 object-contain hover:opacity-80 cursor-pointer transition-opacity"
-                alt="Social media link"
-              />
-              <img
-                src="https://cdn.builder.io/api/v1/image/assets/ca38ae4db7a6428881f7c632440d043a/e31888807ac0e2e4d00224790a076ac9216edea3?placeholderIfAbsent=true"
-                className="w-8 h-8 object-contain hover:opacity-80 cursor-pointer transition-opacity"
-                alt="Social media link"
-              />
+              <a href="https://www.facebook.com/cataldosistonadvogados/" target="_blank" rel="noopener noreferrer" title="Facebook">
+                <img
+                  src="https://cdn.builder.io/api/v1/image/assets/ca38ae4db7a6428881f7c632440d043a/72d95d25980c13a7793be843a3be119eac9a23d4?placeholderIfAbsent=true"
+                  className="w-8 h-8 object-contain hover:opacity-80 cursor-pointer transition-opacity"
+                  alt="Facebook"
+                />
+              </a>
+              <a href="https://www.instagram.com/cataldosiston.advogados/" target="_blank" rel="noopener noreferrer" title="Instagram">
+                <img
+                  src="https://cdn.builder.io/api/v1/image/assets/ca38ae4db7a6428881f7c632440d043a/244b9c45e595799dda32400ab0c739ab1dcf1e36?placeholderIfAbsent=true"
+                  className="w-8 h-8 object-contain hover:opacity-80 cursor-pointer transition-opacity"
+                  alt="Instagram"
+                />
+              </a>
+              <a href="https://www.jusbrasil.com.br/topicos/36756955/raphael-cataldo-siston" target="_blank" rel="noopener noreferrer" title="JusBrasil">
+                <img
+                  src="https://cdn.builder.io/api/v1/image/assets/ca38ae4db7a6428881f7c632440d043a/2ed2ac661a8abd87a2ab346c9f25dcece7dbc7df?placeholderIfAbsent=true"
+                  className="w-8 h-8 object-contain hover:opacity-80 cursor-pointer transition-opacity"
+                  alt="JusBrasil"
+                />
+              </a>
+              <a href="https://www.youtube.com/channel/UCldbgxJU1D9h3U6Ej8Ej8Ej8Ej8Ej8Ej8Ej8Ej8" target="_blank" rel="noopener noreferrer" title="YouTube">
+                <img
+                  src="https://cdn.builder.io/api/v1/image/assets/ca38ae4db7a6428881f7c632440d043a/e31888807ac0e2e4d00224790a076ac9216edea3?placeholderIfAbsent=true"
+                  className="w-8 h-8 object-contain hover:opacity-80 cursor-pointer transition-opacity"
+                  alt="YouTube"
+                />
+              </a>
             </div>
           </div>
         </div>

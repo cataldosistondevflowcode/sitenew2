@@ -60,6 +60,9 @@ interface Filters {
   financiamento?: boolean; // Filtro para leilão com financiamento
   fgts?: boolean; // Filtro para leilão que aceita FGTS
   parcelamento?: boolean; // Filtro para parcelamento
+  neighborhoods?: string[]; // Para múltiplos bairros
+  cities?: string[]; // Para múltiplas cidades
+  dataFimSegundoLeilao?: string; // Data final do filtro de data de encerramento do segundo leilão
 }
 
 // Interface para as faixas de preço
@@ -225,6 +228,9 @@ const LeilaoCaixaRJ = () => {
   const [citySearchTerm, setCitySearchTerm] = useState("");
   const [neighborhoodSearchTerm, setNeighborhoodSearchTerm] = useState("");
 
+  // Estado para filtro de data de encerramento do segundo leilão
+  const [dataFimSegundoLeilao, setDataFimSegundoLeilao] = useState("");
+
   // Estado para controlar o popup de oportunidades
   const [showOpportunityPopup, setShowOpportunityPopup] = useState(false);
 
@@ -338,6 +344,11 @@ const LeilaoCaixaRJ = () => {
         if (priceRange) {
           setSelectedPriceRange(priceRange);
         }
+      }
+
+      // Restaurar filtro de data de encerramento do segundo leilão
+      if (urlFilters.dataFimSegundoLeilao) {
+        setDataFimSegundoLeilao(urlFilters.dataFimSegundoLeilao);
       }
       
       // Aplicar os filtros
@@ -532,6 +543,11 @@ const LeilaoCaixaRJ = () => {
         } else if (filters.parcelamento === false) {
           query = query.eq('parcelamento', false);
         }
+
+        // Filtrar por data de encerramento do segundo leilão (até a data especificada)
+        if (filters.dataFimSegundoLeilao) {
+          query = query.lte('data_leilao_2', filters.dataFimSegundoLeilao);
+        }
         
         // Obter a data atual para comparação no servidor
         const currentDateForFilter = new Date();
@@ -703,16 +719,18 @@ const LeilaoCaixaRJ = () => {
       newFilters.hasSecondAuction = true;
     }
     
-    // Adicionar filtro de faixa de preço
+        // Adicionar filtro de faixa de preço
     if (selectedPriceRange && selectedPriceRange.label !== "Todos os preços") {
       newFilters.priceRange = {
         min: selectedPriceRange.min,
         max: selectedPriceRange.max
       };
     }
-    
-    // Adicionar filtro de tipo de leilão conforme as novas regras
 
+    // Adicionar filtro de data de encerramento do segundo leilão
+    if (dataFimSegundoLeilao) {
+      newFilters.dataFimSegundoLeilao = dataFimSegundoLeilao;
+    }
     
     // Aplicar filtros
     setFilters(newFilters);
@@ -962,6 +980,7 @@ const LeilaoCaixaRJ = () => {
     setSelectedCityName("");
     setRjNeighborhoods([]);
     setSelectedCities([]);
+    setDataFimSegundoLeilao(""); // Limpar data final
     
     // Limpar os filtros e atualizar a exibição
     setFilters({});
@@ -1366,8 +1385,26 @@ const LeilaoCaixaRJ = () => {
                 </div>
               </div>
               
+              {/* Filtro de Data de Encerramento do 2º Leilão */}
+              <div className="border-t border-gray-200 pt-4 mb-4">
+                <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center">
+                  <CalendarIcon className="h-4 w-4 mr-2" />
+                  Filtrar por Data de Encerramento (2º Leilão)
+                </h4>
+                <div className="grid grid-cols-1 gap-3 sm:gap-4">
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600 mb-1">Mostrar leilões até a data:</label>
+                    <input
+                      type="date"
+                      value={dataFimSegundoLeilao}
+                      onChange={(e) => setDataFimSegundoLeilao(e.target.value)}
+                      className="w-full p-3 bg-[#fafafa] border border-gray-200 rounded-md text-sm focus:ring-2 focus:ring-primary focus:border-transparent focus:outline-none"
+                      placeholder="Data limite"
+                    />
+                  </div>
+                </div>
+              </div>
 
-              
               {/* Campo de busca rápida */}
               <div className="mb-4 sm:mb-6">
                 <input 

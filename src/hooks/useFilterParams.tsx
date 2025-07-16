@@ -19,6 +19,7 @@ export interface FilterParams {
   auctionType?: string; // Para SP
   neighborhoods?: string[]; // Para múltiplos bairros
   cities?: string[]; // Para múltiplas cidades
+  dataFimSegundoLeilao?: string; // Data final do filtro de data de encerramento do segundo leilão
 }
 
 // Tipos para as faixas de preço
@@ -83,6 +84,10 @@ export const useFilterParams = () => {
       if (maxPrice) filters.priceRange.max = parseInt(maxPrice);
     }
 
+    // Filtro de data de encerramento do segundo leilão
+    const dataFimSegundoLeilao = searchParams.get('data_fim_segundo_leilao');
+    if (dataFimSegundoLeilao) filters.dataFimSegundoLeilao = dataFimSegundoLeilao;
+
     // Arrays para múltiplos valores
     const neighborhoods = searchParams.get('bairros');
     if (neighborhoods) {
@@ -118,6 +123,9 @@ export const useFilterParams = () => {
     // Adicionar faixa de preço
     if (filters.priceRange?.min) newParams.set('preco_min', filters.priceRange.min.toString());
     if (filters.priceRange?.max) newParams.set('preco_max', filters.priceRange.max.toString());
+
+    // Adicionar filtro de data de encerramento do segundo leilão
+    if (filters.dataFimSegundoLeilao) newParams.set('data_fim_segundo_leilao', filters.dataFimSegundoLeilao);
 
     // Adicionar arrays
     if (filters.neighborhoods && filters.neighborhoods.length > 0) {
@@ -159,6 +167,8 @@ export const useFilterParams = () => {
 
     if (filters.priceRange?.min) newParams.set('preco_min', filters.priceRange.min.toString());
     if (filters.priceRange?.max) newParams.set('preco_max', filters.priceRange.max.toString());
+
+    if (filters.dataFimSegundoLeilao) newParams.set('data_fim_segundo_leilao', filters.dataFimSegundoLeilao);
 
     if (filters.neighborhoods && filters.neighborhoods.length > 0) {
       newParams.set('bairros', filters.neighborhoods.join(','));

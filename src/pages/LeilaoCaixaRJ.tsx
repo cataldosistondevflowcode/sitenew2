@@ -1497,6 +1497,7 @@ const LeilaoCaixaRJ = () => {
                       financiamento={property.financiamento}
                       parcelamento={property.parcelamento}
                       rawPropertyData={property}
+                      onContactClick={() => setShowWhatsAppModal(true)}
                     />
                   ))
                 ) : (

@@ -35,6 +35,7 @@ interface SimilarPropertiesSectionProps {
   city?: string;
   neighborhood?: string;
   auctionType?: string;
+  onContactClick?: () => void;
 }
 
 export function SimilarPropertiesSection({ 
@@ -42,7 +43,8 @@ export function SimilarPropertiesSection({
   propertyType, 
   city, 
   neighborhood, 
-  auctionType 
+  auctionType,
+  onContactClick 
 }: SimilarPropertiesSectionProps) {
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
@@ -253,6 +255,7 @@ export function SimilarPropertiesSection({
                       financiamento={property.financiamento}
                       parcelamento={property.parcelamento}
                       rawPropertyData={property}
+                      onContactClick={onContactClick}
                     />
                   </div>
                 ))}

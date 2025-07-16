@@ -22,6 +22,7 @@ interface PropertyCardProps {
   financiamento?: boolean;
   parcelamento?: boolean;
   rawPropertyData?: any;
+  onContactClick?: () => void;
 }
 
 export const PropertyCard = ({
@@ -41,6 +42,7 @@ export const PropertyCard = ({
   financiamento,
   parcelamento,
   rawPropertyData,
+  onContactClick,
 }: PropertyCardProps) => {
   
   const mapRef = useRef<HTMLDivElement>(null);
@@ -188,14 +190,19 @@ export const PropertyCard = ({
           >
             Saiba Mais
           </Link>
-          <a 
-            href="#" 
+          <button 
             className="absolute top-2 sm:top-3 right-2 sm:right-3 bg-[#25d366] text-white px-2 sm:px-3 py-1.5 sm:py-2 rounded text-xs sm:text-sm font-bold z-10 hover:bg-[#20b858] transition-colors"
-            onClick={(e) => e.stopPropagation()}
+            onClick={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
+              if (onContactClick) {
+                onContactClick();
+              }
+            }}
           >
             <span className="hidden sm:inline">Fale conosco</span>
             <span className="sm:hidden">Contato</span>
-          </a>
+          </button>
           {imageOverlayText && (
             <div className="absolute bottom-2 sm:bottom-3 left-3 sm:left-4 text-white text-lg sm:text-xl font-bold">
               {imageOverlayText}

@@ -12,6 +12,11 @@ import { NewsletterSignup } from "@/components/newsletter2/NewsletterSignup";
 import { Footer } from "@/components/Footer";
 import { WhatsAppButton } from "@/components/WhatsAppButton";
 import { SimilarPropertiesSection } from "@/components/SimilarPropertiesSection";
+import OpportunityPopup from "@/components/OpportunityPopup";
+import WhatsAppModal from "@/components/WhatsAppModal";
+import { Mail } from "lucide-react";
+import { WhatsAppIcon } from "@/components/icons";
+import { Button } from "@/components/ui/button";
 
 interface Property {
   id: number;
@@ -44,8 +49,17 @@ const PropertyDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
+  // Estados para controlar os modais
+  const [showOpportunityPopup, setShowOpportunityPopup] = useState(false);
+  const [showWhatsAppModal, setShowWhatsAppModal] = useState(false);
+  
   // Extrai ID da URL (compatível com formato antigo e novo)
   const propertyId = id || extractPropertyIdFromUrl(location.pathname);
+
+  // Função para fechar o popup de oportunidades
+  const closeOpportunityPopup = () => {
+    setShowOpportunityPopup(false);
+  };
 
   // Função para formatar datas no padrão brasileiro
   const formatDateToBrazilian = (dateString: string) => {
@@ -155,8 +169,8 @@ const PropertyDetail = () => {
 
   return (
     <div className="min-h-screen bg-white">
-      <SocialBar />
-      <Header />
+      <SocialBar onWhatsAppClick={() => setShowWhatsAppModal(true)} />
+      <Header onContactClick={() => setShowWhatsAppModal(true)} />
       
       <div className="w-full">
         <main className="container mx-auto px-4 py-8 pb-0 mb-0">
@@ -172,6 +186,7 @@ const PropertyDetail = () => {
           city={property.cidade}
           neighborhood={property.bairro}
           auctionType={property.tipo_leilao}
+          onContactClick={() => setShowWhatsAppModal(true)}
         />
         
         <NewsletterSignup />
@@ -182,7 +197,39 @@ const PropertyDetail = () => {
       <Footer />
       
       <CookieBar />
-      <WhatsAppButton />
+      
+      {/* Floating Buttons */}
+      <div className="fixed bottom-2 sm:bottom-4 right-2 sm:right-4 z-40 flex flex-col sm:flex-row gap-2 sm:gap-3 items-end">
+        <Button 
+          className="bg-primary hover:bg-primary/90 font-bold text-xs sm:text-sm px-3 sm:px-4 py-2 sm:py-3 flex items-center gap-2"
+          onClick={() => setShowOpportunityPopup(true)}
+        >
+          <Mail className="w-4 h-4" />
+          <span className="hidden sm:inline">Inscreva-se para oportunidades</span>
+          <span className="sm:hidden">Oportunidades</span>
+        </Button>
+        
+        <Button 
+          className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-white hover:bg-gray-100 border border-gray-200"
+          onClick={() => setShowWhatsAppModal(true)}
+        >
+          <WhatsAppIcon />
+        </Button>
+      </div>
+
+      {/* Popup de Oportunidades */}
+      <OpportunityPopup 
+        isOpen={showOpportunityPopup} 
+        onClose={closeOpportunityPopup} 
+      />
+
+      {/* Modal do WhatsApp */}
+      {showWhatsAppModal && (
+        <WhatsAppModal 
+          isOpen={showWhatsAppModal} 
+          onClose={() => setShowWhatsAppModal(false)} 
+        />
+      )}
     </div>
   );
 };

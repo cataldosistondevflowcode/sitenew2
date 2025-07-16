@@ -229,7 +229,7 @@ const LeilaoSP = () => {
         setSelectedCities(urlFilters.cities);
         if (urlFilters.cities.length === 1) {
           if (urlFilters.cities[0] === "TODO_SP_STATE") {
-            setSelectedCity("Toda SP");
+            setSelectedCity("Todas cidades de SP");
             setSelectedCityName("TODO_SP_STATE");
           } else {
             setSelectedCity(urlFilters.cities[0]);
@@ -240,7 +240,7 @@ const LeilaoSP = () => {
         }
       } else if (urlFilters.city) {
         if (urlFilters.city === "TODO_SP_STATE") {
-          setSelectedCity("Toda SP");
+          setSelectedCity("Todas cidades de SP");
           setSelectedCityName("TODO_SP_STATE");
         } else {
           setSelectedCity(urlFilters.city);
@@ -737,12 +737,12 @@ const LeilaoSP = () => {
     if (selectedCities.length > 0 && selectedCities[0] !== "TODO_SP_STATE") {
       newFilters.city = selectedCities.join(','); // Passa como string separada por vírgula
       newFilters.cities = selectedCities; // Para URL params
-    } else if (selectedCity && selectedCity !== "Selecione a cidade" && selectedCity !== "Toda SP") {
+    } else if (selectedCity && selectedCity !== "Selecione a cidade" && selectedCity !== "Todas cidades de SP") {
       // Compatibilidade: se só uma cidade foi selecionada pelo modo antigo
       const cityName = selectedCity.split(" (")[0];
       newFilters.city = cityName;
     }
-    // Se for "Toda SP" (TODO_SP_STATE), não aplicar filtro de cidade - apenas o estado='SP' já presente na query
+    // Se for "Todas cidades de SP" (TODO_SP_STATE), não aplicar filtro de cidade - apenas o estado='SP' já presente na query
     
     // Verificar se há tipo selecionado
     if (selectedType && selectedType.label !== "Todos os imóveis") {
@@ -930,7 +930,7 @@ const LeilaoSP = () => {
   };
   
   const selectAllStateSP = () => {
-    setSelectedCity("Toda SP");
+    setSelectedCity("Todas cidades de SP");
     setSelectedCityName("TODO_SP_STATE"); // Valor especial para identificar que é todo o estado
     setSelectedCities(["TODO_SP_STATE"]);
     setShowRegionMenu(false);
@@ -1155,7 +1155,7 @@ const LeilaoSP = () => {
                          className="py-2 px-4 hover:bg-blue-50 cursor-pointer font-semibold text-blue-700 border-b border-gray-100"
                          onClick={() => selectAllStateSP()}
                        >
-                         Toda SP
+                         Todas cidades de SP
                        </div>
                       {rjCities
                         .filter(cityData => 
@@ -1472,6 +1472,7 @@ const LeilaoSP = () => {
                       financiamento={property.financiamento}
                       parcelamento={property.parcelamento}
                       rawPropertyData={property}
+                      onContactClick={() => setShowWhatsAppModal(true)}
                     />
                   ))
                 ) : (

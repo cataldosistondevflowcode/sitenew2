@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { QuoteIcon } from "./QuoteIcon";
 import { NavigationButton } from "./NavigationButton";
 import { TestimonialCard } from "./TestimonialCard";
@@ -13,6 +13,8 @@ interface Testimonial {
 
 export const TestimonialsSection = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
   
   const testimonials: Testimonial[] = [
     {
@@ -96,13 +98,13 @@ export const TestimonialsSection = () => {
         "legais que envolve ainda contato com outro advogado que trabalha no mesmo setor, mas o Siston o supera e muito.",
         "Conversei, resolvi investir no ramo e fiz minha primeira arrematação em 2013, até hoje sou",
         "cliente bastante ativo. A assessoria jurídica prestada por eles no Átrio do Fórum, onde domina",
-        "do momento exato de entrar no pregão do leilão é fundamental, total, tranquilizante. A sua equipe",
-        "de assistentes, em especial a advogada Cristiane, é o que há de melhor nessa relação comercial,",
-        "pois sempre dispostos a esclarecer nossas dúvidas.",
+        "do momento exato de entrar no pregão do leilão é fundamental, total, tranquilizante. A sua",
+        "equipe de assistentes, em especial a advogada Cristiane, é o que há de melhor nessa relação",
+        "comercial, pois sempre dispostos a esclarecer nossas dúvidas.",
         "O vasto conhecimento jurídico que eles têm sobre o assunto, impressiona. A vontade de ganhar",
-        "sempre estampadas em seus rostos nos passa uma tranquilidade impressionante. Li",
-        "praticamente todos os meus processos e tiro o chapéu para o trabalho que desenvolvem. Pelo",
-        "que sei nunca perderam um processo sequer, todos os meus receberam vencedor. Resultado 100% garantido.",
+        "sempre estampadas em seus rostos nos passa uma tranquilidade impressionante. Li praticamente",
+        "todos os meus processos e tiro o chapéu para o trabalho que desenvolvem. Pelo que sei nunca",
+        "perderam um processo sequer, todos os meus receberam vencedor. Resultado 100% garantido.",
         "Recomendo, sem medo de errar, a assistência jurídica prestada pelo Cataldo Siston Advogados",
         "em leilões de um modo geral."
       ],
@@ -118,26 +120,99 @@ export const TestimonialsSection = () => {
         "investidores - foi abraçado também por pessoas interessadas em adquirir imóveis para uso",
         "próprio.",
         "Importante salientar que o interessado em adquirir um bem em leilão pode e deve se valer de",
-        "assessoria jurídica até porque a exigência de documentos em tudo",
-        "exemplificativamente carta de arrematação. É dentro dos escritórios atuantes nessa específica",
-        "área, sento-nos à vontade de citar o Cataldo Siston Advogados, que sempre demonstrou lisura",
-        "e competência quando atuou nos leilões conduzidos por nosso escritório de leilões."
+        "assessoria jurídica até porque a exigência de documentos em tudo exemplificativamente carta",
+        "de arrematação. É dentro dos escritórios atuantes nessa específica área, sento-nos à vontade",
+        "de citar o Cataldo Siston Advogados, que sempre demonstrou lisura e competência quando",
+        "atuou nos leilões conduzidos por nosso escritório de leilões."
       ],
       authorName: "Anderson Carneiro Pereira",
       authorTitle: "LEILOEIRO PÚBLICO"
     }
   ];
 
+  // Função para trocar depoimento com animação
+  const changeTestimonial = (newIndex: number) => {
+    if (isTransitioning || newIndex === currentIndex) return;
+    
+    setIsTransitioning(true);
+    
+    // Fade out primeiro
+    setTimeout(() => {
+      setCurrentIndex(newIndex);
+      // Depois fade in
+      setTimeout(() => {
+        setIsTransitioning(false);
+      }, 150);
+    }, 150);
+  };
+
+  // Auto rotation timer
+  useEffect(() => {
+    intervalRef.current = setInterval(() => {
+      setCurrentIndex((prevIndex) => {
+        const nextIndex = (prevIndex + 1) % testimonials.length;
+        setIsTransitioning(true);
+        
+        setTimeout(() => {
+          setTimeout(() => {
+            setIsTransitioning(false);
+          }, 150);
+        }, 150);
+        
+        return nextIndex;
+      });
+    }, 10000);
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, [testimonials.length]);
+  
+  const restartTimer = () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+    }
+    intervalRef.current = setInterval(() => {
+      setCurrentIndex((prevIndex) => {
+        const nextIndex = (prevIndex + 1) % testimonials.length;
+        setIsTransitioning(true);
+        
+        setTimeout(() => {
+          setTimeout(() => {
+            setIsTransitioning(false);
+          }, 150);
+        }, 150);
+        
+        return nextIndex;
+      });
+    }, 10000);
+  };
+
+  const nextTestimonial = () => {
+    const nextIndex = (currentIndex + 1) % testimonials.length;
+    changeTestimonial(nextIndex);
+    restartTimer();
+  };
+  
+  const prevTestimonial = () => {
+    const prevIndex = (currentIndex - 1 + testimonials.length) % testimonials.length;
+    changeTestimonial(prevIndex);
+    restartTimer();
+  };
+
   const handlePrevClick = () => {
-    setCurrentIndex((prevIndex) => 
-      prevIndex === 0 ? testimonials.length - 1 : prevIndex - 1
-    );
+    prevTestimonial();
   };
 
   const handleNextClick = () => {
-    setCurrentIndex((prevIndex) => 
-      (prevIndex + 1) % testimonials.length
-    );
+    nextTestimonial();
+  };
+
+  const handleIndicatorClick = (index: number) => {
+    changeTestimonial(index);
+    restartTimer();
   };
 
   const currentTestimonial = testimonials[currentIndex];
@@ -178,11 +253,13 @@ export const TestimonialsSection = () => {
                 />
 
                 <div className="flex-1 h-[620px] max-md:h-[550px] max-sm:h-[500px] flex items-center justify-center max-sm:order-1">
-                <TestimonialCard
-                    content={currentTestimonial.content}
-                    authorName={currentTestimonial.authorName}
-                    authorTitle={currentTestimonial.authorTitle}
-                  />
+                  <div className={`transition-opacity duration-300 ease-in-out ${isTransitioning ? 'opacity-0' : 'opacity-100'}`}>
+                    <TestimonialCard
+                      content={currentTestimonial.content}
+                      authorName={currentTestimonial.authorName}
+                      authorTitle={currentTestimonial.authorTitle}
+                    />
+                  </div>
                 </div>
 
                 <NavigationButton
@@ -197,7 +274,7 @@ export const TestimonialsSection = () => {
                 {testimonials.map((_, index) => (
                   <button
                     key={index}
-                    onClick={() => setCurrentIndex(index)}
+                    onClick={() => handleIndicatorClick(index)}
                     className={`w-3 h-3 rounded-full transition-colors duration-200 ${
                       index === currentIndex ? 'bg-yellow-600' : 'bg-gray-400'
                     }`}

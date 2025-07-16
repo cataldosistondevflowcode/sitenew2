@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 interface Testimonial {
   id: number;
@@ -9,6 +9,8 @@ interface Testimonial {
 
 export const PropertyDetailTestimonials = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
   
   const testimonials: Testimonial[] = [
     {
@@ -54,13 +56,82 @@ export const PropertyDetailTestimonials = () => {
       content: "Com sólido escritório de leilões, na seara judicial, podemos afirmar que a aquisição de bens (particularmente imóveis) em leilões sempre representou uma excelente oportunidade de investimento, uma vez que arrematações bem abaixo do valor de mercado constituem regra. De uns tempos para cá, o mercado de leilões - quase sempre exclusivamente voltado para investidores - foi abraçado também por pessoas interessadas em adquirir imóveis para uso próprio. Importante salientar que o interessado em adquirir um bem em leilão pode e deve se valer de assessoria jurídica até porque a exigência de documentos em tudo exemplificativamente carta de arrematação. É dentro dos escritórios atuantes nessa específica área, sento-nos à vontade de citar o Cataldo Siston Advogados, que sempre demonstrou lisura e competência quando atuou nos leilões conduzidos por nosso escritório de leilões."
     }
   ];
+
+  // Função para trocar depoimento com animação
+  const changeTestimonial = (newIndex: number) => {
+    if (isTransitioning || newIndex === currentIndex) return;
+    
+    setIsTransitioning(true);
+    
+    // Fade out primeiro
+    setTimeout(() => {
+      setCurrentIndex(newIndex);
+      // Depois fade in
+      setTimeout(() => {
+        setIsTransitioning(false);
+      }, 150);
+    }, 150);
+  };
+
+  // Auto rotation timer
+  useEffect(() => {
+    intervalRef.current = setInterval(() => {
+      setCurrentIndex((prevIndex) => {
+        const nextIndex = (prevIndex + 1) % testimonials.length;
+        setIsTransitioning(true);
+        
+        setTimeout(() => {
+          setTimeout(() => {
+            setIsTransitioning(false);
+          }, 150);
+        }, 150);
+        
+        return nextIndex;
+      });
+    }, 10000);
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, [testimonials.length]);
   
+  const restartTimer = () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+    }
+    intervalRef.current = setInterval(() => {
+      setCurrentIndex((prevIndex) => {
+        const nextIndex = (prevIndex + 1) % testimonials.length;
+        setIsTransitioning(true);
+        
+        setTimeout(() => {
+          setTimeout(() => {
+            setIsTransitioning(false);
+          }, 150);
+        }, 150);
+        
+        return nextIndex;
+      });
+    }, 10000);
+  };
+
   const nextTestimonial = () => {
-    setCurrentIndex((prevIndex) => (prevIndex + 1) % testimonials.length);
+    const nextIndex = (currentIndex + 1) % testimonials.length;
+    changeTestimonial(nextIndex);
+    restartTimer();
   };
   
   const prevTestimonial = () => {
-    setCurrentIndex((prevIndex) => (prevIndex - 1 + testimonials.length) % testimonials.length);
+    const prevIndex = (currentIndex - 1 + testimonials.length) % testimonials.length;
+    changeTestimonial(prevIndex);
+    restartTimer();
+  };
+
+  const handleIndicatorClick = (index: number) => {
+    changeTestimonial(index);
+    restartTimer();
   };
   
   return (
@@ -70,16 +141,18 @@ export const PropertyDetailTestimonials = () => {
         
         <div className="max-w-4xl mx-auto h-full flex flex-col">
           <div className="bg-[#333] p-6 rounded-lg shadow-md relative flex-1 flex flex-col justify-center">
-            <div className="flex flex-col gap-4 mb-6">
-              <blockquote className="text-white text-base leading-5 max-md:text-sm max-md:leading-4">
-              "{testimonials[currentIndex].content}"
-            </blockquote>
-            </div>
-            
-            <div className="flex items-center">
-              <div>
-                <p className="font-bold text-[#d68e08] text-base">{testimonials[currentIndex].name}</p>
-                <p className="text-sm text-gray-400">{testimonials[currentIndex].role}</p>
+            <div className={`transition-opacity duration-300 ease-in-out ${isTransitioning ? 'opacity-0' : 'opacity-100'} flex flex-col h-full justify-center`}>
+              <div className="flex flex-col gap-4 mb-6">
+                <blockquote className="text-white text-base leading-5 max-md:text-sm max-md:leading-4">
+                "{testimonials[currentIndex].content}"
+              </blockquote>
+              </div>
+              
+              <div className="flex items-center">
+                <div>
+                  <p className="font-bold text-[#d68e08] text-base">{testimonials[currentIndex].name}</p>
+                  <p className="text-sm text-gray-400">{testimonials[currentIndex].role}</p>
+                </div>
               </div>
             </div>
             
@@ -105,7 +178,7 @@ export const PropertyDetailTestimonials = () => {
               <button
                 key={index}
                 className={`w-3 h-3 mx-1 rounded-full transition-colors ${index === currentIndex ? 'bg-[#d68e08]' : 'bg-gray-500'}`}
-                onClick={() => setCurrentIndex(index)}
+                onClick={() => handleIndicatorClick(index)}
                 aria-label={`Ir para depoimento ${index + 1}`}
               />
             ))}

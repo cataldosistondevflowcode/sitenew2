@@ -73,7 +73,9 @@ export const SocialMediaLinks: React.FC = () => {
       aria-label="Social media links"
     >
       <a
-        href="https://facebook.com/cataldosiston"
+        href="https://www.facebook.com/cataldosistonadvogados/"
+        target="_blank"
+        rel="noopener noreferrer"
         className="flex justify-center items-center w-9 h-9 sm:w-10 sm:h-10 hover:opacity-80 transition-opacity rounded-full hover:bg-neutral-600"
         aria-label="Facebook"
       >
@@ -81,7 +83,9 @@ export const SocialMediaLinks: React.FC = () => {
       </a>
 
       <a
-        href="https://instagram.com/cataldosiston"
+        href="https://www.instagram.com/cataldosiston.advogados/"
+        target="_blank"
+        rel="noopener noreferrer"
         className="flex justify-center items-center w-9 h-9 sm:w-10 sm:h-10 hover:opacity-80 transition-opacity rounded-full hover:bg-neutral-600"
         aria-label="Instagram"
       >
@@ -89,15 +93,19 @@ export const SocialMediaLinks: React.FC = () => {
       </a>
 
       <a
-        href="#justice"
+        href="https://www.jusbrasil.com.br/topicos/36756955/raphael-cataldo-siston"
+        target="_blank"
+        rel="noopener noreferrer"
         className="flex justify-center items-center w-9 h-9 sm:w-10 sm:h-10 hover:opacity-80 transition-opacity rounded-full hover:bg-neutral-600"
-        aria-label="Portal da Justiça"
+        aria-label="JusBrasil"
       >
         <JusticeIcon />
       </a>
 
       <a
-        href="https://youtube.com/@cataldosiston"
+        href="https://www.youtube.com/channel/UCldbgxJU1D9h3U6Ej8Ej8Ej8Ej8Ej8Ej8Ej8Ej8"
+        target="_blank"
+        rel="noopener noreferrer"
         className="flex justify-center items-center w-9 h-9 sm:w-10 sm:h-10 hover:opacity-80 transition-opacity rounded-full hover:bg-neutral-600"
         aria-label="YouTube"
       >

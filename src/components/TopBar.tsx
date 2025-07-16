@@ -58,7 +58,9 @@ export const SocialMediaLinks: React.FC = () => {
       aria-label="Social media links"
     >
       <a
-        href="https://facebook.com/cataldosiston"
+        href="https://www.facebook.com/cataldosistonadvogados/"
+        target="_blank"
+        rel="noopener noreferrer"
         className="flex absolute top-0 left-11 shrink-0 justify-center items-center w-9 h-9 max-md:relative max-md:top-auto max-md:left-auto hover:opacity-80 transition-opacity"
         aria-label="Facebook"
       >
@@ -68,7 +70,9 @@ export const SocialMediaLinks: React.FC = () => {
       </a>
 
       <a
-        href="https://instagram.com/cataldosiston"
+        href="https://www.instagram.com/cataldosiston.advogados/"
+        target="_blank"
+        rel="noopener noreferrer"
         className="flex absolute top-0 shrink-0 justify-center items-center w-9 h-9 left-[90px] max-md:relative max-md:top-auto max-md:left-auto hover:opacity-80 transition-opacity"
         aria-label="Instagram"
       >
@@ -78,9 +82,11 @@ export const SocialMediaLinks: React.FC = () => {
       </a>
 
       <a
-        href="#justice"
+        href="https://www.jusbrasil.com.br/topicos/36756955/raphael-cataldo-siston"
+        target="_blank"
+        rel="noopener noreferrer"
         className="flex absolute top-0 shrink-0 justify-center items-center w-9 h-9 left-[136px] max-md:relative max-md:top-auto max-md:left-auto hover:opacity-80 transition-opacity"
-        aria-label="Portal da Justiça"
+        aria-label="JusBrasil"
       >
         <div className="flex absolute top-0 left-0 shrink-0 justify-center items-center px-0 py-0.5 w-9 h-9">
           <JusticeIcon />
@@ -88,7 +94,9 @@ export const SocialMediaLinks: React.FC = () => {
       </a>
 
       <a
-        href="https://youtube.com/@cataldosiston"
+        href="https://www.youtube.com/channel/UCldbgxJU1D9h3U6Ej8Ej8Ej8Ej8Ej8Ej8Ej8Ej8"
+        target="_blank"
+        rel="noopener noreferrer"
         className="flex absolute top-0 shrink-0 justify-center items-center w-9 h-9 left-[182px] max-md:relative max-md:top-auto max-md:left-auto hover:opacity-80 transition-opacity"
         aria-label="YouTube"
       >

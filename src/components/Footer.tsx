@@ -41,12 +41,6 @@ export const Footer: React.FC = () => {
                 <Link to="/leilao-sp" onClick={() => window.scrollTo(0, 0)}>Imóveis em Leilão SP</Link>
               </li>
               <li className="hover:text-[#d68e08] cursor-pointer transition-colors">
-                <a href="https://leilaodeimoveis-cataldosiston.com/leilao-caixa-rj/" target="_blank" rel="noopener noreferrer">Leilões da Caixa – RJ</a>
-              </li>
-              <li className="hover:text-[#d68e08] cursor-pointer transition-colors">
-                <a href="https://leilaodeimoveis-cataldosiston.com/leilao-caixa-sp/" target="_blank" rel="noopener noreferrer">Leilões da Caixa – SP</a>
-              </li>
-              <li className="hover:text-[#d68e08] cursor-pointer transition-colors">
                 <a href="https://leilaodeimoveis-cataldosiston.com/leilao-de-imoveis/" target="_blank" rel="noopener noreferrer">Assessoria em leilões</a>
               </li>
               <li className="hover:text-[#d68e08] cursor-pointer transition-colors">

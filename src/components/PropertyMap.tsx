@@ -24,7 +24,7 @@ export const PropertyMap: React.FC<PropertyMapProps> = ({ property, rawPropertyD
   const streetViewRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<google.maps.Map | null>(null);
   const streetViewInstanceRef = useRef<google.maps.StreetViewPanorama | null>(null);
-
+  
   const images = [
     property.image,
     "/assets/logos/cataldo-siston-logo.png",

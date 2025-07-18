@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 
 interface ContactInfo {
   phone: string;
@@ -11,12 +11,68 @@ interface ContactInfo {
 
 interface ContactSidebarProps {
   contactInfo: ContactInfo;
+  onTripleClick?: () => void;
 }
 
-export const ContactSidebar: React.FC<ContactSidebarProps> = ({ contactInfo }) => {
+export const ContactSidebar: React.FC<ContactSidebarProps> = ({ contactInfo, onTripleClick }) => {
+  const whatsAppUrl = "https://api.whatsapp.com/send/?phone=5521977294848&text=Gostaria+de+saber+mais+sobre+o+im%C3%B3vel+em+leil%C3%A3o&type=phone_number&app_absent=0";
+
+  // Triple click functionality
+  const clickCountRef = useRef(0);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [isAnimating, setIsAnimating] = React.useState(false);
+
+  const handleImageClick = () => {
+    clickCountRef.current++;
+    console.log(`Click ${clickCountRef.current}/3 no círculo do Cataldo Siston`);
+    
+    if (clickCountRef.current === 3) {
+      console.log('🎯 TRIPLE CLICK DETECTADO! Ativando debug...');
+      
+      // Animação visual
+      setIsAnimating(true);
+      setTimeout(() => setIsAnimating(false), 1000);
+      
+      if (onTripleClick) {
+        onTripleClick();
+      }
+      clickCountRef.current = 0;
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
+      return;
+    }
+    
+    // Reset click count after 500ms if not triple clicked
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    
+    timeoutRef.current = setTimeout(() => {
+      clickCountRef.current = 0;
+      timeoutRef.current = null;
+    }, 500);
+  };
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
+
   return (
     <aside className="flex overflow-hidden flex-col items-center self-stretch pt-12 pb-7 m-auto w-full bg-white rounded-2xl shadow-sm max-md:mt-10">
-      <div className="flex items-center justify-center bg-white border-2 border-gray-200 aspect-square rounded-[200px] w-[200px] h-[200px] overflow-hidden">
+      <div 
+        className={`flex items-center justify-center bg-white border-2 border-gray-200 aspect-square rounded-[200px] w-[200px] h-[200px] overflow-hidden cursor-pointer hover:border-gray-300 transition-all duration-300 ${
+          isAnimating ? 'border-green-500 shadow-lg shadow-green-200 scale-105' : ''
+        }`}
+        onClick={handleImageClick}
+        title="Clique 3x para ativar debug da página (?debug=true)"
+      >
         <img
           src="/imagem-padrao.webp"
           alt="Cataldo Siston Logo"
@@ -38,10 +94,11 @@ export const ContactSidebar: React.FC<ContactSidebarProps> = ({ contactInfo }) =
       </div>
       <div className="flex flex-col self-stretch px-3 mt-5 w-full text-center">
         <a
-          href="https://api.whatsapp.com/send/?phone=5521977294848&text=Gostaria+de+saber+mais+sobre+o+im%C3%B3vel+em+leil%C3%A3o&type=phone_number&app_absent=0"
+          href={whatsAppUrl}
           target="_blank"
           rel="noopener noreferrer"
           className="flex gap-3.5 justify-center items-center py-4 px-6 text-base font-semibold text-white rounded-lg bg-gradient-to-r from-[#d68e08] via-[#e6a010] to-[#d68e08] hover:from-[#b8780a] hover:via-[#c8920e] hover:to-[#b8780a] transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+          data-lov-id="src\components\property-detail\ContactSidebar.tsx:20:8"
         >
           <img
             src={contactInfo.chatIcon}

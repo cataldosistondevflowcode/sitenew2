@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from 'react';
+import React from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Breadcrumb } from './Breadcrumb';
 import { PropertyHeader } from './PropertyHeader';
@@ -43,6 +43,19 @@ export const MainPropertyDetail: React.FC<MainPropertyDetailProps> = ({ property
   const [searchParams] = useSearchParams();
   const showDebug = searchParams.get('debug') === 'true';
   
+  const handleTripleClick = () => {
+    // Criar nova URL com debug=true
+    const currentUrl = new URL(window.location.href);
+    currentUrl.searchParams.set('debug', 'true');
+    
+    console.log('🎯 TRIPLE CLICK DETECTADO! Redirecionando para URL com debug...');
+    console.log('URL atual:', window.location.href);
+    console.log('Nova URL:', currentUrl.toString());
+    
+    // Navegar para a nova URL
+    window.location.href = currentUrl.toString();
+  };
+
   const breadcrumbItems = [
     { label: "Home", isActive: true },
     { label: "Imóveis em Leilão RJ", isActive: true },
@@ -180,7 +193,10 @@ export const MainPropertyDetail: React.FC<MainPropertyDetailProps> = ({ property
 
             <aside className="w-full lg:w-[34%] mt-6 lg:mt-0">
               <div className="lg:sticky lg:top-4">
-                <ContactSidebar contactInfo={contactInfo} />
+                <ContactSidebar 
+                  contactInfo={contactInfo} 
+                  onTripleClick={handleTripleClick}
+                />
                 
                 {/* Debug Section */}
                 {showDebug && (

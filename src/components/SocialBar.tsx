@@ -4,7 +4,6 @@ import {
   PhoneIcon, 
   FacebookIcon, 
   InstagramIcon, 
-  JusticeIcon, 
   YouTubeIcon,
   WhatsAppIcon
 } from './icons';
@@ -90,16 +89,6 @@ export const SocialMediaLinks: React.FC = () => {
         aria-label="Instagram"
       >
         <InstagramIcon />
-      </a>
-
-      <a
-        href="https://www.jusbrasil.com.br/topicos/36756955/raphael-cataldo-siston"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="flex justify-center items-center w-9 h-9 sm:w-10 sm:h-10 hover:opacity-80 transition-opacity rounded-full hover:bg-neutral-600"
-        aria-label="JusBrasil"
-      >
-        <JusticeIcon />
       </a>
 
       <a

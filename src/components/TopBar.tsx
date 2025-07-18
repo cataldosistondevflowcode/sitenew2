@@ -4,7 +4,6 @@ import {
   PhoneIcon, 
   FacebookIcon, 
   InstagramIcon, 
-  JusticeIcon, 
   YouTubeIcon 
 } from './icons';
 
@@ -82,22 +81,10 @@ export const SocialMediaLinks: React.FC = () => {
       </a>
 
       <a
-        href="https://www.jusbrasil.com.br/topicos/36756955/raphael-cataldo-siston"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="flex absolute top-0 shrink-0 justify-center items-center w-9 h-9 left-[136px] max-md:relative max-md:top-auto max-md:left-auto hover:opacity-80 transition-opacity"
-        aria-label="JusBrasil"
-      >
-        <div className="flex absolute top-0 left-0 shrink-0 justify-center items-center px-0 py-0.5 w-9 h-9">
-          <JusticeIcon />
-        </div>
-      </a>
-
-      <a
         href="https://www.youtube.com/channel/UCldbgxJU1D9h3U6Ej8Ej8Ej8Ej8Ej8Ej8Ej8Ej8"
         target="_blank"
         rel="noopener noreferrer"
-        className="flex absolute top-0 shrink-0 justify-center items-center w-9 h-9 left-[182px] max-md:relative max-md:top-auto max-md:left-auto hover:opacity-80 transition-opacity"
+        className="flex absolute top-0 shrink-0 justify-center items-center w-9 h-9 left-[136px] max-md:relative max-md:top-auto max-md:left-auto hover:opacity-80 transition-opacity"
         aria-label="YouTube"
       >
         <div className="flex absolute top-0 left-0 shrink-0 justify-center items-center px-0 py-0.5 w-9 h-9">

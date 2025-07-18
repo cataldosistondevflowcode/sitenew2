@@ -35,7 +35,9 @@ export const YouTubeSection: React.FC<YouTubeSectionProps> = ({
       <div className="flex flex-wrap items-center mt-4 w-full text-xl text-center text-yellow-600">
         <div className="self-stretch my-auto">
           <a
-            href="#"
+            href="https://www.youtube.com/channel/UCldbgxJU1D9h3UAVUIRIRYg"
+            target="_blank"
+            rel="noopener noreferrer"
             className="py-2.5 pr-5 pl-4 rounded-full border border-yellow-600 border-solid"
           >
             Assista na íntegra

@@ -63,7 +63,9 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
             </div>
 
             <a
-              href="#"
+              href="https://www.youtube.com/channel/UCldbgxJU1D9h3UAVUIRIRYg"
+              target="_blank"
+              rel="noopener noreferrer"
               className="relative mt-64 max-w-full rounded-none bg-neutral-900 bg-opacity-80 min-h-[47px] w-[181px] max-md:mt-10"
             >
               <div className="flex gap-2.5 items-start px-3 pt-4 w-full">

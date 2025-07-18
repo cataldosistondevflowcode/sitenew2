@@ -47,7 +47,9 @@ export const SuccessCases = () => {
         </div>
         <div className="text-center mt-10">
           <a 
-            href="#" 
+            href="https://leilaodeimoveis-cataldosiston.com/casos-reais/" 
+            target="_blank"
+            rel="noopener noreferrer"
             className="inline-block bg-[#d68e08] text-white px-8 py-3 rounded-lg font-bold hover:bg-[#b8780a] transition-colors"
           >
             Veja os nossos resultados

@@ -98,13 +98,6 @@ export const Footer: React.FC = () => {
                   alt="Instagram"
                 />
               </a>
-              <a href="https://www.jusbrasil.com.br/topicos/36756955/raphael-cataldo-siston" target="_blank" rel="noopener noreferrer" title="JusBrasil">
-                <img
-                  src="https://cdn.builder.io/api/v1/image/assets/ca38ae4db7a6428881f7c632440d043a/2ed2ac661a8abd87a2ab346c9f25dcece7dbc7df?placeholderIfAbsent=true"
-                  className="w-8 h-8 object-contain hover:opacity-80 cursor-pointer transition-opacity"
-                  alt="JusBrasil"
-                />
-              </a>
               <a href="https://www.youtube.com/channel/UCldbgxJU1D9h3U6Ej8Ej8Ej8Ej8Ej8Ej8Ej8Ej8" target="_blank" rel="noopener noreferrer" title="YouTube">
                 <img
                   src="https://cdn.builder.io/api/v1/image/assets/ca38ae4db7a6428881f7c632440d043a/e31888807ac0e2e4d00224790a076ac9216edea3?placeholderIfAbsent=true"

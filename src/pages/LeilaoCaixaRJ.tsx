@@ -22,6 +22,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useFilterParams } from "@/hooks/useFilterParams";
+import { flexibleSearch } from "@/utils/stringUtils";
 
 // Interface para os dados dos imóveis
 interface Property {
@@ -1190,14 +1191,14 @@ const LeilaoCaixaRJ = () => {
                       {Object.keys(cidadesPorRegiaoRJ)
                         .filter(regiao => 
                           citySearchTerm === '' || 
-                          regiao.toLowerCase().includes(citySearchTerm.toLowerCase()) ||
+                          flexibleSearch(regiao, citySearchTerm) ||
                           cidadesPorRegiaoRJ[regiao].some(cidade => 
-                            cidade.toLowerCase().includes(citySearchTerm.toLowerCase())
+                            flexibleSearch(cidade, citySearchTerm)
                           )
                         )
                         .map((regiao) => (
                         <div key={regiao}>
-                          {(citySearchTerm === '' || regiao.toLowerCase().includes(citySearchTerm.toLowerCase())) && (
+                          {(citySearchTerm === '' || flexibleSearch(regiao, citySearchTerm)) && (
                             <div
                               className="py-2 px-4 font-bold text-primary bg-gray-100 border-b border-gray-200 cursor-pointer hover:bg-yellow-100"
                               onClick={() => selectRegion(regiao)}
@@ -1208,7 +1209,7 @@ const LeilaoCaixaRJ = () => {
                           {cidadesPorRegiaoRJ[regiao]
                             .filter(cidade => 
                               citySearchTerm === '' || 
-                              cidade.toLowerCase().includes(citySearchTerm.toLowerCase())
+                              flexibleSearch(cidade, citySearchTerm)
                             )
                             .map((cidade) => (
                             <div
@@ -1252,14 +1253,14 @@ const LeilaoCaixaRJ = () => {
                         Object.keys(rjNeighborhoods)
                           .filter(zona => {
                             if (neighborhoodSearchTerm === '') return true;
-                            return zona.toLowerCase().includes(neighborhoodSearchTerm.toLowerCase()) ||
+                            return flexibleSearch(zona, neighborhoodSearchTerm) ||
                               rjNeighborhoods[zona].some((neighborhoodData: any) => 
-                                neighborhoodData.neighborhood.toLowerCase().includes(neighborhoodSearchTerm.toLowerCase())
+                                flexibleSearch(neighborhoodData.neighborhood, neighborhoodSearchTerm)
                               );
                           })
                           .map((zona) => (
                           <div key={zona}>
-                            {(neighborhoodSearchTerm === '' || zona.toLowerCase().includes(neighborhoodSearchTerm.toLowerCase())) && (
+                            {(neighborhoodSearchTerm === '' || flexibleSearch(zona, neighborhoodSearchTerm)) && (
                               <div
                                 className="py-2 px-4 font-bold text-primary bg-gray-100 border-b border-gray-200 cursor-pointer hover:bg-yellow-100"
                                 onClick={() => selectZone(zona)}
@@ -1270,7 +1271,7 @@ const LeilaoCaixaRJ = () => {
                             {rjNeighborhoods[zona]
                               .filter((neighborhoodData: any) => 
                                 neighborhoodSearchTerm === '' || 
-                                neighborhoodData.neighborhood.toLowerCase().includes(neighborhoodSearchTerm.toLowerCase())
+                                flexibleSearch(neighborhoodData.neighborhood, neighborhoodSearchTerm)
                               )
                               .map((neighborhoodData: any, index: number) => (
                                 <div
@@ -1287,14 +1288,14 @@ const LeilaoCaixaRJ = () => {
                         Object.keys(rjNeighborhoods)
                           .filter(regiao => {
                             if (neighborhoodSearchTerm === '') return true;
-                            return regiao.toLowerCase().includes(neighborhoodSearchTerm.toLowerCase()) ||
+                            return flexibleSearch(regiao, neighborhoodSearchTerm) ||
                               rjNeighborhoods[regiao].some((neighborhoodData: any) => 
-                                neighborhoodData.neighborhood.toLowerCase().includes(neighborhoodSearchTerm.toLowerCase())
+                                flexibleSearch(neighborhoodData.neighborhood, neighborhoodSearchTerm)
                               );
                           })
                           .map((regiao) => (
                           <div key={regiao}>
-                            {(neighborhoodSearchTerm === '' || regiao.toLowerCase().includes(neighborhoodSearchTerm.toLowerCase())) && (
+                            {(neighborhoodSearchTerm === '' || flexibleSearch(regiao, neighborhoodSearchTerm)) && (
                               <div
                                 className="py-2 px-4 font-bold text-primary bg-gray-100 border-b border-gray-200 cursor-pointer hover:bg-yellow-100"
                                 onClick={() => selectRegionNiteroi(regiao)}
@@ -1305,7 +1306,7 @@ const LeilaoCaixaRJ = () => {
                             {rjNeighborhoods[regiao]
                               .filter((neighborhoodData: any) => 
                                 neighborhoodSearchTerm === '' || 
-                                neighborhoodData.neighborhood.toLowerCase().includes(neighborhoodSearchTerm.toLowerCase())
+                                flexibleSearch(neighborhoodData.neighborhood, neighborhoodSearchTerm)
                               )
                               .map((neighborhoodData: any, index: number) => (
                                 <div
@@ -1323,7 +1324,7 @@ const LeilaoCaixaRJ = () => {
                           rjNeighborhoods
                             .filter((neighborhoodData: any) => 
                               neighborhoodSearchTerm === '' || 
-                              neighborhoodData.neighborhood.toLowerCase().includes(neighborhoodSearchTerm.toLowerCase())
+                              flexibleSearch(neighborhoodData.neighborhood, neighborhoodSearchTerm)
                             )
                             .map((neighborhoodData: any, index: number) => (
                             <div

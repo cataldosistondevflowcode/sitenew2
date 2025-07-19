@@ -18,7 +18,7 @@ export const InterviewSection = () => {
             Confira a entrevista do advogado <strong className="text-[#d68e08]">Raphael Cataldo Siston</strong> sobre leilões de imóveis
           </h2>
           <a 
-            href="https://www.youtube.com/channel/UCldgxJU1D9h3U..." 
+            href="https://www.youtube.com/channel/UCldbgxJU1D9h3UAVUIRIRYg" 
             className="inline-block bg-[#d68e08] text-white px-8 py-3 rounded-lg font-bold hover:bg-[#b8780a] transition-colors"
           >
             Assista na íntegra

@@ -81,7 +81,7 @@ export const SocialMediaLinks: React.FC = () => {
       </a>
 
       <a
-        href="https://www.youtube.com/channel/UCldbgxJU1D9h3U6Ej8Ej8Ej8Ej8Ej8Ej8Ej8Ej8"
+        href="https://www.youtube.com/channel/UCldbgxJU1D9h3UAVUIRIRYg"
         target="_blank"
         rel="noopener noreferrer"
         className="flex absolute top-0 shrink-0 justify-center items-center w-9 h-9 left-[136px] max-md:relative max-md:top-auto max-md:left-auto hover:opacity-80 transition-opacity"

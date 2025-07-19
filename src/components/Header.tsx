@@ -19,7 +19,7 @@ export const Header = ({ onContactClick }: HeaderProps) => {
     { label: "Direito Imobiliário", href: "https://leilaodeimoveis-cataldosiston.com/direito-imobiliario/" },
     { label: "Casos Reais", href: "https://leilaodeimoveis-cataldosiston.com/casos-reais/" },
     { label: "Blog", href: "https://leilaodeimoveis-cataldosiston.com/blog-leilao-de-imoveis/" },
-    { label: "Contato", href: "https://leilaodeimoveis-cataldosiston.com/contato/", isContact: true },
+    { label: "Contato", href: "https://leilaodeimoveis-cataldosiston.com/contato-advogados-imobiliarios/" },
   ];
 
   const dropdownItems = [
@@ -141,18 +141,6 @@ export const Header = ({ onContactClick }: HeaderProps) => {
                         </div>
                       )}
                     </div>
-                  ) : item.isContact ? (
-                    <button
-                      onClick={() => {
-                        setIsMenuOpen(false);
-                        onContactClick?.();
-                      }}
-                      className={`block py-3 lg:py-2 px-2 text-sm lg:text-base text-secondary hover:text-primary transition-colors rounded lg:rounded-none hover:bg-gray-50 lg:hover:bg-transparent cursor-pointer ${
-                        item.active ? 'text-primary font-medium relative lg:after:content-[""] lg:after:absolute lg:after:bottom-0 lg:after:left-0 lg:after:w-full lg:after:h-0.5 lg:after:bg-primary' : ''
-                      }`}
-                    >
-                      {item.label}
-                    </button>
                   ) : (
                     <a
                       href={item.href}

@@ -55,7 +55,7 @@ export const Footer: React.FC<FooterProps> = ({ onWhatsAppClick }) => {
                 <Link to="/leilao-sp" onClick={() => window.scrollTo(0, 0)}>Imóveis em Leilão SP</Link>
               </li>
               <li className="hover:text-[#d68e08] cursor-pointer transition-colors">
-                <a href="https://leilaodeimoveis-cataldosiston.com/leilao-de-imoveis/" target="_blank" rel="noopener noreferrer">Assessoria em leilões</a>
+                <a href="https://leilaodeimoveis-cataldosiston.com/leilao-imoveis-rj/" target="_blank" rel="noopener noreferrer">Assessoria em leilões</a>
               </li>
               <li className="hover:text-[#d68e08] cursor-pointer transition-colors">
                 <a href="https://leilaodeimoveis-cataldosiston.com/direito-imobiliario/" target="_blank" rel="noopener noreferrer">Direito Imobiliário</a>

@@ -210,7 +210,7 @@ const PropertyDetail = () => {
         <TestimonialsSection />
       </div>
       <Newsletter />
-      <Footer />
+      <Footer onWhatsAppClick={() => setShowWhatsAppModal(true)} />
       
       <CookieBar />
       

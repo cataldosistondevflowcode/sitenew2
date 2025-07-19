@@ -2,7 +2,11 @@
 import * as React from "react";
 import { Link } from "react-router-dom";
 
-export const Footer: React.FC = () => {
+interface FooterProps {
+  onWhatsAppClick?: () => void;
+}
+
+export const Footer: React.FC<FooterProps> = ({ onWhatsAppClick }) => {
   return (
     <footer className="bg-gray-50 py-12">
       <div className="container mx-auto px-4">
@@ -69,7 +73,10 @@ export const Footer: React.FC = () => {
 
           {/* Contact Info */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-gray-900">
+            <h3 
+              className="text-lg font-semibold text-gray-900 cursor-pointer hover:text-[#d68e08] transition-colors"
+              onClick={onWhatsAppClick}
+            >
               Entre em Contato
             </h3>
             <div className="text-sm text-gray-700 space-y-2">

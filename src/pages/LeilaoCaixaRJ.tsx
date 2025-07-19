@@ -1652,7 +1652,7 @@ const LeilaoCaixaRJ = () => {
       />
 
       {/* Footer */}
-      <Footer />
+      <Footer onWhatsAppClick={() => setShowWhatsAppModal(true)} />
 
       {/* Floating Buttons */}
       <div className="fixed bottom-2 sm:bottom-4 right-2 sm:right-4 z-40 flex flex-col sm:flex-row gap-2 sm:gap-3 items-end">

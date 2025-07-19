@@ -37,9 +37,10 @@ interface PropertyDetailData {
 interface MainPropertyDetailProps {
   property: PropertyDetailData;
   rawPropertyData?: any;
+  onContactClick?: () => void;
 }
 
-export const MainPropertyDetail: React.FC<MainPropertyDetailProps> = ({ property, rawPropertyData }) => {
+export const MainPropertyDetail: React.FC<MainPropertyDetailProps> = ({ property, rawPropertyData, onContactClick }) => {
   const [searchParams] = useSearchParams();
   const showDebug = searchParams.get('debug') === 'true';
   
@@ -196,6 +197,7 @@ export const MainPropertyDetail: React.FC<MainPropertyDetailProps> = ({ property
                 <ContactSidebar 
                   contactInfo={contactInfo} 
                   onTripleClick={handleTripleClick}
+                  onContactClick={onContactClick}
                 />
                 
                 {/* Debug Section */}

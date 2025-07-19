@@ -12,9 +12,10 @@ interface ContactInfo {
 interface ContactSidebarProps {
   contactInfo: ContactInfo;
   onTripleClick?: () => void;
+  onContactClick?: () => void;
 }
 
-export const ContactSidebar: React.FC<ContactSidebarProps> = ({ contactInfo, onTripleClick }) => {
+export const ContactSidebar: React.FC<ContactSidebarProps> = ({ contactInfo, onTripleClick, onContactClick }) => {
   const whatsAppUrl = "https://api.whatsapp.com/send/?phone=5521977294848&text=Gostaria+de+saber+mais+sobre+o+im%C3%B3vel+em+leil%C3%A3o&type=phone_number&app_absent=0";
 
   // Triple click functionality
@@ -93,11 +94,9 @@ export const ContactSidebar: React.FC<ContactSidebarProps> = ({ contactInfo, onT
         </div>
       </div>
       <div className="flex flex-col self-stretch px-3 mt-5 w-full text-center">
-        <a
-          href={whatsAppUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex gap-3.5 justify-center items-center py-4 px-6 text-base font-semibold text-white rounded-lg bg-gradient-to-r from-[#d68e08] via-[#e6a010] to-[#d68e08] hover:from-[#b8780a] hover:via-[#c8920e] hover:to-[#b8780a] transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+        <button
+          onClick={onContactClick}
+          className="flex gap-3.5 justify-center items-center py-4 px-6 text-base font-semibold text-white rounded-lg bg-gradient-to-r from-[#d68e08] via-[#e6a010] to-[#d68e08] hover:from-[#b8780a] hover:via-[#c8920e] hover:to-[#b8780a] transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl cursor-pointer"
           data-lov-id="src\components\property-detail\ContactSidebar.tsx:20:8"
         >
           <img
@@ -108,7 +107,7 @@ export const ContactSidebar: React.FC<ContactSidebarProps> = ({ contactInfo, onT
           <span className="uppercase tracking-wide">
             Fale com nossos advogados
           </span>
-        </a>
+        </button>
         <h3 className="self-center mt-5 text-2xl font-medium leading-tight text-zinc-900">
           COMPARTILHAR
         </h3>

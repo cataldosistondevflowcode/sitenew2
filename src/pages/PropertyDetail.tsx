@@ -192,6 +192,7 @@ const PropertyDetail = () => {
           <MainPropertyDetail 
             property={formattedProperty} 
             rawPropertyData={property}
+            onContactClick={() => setShowWhatsAppModal(true)}
           />
         </main>
         

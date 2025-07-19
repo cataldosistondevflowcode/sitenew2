@@ -1646,7 +1646,10 @@ const LeilaoCaixaRJ = () => {
       <TestimonialsSection />
 
       {/* Newsletter Bottom Section */}
-      <NewsletterBottomSection />
+      <NewsletterBottomSection 
+        onWhatsAppClick={() => setShowWhatsAppModal(true)}
+        onOpportunityClick={() => setShowOpportunityPopup(true)}
+      />
 
       {/* Footer */}
       <Footer />

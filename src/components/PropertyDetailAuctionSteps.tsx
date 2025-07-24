@@ -59,7 +59,9 @@ export const PropertyDetailAuctionSteps = () => {
         
         <div className="text-center mt-10">
           <a 
-            href="#" 
+            href="https://leilaodeimoveis-cataldosiston.com/leilao-imoveis-rj/" 
+            target="_blank"
+            rel="noopener noreferrer"
             className="inline-block bg-[#d68e08] text-white px-6 py-3 rounded-lg font-bold hover:bg-[#b8780a] transition-colors"
           >
             SAIBA MAIS SOBRE A NOSSA ASSESSORIA EM LEILÕES

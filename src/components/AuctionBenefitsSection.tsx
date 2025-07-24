@@ -143,8 +143,7 @@ export const AuctionBenefitsSection: React.FC = () => {
       <CallToActionButton
         text="SAIBA MAIS SOBRE A NOSSA ASSESSORIA EM LEILÕES"
         onClick={() => {
-          // Handle click action here
-          console.log('CTA button clicked');
+          window.open('https://leilaodeimoveis-cataldosiston.com/leilao-imoveis-rj/', '_blank');
         }}
       />
     </main>

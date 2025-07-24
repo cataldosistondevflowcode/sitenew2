@@ -108,7 +108,7 @@ const PropertyForm = ({ property, onSubmit, onCancel, isLoading = false }: Prope
                 <SelectTrigger>
                   <SelectValue placeholder="Selecione o tipo" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-white">
                   <SelectItem value="Casa">Casa</SelectItem>
                   <SelectItem value="Apartamento">Apartamento</SelectItem>
                   <SelectItem value="Terreno">Terreno</SelectItem>
@@ -165,17 +165,9 @@ const PropertyForm = ({ property, onSubmit, onCancel, isLoading = false }: Prope
                 <SelectTrigger>
                   <SelectValue placeholder="Selecione o estado" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-white">
                   <SelectItem value="RJ">Rio de Janeiro</SelectItem>
                   <SelectItem value="SP">São Paulo</SelectItem>
-                  <SelectItem value="MG">Minas Gerais</SelectItem>
-                  <SelectItem value="ES">Espírito Santo</SelectItem>
-                  <SelectItem value="PR">Paraná</SelectItem>
-                  <SelectItem value="SC">Santa Catarina</SelectItem>
-                  <SelectItem value="RS">Rio Grande do Sul</SelectItem>
-                  <SelectItem value="BA">Bahia</SelectItem>
-                  <SelectItem value="GO">Goiás</SelectItem>
-                  <SelectItem value="DF">Distrito Federal</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -189,7 +181,7 @@ const PropertyForm = ({ property, onSubmit, onCancel, isLoading = false }: Prope
                 <SelectTrigger>
                   <SelectValue placeholder="Selecione o tipo" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-white">
                   <SelectItem value="Judicial">Judicial</SelectItem>
                   <SelectItem value="Extrajudicial">Extrajudicial</SelectItem>
                   <SelectItem value="Caixa Econômica Federal">Caixa Econômica Federal</SelectItem>

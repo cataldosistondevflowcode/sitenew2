@@ -12,7 +12,7 @@ export const LegalDisclaimer: React.FC = () => {
           <span style={{fontWeight: 700}}>estudo de viabilidade jurídica</span>{" "}
           clicando{" "}
         </span>
-        <a href="#" className="font-bold text-yellow-600">
+        <a href="https://leilaodeimoveis-cataldosiston.com/leilao-de-imoveis-importancia-analise-juridica/" className="font-bold text-yellow-600" target="_blank" rel="noopener noreferrer">
           aqui
         </a>
         <span className="my-auto basis-auto">

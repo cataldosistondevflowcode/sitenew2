@@ -55,7 +55,7 @@ export const PropertyDetailDescription = ({ property }: PropertyDetailDescriptio
         <div className="mt-10 p-4 bg-[#333] border-l-4 border-[#d68e08] rounded">
           <p className="text-lg">
             O imóvel em leilão acima não foi objeto de análise jurídica prévia.
-            Entenda como funciona o nosso <strong>estudo de viabilidade jurídica</strong> clicando <a href="#" className="text-[#d68e08] hover:underline">aqui</a> ou entre em contato conosco.
+            Entenda como funciona o nosso <strong>estudo de viabilidade jurídica</strong> clicando <a href="https://leilaodeimoveis-cataldosiston.com/leilao-de-imoveis-importancia-analise-juridica/" className="text-[#d68e08] hover:underline" target="_blank" rel="noopener noreferrer">aqui</a> ou entre em contato conosco.
           </p>
         </div>
       </div>

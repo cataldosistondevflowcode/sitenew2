@@ -146,7 +146,7 @@ export const HeroSectionSP = ({ onOpportunityClick }: HeroSectionSPProps) => {
                       Entenda como funciona o nosso{" "}
                       <span className="font-bold">estudo de viabilidade jurídica</span>{" "}
                       clicando{" "}
-                      <a href="#" className="text-[#d48d07] font-bold hover:underline">
+                      <a href="https://leilaodeimoveis-cataldosiston.com/leilao-de-imoveis-importancia-analise-juridica/" className="text-[#d48d07] font-bold hover:underline" target="_blank" rel="noopener noreferrer">
                         aqui
                       </a>{" "}
                       ou entre em contato conosco

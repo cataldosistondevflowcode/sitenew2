@@ -14,9 +14,13 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Search, Filter, Eye, RefreshCw, ChevronLeft, ChevronRight, Download, Edit, ExternalLink } from 'lucide-react';
+import { Search, Filter, Eye, RefreshCw, ChevronLeft, ChevronRight, Download, Edit, ExternalLink, Plus, Trash2 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { createPropertyUrl } from '@/utils/slugUtils';
+import { toast } from '@/hooks/use-toast';
+import PropertyModal from './PropertyModal';
+import DeleteConfirmDialog from './DeleteConfirmDialog';
+import { PropertyCRUD } from './PropertyCRUD';
 
 type Property = Tables<'leiloes_imoveis'>;
 
@@ -42,6 +46,12 @@ const PropertiesTable = () => {
   const [allCities, setAllCities] = useState<string[]>([]);
   const [allTypes, setAllTypes] = useState<string[]>([]);
   const [allAuctionTypes, setAllAuctionTypes] = useState<string[]>([]);
+
+  // Estados para CRUD
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
+  const [crudLoading, setCrudLoading] = useState(false);
 
   const pageSize = 20;
 
@@ -195,6 +205,70 @@ const PropertiesTable = () => {
     fetchProperties(0);
   };
 
+  // Funções CRUD
+  const handleCreateProperty = async (data: Partial<Property>) => {
+    await PropertyCRUD.createProperty(data);
+    fetchProperties(0); // Recarregar primeira página
+    fetchMetadata(); // Atualizar metadados
+  };
+
+  const handleUpdateProperty = async (data: Partial<Property>) => {
+    if (selectedProperty?.id) {
+      await PropertyCRUD.updateProperty(selectedProperty.id, data);
+      fetchProperties(currentPage); // Recarregar página atual
+      fetchMetadata(); // Atualizar metadados
+    }
+  };
+
+  const handleDeleteProperty = async (propertyId: number) => {
+    try {
+      setCrudLoading(true);
+      await PropertyCRUD.deleteProperty(propertyId);
+      toast({
+        title: "Sucesso!",
+        description: "Propriedade excluída com sucesso.",
+      });
+      setIsDeleteDialogOpen(false);
+      setSelectedProperty(null);
+      fetchProperties(currentPage); // Recarregar página atual
+      fetchMetadata(); // Atualizar metadados
+    } catch (error) {
+      console.error('Erro ao excluir propriedade:', error);
+      toast({
+        title: "Erro",
+        description: "Erro ao excluir propriedade. Tente novamente.",
+        variant: "destructive",
+      });
+    } finally {
+      setCrudLoading(false);
+    }
+  };
+
+  const openCreateModal = () => {
+    setSelectedProperty(null);
+    setIsModalOpen(true);
+  };
+
+  const openEditModal = (property: Property) => {
+    setSelectedProperty(property);
+    setIsModalOpen(true);
+  };
+
+  const openDeleteDialog = (property: Property) => {
+    setSelectedProperty(property);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedProperty(null);
+  };
+
+  const closeDeleteDialog = () => {
+    setIsDeleteDialogOpen(false);
+    setSelectedProperty(null);
+  };
+
   const totalPages = Math.ceil(totalCount / pageSize);
   const startRecord = currentPage * pageSize + 1;
   const endRecord = Math.min((currentPage + 1) * pageSize, totalCount);
@@ -229,10 +303,19 @@ const PropertiesTable = () => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Eye className="h-5 w-5" />
-          Propriedades ({startRecord}-{endRecord} de {totalCount})
-        </CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle className="flex items-center gap-2">
+            <Eye className="h-5 w-5" />
+            Propriedades ({startRecord}-{endRecord} de {totalCount})
+          </CardTitle>
+          <Button 
+            onClick={openCreateModal}
+            className="bg-blue-600 hover:bg-blue-700 text-white"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Nova Propriedade
+          </Button>
+        </div>
         
         {/* Filtros */}
         <div className="space-y-4 mt-4">
@@ -381,6 +464,7 @@ const PropertiesTable = () => {
                 <TableHead className="min-w-48">Leiloeiro</TableHead>
                 <TableHead className="min-w-32">Processo</TableHead>
                 <TableHead className="min-w-64">Descrição</TableHead>
+                <TableHead className="w-32">Ações</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -475,6 +559,28 @@ const PropertiesTable = () => {
                   <TableCell className="max-w-64">
                     <div className="truncate text-xs" title={property.descricao || 'N/A'}>
                       {property.descricao || 'N/A'}
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => openEditModal(property)}
+                        className="h-8 w-8 p-0"
+                        title="Editar propriedade"
+                      >
+                        <Edit className="h-3 w-3" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => openDeleteDialog(property)}
+                        className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+                        title="Excluir propriedade"
+                      >
+                        <Trash2 className="h-3 w-3" />
+                      </Button>
                     </div>
                   </TableCell>
                 </TableRow>
@@ -597,6 +703,27 @@ const PropertiesTable = () => {
           </div>
         )}
       </CardContent>
+
+      {/* Modal para Criar/Editar Propriedade */}
+      <PropertyModal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        property={selectedProperty}
+        onSuccess={() => {
+          fetchProperties(currentPage);
+          fetchMetadata();
+        }}
+        onSubmit={selectedProperty ? handleUpdateProperty : handleCreateProperty}
+      />
+
+      {/* Dialog de Confirmação de Exclusão */}
+      <DeleteConfirmDialog
+        isOpen={isDeleteDialogOpen}
+        onClose={closeDeleteDialog}
+        property={selectedProperty}
+        onConfirm={handleDeleteProperty}
+        isLoading={crudLoading}
+      />
     </Card>
   );
 };

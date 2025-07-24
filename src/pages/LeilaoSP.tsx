@@ -1031,7 +1031,7 @@ const LeilaoSP = () => {
       <CookieBar />
       <SocialBar onWhatsAppClick={() => setShowWhatsAppModal(true)} />
               <Header onContactClick={() => setShowWhatsAppModal(true)} />
-              <HeroSectionSP onOpportunityClick={() => setShowOpportunityPopup(true)} />
+              <HeroSectionSP onOpportunityClick={() => window.open('https://leilaodeimoveis-cataldosiston.com/contato-advogados-imobiliarios/', '_blank')} />
       
       {/* Properties Section - Movida para cima */}
       <section className="py-16 bg-background opportunities">
@@ -1620,7 +1620,7 @@ const LeilaoSP = () => {
       {/* Newsletter Bottom Section */}
       <NewsletterBottomSection 
         onWhatsAppClick={() => setShowWhatsAppModal(true)}
-        onOpportunityClick={() => setShowOpportunityPopup(true)}
+        onOpportunityClick={() => window.open('https://leilaodeimoveis-cataldosiston.com/contato-advogados-imobiliarios/', '_blank')}
       />
 
       {/* Footer */}
@@ -1630,7 +1630,7 @@ const LeilaoSP = () => {
       <div className="fixed bottom-2 sm:bottom-4 right-2 sm:right-4 z-40 flex flex-col sm:flex-row gap-2 sm:gap-3 items-end">
         <Button 
           className="bg-primary hover:bg-primary/90 font-bold text-xs sm:text-sm px-3 sm:px-4 py-2 sm:py-3 flex items-center gap-2"
-          onClick={() => setShowOpportunityPopup(true)}
+          onClick={() => window.open('https://leilaodeimoveis-cataldosiston.com/contato-advogados-imobiliarios/', '_blank')}
         >
           <Mail className="w-4 h-4" />
           <span className="hidden sm:inline">Inscreva-se para oportunidades</span>

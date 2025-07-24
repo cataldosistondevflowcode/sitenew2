@@ -5,12 +5,22 @@ interface ArticleCardProps {
   title: string;
   description: string;
   readMoreIconUrl: string;
+  link?: string;
 }
 
-export function ArticleCard({ imageUrl, title, description, readMoreIconUrl }: ArticleCardProps) {
+export function ArticleCard({ imageUrl, title, description, readMoreIconUrl, link }: ArticleCardProps) {
+  const handleClick = () => {
+    if (link) {
+      window.open(link, '_blank', 'noopener,noreferrer');
+    }
+  };
+
   return (
-    <article className="flex flex-col grow shrink justify-center pr-2.5 min-w-60 w-[216px]">
-      <div className="w-full bg-neutral-800 h-[527px] max-w-[260px] shadow-[0px_0px_8px_rgba(0,0,0,0.75)]">
+    <article 
+      className="flex flex-col grow shrink justify-center pr-2.5 min-w-60 w-[216px] cursor-pointer"
+      onClick={handleClick}
+    >
+      <div className="w-full bg-neutral-800 h-[527px] max-w-[260px] shadow-[0px_0px_8px_rgba(0,0,0,0.75)] hover:shadow-[0px_0px_12px_rgba(0,0,0,0.9)] transition-shadow duration-300">
         <div className="flex justify-center items-start w-full">
           <img
             src={imageUrl}

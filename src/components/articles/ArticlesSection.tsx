@@ -4,36 +4,85 @@ import { ArticleCard } from "./ArticleCard";
 import { NavigationButton } from "./NavigationButton";
 
 export function ArticlesSection() {
+  const [currentIndex, setCurrentIndex] = React.useState(0);
+
   const articles = [
     {
-      imageUrl: "https://cdn.builder.io/api/v1/image/assets/TEMP/0254e4f12d5a287b68afcd06e1bafc097b7aaa85?placeholderIfAbsent=true&apiKey=ca38ae4db7a6428881f7c632440d043a",
-      title: "Imóveis em leilão costumam\nestar em péssimo estado de\nconservação?",
-      description: "Muitos investidores e\ncompradores em potencial se\npreocupam com o estado de\nconservação dos imóveis em\nleilão. A ideia de que essas\npropriedades estão\ncompletamente deterioradas,\nexigindo reformas onerosas,…",
-      readMoreIconUrl: "https://cdn.builder.io/api/v1/image/assets/TEMP/e950cad0fb86d9a56163de76d08b71dc2644b797?placeholderIfAbsent=true&apiKey=ca38ae4db7a6428881f7c632440d043a"
+      imageUrl: "https://leilaodeimoveis-cataldosiston.com/wp-content/uploads/2024/08/como-ocorre-a-imissao-na-posse-leiloes-de-imoveis-blog-escritorio-cataldo-siston.webp",
+      title: "Saiba como ocorre a imissão na posse em leilões de imóveis",
+      description: "A imissão na posse em leilões de imóveis, seja extrajudiciais ou judiciais, é algo que suscita muitos questionamentos por parte dos licitantes ou interessados em participar desta modalidade de…",
+      readMoreIconUrl: "https://cdn.builder.io/api/v1/image/assets/TEMP/e950cad0fb86d9a56163de76d08b71dc2644b797?placeholderIfAbsent=true&apiKey=ca38ae4db7a6428881f7c632440d043a",
+      link: "https://leilaodeimoveis-cataldosiston.com/como-ocorre-a-imissao-na-posse-em-leiloes-de-imoveis/"
     },
     {
-      imageUrl: "https://cdn.builder.io/api/v1/image/assets/TEMP/e145cdbcbb7a1330a02b8c6044727a198c0c874e?placeholderIfAbsent=true&apiKey=ca38ae4db7a6428881f7c632440d043a",
-      title: "O que você deve pagar, após\narrematar um imóvel em\nleilão?",
-      description: "Quando você decide adquirir um\nimóvel em leilão, seja judicial ou\nextrajudicial, a arrematação é\napenas o primeiro passo para\ngarantir a sua propriedade. O\nvalor do lance é…",
-      readMoreIconUrl: "https://cdn.builder.io/api/v1/image/assets/TEMP/8bab8ca5f1e7da663f03610d411a5858b3b5cf25?placeholderIfAbsent=true&apiKey=ca38ae4db7a6428881f7c632440d043a"
+      imageUrl: "https://leilaodeimoveis-cataldosiston.com/wp-content/uploads/2024/08/impugnacao-a-arrematacao-quando-pode-ocorrer-blog-escritorio-cataldo-siston.webp",
+      title: "Impugnação à arrematação do imóvel: quando pode ocorrer?",
+      description: "Um dos maiores receios de quem participa de leilões de imóveis, ou daqueles que têm interesse em participar, é chegar ao final de todo o processo e ocorrer algo…",
+      readMoreIconUrl: "https://cdn.builder.io/api/v1/image/assets/TEMP/8bab8ca5f1e7da663f03610d411a5858b3b5cf25?placeholderIfAbsent=true&apiKey=ca38ae4db7a6428881f7c632440d043a",
+      link: "https://leilaodeimoveis-cataldosiston.com/impugnacao-a-arrematacao-em-leiloes-de-imoveis/"
     },
     {
-      imageUrl: "https://cdn.builder.io/api/v1/image/assets/TEMP/e77bd401e6076acfa28974b18bfc9a4af4cf8dbc?placeholderIfAbsent=true&apiKey=ca38ae4db7a6428881f7c632440d043a",
-      title: "Saiba como ocorre a imissão\nna posse em leilões de\nimóveis",
-      description: "A imissão na posse em leilões de\nimóveis, seja extrajudiciais ou\njudiciais, é algo que suscita\nmuitos questionamentos por\nparte dos licitantes ou\ninteressados em participar desta\nmodalidade de…",
-      readMoreIconUrl: "https://cdn.builder.io/api/v1/image/assets/TEMP/571fe5f53b82099e9da6337b0802e635f055a695?placeholderIfAbsent=true&apiKey=ca38ae4db7a6428881f7c632440d043a"
+      imageUrl: "https://leilaodeimoveis-cataldosiston.com/wp-content/uploads/2024/03/entrevista-casa-jardim-como-funcionam-leiloes-de-imoveis.png",
+      title: "Leilão de imóveis: como funciona e dicas para participar",
+      description: "O Raphael Siston, sócio do escritório Cataldo Siston, deu uma entrevista para a Casa & Jardim falando como funcionam os leilões de imóveis e de que forma é possível…",
+      readMoreIconUrl: "https://cdn.builder.io/api/v1/image/assets/TEMP/571fe5f53b82099e9da6337b0802e635f055a695?placeholderIfAbsent=true&apiKey=ca38ae4db7a6428881f7c632440d043a",
+      link: "https://leilaodeimoveis-cataldosiston.com/leilao-de-imoveis-como-funciona-e-dicas-para-participar/"
+    },
+    {
+      imageUrl: "https://leilaodeimoveis-cataldosiston.com/wp-content/uploads/2025/02/imoveis-em-leilao-costumam-estar-em-pessimo-estado-de-conservacao-blog-cataldo-siston-advogados.jpg",
+      title: "Imóveis em leilão costumam estar em péssimo estado de conservação?",
+      description: "Muitos investidores e compradores em potencial se preocupam com o estado de conservação dos imóveis em leilão. A ideia de que essas propriedades estão completamente deterioradas, exigindo reformas onerosas,…",
+      readMoreIconUrl: "https://cdn.builder.io/api/v1/image/assets/TEMP/e950cad0fb86d9a56163de76d08b71dc2644b797?placeholderIfAbsent=true&apiKey=ca38ae4db7a6428881f7c632440d043a",
+      link: "https://leilaodeimoveis-cataldosiston.com/imoveis-em-leilao-costumam-estar-em-pessimo-estado-de-conservacao/"
+    },
+    {
+      imageUrl: "https://leilaodeimoveis-cataldosiston.com/wp-content/uploads/2024/11/custos-apos-a-arrematacao-blog-cataldo-siston-advogados.jpg",
+      title: "O que você deve pagar, após arrematar um imóvel em leilão?",
+      description: "Quando você decide adquirir um imóvel em leilão, seja judicial ou extrajudicial, a arrematação é apenas o primeiro passo para garantir a sua propriedade. O valor do lance é…",
+      readMoreIconUrl: "https://cdn.builder.io/api/v1/image/assets/TEMP/8bab8ca5f1e7da663f03610d411a5858b3b5cf25?placeholderIfAbsent=true&apiKey=ca38ae4db7a6428881f7c632440d043a",
+      link: "https://leilaodeimoveis-cataldosiston.com/o-que-voce-deve-pagar-apos-arrematar-um-imovel-em-leilao/"
     }
   ];
 
   const handlePreviousClick = () => {
-    // Navigation logic would be implemented here
-    console.log("Previous slide");
+    setCurrentIndex((prevIndex) => 
+      prevIndex === 0 ? articles.length - 1 : prevIndex - 1
+    );
   };
 
   const handleNextClick = () => {
-    // Navigation logic would be implemented here
-    console.log("Next slide");
+    setCurrentIndex((prevIndex) => 
+      prevIndex === articles.length - 1 ? 0 : prevIndex + 1
+    );
   };
+
+  // Hook para detectar se é mobile
+  const [isMobile, setIsMobile] = React.useState(false);
+
+  React.useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Função para determinar quais artigos exibir
+  const getVisibleArticles = () => {
+    const articlesToShow = isMobile ? 1 : 3;
+    
+    const visibleArticles = [];
+    for (let i = 0; i < articlesToShow; i++) {
+      const index = (currentIndex + i) % articles.length;
+      visibleArticles.push(articles[index]);
+    }
+    return visibleArticles;
+  };
+
+  const visibleArticles = getVisibleArticles();
 
   return (
     <section className="flex relative gap-4 justify-center items-start pt-10 pr-5 pb-0 pl-4 min-h-[430px]">
@@ -53,14 +102,15 @@ export function ArticlesSection() {
             </header>
             <div className="flex relative flex-col items-start px-16 mt-2 w-full max-md:px-5 max-md:max-w-full">
               <div className="overflow-hidden z-0 self-stretch pb-16 w-full max-md:max-w-full">
-                <div className="flex flex-wrap min-h-[527px]">
-                  {articles.map((article, index) => (
+                <div className="flex flex-wrap justify-center min-h-[527px]">
+                  {visibleArticles.map((article, index) => (
                     <ArticleCard
-                      key={index}
+                      key={`${currentIndex}-${index}`}
                       imageUrl={article.imageUrl}
                       title={article.title}
                       description={article.description}
                       readMoreIconUrl={article.readMoreIconUrl}
+                      link={article.link}
                     />
                   ))}
                 </div>

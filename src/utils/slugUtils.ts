@@ -15,10 +15,10 @@ export const createSlug = (text: string): string => {
 };
 
 /**
- * Cria URL completa para propriedade com ID e slug do título
+ * Cria URL completa para propriedade com ID e slug do endereço
  */
-export const createPropertyUrl = (id: number, title: string): string => {
-  const slug = createSlug(title);
+export const createPropertyUrl = (id: number, address: string): string => {
+  const slug = createSlug(address);
   return `/imovel/${id}/${slug}`;
 };
 

@@ -1,6 +1,19 @@
 import React from 'react';
 import { createPropertyUrl } from '../utils/slugUtils';
 
+// Função auxiliar para extrair bairro, cidade e estado da string de localização
+const parseLocation = (location: string) => {
+  // Formato esperado: "Bairro, Cidade/Estado"
+  const [neighborhood, cityState] = location.split(', ');
+  const [city, state] = (cityState || '').split('/');
+  
+  return {
+    neighborhood: neighborhood?.trim() || '',
+    city: city?.trim() || '',
+    state: state?.trim() || ''
+  };
+};
+
 export const PropertyDetailSimilar = () => {
   const similarProperties = [
     {
@@ -87,7 +100,13 @@ export const PropertyDetailSimilar = () => {
                 
                 <div className="flex justify-end mt-4">
                   <a
-                    href={createPropertyUrl(property.id, property.location)}
+                    href={createPropertyUrl(
+                      property.id, 
+                      '', // Não temos endereço específico nos dados estáticos
+                      parseLocation(property.location).neighborhood,
+                      parseLocation(property.location).city,
+                      parseLocation(property.location).state
+                    )}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="bg-[#d68e08] text-white px-4 py-2 rounded mr-2 hover:bg-[#b8780a]"

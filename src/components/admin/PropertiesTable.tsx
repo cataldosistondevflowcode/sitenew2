@@ -473,7 +473,13 @@ const PropertiesTable = () => {
                 <TableRow key={property.id} className="hover:bg-gray-50">
                   <TableCell className="font-medium text-xs">
                     <a 
-                      href={createPropertyUrl(property.id, formatPropertyAddress(property.endereco || '', property.bairro || '', property.cidade || '', property.estado || ''))} 
+                      href={createPropertyUrl(
+                        property.id, 
+                        property.endereco || '', 
+                        property.bairro || '', 
+                        property.cidade || '', 
+                        property.estado || ''
+                      )} 
                       target="_blank" 
                       rel="noopener noreferrer" 
                       className="flex items-center hover:underline text-blue-600 hover:text-blue-800"

@@ -160,7 +160,12 @@ const PropertyDetail = () => {
 
   const formattedProperty = {
     id: property.id,
-    title: property.titulo_propriedade,
+    title: [
+      property.tipo_propriedade || 'Imóvel',
+      property.bairro,
+      property.cidade,
+      property.estado
+    ].filter(Boolean).join(' - '),
     address: property.endereco,
     location: `${property.bairro}, ${property.cidade}/${property.estado}`,
     description: property.descricao || "",

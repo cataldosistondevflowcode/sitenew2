@@ -58,11 +58,12 @@ export const PropertyPagination: React.FC<PropertyPaginationProps> = ({
 
   return (
     <Pagination className="my-8">
-      <PaginationContent>
+      <PaginationContent className="gap-2">
         {currentPage > 1 && (
           <PaginationItem>
             <PaginationPrevious 
               href="#" 
+              className="hover:bg-[#d68e08] hover:text-white hover:border-[#d68e08] transition-colors"
               onClick={(e) => {
                 e.preventDefault();
                 onPageChange(currentPage - 1);
@@ -87,6 +88,10 @@ export const PropertyPagination: React.FC<PropertyPaginationProps> = ({
                   }
                 }}
                 isActive={page === currentPage}
+                className={page === currentPage ? 
+                  "border-2 border-[#d68e08] bg-[#d68e08] text-white hover:bg-[#b8780a] hover:border-[#b8780a] font-bold shadow-lg transform scale-110" : 
+                  "hover:bg-gray-100 hover:border-gray-300 border border-gray-200 text-gray-700 font-medium hover:text-[#d68e08] transition-all"
+                }
               >
                 {page}
               </PaginationLink>
@@ -98,6 +103,7 @@ export const PropertyPagination: React.FC<PropertyPaginationProps> = ({
           <PaginationItem>
             <PaginationNext 
               href="#" 
+              className="hover:bg-[#d68e08] hover:text-white hover:border-[#d68e08] transition-colors"
               onClick={(e) => {
                 e.preventDefault();
                 onPageChange(currentPage + 1);

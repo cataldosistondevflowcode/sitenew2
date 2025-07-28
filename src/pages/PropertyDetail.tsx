@@ -160,12 +160,12 @@ const PropertyDetail = () => {
 
   const formattedProperty = {
     id: property.id,
-    title: [
+    title: `Leilão ${[
       property.tipo_propriedade || 'Imóvel',
       property.bairro,
       property.cidade,
       property.estado
-    ].filter(Boolean).join(' - '),
+    ].filter(Boolean).join(' - ')}`,
     address: property.endereco,
     location: `${property.bairro}, ${property.cidade}/${property.estado}`,
     description: property.descricao || "",

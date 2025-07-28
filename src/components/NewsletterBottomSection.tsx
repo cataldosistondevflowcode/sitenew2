@@ -267,15 +267,15 @@ export const NewsletterBottomSection: React.FC<NewsletterBottomSectionProps> = (
                     </svg>
                     <span className="text-xs sm:text-sm">WhatsApp</span>
                   </button>
-                  <button 
-                    onClick={onOpportunityClick}
+                  <a 
+                    href="mailto:contato@cataldosiston-adv.com.br"
                     className="flex flex-col items-center text-[#d68e08] hover:text-[#b8780a] transition-colors cursor-pointer"
                   >
                     <svg className="w-6 h-6 sm:w-8 sm:h-8 mb-2" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
                     </svg>
                     <span className="text-xs sm:text-sm">Email</span>
-                  </button>
+                  </a>
                   <button 
                     onClick={onOpportunityClick}
                     className="flex flex-col items-center text-[#d68e08] hover:text-[#b8780a] transition-colors cursor-pointer"

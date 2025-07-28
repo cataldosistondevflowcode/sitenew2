@@ -160,6 +160,11 @@ const LeilaoSP = () => {
   // Adicionar novo estado para bairros selecionados (pode ser 1 bairro ou vários de uma zona)
   const [selectedNeighborhoods, setSelectedNeighborhoods] = useState<string[]>([]);
 
+  // Novos estados para múltipla seleção
+  const [selectedTypes, setSelectedTypes] = useState<SelectedType[]>([]);
+  const [selectedPriceRanges, setSelectedPriceRanges] = useState<PriceRange[]>([]);
+  const [selectedAuctionTypes, setSelectedAuctionTypes] = useState<string[]>([]);
+
   // Faixas de preço disponíveis
   const priceRanges: PriceRange[] = [
     { label: "Todos os preços" },
@@ -523,8 +528,15 @@ const LeilaoSP = () => {
         // Se for "TODO_SP_STATE", não aplicar filtro de cidade (já está limitado a SP)
         
         if (filters.type && filters.type !== "Todos os imóveis") {
-          // Usar diretamente o valor original do tipo_propriedade sem converter para minúsculas
-          query = query.eq('tipo_propriedade', filters.type);
+          // Verificar se são múltiplos tipos (separados por vírgula)
+          const tipos = filters.type.split(',').map(t => t.trim()).filter(Boolean);
+          if (tipos.length > 1) {
+            // Filtro IN para múltiplos tipos
+            query = query.in('tipo_propriedade', tipos);
+          } else {
+            // Usar diretamente o valor original do tipo_propriedade
+            query = query.eq('tipo_propriedade', filters.type);
+          }
         }
         
         if (filters.neighborhood) {
@@ -745,9 +757,13 @@ const LeilaoSP = () => {
     }
     // Se for "Todas cidades de SP" (TODO_SP_STATE), não aplicar filtro de cidade - apenas o estado='SP' já presente na query
     
-    // Verificar se há tipo selecionado
-    if (selectedType && selectedType.label !== "Todos os imóveis") {
-      // Usar o valor original do tipo_propriedade
+    // Verificar se há tipo selecionado - usar múltipla seleção se disponível
+    if (selectedTypes.length > 0) {
+      // Usar múltiplos tipos
+      const typeValues = selectedTypes.map(type => type.originalValue || type.label.split(" (")[0]);
+      newFilters.type = typeValues.join(',');
+    } else if (selectedType && selectedType.label !== "Todos os imóveis" && !selectedType.label.includes("tipos selecionados")) {
+      // Compatibilidade: se só um tipo foi selecionado pelo modo antigo
       newFilters.type = selectedType.originalValue || selectedType.label.split(" (")[0];
     }
     
@@ -776,25 +792,54 @@ const LeilaoSP = () => {
       newFilters.hasSecondAuction = true;
     }
     
-    // Adicionar filtro de faixa de preço
-    if (selectedPriceRange && selectedPriceRange.label !== "Todos os preços") {
+    // Adicionar filtro de faixa de preço - usar múltipla seleção se disponível
+    if (selectedPriceRanges.length > 0) {
+      // Para múltiplas faixas, usar o mínimo do menor e máximo do maior
+      const allMins = selectedPriceRanges.filter(range => range.min !== undefined).map(range => range.min!);
+      const allMaxs = selectedPriceRanges.filter(range => range.max !== undefined).map(range => range.max!);
+      
+      newFilters.priceRange = {
+        min: allMins.length > 0 ? Math.min(...allMins) : undefined,
+        max: allMaxs.length > 0 ? Math.max(...allMaxs) : undefined
+      };
+    } else if (selectedPriceRange && selectedPriceRange.label !== "Todos os preços" && !selectedPriceRange.label.includes("faixas selecionadas")) {
+      // Compatibilidade: se só uma faixa foi selecionada pelo modo antigo
       newFilters.priceRange = {
         min: selectedPriceRange.min,
         max: selectedPriceRange.max
       };
     }
     
-    // Adicionar filtro de tipo de leilão conforme as novas regras
-    if (selectedAuctionType && selectedAuctionType !== "Todos os tipos de leilão") {
+    // Adicionar filtro de tipo de leilão - usar múltipla seleção se disponível
+    if (selectedAuctionTypes.length > 0) {
+      // Para múltiplas modalidades, vamos definir uma lógica específica
+      let hasJudicial = selectedAuctionTypes.includes(AUCTION_TYPE_JUDICIAL);
+      let hasExtrajudicial = selectedAuctionTypes.includes(AUCTION_TYPE_EXTRAJUDICIAL);
+      let hasExtrajudicialFinanciamento = selectedAuctionTypes.includes(AUCTION_TYPE_EXTRAJUDICIAL_FINANCIAMENTO);
+      
+      if (hasJudicial && (hasExtrajudicial || hasExtrajudicialFinanciamento)) {
+        // Se tem judicial E extrajudicial, não filtrar por tipo específico (mostrar todos)
+        // Mas se só tem extrajudicial com financiamento, aplicar esse filtro
+        if (hasExtrajudicialFinanciamento && !hasExtrajudicial) {
+          newFilters.auctionType = "EXTRAJUDICIAL_CUSTOM";
+          newFilters.financiamento = true;
+        }
+      } else if (hasJudicial) {
+        newFilters.auctionType = "Judicial";
+      } else if (hasExtrajudicialFinanciamento) {
+        newFilters.auctionType = "EXTRAJUDICIAL_CUSTOM";
+        newFilters.financiamento = true;
+      } else if (hasExtrajudicial) {
+        newFilters.auctionType = "EXTRAJUDICIAL_CUSTOM";
+      }
+    } else if (selectedAuctionType && selectedAuctionType !== "Todos os tipos de leilão" && !selectedAuctionType.includes("modalidades selecionadas")) {
+      // Compatibilidade: se só uma modalidade foi selecionada pelo modo antigo
       if (selectedAuctionType === AUCTION_TYPE_JUDICIAL) {
-        // JUDICIAL: tipo_leilao = "Judicial"
         newFilters.auctionType = "Judicial";
       } else if (selectedAuctionType === AUCTION_TYPE_EXTRAJUDICIAL_FINANCIAMENTO) {
-        // EXTRAJUDICIAL FINANCIÁVEL: tipo_leilao != "Judicial" && financiamento = true
         newFilters.auctionType = "EXTRAJUDICIAL_CUSTOM";
         newFilters.financiamento = true;
       } else if (selectedAuctionType === AUCTION_TYPE_EXTRAJUDICIAL) {
-        // EXTRAJUDICIAL: tipo_leilao != "Judicial"
         newFilters.auctionType = "EXTRAJUDICIAL_CUSTOM";
       }
     }
@@ -917,6 +962,46 @@ const LeilaoSP = () => {
     setSelectedType({ label, icon, originalValue });
     setShowTypeMenu(false);
   };
+
+  // Nova função para múltipla seleção de tipos
+  const togglePropertyType = (label: string, icon: JSX.Element, originalValue?: string) => {
+    const newType = { label, icon, originalValue };
+    
+    // Se é "Todos os imóveis", limpar todas as seleções
+    if (label === "Todos os imóveis") {
+      setSelectedTypes([]);
+      setSelectedType({ label: "Todos os imóveis", icon: <Globe className="h-4 w-4" /> });
+      return;
+    }
+
+    const typeExists = selectedTypes.some(type => type.label === label);
+    
+    if (typeExists) {
+      // Remover o tipo se já existe
+      const newTypes = selectedTypes.filter(type => type.label !== label);
+      setSelectedTypes(newTypes);
+      
+      // Atualizar o display
+      if (newTypes.length === 0) {
+        setSelectedType({ label: "Todos os imóveis", icon: <Globe className="h-4 w-4" /> });
+      } else if (newTypes.length === 1) {
+        setSelectedType(newTypes[0]);
+      } else {
+        setSelectedType({ label: `${newTypes.length} tipos selecionados`, icon: <Globe className="h-4 w-4" /> });
+      }
+    } else {
+      // Adicionar o novo tipo
+      const newTypes = [...selectedTypes, newType];
+      setSelectedTypes(newTypes);
+      
+      // Atualizar o display
+      if (newTypes.length === 1) {
+        setSelectedType(newTypes[0]);
+      } else {
+        setSelectedType({ label: `${newTypes.length} tipos selecionados`, icon: <Globe className="h-4 w-4" /> });
+      }
+    }
+  };
   
   const selectCity = (city: string) => {
     setSelectedCity(city);
@@ -928,6 +1013,60 @@ const LeilaoSP = () => {
     setSelectedNeighborhoods([]);
     fetchNeighborhoodsByCity(city);
     setShowCityMenu(false);
+  };
+
+  // Nova função para múltipla seleção de cidades
+  const toggleCity = (city: string) => {
+    // Se é "Todas as cidades de SP", limpar todas as seleções
+    if (city === "Todas cidades de SP" || city.includes("(todos)")) {
+      setSelectedCities([]);
+      setSelectedCity("Selecione a cidade");
+      setSelectedCityName("");
+      setSelectedNeighborhood("Selecione o bairro");
+      setSelectedNeighborhoods([]);
+      return;
+    }
+
+    const cityExists = selectedCities.includes(city);
+    
+    if (cityExists) {
+      // Remover a cidade se já existe
+      const newCities = selectedCities.filter(c => c !== city);
+      setSelectedCities(newCities);
+      
+      // Atualizar o display
+      if (newCities.length === 0) {
+        setSelectedCity("Selecione a cidade");
+        setSelectedCityName("");
+      } else if (newCities.length === 1) {
+        setSelectedCity(newCities[0]);
+        setSelectedCityName(newCities[0]);
+        fetchNeighborhoodsByCity(newCities[0]);
+      } else {
+        setSelectedCity(`${newCities.length} cidades selecionadas`);
+        setSelectedCityName("MULTIPLE_CITIES");
+      }
+    } else {
+      // Adicionar a nova cidade
+      const newCities = [...selectedCities, city];
+      setSelectedCities(newCities);
+      
+      // Atualizar o display
+      if (newCities.length === 1) {
+        setSelectedCity(newCities[0]);
+        setSelectedCityName(newCities[0]);
+        fetchNeighborhoodsByCity(newCities[0]);
+      } else {
+        setSelectedCity(`${newCities.length} cidades selecionadas`);
+        setSelectedCityName("MULTIPLE_CITIES");
+      }
+    }
+    
+    // Limpar bairros quando múltiplas cidades são selecionadas
+    if (selectedCities.length > 0) {
+      setSelectedNeighborhood("Selecione o bairro");
+      setSelectedNeighborhoods([]);
+    }
   };
   
   const selectAllStateSP = () => {
@@ -958,6 +1097,50 @@ const LeilaoSP = () => {
     setSelectedNeighborhoods([neighborhood]);
     setShowNeighborhoodMenu(false);
   };
+
+  // Nova função para múltipla seleção de bairros
+  const toggleNeighborhood = (neighborhood: string) => {
+    // Se é "Todos os bairros" ou zona, limpar todas as seleções
+    if (neighborhood.includes("(todos)") || neighborhood === "Todos os bairros" || neighborhood === "Toda São Paulo") {
+      setSelectedNeighborhoods([]);
+      setSelectedNeighborhood("Selecione o bairro");
+      return;
+    }
+
+    const neighborhoodExists = selectedNeighborhoods.includes(neighborhood);
+    
+    if (neighborhoodExists) {
+      // Remover o bairro se já existe
+      const newNeighborhoods = selectedNeighborhoods.filter(n => n !== neighborhood);
+      setSelectedNeighborhoods(newNeighborhoods);
+      
+      // Atualizar o display
+      if (newNeighborhoods.length === 0) {
+        setSelectedNeighborhood("Selecione o bairro");
+      } else if (newNeighborhoods.length === 1) {
+        setSelectedNeighborhood(newNeighborhoods[0]);
+      } else {
+        setSelectedNeighborhood(`${newNeighborhoods.length} bairros selecionados`);
+      }
+    } else {
+      // Verificar se é uma zona (para SP)
+      let bairrosToAdd = [neighborhood];
+      if (bairrosPorZonaSP[neighborhood]) {
+        bairrosToAdd = bairrosPorZonaSP[neighborhood];
+      }
+      
+      // Adicionar os novos bairros (removendo duplicatas)
+      const newNeighborhoods = [...new Set([...selectedNeighborhoods, ...bairrosToAdd])];
+      setSelectedNeighborhoods(newNeighborhoods);
+      
+      // Atualizar o display
+      if (newNeighborhoods.length === 1) {
+        setSelectedNeighborhood(newNeighborhoods[0]);
+      } else {
+        setSelectedNeighborhood(`${newNeighborhoods.length} bairros selecionados`);
+      }
+    }
+  };
   
   const selectZone = (zone: string) => {
     // Seleciona todos os bairros da zona
@@ -979,12 +1162,88 @@ const LeilaoSP = () => {
     setSelectedPriceRange(priceRange);
     setShowPriceMenu(false);
   };
+
+  // Nova função para múltipla seleção de faixas de preço
+  const togglePriceRange = (priceRange: PriceRange) => {
+    // Se é "Todos os preços", limpar todas as seleções
+    if (priceRange.label === "Todos os preços") {
+      setSelectedPriceRanges([]);
+      setSelectedPriceRange({ label: "Todos os preços" });
+      return;
+    }
+
+    const rangeExists = selectedPriceRanges.some(range => range.label === priceRange.label);
+    
+    if (rangeExists) {
+      // Remover a faixa se já existe
+      const newRanges = selectedPriceRanges.filter(range => range.label !== priceRange.label);
+      setSelectedPriceRanges(newRanges);
+      
+      // Atualizar o display
+      if (newRanges.length === 0) {
+        setSelectedPriceRange({ label: "Todos os preços" });
+      } else if (newRanges.length === 1) {
+        setSelectedPriceRange(newRanges[0]);
+      } else {
+        setSelectedPriceRange({ label: `${newRanges.length} faixas selecionadas` });
+      }
+    } else {
+      // Adicionar a nova faixa
+      const newRanges = [...selectedPriceRanges, priceRange];
+      setSelectedPriceRanges(newRanges);
+      
+      // Atualizar o display
+      if (newRanges.length === 1) {
+        setSelectedPriceRange(newRanges[0]);
+      } else {
+        setSelectedPriceRange({ label: `${newRanges.length} faixas selecionadas` });
+      }
+    }
+  };
   
   const selectAuctionType = (auctionType: string) => {
     setSelectedAuctionType(auctionType);
     setShowAuctionTypeMenu(false);
   };
 
+  // Nova função para múltipla seleção de modalidades de leilão
+  const toggleAuctionType = (auctionType: string) => {
+    // Se é "Todos os tipos de leilão", limpar todas as seleções
+    if (auctionType === "Todos os tipos de leilão") {
+      setSelectedAuctionTypes([]);
+      setSelectedAuctionType("Todos os tipos de leilão");
+      return;
+    }
+
+    const typeExists = selectedAuctionTypes.includes(auctionType);
+    
+    if (typeExists) {
+      // Remover o tipo se já existe
+      const newTypes = selectedAuctionTypes.filter(type => type !== auctionType);
+      setSelectedAuctionTypes(newTypes);
+      
+      // Atualizar o display
+      if (newTypes.length === 0) {
+        setSelectedAuctionType("Todos os tipos de leilão");
+      } else if (newTypes.length === 1) {
+        setSelectedAuctionType(newTypes[0]);
+      } else {
+        setSelectedAuctionType(`${newTypes.length} modalidades selecionadas`);
+      }
+    } else {
+      // Adicionar o novo tipo
+      const newTypes = [...selectedAuctionTypes, auctionType];
+      setSelectedAuctionTypes(newTypes);
+      
+      // Atualizar o display
+      if (newTypes.length === 1) {
+        setSelectedAuctionType(newTypes[0]);
+      } else {
+        setSelectedAuctionType(`${newTypes.length} modalidades selecionadas`);
+      }
+        }
+  };
+  
   // Função para limpar todos os filtros
   const clearAllFilters = () => {
     setSelectedType({ label: "Todos os imóveis", icon: <Globe className="h-4 w-4" /> });
@@ -993,6 +1252,12 @@ const LeilaoSP = () => {
     setSelectedNeighborhoods([]); // Limpar array de bairros selecionados
     setSelectedPriceRange({ label: "Todos os preços" });
     setSelectedAuctionType("Todos os tipos de leilão");
+    
+    // Limpar os novos arrays de múltipla seleção
+    setSelectedTypes([]);
+    setSelectedPriceRanges([]);
+    setSelectedAuctionTypes([]);
+    
     setLocationInput("");
     setKeywordInput("");
     setFilterSecondAuction(false);
@@ -1075,9 +1340,12 @@ const LeilaoSP = () => {
                   
                   {showTypeMenu && (
                     <div className="absolute z-40 w-full bg-white border border-gray-200 rounded-md shadow-md mt-1 py-2 max-h-[400px] overflow-y-auto">
+                      <div className="px-4 py-1 text-xs text-gray-500 border-b border-gray-200">
+                        Clique para selecionar/deselecionar (múltipla escolha)
+                      </div>
                       <div 
                         className="px-4 py-2 flex items-center hover:bg-gray-100 cursor-pointer"
-                        onClick={() => selectPropertyType("Todos os imóveis", <Globe className="h-4 w-4" />, undefined)}
+                        onClick={() => togglePropertyType("Todos os imóveis", <Globe className="h-4 w-4" />, undefined)}
                       >
                         <Globe className="h-4 w-4 mr-2 text-gray-500" />
                         <span>Todos os imóveis</span>
@@ -1108,12 +1376,23 @@ const LeilaoSP = () => {
                         // Formatar o nome do tipo para exibição
                         const formattedTypeName = typeData.type.charAt(0).toUpperCase() + typeData.type.slice(1).toLowerCase();
                         
+                        // Verificar se este tipo está selecionado
+                        const isSelected = selectedTypes.some(type => type.label === formattedTypeName);
+                        
                         return (
                           <div 
                             key={index}
-                            className="px-4 py-2 flex items-center hover:bg-gray-100 cursor-pointer"
-                            onClick={() => selectPropertyType(formattedTypeName, icon, typeData.type)}
+                            className={`px-4 py-2 flex items-center cursor-pointer ${
+                              isSelected ? 'bg-blue-100 text-blue-800' : 'hover:bg-gray-100'
+                            }`}
+                            onClick={() => togglePropertyType(formattedTypeName, icon, typeData.type)}
                           >
+                            <input
+                              type="checkbox"
+                              checked={isSelected}
+                              onChange={() => {}} // Controlled by parent onClick
+                              className="mr-2 h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                            />
                             {icon}
                             <span>{formattedTypeName}</span>
                           </div>
@@ -1139,7 +1418,9 @@ const LeilaoSP = () => {
                   {showCityMenu && (
                     <div className="absolute z-40 w-full bg-white border border-gray-200 rounded-md shadow-md mt-1 max-h-[400px] overflow-y-auto">
                       <div className="border-b border-gray-200 py-2 px-4 font-bold bg-gray-50 text-gray-700">CIDADES DE SÃO PAULO</div>
-                      
+                      <div className="px-4 py-1 text-xs text-gray-500 border-b border-gray-200">
+                        Clique para selecionar/deselecionar (múltipla escolha)
+                      </div>
                       <div className="p-2 border-b border-gray-200">
                         <input
                           type="text"
@@ -1163,15 +1444,26 @@ const LeilaoSP = () => {
                           citySearchTerm === '' || 
                           flexibleSearch(cityData.city, citySearchTerm)
                         )
-                        .map((cityData, index) => (
-                        <div
-                          key={index}
-                          className="py-2 px-4 hover:bg-gray-100 cursor-pointer"
-                          onClick={() => selectCity(cityData.city)}
-                        >
-                          {cityData.city}
-                        </div>
-                      ))}
+                        .map((cityData, index) => {
+                        const isSelected = selectedCities.includes(cityData.city);
+                        return (
+                          <div
+                            key={index}
+                            className={`py-2 px-4 flex items-center cursor-pointer ${
+                              isSelected ? 'bg-blue-100 text-blue-800' : 'hover:bg-gray-100'
+                            }`}
+                            onClick={() => toggleCity(cityData.city)}
+                          >
+                            <input
+                              type="checkbox"
+                              checked={isSelected}
+                              onChange={() => {}} // Controlled by parent onClick
+                              className="mr-2 h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                            />
+                            {cityData.city}
+                          </div>
+                        );
+                      })}
                       {citySearchTerm !== '' && !rjCities.some(cityData => 
                         flexibleSearch(cityData.city, citySearchTerm)
                       ) && (
@@ -1194,6 +1486,9 @@ const LeilaoSP = () => {
                   {showNeighborhoodMenu && selectedCityName && (
                     <div className="absolute z-40 w-full bg-white border border-gray-200 rounded-md shadow-md mt-1 max-h-[400px] overflow-y-auto">
                       <div className="border-b border-gray-200 py-2 px-4 font-bold bg-gray-50 text-gray-700">BAIRROS DE {selectedCityName.toUpperCase()}</div>
+                      <div className="px-4 py-1 text-xs text-gray-500 border-b border-gray-200">
+                        Clique para selecionar/deselecionar (múltipla escolha)
+                      </div>
                       <div className="p-2 border-b border-gray-200">
                         <input
                           type="text"
@@ -1240,15 +1535,26 @@ const LeilaoSP = () => {
                                   neighborhoodSearchTerm === '' || 
                                   flexibleSearch(neighborhoodData.neighborhood, neighborhoodSearchTerm)
                                 )
-                                .map((neighborhoodData: any, index: number) => (
-                                  <div
-                                    key={neighborhoodData.neighborhood}
-                                    className="py-2 px-4 hover:bg-gray-100 cursor-pointer"
-                                    onClick={() => selectNeighborhood(neighborhoodData.neighborhood)}
-                                  >
-                                    {neighborhoodData.neighborhood}
-                                  </div>
-                                ))}
+                                .map((neighborhoodData: any, index: number) => {
+                                  const isSelected = selectedNeighborhoods.includes(neighborhoodData.neighborhood);
+                                  return (
+                                    <div
+                                      key={neighborhoodData.neighborhood}
+                                      className={`py-2 px-4 flex items-center cursor-pointer ${
+                                        isSelected ? 'bg-blue-100 text-blue-800' : 'hover:bg-gray-100'
+                                      }`}
+                                      onClick={() => toggleNeighborhood(neighborhoodData.neighborhood)}
+                                    >
+                                      <input
+                                        type="checkbox"
+                                        checked={isSelected}
+                                        onChange={() => {}} // Controlled by parent onClick
+                                        className="mr-2 h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                                      />
+                                      {neighborhoodData.neighborhood}
+                                    </div>
+                                  );
+                                })}
                             </div>
                           ))}
                         </>
@@ -1259,15 +1565,26 @@ const LeilaoSP = () => {
                               neighborhoodSearchTerm === '' || 
                               flexibleSearch(neighborhoodData.neighborhood, neighborhoodSearchTerm)
                             )
-                            .map((neighborhoodData: any, index: number) => (
-                            <div
-                              key={neighborhoodData.neighborhood}
-                              className="py-2 px-4 hover:bg-gray-100 cursor-pointer"
-                              onClick={() => selectNeighborhood(neighborhoodData.neighborhood)}
-                            >
-                              {neighborhoodData.neighborhood}
-                            </div>
-                          ))
+                            .map((neighborhoodData: any, index: number) => {
+                            const isSelected = selectedNeighborhoods.includes(neighborhoodData.neighborhood);
+                            return (
+                              <div
+                                key={neighborhoodData.neighborhood}
+                                className={`py-2 px-4 flex items-center cursor-pointer ${
+                                  isSelected ? 'bg-blue-100 text-blue-800' : 'hover:bg-gray-100'
+                                }`}
+                                onClick={() => toggleNeighborhood(neighborhoodData.neighborhood)}
+                              >
+                                <input
+                                  type="checkbox"
+                                  checked={isSelected}
+                                  onChange={() => {}} // Controlled by parent onClick
+                                  className="mr-2 h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                                />
+                                {neighborhoodData.neighborhood}
+                              </div>
+                            );
+                          })
                         ) : (
                           <div className="py-2 px-4 text-gray-500">Nenhum bairro encontrado</div>
                         )
@@ -1316,14 +1633,44 @@ const LeilaoSP = () => {
                   {showPriceMenu && (
                     <div className="absolute z-40 w-full bg-white border border-gray-200 rounded-md shadow-md mt-1 py-2 max-h-[400px] overflow-y-auto">
                       <div className="border-b border-gray-200 py-2 px-4 font-bold bg-gray-50 text-gray-700">FAIXAS DE PREÇO</div>
-                      {/* Filtros conforme imagem */}
-                      <div className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={() => selectPriceRange({ label: 'Até 300 mil', max: 300000 })}>Até 300 mil</div>
-                      <div className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={() => selectPriceRange({ label: 'De 301 a 500 mil', min: 301000, max: 500000 })}>De 301 a 500 mil</div>
-                      <div className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={() => selectPriceRange({ label: 'De 501 a 700 mil', min: 501000, max: 700000 })}>De 501 a 700 mil</div>
-                      <div className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={() => selectPriceRange({ label: 'De 700 a 1 milhão', min: 700000, max: 1000000 })}>De 700 a 1 milhão</div>
-                      <div className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={() => selectPriceRange({ label: 'De 1 a 1,5 milhão', min: 1000000, max: 1500000 })}>De 1 a 1,5 milhão</div>
-                      <div className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={() => selectPriceRange({ label: 'De 1,5 a 2 milhões', min: 1500000, max: 2000000 })}>De 1,5 a 2 milhões</div>
-                      <div className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={() => selectPriceRange({ label: 'Mais de 2 milhões', min: 2000001 })}>Mais de 2 milhões</div>
+                      <div className="px-4 py-1 text-xs text-gray-500 border-b border-gray-200">
+                        Clique para selecionar/deselecionar (múltipla escolha)
+                      </div>
+                      <div 
+                        className="px-4 py-2 hover:bg-gray-100 cursor-pointer" 
+                        onClick={() => togglePriceRange({ label: 'Todos os preços' })}
+                      >
+                        Todos os preços
+                      </div>
+                      {/* Faixas de preço */}
+                      {[
+                        { label: 'Até 300 mil', max: 300000 },
+                        { label: 'De 301 a 500 mil', min: 301000, max: 500000 },
+                        { label: 'De 501 a 700 mil', min: 501000, max: 700000 },
+                        { label: 'De 700 a 1 milhão', min: 700000, max: 1000000 },
+                        { label: 'De 1 a 1,5 milhão', min: 1000000, max: 1500000 },
+                        { label: 'De 1,5 a 2 milhões', min: 1500000, max: 2000000 },
+                        { label: 'Mais de 2 milhões', min: 2000001 }
+                      ].map((range, index) => {
+                        const isSelected = selectedPriceRanges.some(r => r.label === range.label);
+                        return (
+                          <div 
+                            key={index}
+                            className={`px-4 py-2 flex items-center cursor-pointer ${
+                              isSelected ? 'bg-blue-100 text-blue-800' : 'hover:bg-gray-100'
+                            }`}
+                            onClick={() => togglePriceRange(range)}
+                          >
+                            <input
+                              type="checkbox"
+                              checked={isSelected}
+                              onChange={() => {}} // Controlled by parent onClick
+                              className="mr-2 h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                            />
+                            <span>{range.label}</span>
+                          </div>
+                        );
+                      })}
                     </div>
                   )}
                 </div>
@@ -1347,30 +1694,39 @@ const LeilaoSP = () => {
                   {showAuctionTypeMenu && (
                     <div className="absolute z-40 w-full bg-white border border-gray-200 rounded-md shadow-md mt-1 py-2 max-h-[400px] overflow-y-auto">
                       <div className="border-b border-gray-200 py-2 px-4 font-bold bg-gray-50 text-gray-700">MODALIDADE DE LEILÃO</div>
+                      <div className="px-4 py-1 text-xs text-gray-500 border-b border-gray-200">
+                        Clique para selecionar/deselecionar (múltipla escolha)
+                      </div>
                       <div 
                         className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                        onClick={() => selectAuctionType("Todos os tipos de leilão")}
+                        onClick={() => toggleAuctionType("Todos os tipos de leilão")}
                       >
                         Todos os tipos de leilão
                       </div>
-                      <div 
-                        className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                        onClick={() => selectAuctionType(AUCTION_TYPE_JUDICIAL)}
-                      >
-                        {AUCTION_TYPE_JUDICIAL}
-                      </div>
-                      <div 
-                        className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                        onClick={() => selectAuctionType(AUCTION_TYPE_EXTRAJUDICIAL)}
-                      >
-                        {AUCTION_TYPE_EXTRAJUDICIAL}
-                      </div>
-                      <div 
-                        className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                        onClick={() => selectAuctionType(AUCTION_TYPE_EXTRAJUDICIAL_FINANCIAMENTO)}
-                      >
-                        {AUCTION_TYPE_EXTRAJUDICIAL_FINANCIAMENTO}
-                      </div>
+                      {[
+                        AUCTION_TYPE_JUDICIAL,
+                        AUCTION_TYPE_EXTRAJUDICIAL,
+                        AUCTION_TYPE_EXTRAJUDICIAL_FINANCIAMENTO
+                      ].map((auctionType, index) => {
+                        const isSelected = selectedAuctionTypes.includes(auctionType);
+                        return (
+                          <div 
+                            key={index}
+                            className={`px-4 py-2 flex items-center cursor-pointer ${
+                              isSelected ? 'bg-blue-100 text-blue-800' : 'hover:bg-gray-100'
+                            }`}
+                            onClick={() => toggleAuctionType(auctionType)}
+                          >
+                            <input
+                              type="checkbox"
+                              checked={isSelected}
+                              onChange={() => {}} // Controlled by parent onClick
+                              className="mr-2 h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                            />
+                            <span>{auctionType}</span>
+                          </div>
+                        );
+                      })}
                     </div>
                   )}
                 </div>

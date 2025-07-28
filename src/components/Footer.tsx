@@ -24,12 +24,12 @@ export const Footer: React.FC<FooterProps> = ({ onWhatsAppClick }) => {
             <address className="text-gray-700 text-sm not-italic space-y-1">
               <div>Av. Rio Branco, 156, Gr. 3336 a 3339 Centro</div>
               <div>- Rio de Janeiro - RJ - Brasil</div>
-              <div 
+              <a 
+                href="tel:+55-21-3173-3795"
                 className="cursor-pointer hover:text-[#d68e08] transition-colors"
-                onClick={onWhatsAppClick}
               >
                 +55 (21) 3173-3795
-              </div>
+              </a>
               <div 
                 className="font-bold cursor-pointer hover:text-[#d68e08] transition-colors"
                 onClick={onWhatsAppClick}

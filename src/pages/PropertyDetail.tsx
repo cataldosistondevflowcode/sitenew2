@@ -209,7 +209,7 @@ const PropertyDetail = () => {
         
         <TestimonialsSection />
       </div>
-      <Newsletter />
+      <Newsletter onWhatsAppClick={() => setShowWhatsAppModal(true)} />
       <Footer onWhatsAppClick={() => setShowWhatsAppModal(true)} />
       
       <CookieBar />

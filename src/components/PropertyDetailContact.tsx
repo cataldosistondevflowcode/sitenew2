@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 
-export const PropertyDetailContact = () => {
+interface PropertyDetailContactProps {
+  onWhatsAppClick?: () => void;
+}
+
+export const PropertyDetailContact = ({ onWhatsAppClick }: PropertyDetailContactProps) => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -37,9 +41,9 @@ export const PropertyDetailContact = () => {
             <p className="text-xl text-[#d68e08] mb-8">Entre em contato conosco</p>
             
             <div className="flex space-x-4 mt-6">
-              <a href="https://wa.me/5521977294848" className="bg-green-600 text-white p-3 rounded-full hover:bg-green-700">
+              <button onClick={onWhatsAppClick} className="bg-green-600 text-white p-3 rounded-full hover:bg-green-700 cursor-pointer">
                 Whatsapp
-              </a>
+              </button>
               <a href="mailto:contato@cataldosiston-adv.com.br" className="bg-red-500 text-white p-3 rounded-full hover:bg-red-600">
                 E-mail
               </a>

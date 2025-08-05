@@ -51,7 +51,13 @@ export function SimilarPropertiesSection({
   const [currentIndex, setCurrentIndex] = useState(0);
   const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1024);
 
-  console.log('📍 SimilarPropertiesSection renderizado!');
+  console.log('📍 SimilarPropertiesSection renderizado!', {
+    currentPropertyId,
+    propertyType,
+    city,
+    neighborhood,
+    auctionType
+  });
 
   // Função para formatar datas no padrão brasileiro
   const formatDateToBrazilian = (dateString: string) => {
@@ -113,36 +119,49 @@ export function SimilarPropertiesSection({
       try {
         let foundProperties: Property[] = [];
 
-        // Estratégia 1: Buscar por cidade e tipo de leilão
+        // Estratégia 1: Buscar por bairro (prioridade máxima)
+        if (neighborhood) {
+          console.log('🎯 Tentativa 1: Mesmo bairro');
+          const { data } = await supabase
+            .from('leiloes_imoveis')
+            .select('*')
+            .neq('id', currentPropertyId)
+            .eq('bairro', neighborhood)
+            .limit(9);
+          foundProperties = data || [];
+          console.log('📊 Encontrados na tentativa 1 (mesmo bairro):', foundProperties.length);
+        }
+
+        // Estratégia 2: Buscar por cidade e tipo de leilão (se não encontrou no bairro)
         if (city && auctionType && foundProperties.length === 0) {
-          console.log('🎯 Tentativa 1: Mesma cidade e tipo de leilão');
+          console.log('🎯 Tentativa 2: Mesma cidade e tipo de leilão');
           const { data } = await supabase
             .from('leiloes_imoveis')
             .select('*')
             .neq('id', currentPropertyId)
             .eq('cidade', city)
             .eq('tipo_leilao', auctionType)
-            .limit(9);
-          foundProperties = data || [];
-          console.log('📊 Encontrados na tentativa 1:', foundProperties.length);
-        }
-
-        // Estratégia 2: Buscar apenas por cidade
-        if (city && foundProperties.length === 0) {
-          console.log('🎯 Tentativa 2: Mesma cidade');
-          const { data } = await supabase
-            .from('leiloes_imoveis')
-            .select('*')
-            .neq('id', currentPropertyId)
-            .eq('cidade', city)
             .limit(9);
           foundProperties = data || [];
           console.log('📊 Encontrados na tentativa 2:', foundProperties.length);
         }
 
-        // Estratégia 3: Buscar por tipo de leilão
+        // Estratégia 3: Buscar apenas por cidade
+        if (city && foundProperties.length === 0) {
+          console.log('🎯 Tentativa 3: Mesma cidade');
+          const { data } = await supabase
+            .from('leiloes_imoveis')
+            .select('*')
+            .neq('id', currentPropertyId)
+            .eq('cidade', city)
+            .limit(9);
+          foundProperties = data || [];
+          console.log('📊 Encontrados na tentativa 3:', foundProperties.length);
+        }
+
+        // Estratégia 4: Buscar por tipo de leilão
         if (auctionType && foundProperties.length === 0) {
-          console.log('🎯 Tentativa 3: Mesmo tipo de leilão');
+          console.log('🎯 Tentativa 4: Mesmo tipo de leilão');
           const { data } = await supabase
             .from('leiloes_imoveis')
             .select('*')
@@ -150,19 +169,19 @@ export function SimilarPropertiesSection({
             .eq('tipo_leilao', auctionType)
             .limit(9);
           foundProperties = data || [];
-          console.log('📊 Encontrados na tentativa 3:', foundProperties.length);
+          console.log('📊 Encontrados na tentativa 4:', foundProperties.length);
         }
 
-        // Estratégia 4: Buscar qualquer imóvel (fallback)
+        // Estratégia 5: Buscar qualquer imóvel (fallback)
         if (foundProperties.length === 0) {
-          console.log('🎯 Tentativa 4: Qualquer imóvel');
+          console.log('🎯 Tentativa 5: Qualquer imóvel');
           const { data } = await supabase
             .from('leiloes_imoveis')
             .select('*')
             .neq('id', currentPropertyId)
             .limit(9);
           foundProperties = data || [];
-          console.log('📊 Encontrados na tentativa 4:', foundProperties.length);
+          console.log('📊 Encontrados na tentativa 5:', foundProperties.length);
         }
         
         console.log('✅ Total de imóveis similares encontrados:', foundProperties.length);
@@ -227,10 +246,13 @@ export function SimilarPropertiesSection({
         <div className="max-w-6xl mx-auto">
           <header className="text-center mb-8 sm:mb-12">
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-medium text-black mb-2 sm:mb-4">
-              Imóveis Similares
+              {neighborhood ? `Imóveis em ${neighborhood}` : 'Imóveis Similares'}
             </h2>
             <p className="text-base sm:text-lg text-gray-600">
-              Confira outros imóveis que podem interessar você
+              {neighborhood 
+                ? `Confira outros imóveis disponíveis em ${neighborhood}`
+                : 'Confira outros imóveis que podem interessar você'
+              }
             </p>
           </header>
           

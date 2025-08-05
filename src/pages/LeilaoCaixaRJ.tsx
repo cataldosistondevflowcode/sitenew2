@@ -895,6 +895,104 @@ const LeilaoCaixaRJ = () => {
     setSelectedNeighborhoods(bairros);
     setShowNeighborhoodMenu(false);
   };
+
+  // Nova função para múltipla seleção de cidades
+  const toggleCity = (city: string) => {
+    // Se é "Todas as cidades", limpar todas as seleções
+    if (city === "Todas as cidades" || city.includes("(todos)")) {
+      setSelectedCities([]);
+      setSelectedCity("Selecione a cidade");
+      setSelectedCityName("");
+      setSelectedNeighborhood("Selecione o bairro");
+      setSelectedNeighborhoods([]);
+      return;
+    }
+
+    const cityExists = selectedCities.includes(city);
+    
+    if (cityExists) {
+      // Remover a cidade se já existe
+      const newCities = selectedCities.filter(c => c !== city);
+      setSelectedCities(newCities);
+      
+      // Atualizar o display
+      if (newCities.length === 0) {
+        setSelectedCity("Selecione a cidade");
+        setSelectedCityName("");
+      } else if (newCities.length === 1) {
+        setSelectedCity(newCities[0]);
+        setSelectedCityName(newCities[0]);
+        fetchNeighborhoodsByCity(newCities[0]);
+      } else {
+        setSelectedCity(`${newCities.length} cidades selecionadas`);
+        setSelectedCityName("MULTIPLE_CITIES");
+      }
+    } else {
+      // Adicionar a nova cidade
+      const newCities = [...selectedCities, city];
+      setSelectedCities(newCities);
+      
+      // Atualizar o display
+      if (newCities.length === 1) {
+        setSelectedCity(newCities[0]);
+        setSelectedCityName(newCities[0]);
+        fetchNeighborhoodsByCity(newCities[0]);
+      } else {
+        setSelectedCity(`${newCities.length} cidades selecionadas`);
+        setSelectedCityName("MULTIPLE_CITIES");
+      }
+    }
+    
+    // Limpar bairros quando múltiplas cidades são selecionadas
+    if (selectedCities.length > 0) {
+      setSelectedNeighborhood("Selecione o bairro");
+      setSelectedNeighborhoods([]);
+    }
+  };
+
+  // Nova função para múltipla seleção de bairros
+  const toggleNeighborhood = (neighborhood: string) => {
+    // Se é "Todos os bairros" ou zona, limpar todas as seleções
+    if (neighborhood.includes("(todos)") || neighborhood === "Todos os bairros") {
+      setSelectedNeighborhoods([]);
+      setSelectedNeighborhood("Selecione o bairro");
+      return;
+    }
+
+    const neighborhoodExists = selectedNeighborhoods.includes(neighborhood);
+    
+    if (neighborhoodExists) {
+      // Remover o bairro se já existe
+      const newNeighborhoods = selectedNeighborhoods.filter(n => n !== neighborhood);
+      setSelectedNeighborhoods(newNeighborhoods);
+      
+      // Atualizar o display
+      if (newNeighborhoods.length === 0) {
+        setSelectedNeighborhood("Selecione o bairro");
+      } else if (newNeighborhoods.length === 1) {
+        setSelectedNeighborhood(newNeighborhoods[0]);
+      } else {
+        setSelectedNeighborhood(`${newNeighborhoods.length} bairros selecionados`);
+      }
+    } else {
+      // Verificar se é uma área especial
+      let bairrosToAdd = [neighborhood];
+      if (areasEspeciaisRJ[neighborhood]) {
+        bairrosToAdd = areasEspeciaisRJ[neighborhood];
+      }
+      
+      // Adicionar os novos bairros (removendo duplicatas)
+      const newNeighborhoods = [...new Set([...selectedNeighborhoods, ...bairrosToAdd])];
+      setSelectedNeighborhoods(newNeighborhoods);
+      
+      // Atualizar o display
+      if (newNeighborhoods.length === 1) {
+        setSelectedNeighborhood(newNeighborhoods[0]);
+      } else {
+        setSelectedNeighborhood(`${newNeighborhoods.length} bairros selecionados`);
+      }
+    }
+  };
   
   const selectPriceRange = (priceRange: PriceRange) => {
     setSelectedPriceRange(priceRange);
@@ -1215,9 +1313,17 @@ const LeilaoCaixaRJ = () => {
                             <div
                               key={cidade}
                               className="py-2 px-4 hover:bg-gray-100 cursor-pointer"
-                              onClick={() => selectCity(cidade)}
+                              onClick={() => toggleCity(cidade)}
                             >
-                              {cidade}
+                              <div className="flex items-center">
+                                <input
+                                  type="checkbox"
+                                  checked={selectedCities.includes(cidade)}
+                                  onChange={() => {}} // Controlled by parent onClick
+                                  className="mr-2 h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                                />
+                                {cidade}
+                              </div>
                             </div>
                           ))}
                         </div>
@@ -1277,9 +1383,17 @@ const LeilaoCaixaRJ = () => {
                                 <div
                                   key={neighborhoodData.neighborhood}
                                   className="py-2 px-4 hover:bg-gray-100 cursor-pointer"
-                                  onClick={() => selectNeighborhood(neighborhoodData.neighborhood)}
+                                  onClick={() => toggleNeighborhood(neighborhoodData.neighborhood)}
                                 >
-                                  {neighborhoodData.neighborhood}
+                                  <div className="flex items-center">
+                                    <input
+                                      type="checkbox"
+                                      checked={selectedNeighborhoods.includes(neighborhoodData.neighborhood)}
+                                      onChange={() => {}} // Controlled by parent onClick
+                                      className="mr-2 h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                                    />
+                                    {neighborhoodData.neighborhood}
+                                  </div>
                                 </div>
                               ))}
                           </div>
@@ -1312,9 +1426,17 @@ const LeilaoCaixaRJ = () => {
                                 <div
                                   key={neighborhoodData.neighborhood}
                                   className="py-2 px-4 hover:bg-gray-100 cursor-pointer"
-                                  onClick={() => selectNeighborhood(neighborhoodData.neighborhood)}
+                                  onClick={() => toggleNeighborhood(neighborhoodData.neighborhood)}
                                 >
-                                  {neighborhoodData.neighborhood}
+                                  <div className="flex items-center">
+                                    <input
+                                      type="checkbox"
+                                      checked={selectedNeighborhoods.includes(neighborhoodData.neighborhood)}
+                                      onChange={() => {}} // Controlled by parent onClick
+                                      className="mr-2 h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                                    />
+                                    {neighborhoodData.neighborhood}
+                                  </div>
                                 </div>
                               ))}
                           </div>
@@ -1330,7 +1452,7 @@ const LeilaoCaixaRJ = () => {
                             <div
                               key={neighborhoodData.neighborhood}
                               className="py-2 px-4 hover:bg-gray-100 cursor-pointer"
-                              onClick={() => selectNeighborhood(neighborhoodData.neighborhood)}
+                              onClick={() => toggleNeighborhood(neighborhoodData.neighborhood)}
                             >
                               {neighborhoodData.neighborhood}
                             </div>

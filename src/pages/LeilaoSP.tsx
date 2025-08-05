@@ -1141,6 +1141,40 @@ const LeilaoSP = () => {
       }
     }
   };
+
+  // Nova função para múltipla seleção de zonas
+  const toggleZone = (zone: string) => {
+    const bairros = bairrosPorZonaSP[zone] || [];
+    
+    // Verificar se todos os bairros da zona já estão selecionados
+    const allZoneBairrosSelected = bairros.every(bairro => selectedNeighborhoods.includes(bairro));
+    
+    if (allZoneBairrosSelected) {
+      // Remover todos os bairros da zona
+      const newNeighborhoods = selectedNeighborhoods.filter(n => !bairros.includes(n));
+      setSelectedNeighborhoods(newNeighborhoods);
+      
+      // Atualizar o display
+      if (newNeighborhoods.length === 0) {
+        setSelectedNeighborhood("Selecione o bairro");
+      } else if (newNeighborhoods.length === 1) {
+        setSelectedNeighborhood(newNeighborhoods[0]);
+      } else {
+        setSelectedNeighborhood(`${newNeighborhoods.length} bairros selecionados`);
+      }
+    } else {
+      // Adicionar todos os bairros da zona (removendo duplicatas)
+      const newNeighborhoods = [...new Set([...selectedNeighborhoods, ...bairros])];
+      setSelectedNeighborhoods(newNeighborhoods);
+      
+      // Atualizar o display
+      if (newNeighborhoods.length === 1) {
+        setSelectedNeighborhood(newNeighborhoods[0]);
+      } else {
+        setSelectedNeighborhood(`${newNeighborhoods.length} bairros selecionados`);
+      }
+    }
+  };
   
   const selectZone = (zone: string) => {
     // Seleciona todos os bairros da zona
@@ -1525,7 +1559,7 @@ const LeilaoSP = () => {
                               {(neighborhoodSearchTerm === '' || flexibleSearch(zona, neighborhoodSearchTerm)) && (
                                 <div
                                   className="py-2 px-4 font-bold text-primary bg-gray-100 border-b border-gray-200 cursor-pointer hover:bg-yellow-100"
-                                  onClick={() => selectZone(zona)}
+                                  onClick={() => toggleZone(zona)}
                                 >
                                   {zona} (todos)
                                 </div>

@@ -1080,6 +1080,121 @@ const Index = () => {
       }
     }
   };
+
+  // Nova função para múltipla seleção de zonas
+  const toggleZone = (zone: string) => {
+    const bairros = bairrosPorZonaRJ[zone] || [];
+    
+    // Verificar se todos os bairros da zona já estão selecionados
+    const allZoneBairrosSelected = bairros.every(bairro => selectedNeighborhoods.includes(bairro));
+    
+    if (allZoneBairrosSelected) {
+      // Remover todos os bairros da zona
+      const newNeighborhoods = selectedNeighborhoods.filter(n => !bairros.includes(n));
+      setSelectedNeighborhoods(newNeighborhoods);
+      
+      // Atualizar o display
+      if (newNeighborhoods.length === 0) {
+        setSelectedNeighborhood("Selecione o bairro");
+      } else if (newNeighborhoods.length === 1) {
+        setSelectedNeighborhood(newNeighborhoods[0]);
+      } else {
+        setSelectedNeighborhood(`${newNeighborhoods.length} bairros selecionados`);
+      }
+    } else {
+      // Adicionar todos os bairros da zona (removendo duplicatas)
+      const newNeighborhoods = [...new Set([...selectedNeighborhoods, ...bairros])];
+      setSelectedNeighborhoods(newNeighborhoods);
+      
+      // Atualizar o display
+      if (newNeighborhoods.length === 1) {
+        setSelectedNeighborhood(newNeighborhoods[0]);
+      } else {
+        setSelectedNeighborhood(`${newNeighborhoods.length} bairros selecionados`);
+      }
+    }
+  };
+
+  // Nova função para múltipla seleção de regiões (cidades)
+  const toggleRegion = (region: string) => {
+    const cidades = cidadesPorRegiaoRJ[region] || [];
+    
+    // Verificar se todas as cidades da região já estão selecionadas
+    const allRegionCitiesSelected = cidades.every(cidade => selectedCities.includes(cidade));
+    
+    if (allRegionCitiesSelected) {
+      // Remover todas as cidades da região
+      const newCities = selectedCities.filter(c => !cidades.includes(c));
+      setSelectedCities(newCities);
+      
+      // Atualizar o display
+      if (newCities.length === 0) {
+        setSelectedCity("Selecione a cidade");
+        setSelectedCityName("");
+      } else if (newCities.length === 1) {
+        setSelectedCity(newCities[0]);
+        setSelectedCityName(newCities[0]);
+        fetchNeighborhoodsByCity(newCities[0]);
+      } else {
+        setSelectedCity(`${newCities.length} cidades selecionadas`);
+        setSelectedCityName("MULTIPLE_CITIES");
+      }
+    } else {
+      // Adicionar todas as cidades da região (removendo duplicatas)
+      const newCities = [...new Set([...selectedCities, ...cidades])];
+      setSelectedCities(newCities);
+      
+      // Atualizar o display
+      if (newCities.length === 1) {
+        setSelectedCity(newCities[0]);
+        setSelectedCityName(newCities[0]);
+        fetchNeighborhoodsByCity(newCities[0]);
+      } else {
+        setSelectedCity(`${newCities.length} cidades selecionadas`);
+        setSelectedCityName("MULTIPLE_CITIES");
+      }
+    }
+    
+    // Limpar bairros quando múltiplas cidades são selecionadas
+    if (selectedCities.length > 0) {
+      setSelectedNeighborhood("Selecione o bairro");
+      setSelectedNeighborhoods([]);
+    }
+  };
+
+  // Nova função para múltipla seleção de regiões de Niterói (bairros)
+  const toggleRegionNiteroi = (region: string) => {
+    const bairros = bairrosPorRegiaoNiteroi[region] || [];
+    
+    // Verificar se todos os bairros da região já estão selecionados
+    const allRegionBairrosSelected = bairros.every(bairro => selectedNeighborhoods.includes(bairro));
+    
+    if (allRegionBairrosSelected) {
+      // Remover todos os bairros da região
+      const newNeighborhoods = selectedNeighborhoods.filter(n => !bairros.includes(n));
+      setSelectedNeighborhoods(newNeighborhoods);
+      
+      // Atualizar o display
+      if (newNeighborhoods.length === 0) {
+        setSelectedNeighborhood("Selecione o bairro");
+      } else if (newNeighborhoods.length === 1) {
+        setSelectedNeighborhood(newNeighborhoods[0]);
+      } else {
+        setSelectedNeighborhood(`${newNeighborhoods.length} bairros selecionados`);
+      }
+    } else {
+      // Adicionar todos os bairros da região (removendo duplicatas)
+      const newNeighborhoods = [...new Set([...selectedNeighborhoods, ...bairros])];
+      setSelectedNeighborhoods(newNeighborhoods);
+      
+      // Atualizar o display
+      if (newNeighborhoods.length === 1) {
+        setSelectedNeighborhood(newNeighborhoods[0]);
+      } else {
+        setSelectedNeighborhood(`${newNeighborhoods.length} bairros selecionados`);
+      }
+    }
+  };
   
   const selectZone = (zone: string) => {
     // Seleciona todos os bairros da zona
@@ -1484,7 +1599,7 @@ const Index = () => {
                           {(citySearchTerm === '' || flexibleSearch(regiao, citySearchTerm)) && (
                             <div
                               className="py-2 px-4 font-bold text-primary bg-gray-100 border-b border-gray-200 cursor-pointer hover:bg-yellow-100"
-                              onClick={() => selectRegion(regiao)}
+                              onClick={() => toggleRegion(regiao)}
                             >
                               {regiao} (todos)
                             </div>
@@ -1560,7 +1675,7 @@ const Index = () => {
                             {(neighborhoodSearchTerm === '' || flexibleSearch(zona, neighborhoodSearchTerm)) && (
                               <div
                                 className="py-2 px-4 font-bold text-primary bg-gray-100 border-b border-gray-200 cursor-pointer hover:bg-yellow-100"
-                                onClick={() => selectZone(zona)}
+                                onClick={() => toggleZone(zona)}
                               >
                                 {zona} (todos)
                               </div>
@@ -1606,7 +1721,7 @@ const Index = () => {
                             {(neighborhoodSearchTerm === '' || flexibleSearch(regiao, neighborhoodSearchTerm)) && (
                               <div
                                 className="py-2 px-4 font-bold text-primary bg-gray-100 border-b border-gray-200 cursor-pointer hover:bg-yellow-100"
-                                onClick={() => selectRegionNiteroi(regiao)}
+                                onClick={() => toggleRegionNiteroi(regiao)}
                               >
                                 {regiao} (todos)
                               </div>

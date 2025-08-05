@@ -79,7 +79,7 @@ export const HeroSectionSP = ({ onOpportunityClick }: HeroSectionSPProps) => {
                 <div className="relative w-full max-w-[560px] aspect-video bg-black rounded-lg overflow-hidden">
                   {/* Iframe do YouTube */}
                   <iframe
-                    src="https://www.youtube.com/embed/H9-LPE3gRFg"
+                    src="https://www.youtube.com/embed/G8Wp2ju3CaU"
                     title="Como funciona nossa assessoria em leilões de imóveis"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowFullScreen

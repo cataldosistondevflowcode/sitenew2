@@ -776,11 +776,15 @@ const LeilaoCaixaRJ = () => {
     
     // Fechar menus ao clicar fora deles
     const handleClickOutside = (event: MouseEvent) => {
-      if (showTypeMenu || showCityMenu || showNeighborhoodMenu || showPriceMenu) {
-        const target = event.target as HTMLElement;
-        if (!target.closest('.filter-dropdown')) {
+      const target = event.target as HTMLElement;
+      const isClickInsideFilter = target.closest('.filter-dropdown');
+      
+      if (!isClickInsideFilter) {
+        // Fechar todos os menus se o clique foi fora de qualquer filtro
+        if (showTypeMenu || showCityMenu || showRegionMenu || showNeighborhoodMenu || showPriceMenu) {
           setShowTypeMenu(false);
           setShowCityMenu(false);
+          setShowRegionMenu(false);
           setShowNeighborhoodMenu(false);
           setShowPriceMenu(false);
           setCitySearchTerm("");
@@ -789,19 +793,20 @@ const LeilaoCaixaRJ = () => {
       }
     };
     
-    document.addEventListener('click', handleClickOutside);
+    document.addEventListener('click', handleClickOutside, true);
 
     return () => {
       window.removeEventListener('resize', checkScreenSize);
-      document.removeEventListener('click', handleClickOutside);
+      document.removeEventListener('click', handleClickOutside, true);
     };
-  }, [showTypeMenu, showCityMenu, showNeighborhoodMenu, showPriceMenu]);
+  }, [showTypeMenu, showCityMenu, showRegionMenu, showNeighborhoodMenu, showPriceMenu]);
   
   // Funções para manipular os menus
   const toggleTypeMenu = (e: React.MouseEvent) => {
     e.stopPropagation();
     setShowTypeMenu(!showTypeMenu);
     setShowCityMenu(false);
+    setShowRegionMenu(false);
     setShowNeighborhoodMenu(false);
     setShowPriceMenu(false);
   };
@@ -810,6 +815,7 @@ const LeilaoCaixaRJ = () => {
     e.stopPropagation();
     setShowCityMenu(!showCityMenu);
     setShowTypeMenu(false);
+    setShowRegionMenu(false);
     setShowNeighborhoodMenu(false);
     setShowPriceMenu(false);
     if (showCityMenu) {
@@ -822,6 +828,7 @@ const LeilaoCaixaRJ = () => {
     setShowNeighborhoodMenu(!showNeighborhoodMenu);
     setShowTypeMenu(false);
     setShowCityMenu(false);
+    setShowRegionMenu(false);
     setShowPriceMenu(false);
     if (showNeighborhoodMenu) {
       setNeighborhoodSearchTerm("");
@@ -833,6 +840,7 @@ const LeilaoCaixaRJ = () => {
     setShowPriceMenu(!showPriceMenu);
     setShowTypeMenu(false);
     setShowCityMenu(false);
+    setShowRegionMenu(false);
     setShowNeighborhoodMenu(false);
   };
   
@@ -1313,7 +1321,10 @@ const LeilaoCaixaRJ = () => {
                             <div
                               key={cidade}
                               className="py-2 px-4 hover:bg-gray-100 cursor-pointer"
-                              onClick={() => toggleCity(cidade)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                toggleCity(cidade);
+                              }}
                             >
                               <div className="flex items-center">
                                 <input
@@ -1383,7 +1394,10 @@ const LeilaoCaixaRJ = () => {
                                 <div
                                   key={neighborhoodData.neighborhood}
                                   className="py-2 px-4 hover:bg-gray-100 cursor-pointer"
-                                  onClick={() => toggleNeighborhood(neighborhoodData.neighborhood)}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    toggleNeighborhood(neighborhoodData.neighborhood);
+                                  }}
                                 >
                                   <div className="flex items-center">
                                     <input
@@ -1426,7 +1440,10 @@ const LeilaoCaixaRJ = () => {
                                 <div
                                   key={neighborhoodData.neighborhood}
                                   className="py-2 px-4 hover:bg-gray-100 cursor-pointer"
-                                  onClick={() => toggleNeighborhood(neighborhoodData.neighborhood)}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    toggleNeighborhood(neighborhoodData.neighborhood);
+                                  }}
                                 >
                                   <div className="flex items-center">
                                     <input

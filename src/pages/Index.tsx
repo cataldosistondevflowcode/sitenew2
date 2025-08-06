@@ -819,33 +819,35 @@ const Index = () => {
     
     // Fechar menus ao clicar fora deles
     const handleClickOutside = (event: MouseEvent) => {
-      if (showTypeMenu || showCityMenu || showNeighborhoodMenu || showPriceMenu || showAuctionTypeMenu) {
-        const target = event.target as HTMLElement;
-        if (!target.closest('.filter-dropdown')) {
-          setShowTypeMenu(false);
-          setShowCityMenu(false);
-          setShowNeighborhoodMenu(false);
-          setShowPriceMenu(false);
-          setShowAuctionTypeMenu(false);
-          setCitySearchTerm("");
-          setNeighborhoodSearchTerm("");
-        }
+      const target = event.target as HTMLElement;
+      const isClickInsideFilter = target.closest('.filter-dropdown');
+      
+      if (!isClickInsideFilter && (showTypeMenu || showCityMenu || showRegionMenu || showNeighborhoodMenu || showPriceMenu || showAuctionTypeMenu)) {
+        setShowTypeMenu(false);
+        setShowCityMenu(false);
+        setShowRegionMenu(false);
+        setShowNeighborhoodMenu(false);
+        setShowPriceMenu(false);
+        setShowAuctionTypeMenu(false);
+        setCitySearchTerm("");
+        setNeighborhoodSearchTerm("");
       }
     };
     
-    document.addEventListener('click', handleClickOutside);
+    document.addEventListener('click', handleClickOutside, true);
 
     return () => {
       window.removeEventListener('resize', checkScreenSize);
-      document.removeEventListener('click', handleClickOutside);
+      document.removeEventListener('click', handleClickOutside, true);
     };
-  }, [showTypeMenu, showCityMenu, showNeighborhoodMenu, showPriceMenu, showAuctionTypeMenu]);
+  }, [showTypeMenu, showCityMenu, showRegionMenu, showNeighborhoodMenu, showPriceMenu, showAuctionTypeMenu]);
   
   // Funções para manipular os menus
   const toggleTypeMenu = (e: React.MouseEvent) => {
     e.stopPropagation();
     setShowTypeMenu(!showTypeMenu);
     setShowCityMenu(false);
+    setShowRegionMenu(false);
     setShowNeighborhoodMenu(false);
     setShowPriceMenu(false);
     setShowAuctionTypeMenu(false);
@@ -855,6 +857,7 @@ const Index = () => {
     e.stopPropagation();
     setShowCityMenu(!showCityMenu);
     setShowTypeMenu(false);
+    setShowRegionMenu(false);
     setShowNeighborhoodMenu(false);
     setShowPriceMenu(false);
     setShowAuctionTypeMenu(false);
@@ -868,6 +871,7 @@ const Index = () => {
     setShowNeighborhoodMenu(!showNeighborhoodMenu);
     setShowTypeMenu(false);
     setShowCityMenu(false);
+    setShowRegionMenu(false);
     setShowPriceMenu(false);
     setShowAuctionTypeMenu(false);
     if (showNeighborhoodMenu) {
@@ -880,6 +884,7 @@ const Index = () => {
     setShowPriceMenu(!showPriceMenu);
     setShowTypeMenu(false);
     setShowCityMenu(false);
+    setShowRegionMenu(false);
     setShowNeighborhoodMenu(false);
     setShowAuctionTypeMenu(false);
   };
@@ -889,6 +894,7 @@ const Index = () => {
     setShowAuctionTypeMenu(!showAuctionTypeMenu);
     setShowTypeMenu(false);
     setShowCityMenu(false);
+    setShowRegionMenu(false);
     setShowNeighborhoodMenu(false);
     setShowPriceMenu(false);
   };
@@ -1504,7 +1510,10 @@ const Index = () => {
                       </div>
                       <div 
                         className="px-4 py-2 flex items-center hover:bg-gray-100 cursor-pointer"
-                        onClick={() => togglePropertyType("Todos os imóveis", <Globe className="h-4 w-4" />, undefined)}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            togglePropertyType("Todos os imóveis", <Globe className="h-4 w-4" />, undefined);
+                          }}
                       >
                         <Globe className="h-4 w-4 mr-2 text-gray-500" />
                         <span>Todos os imóveis</span>
@@ -1544,7 +1553,10 @@ const Index = () => {
                             className={`px-4 py-2 flex items-center cursor-pointer ${
                               isSelected ? 'bg-blue-100 text-blue-800' : 'hover:bg-gray-100'
                             }`}
-                            onClick={() => togglePropertyType(formattedTypeName, icon, typeData.type)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              togglePropertyType(formattedTypeName, icon, typeData.type);
+                            }}
                           >
                             <input
                               type="checkbox"
@@ -1599,7 +1611,10 @@ const Index = () => {
                           {(citySearchTerm === '' || flexibleSearch(regiao, citySearchTerm)) && (
                             <div
                               className="py-2 px-4 font-bold text-primary bg-gray-100 border-b border-gray-200 cursor-pointer hover:bg-yellow-100"
-                              onClick={() => toggleRegion(regiao)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                toggleRegion(regiao);
+                              }}
                             >
                               {regiao} (todos)
                             </div>
@@ -1617,7 +1632,10 @@ const Index = () => {
                                 className={`py-2 px-4 flex items-center cursor-pointer ${
                                   isSelected ? 'bg-blue-100 text-blue-800' : 'hover:bg-gray-100'
                                 }`}
-                                onClick={() => toggleCity(cidade)}
+                                onClick={(e) => {
+                                e.stopPropagation();
+                                toggleCity(cidade);
+                              }}
                               >
                                 <input
                                   type="checkbox"
@@ -1675,7 +1693,10 @@ const Index = () => {
                             {(neighborhoodSearchTerm === '' || flexibleSearch(zona, neighborhoodSearchTerm)) && (
                               <div
                                 className="py-2 px-4 font-bold text-primary bg-gray-100 border-b border-gray-200 cursor-pointer hover:bg-yellow-100"
-                                onClick={() => toggleZone(zona)}
+                                onClick={(e) => {
+                                e.stopPropagation();
+                                toggleZone(zona);
+                              }}
                               >
                                 {zona} (todos)
                               </div>
@@ -1693,7 +1714,10 @@ const Index = () => {
                                     className={`py-2 px-4 flex items-center cursor-pointer ${
                                       isSelected ? 'bg-blue-100 text-blue-800' : 'hover:bg-gray-100'
                                     }`}
-                                    onClick={() => toggleNeighborhood(neighborhoodData.neighborhood)}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      toggleNeighborhood(neighborhoodData.neighborhood);
+                                    }}
                                   >
                                     <input
                                       type="checkbox"
@@ -1721,7 +1745,10 @@ const Index = () => {
                             {(neighborhoodSearchTerm === '' || flexibleSearch(regiao, neighborhoodSearchTerm)) && (
                               <div
                                 className="py-2 px-4 font-bold text-primary bg-gray-100 border-b border-gray-200 cursor-pointer hover:bg-yellow-100"
-                                onClick={() => toggleRegionNiteroi(regiao)}
+                                onClick={(e) => {
+                                e.stopPropagation();
+                                toggleRegionNiteroi(regiao);
+                              }}
                               >
                                 {regiao} (todos)
                               </div>
@@ -1739,7 +1766,10 @@ const Index = () => {
                                     className={`py-2 px-4 flex items-center cursor-pointer ${
                                       isSelected ? 'bg-blue-100 text-blue-800' : 'hover:bg-gray-100'
                                     }`}
-                                    onClick={() => toggleNeighborhood(neighborhoodData.neighborhood)}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      toggleNeighborhood(neighborhoodData.neighborhood);
+                                    }}
                                   >
                                     <input
                                       type="checkbox"

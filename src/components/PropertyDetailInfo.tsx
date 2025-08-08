@@ -25,6 +25,40 @@ export const PropertyDetailInfo = ({ property, rawPropertyData }: PropertyDetail
   const [searchParams] = useSearchParams();
   const showDebug = searchParams.get('debug') === 'true';
   
+  const urlSplitRegex = /(https?:\/\/[^\s]+)/g;
+  const urlExactRegex = /^https?:\/\/[^\s]+$/;
+
+  const linkifyText = (text: string): React.ReactNode => {
+    const parts = text.split(urlSplitRegex);
+    return (
+      <>
+        {parts.map((part, index) =>
+          urlExactRegex.test(part) ? (
+            <a
+              key={`url-${index}-${part}`}
+              href={part}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline text-blue-400 hover:text-blue-300 break-words"
+            >
+              {part}
+            </a>
+          ) : (
+            <span key={`txt-${index}`}>{part}</span>
+          )
+        )}
+      </>
+    );
+  };
+
+  const renderTextOrLink = (value: string): React.ReactNode => {
+    if (!value) return value;
+    if (value.includes('http://') || value.includes('https://')) {
+      return linkifyText(value);
+    }
+    return value;
+  };
+  
   const formatCurrency = (value: number): string => {
     return value.toLocaleString('pt-BR', {
       style: 'currency',
@@ -177,7 +211,7 @@ export const PropertyDetailInfo = ({ property, rawPropertyData }: PropertyDetail
                             ) : typeof value === 'boolean' ? (
                               <span className={value ? "text-green-400" : "text-red-400"}>{String(value)}</span>
                             ) : (
-                              String(value)
+                              renderTextOrLink(String(value))
                             )}
                           </span>
                         </div>
@@ -193,7 +227,7 @@ export const PropertyDetailInfo = ({ property, rawPropertyData }: PropertyDetail
                       <div key={key} className="flex flex-col sm:flex-row border-b border-gray-700 pb-1">
                         <span className="font-semibold text-yellow-300 min-w-[180px]">{key}:</span>
                         <span className="text-gray-100 break-all">
-                          {typeof value === 'object' ? JSON.stringify(value, null, 2) : String(value)}
+                          {typeof value === 'object' ? JSON.stringify(value, null, 2) : renderTextOrLink(String(value))}
                         </span>
                       </div>
                     ))}

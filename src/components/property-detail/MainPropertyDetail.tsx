@@ -44,6 +44,40 @@ export const MainPropertyDetail: React.FC<MainPropertyDetailProps> = ({ property
   const [searchParams] = useSearchParams();
   const showDebug = searchParams.get('debug') === 'true';
   
+  const urlSplitRegex = /(https?:\/\/[^\s]+)/g;
+  const urlExactRegex = /^https?:\/\/[^\s]+$/;
+
+  const linkifyText = (text: string): React.ReactNode => {
+    const parts = text.split(urlSplitRegex);
+    return (
+      <>
+        {parts.map((part, index) =>
+          urlExactRegex.test(part) ? (
+            <a
+              key={`url-${index}-${part}`}
+              href={part}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline text-blue-400 hover:text-blue-300 break-words"
+            >
+              {part}
+            </a>
+          ) : (
+            <span key={`txt-${index}`}>{part}</span>
+          )
+        )}
+      </>
+    );
+  };
+
+  const renderTextOrLink = (value: string): React.ReactNode => {
+    if (!value) return value;
+    if (value.includes('http://') || value.includes('https://')) {
+      return linkifyText(value);
+    }
+    return value;
+  };
+
   const handleTripleClick = () => {
     // Criar nova URL com debug=true
     const currentUrl = new URL(window.location.href);
@@ -222,7 +256,7 @@ export const MainPropertyDetail: React.FC<MainPropertyDetailProps> = ({ property
                                 ) : typeof value === 'boolean' ? (
                                   <span className={value ? "text-green-400" : "text-red-400"}>{String(value)}</span>
                                 ) : (
-                                  String(value)
+                                  renderTextOrLink(String(value))
                                 )}
                               </span>
                             </div>
@@ -238,7 +272,7 @@ export const MainPropertyDetail: React.FC<MainPropertyDetailProps> = ({ property
                           <div key={key} className="flex flex-col sm:flex-row border-b border-gray-700 pb-1">
                             <span className="font-semibold text-yellow-300 min-w-[180px]">{key}:</span>
                             <span className="text-gray-100 break-all">
-                              {typeof value === 'object' ? JSON.stringify(value, null, 2) : String(value)}
+                              {typeof value === 'object' ? JSON.stringify(value, null, 2) : renderTextOrLink(String(value))}
                             </span>
                           </div>
                         ))}
@@ -248,7 +282,16 @@ export const MainPropertyDetail: React.FC<MainPropertyDetailProps> = ({ property
                     <div className="mt-4 p-3 bg-blue-900 rounded">
                       <h4 className="text-md font-semibold mb-2 text-blue-300">ℹ️ URL Info:</h4>
                       <p className="text-xs text-gray-300">
-                        <strong>URL atual:</strong> {window.location.href}<br/>
+                        <strong>URL atual:</strong> {(
+                          <a
+                            href={window.location.href}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="underline text-blue-300 hover:text-blue-200 break-words"
+                          >
+                            {window.location.href}
+                          </a>
+                        )}<br/>
                         <strong>Parâmetros:</strong> {searchParams.toString() || 'Nenhum'}<br/>
                         <strong>Debug ativado:</strong> <span className={showDebug ? "text-green-400" : "text-red-400"}>{showDebug ? 'SIM' : 'NÃO'}</span>
                       </p>

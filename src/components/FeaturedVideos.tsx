@@ -8,60 +8,62 @@ export const FeaturedVideos = () => {
     {
       title: "Quais as vantagens de comprar imóveis em leilão?",
       description: "Existem muitas vantagens nos leilões de imóveis em relação a uma compra e venda comum. Veja alguns motivos que têm levado cada vez mais pessoas a optarem por essa modalidade.",
-      url: "https://leilaodeimoveis-cataldosiston.com/vantagens-de-comprarimoveis-em-leilao/",
-      youtubeId: "H9-LPE3gRFg"
+      url: "https://www.youtube.com/watch?v=hbt-4kFMD4Q&embeds_referring_euri=https%3A%2F%2Fleilaodeimoveis-cataldosiston.com%2F&source_ve_path=Mjg2NjY",
+      youtubeId: "hbt-4kFMD4Q"
     },
     {
       title: "É possível parcelar o valor da arrematação em leilões de imóveis?",
       description: "Tem dúvidas sobre como deve ser feito o pagamento do valor da arrematação em leilões de imóveis? Quer saber em quais casos é possível realizar o parcelamento? Veja o vídeo que nós preparamos sobre esse assunto.",
-      url: "https://leilaodeimoveis-cataldosiston.com/e-possivel-parcelar-o-valorda-arrematacao-em-leiloes-de-imoveis/",
+      url: "https://www.youtube.com/watch?time_continue=1&v=yvQrGmdXDiU&embeds_referring_euri=https%3A%2F%2Fleilaodeimoveis-cataldosiston.com%2F&source_ve_path=Mjg2NjY",
       youtubeId: "yvQrGmdXDiU"
     },
     {
       title: "Quem deve arcar com as dívidas de um imóvel arrematado em leilão?",
       description: "Imóveis vão a leilão para saldar alguma dívida do antigo proprietário. No entanto, e se houver mais dívidas registradas no imóvel, que não possam ser quitadas apenas com o valor da arrematação? Quem precisa arcar o restante? O arrematante ou o executado?",
-      url: "https://leilaodeimoveis-cataldosiston.com/quem-deve-arcar-com-asdividas-de-um-imovel-arrematado-em-leilao/",
+      url: "https://www.youtube.com/watch?v=1keAvaimI5k&embeds_referring_euri=https%3A%2F%2Fleilaodeimoveis-cataldosiston.com%2F&source_ve_path=Mjg2NjY",
       youtubeId: "1keAvaimI5k"
     },
     {
       title: "Arrematar um imóvel ocupado dá mais dor de cabeça?",
       description: "Muita gente pensa que comprar imóveis em leilão que estejam ocupados dá mais dor de cabeça do que arrematar um imóvel desocupado. No entanto, será que isso faz mesmo diferença? Descubra agora!",
-      url: "https://leilaodeimoveis-cataldosiston.com/arrematar-um-imovelocupado-da-mais-dor-de-cabeca/",
+      url: "https://www.youtube.com/watch?v=9ZnMzYQJNck&embeds_referring_euri=https%3A%2F%2Fleilaodeimoveis-cataldosiston.com%2F&source_ve_path=Mjg2NjY",
       youtubeId: "9ZnMzYQJNck"
     },
     {
       title: "Como é calculado o ITBI em leilões de imóveis?",
       description: "Como é calculado o ITBI em leilões de imóveis e mais baixo?",
-      url: "https://leilaodeimoveis-cataldosiston.com/como-e-calculado-o-itbiem-leiloes-de-imoveis/",
+      url: "https://www.youtube.com/watch?v=FQAUWbkwjT8",
       youtubeId: "FQAUWbkwjT8"
     },
     {
-      title: "Leilões extrajudiciais: tudo que você deve saber",
+      title: "Tudo que você precisa saber sobre leilões extrajudiciais",
       description: "Tudo que você deve saber sobre leilões de bancos",
-      url: "https://leilaodeimoveis-cataldosiston.com/leiloes-extrajudiciais-tudoque-voce-deve-saber/",
+      url: "https://www.youtube.com/watch?v=VVxUQtMC-xg",
       youtubeId: "VVxUQtMC-xg"
     },
     {
-      title: "Entrevista do advogado Raphael Cataldo Siston sobre leilões de imóveis",
-      description: "Confira a entrevista do advogado Raphael Cataldo Siston sobre leilões de imóveis",
-      url: "https://leilaodeimoveis-cataldosiston.com/entrevista-raphael-cataldosiston-leiloes-de-imoveis/"
+      title: "Imissão na posse em leilões de imóveis",
+      description: "Basta ler o edital? O arrematante sempre precisa lidar com as dívidas do imóvel? É sempre possível parcelar o valor da arrematação? Neste vídeo, vamos desmentir alguns mitos comuns sobre leilões de imóveis!",
+      url: "https://www.youtube.com/watch?v=Bps7pphdE_g",
+      youtubeId: "Bps7pphdE_g"
     },
     {
-      title: "O que fazer após a arrematação de um imóvel em leilão?",
-      description: "O que fazer após a arrematação de um imóvel em leilão?",
-      url: "https://leilaodeimoveis-cataldosiston.com/o-que-fazer-apos-aarrematacao-de-um-imovel-em-leilao/",
-      youtubeId: "uISCy7wT-G4"
+      title: "3 mitos sobre leilões de imóveis",
+      description: "Basta ler o edital? O arrematante sempre precisa lidar com as dívidas do imóvel? É sempre possível parcelar o valor da arrematação? Neste vídeo, vamos desmentir alguns mitos comuns sobre leilões de imóveis!",
+      url: "https://www.youtube.com/watch?v=a4yQKEDt7hc",
+      youtubeId: "a4yQKEDt7hc"
     },
     {
-      title: "Posso perder o imóvel que arrematei em leilão?",
-      description: "Posso perder o imóvel que arrematei em leilão?",
-      url: "https://leilaodeimoveis-cataldosiston.com/posso-perder-o-imovel-quearrematei-em-leilao/"
+      title: "5 fatores que podem levar à anulação da arrematação",
+      description: "Ao participar de leilões de imóveis, é importante estar sempre atento se todos os trâmites legais foram devidamente respeitados.",
+      url: "https://www.youtube.com/watch?v=Bps7pphdE_g",
+      youtubeId: "Bps7pphdE_g"
     },
     {
-      title: "Como funciona a nossa assessoria em leilões de imóveis",
-      description: "Como funciona a nossa assessoria em leilões de imóveis",
-      url: "https://leilaodeimoveis-cataldosiston.com/como-funciona-a-nossaassessoria-em-leiloes-de-imoveis/",
-      youtubeId: "G8Wp2ju3CaU"
+      title: "Carta de arrematação e auto de arrematação",
+      description: "O auto de arrematação e a carta de arrematação são dois importantes documentos dos leilões de imóveis judiciais, que devem ser obtidos após a arrematação. O que eles são? Qual a importância deles para os processos burocráticos pós-leilão? Qual a diferença entre eles? Descubra agora!",
+      url: "https://www.youtube.com/watch?v=xGUunlbUAx0",
+      youtubeId: "xGUunlbUAx0"
     }
   ];
 

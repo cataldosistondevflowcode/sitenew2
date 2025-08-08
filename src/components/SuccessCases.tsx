@@ -3,17 +3,17 @@ import React from 'react';
 export const SuccessCases = () => {
   const cases = [
     {
-      id: "hbt-4kFMD4Q",
+      id: "nXMiKXmjEOs",
       title: "Leilão de imóvel | Ipanema/RJ",
       description: "Caso real de imóvel em leilão em Ipanema, assessorado pela equipe jurídica do escritório Cataldo Siston Advogados."
     },
     {
-      id: "IssSNAzj4ag",
+      id: "AH_sNBsqIMg",
       title: "Leilão de imóvel | Botafogo/RJ",
       description: "Caso real de imóvel em leilão em Botafogo, assessorado pela equipe jurídica do escritório Cataldo Siston Advogados."
     },
     {
-      id: "H9-LPE3gRFg",
+      id: "9vziuX_9kxA",
       title: "Leilão de imóvel | Fonte da Saudade/RJ", 
       description: "Caso real de imóvel em leilão na Fonte da Saudade assessorado pela equipe jurídica do escritório Cataldo Siston Advogados."
     }

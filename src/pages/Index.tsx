@@ -252,7 +252,7 @@ const Index = () => {
   
   // Configurar título da página para RJ
   useEffect(() => {
-    document.title = "Imóveis RJ";
+    document.title = "Imóveis em Leilão RJ | Cataldo Siston";
     
     // Garantir que a meta description está correta para RJ
     const metaDescription = document.querySelector('meta[name="description"]');
@@ -263,7 +263,7 @@ const Index = () => {
     // Atualizar Open Graph title
     const ogTitle = document.querySelector('meta[property="og:title"]');
     if (ogTitle) {
-      ogTitle.setAttribute('content', 'Imóveis RJ');
+      ogTitle.setAttribute('content', 'Imóveis em Leilão RJ | Cataldo Siston');
     }
     
     // Atualizar Open Graph description
@@ -275,7 +275,7 @@ const Index = () => {
     // Atualizar Twitter title
     const twitterTitle = document.querySelector('meta[name="twitter:title"]');
     if (twitterTitle) {
-      twitterTitle.setAttribute('content', 'Imóveis RJ');
+      twitterTitle.setAttribute('content', 'Imóveis em Leilão RJ | Cataldo Siston');
     }
     
     // Atualizar Twitter description

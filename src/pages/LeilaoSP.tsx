@@ -149,7 +149,7 @@ const LeilaoSP = () => {
 
   // Configurar título da página e metadados para SP
   useEffect(() => {
-    document.title = "Imóveis SP";
+    document.title = "Imóveis em Leilão SP | Cataldo Siston";
     
     // Atualizar meta description
     const metaDescription = document.querySelector('meta[name="description"]');
@@ -160,7 +160,7 @@ const LeilaoSP = () => {
     // Atualizar Open Graph title
     const ogTitle = document.querySelector('meta[property="og:title"]');
     if (ogTitle) {
-      ogTitle.setAttribute('content', 'Imóveis SP');
+      ogTitle.setAttribute('content', 'Imóveis em Leilão SP | Cataldo Siston');
     }
     
     // Atualizar Open Graph description
@@ -172,7 +172,7 @@ const LeilaoSP = () => {
     // Atualizar Twitter title
     const twitterTitle = document.querySelector('meta[name="twitter:title"]');
     if (twitterTitle) {
-      twitterTitle.setAttribute('content', 'Imóveis SP');
+      twitterTitle.setAttribute('content', 'Imóveis em Leilão SP | Cataldo Siston');
     }
     
     // Atualizar Twitter description

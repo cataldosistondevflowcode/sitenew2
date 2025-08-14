@@ -146,6 +146,41 @@ const LeilaoSP = () => {
   
   // Estado para armazenar a lista de bairros do RJ
   const [rjNeighborhoods, setRjNeighborhoods] = useState<{neighborhood: string, count: number}[]>([]);
+
+  // Configurar título da página e metadados para SP
+  useEffect(() => {
+    document.title = "Imóveis SP";
+    
+    // Atualizar meta description
+    const metaDescription = document.querySelector('meta[name="description"]');
+    if (metaDescription) {
+      metaDescription.setAttribute('content', 'Leilão de imóveis em SP e Advocacia Imobiliária. Tenha alto Retorno Financeiro com segurança com Especialistas. Entre em Contato Conosco!');
+    }
+    
+    // Atualizar Open Graph title
+    const ogTitle = document.querySelector('meta[property="og:title"]');
+    if (ogTitle) {
+      ogTitle.setAttribute('content', 'Imóveis SP');
+    }
+    
+    // Atualizar Open Graph description
+    const ogDescription = document.querySelector('meta[property="og:description"]');
+    if (ogDescription) {
+      ogDescription.setAttribute('content', 'Leilão de imóveis em SP e Advocacia Imobiliária. Tenha alto Retorno Financeiro com segurança com Especialistas. Entre em Contato Conosco!');
+    }
+    
+    // Atualizar Twitter title
+    const twitterTitle = document.querySelector('meta[name="twitter:title"]');
+    if (twitterTitle) {
+      twitterTitle.setAttribute('content', 'Imóveis SP');
+    }
+    
+    // Atualizar Twitter description
+    const twitterDescription = document.querySelector('meta[name="twitter:description"]');
+    if (twitterDescription) {
+      twitterDescription.setAttribute('content', 'Leilão de imóveis em SP e Advocacia Imobiliária. Tenha alto Retorno Financeiro com segurança com Especialistas. Entre em Contato Conosco!');
+    }
+  }, []);
   
   // Estado para armazenar a cidade selecionada sem a contagem entre parênteses
   const [selectedCityName, setSelectedCityName] = useState<string>("");

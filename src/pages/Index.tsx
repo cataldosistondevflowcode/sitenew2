@@ -250,6 +250,41 @@ const Index = () => {
   const [showPriceMenu, setShowPriceMenu] = useState(false);
   const [showAuctionTypeMenu, setShowAuctionTypeMenu] = useState(false);
   
+  // Configurar título da página para RJ
+  useEffect(() => {
+    document.title = "Imóveis RJ";
+    
+    // Garantir que a meta description está correta para RJ
+    const metaDescription = document.querySelector('meta[name="description"]');
+    if (metaDescription) {
+      metaDescription.setAttribute('content', 'Leilão de imóveis no RJ e Advocacia Imobiliária. Tenha alto Retorno Financeiro com segurança com Especialistas. Entre em Contato Conosco!');
+    }
+    
+    // Atualizar Open Graph title
+    const ogTitle = document.querySelector('meta[property="og:title"]');
+    if (ogTitle) {
+      ogTitle.setAttribute('content', 'Imóveis RJ');
+    }
+    
+    // Atualizar Open Graph description
+    const ogDescription = document.querySelector('meta[property="og:description"]');
+    if (ogDescription) {
+      ogDescription.setAttribute('content', 'Leilão de imóveis no RJ e Advocacia Imobiliária. Tenha alto Retorno Financeiro com segurança com Especialistas. Entre em Contato Conosco!');
+    }
+    
+    // Atualizar Twitter title
+    const twitterTitle = document.querySelector('meta[name="twitter:title"]');
+    if (twitterTitle) {
+      twitterTitle.setAttribute('content', 'Imóveis RJ');
+    }
+    
+    // Atualizar Twitter description
+    const twitterDescription = document.querySelector('meta[name="twitter:description"]');
+    if (twitterDescription) {
+      twitterDescription.setAttribute('content', 'Leilão de imóveis no RJ e Advocacia Imobiliária. Tenha alto Retorno Financeiro com segurança com Especialistas. Entre em Contato Conosco!');
+    }
+  }, []);
+
   // Estados para armazenar as seleções
   const [selectedType, setSelectedType] = useState<SelectedType>({ label: "Todos os imóveis", icon: <Globe className="h-4 w-4" /> });
   const [selectedCity, setSelectedCity] = useState("Selecione a cidade");

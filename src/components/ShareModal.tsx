@@ -18,7 +18,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
   const fullUrl = `${window.location.origin}${propertyUrl}`;
   
   const handleWhatsAppShare = () => {
-    const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(fullUrl)}`;
+    const whatsappUrl = `https://wa.me/5521977294848?text=${encodeURIComponent(fullUrl)}`;
     window.open(whatsappUrl, '_blank');
     onClose();
   };

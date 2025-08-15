@@ -16,7 +16,7 @@ interface ContactSidebarProps {
 }
 
 export const ContactSidebar: React.FC<ContactSidebarProps> = ({ contactInfo, onTripleClick, onContactClick }) => {
-  const whatsAppUrl = "https://api.whatsapp.com/send/?phone=5521977294848&text=Gostaria+de+saber+mais+sobre+o+im%C3%B3vel+em+leil%C3%A3o&type=phone_number&app_absent=0";
+  const whatsAppUrl = "https://wa.me/5521977294848?text=Gostaria+de+saber+mais+sobre+o+im%C3%B3vel+em+leil%C3%A3o";
 
   // Triple click functionality
   const clickCountRef = useRef(0);
@@ -120,7 +120,7 @@ export const ContactSidebar: React.FC<ContactSidebarProps> = ({ contactInfo, onT
             onClick={(e) => {
               e.preventDefault();
               const currentUrl = window.location.href;
-              const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(currentUrl)}`;
+              const whatsappUrl = `https://wa.me/5521977294848?text=${encodeURIComponent(currentUrl)}`;
               window.open(whatsappUrl, '_blank');
             }}
             style={{

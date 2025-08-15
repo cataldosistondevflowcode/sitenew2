@@ -179,7 +179,7 @@ const WhatsAppModal: React.FC<WhatsAppModalProps> = ({ isOpen, onClose }) => {
     // Aguarda um pouco para garantir que o envio foi processado
     setTimeout(() => {
       // Abrir o WhatsApp Web numa nova guia
-      const whatsappUrl = 'https://web.whatsapp.com/send?phone=+5521977294848&text=Gostaria+de+Atendimento+via+WhatsApp';
+      const whatsappUrl = 'https://wa.me/5521977294848?text=Gostaria+de+Atendimento+via+WhatsApp';
       window.open(whatsappUrl, '_blank');
       
       // Fechar o modal e limpar os campos

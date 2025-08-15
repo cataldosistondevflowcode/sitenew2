@@ -154,31 +154,8 @@ export const Header = ({ onContactClick }: HeaderProps) => {
                   )}
                 </li>
               ))}
-              
-              {/* Botão Fale Conosco Mobile */}
-              <li className="lg:hidden mt-4 pt-4 border-t border-gray-200">
-                <Button
-                  onClick={() => {
-                    setIsMenuOpen(false);
-                    onContactClick?.();
-                  }}
-                  className="w-full bg-[#d68e08] hover:bg-[#b8780a] text-white font-bold px-4 py-3 rounded-md transition-colors"
-                >
-                  Fale Conosco
-                </Button>
-              </li>
             </ul>
           </nav>
-          
-          {/* Botão Fale Conosco */}
-          <div className="hidden lg:block">
-            <Button
-              onClick={onContactClick}
-              className="bg-[#d68e08] hover:bg-[#b8780a] text-white font-bold px-4 py-2 rounded-md transition-colors"
-            >
-              Fale Conosco
-            </Button>
-          </div>
         </div>
       </div>
     </header>

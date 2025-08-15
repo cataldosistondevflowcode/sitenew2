@@ -28,7 +28,7 @@ export const HeroSection = ({ onOpportunityClick }: HeroSectionProps) => {
                     className="text-white font-medium text-2xl sm:text-3xl md:text-4xl lg:text-[44px] leading-tight lg:leading-[52.8px] mb-4" 
                     style={{ fontFamily: "Playfair Display, serif" }}
                   >
-                    Imóveis em Leilão<br className="hidden sm:block" />
+                    Imóveis em Leilão<br className="hidden sm:block" />{" "}
                     no Rio de Janeiro
                   </h1>
                 </div>

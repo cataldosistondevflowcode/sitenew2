@@ -70,7 +70,7 @@ export const Footer: React.FC<FooterProps> = ({ onWhatsAppClick }) => {
                 <a href="https://leilaodeimoveis-cataldosiston.com/casos-reais/" target="_blank" rel="noopener noreferrer">Casos Reais</a>
               </li>
               <li className="hover:text-[#d68e08] cursor-pointer transition-colors">
-                <a href="https://leilaodeimoveis-cataldosiston.com/blog-leilao-de-imoveis/" target="_blank" rel="noopener noreferrer">Blog</a>
+                <a href="https://leilaodeimoveis-cataldosiston.com/blog-cataldo-siston-advogados/" target="_blank" rel="noopener noreferrer">Blog</a>
               </li>
               <li className="hover:text-[#d68e08] cursor-pointer transition-colors">
                 <a href="https://leilaodeimoveis-cataldosiston.com/contato-advogados-imobiliarios/" target="_blank" rel="noopener noreferrer">Contato</a>

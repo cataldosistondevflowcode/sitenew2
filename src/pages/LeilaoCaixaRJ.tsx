@@ -1798,7 +1798,7 @@ const LeilaoCaixaRJ = () => {
       <Footer onWhatsAppClick={() => executeWhatsAppAction()} />
 
       {/* Floating Buttons */}
-      <div className="fixed bottom-2 sm:bottom-4 right-[72px] sm:right-[102px] z-40 flex flex-col sm:flex-row gap-2 sm:gap-3 items-end">
+      <div className="fixed bottom-2 sm:bottom-4 right-[80px] sm:right-[110px] z-40 flex flex-col sm:flex-row gap-2 sm:gap-3 items-end">
         <Button 
           className="bg-primary hover:bg-primary/90 font-bold text-xs sm:text-sm px-3 sm:px-4 py-2 sm:py-3 flex items-center gap-2"
           onClick={() => setShowOpportunityPopup(true)}

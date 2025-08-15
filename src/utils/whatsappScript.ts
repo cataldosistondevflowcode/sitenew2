@@ -457,16 +457,16 @@ export const executeWhatsAppAction = async (): Promise<void> => {
         document.addEventListener(eventType, preventModalClose, true);
       });
       
-      // Remover os listeners após 5 segundos
+      // Remover os listeners após 2 segundos
       setTimeout(() => {
         eventsToPrevent.forEach(eventType => {
           document.removeEventListener(eventType, preventModalClose, true);
         });
-        console.log('🔓 Proteção contra fechamento automático removida após 5 segundos');
-      }, 5000);
+        console.log('🔓 Proteção contra fechamento automático removida após 2 segundos');
+      }, 2000);
       
       console.log('📝 Modal deve estar aberto para preenchimento dos dados do usuário');
-      console.log('🛡️ Proteção contra fechamento automático ativada por 5 segundos');
+      console.log('🛡️ Proteção contra fechamento automático ativada por 2 segundos');
       
       // Apenas abrir o modal - não fazer mais nada automaticamente
       // O próprio widget RDStation vai gerenciar o fluxo a partir daqui

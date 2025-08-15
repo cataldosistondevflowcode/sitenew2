@@ -85,7 +85,19 @@ const encodeArray = (items: string[], codeMap: Record<string, string>): string =
 
 // Função para decodificar arrays usando códigos curtos
 const decodeArray = (encoded: string, reverseMap: Record<string, string>): string[] => {
-  return encoded.split(',').map(code => reverseMap[code] || code.replace(/-/g, ' '));
+  return encoded.split(',').map(code => {
+    const trimmedCode = code.trim();
+    // Primeiro tenta encontrar no mapeamento reverso
+    if (reverseMap[trimmedCode]) {
+      return reverseMap[trimmedCode];
+    }
+    // Se não encontrou, reconstrói o nome a partir do código
+    return trimmedCode
+      .replace(/-/g, ' ')
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ');
+  });
 };
 
 // Função para verificar se os filtros devem usar códigos curtos
@@ -96,13 +108,15 @@ const shouldUseShortCodes = (filters: FilterParams): boolean => {
   const citiesCount = filters.cities ? filters.cities.length : 0;
   const neighborhoodsCount = filters.neighborhoods ? filters.neighborhoods.length : 0;
   
-  // Usar códigos curtos se tem mais de 2 itens em qualquer categoria
+  // Usar códigos curtos se tem mais de 1 item em qualquer categoria OU total > 3
+  const totalItems = cityCount + typeCount + neighborhoodCount + citiesCount + neighborhoodsCount;
   return (
-    cityCount > 2 ||
-    typeCount > 2 ||
-    neighborhoodCount > 2 ||
-    citiesCount > 2 ||
-    neighborhoodsCount > 2
+    cityCount > 1 ||
+    typeCount > 1 ||
+    neighborhoodCount > 1 ||
+    citiesCount > 1 ||
+    neighborhoodsCount > 1 ||
+    totalItems > 3
   );
 };
 
@@ -113,31 +127,46 @@ export const useFilterParams = () => {
   const parseFiltersFromURL = useCallback((): FilterParams => {
     const filters: FilterParams = {};
     
-    // Verificar se há parâmetros com códigos curtos
-    const shortCities = searchParams.get('c');
-    if (shortCities) {
-      filters.city = decodeArray(shortCities, CITY_CODES_REVERSE).join(',');
-    }
-    
-    const shortTypes = searchParams.get('t');
-    if (shortTypes) {
-      filters.type = decodeArray(shortTypes, TYPE_CODES_REVERSE).join(',');
-    }
-    
-    const shortNeighborhoods = searchParams.get('b');
-    if (shortNeighborhoods) {
-      filters.neighborhood = shortNeighborhoods.split(',').map(n => n.replace(/-/g, ' ')).join(',');
-    }
-
-    // Parâmetros simples
+    // Verificar primeiro se há parâmetros tradicionais (prioridade)
     const city = searchParams.get('cidade');
-    if (city) filters.city = city;
+    if (city) {
+      filters.city = city;
+    } else {
+      // Se não há parâmetros tradicionais, verificar códigos curtos
+      const shortCities = searchParams.get('c');
+      if (shortCities) {
+        filters.city = decodeArray(shortCities, CITY_CODES_REVERSE).join(',');
+      }
+    }
 
     const type = searchParams.get('tipo');
-    if (type) filters.type = type;
+    if (type) {
+      filters.type = type;
+    } else {
+      const shortTypes = searchParams.get('t');
+      if (shortTypes) {
+        filters.type = decodeArray(shortTypes, TYPE_CODES_REVERSE).join(',');
+      }
+    }
 
     const neighborhood = searchParams.get('bairro');
-    if (neighborhood) filters.neighborhood = neighborhood;
+    if (neighborhood) {
+      filters.neighborhood = neighborhood;
+    } else {
+      const shortNeighborhoods = searchParams.get('b');
+      if (shortNeighborhoods) {
+        // Usa a mesma lógica de decodificação que as cidades e tipos
+        const decodedNeighborhoods = shortNeighborhoods.split(',').map(code => {
+          const trimmedCode = code.trim();
+          return trimmedCode
+            .replace(/-/g, ' ')
+            .split(' ')
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+            .join(' ');
+        });
+        filters.neighborhood = decodedNeighborhoods.join(',');
+      }
+    }
 
     const location = searchParams.get('localizacao');
     if (location) filters.location = location;
@@ -197,19 +226,21 @@ export const useFilterParams = () => {
       // Usar códigos curtos para cidades
       if (filters.city) {
         const cities = filters.city.split(',');
-        if (cities.length > 2) {
+        if (cities.length > 1) {
           newParams.set('c', encodeArray(cities, CITY_CODES));
         } else {
           newParams.set('cidade', filters.city);
         }
-      } else if (filters.cities && filters.cities.length > 2) {
+      } else if (filters.cities && filters.cities.length > 1) {
         newParams.set('c', encodeArray(filters.cities, CITY_CODES));
+      } else if (filters.cities && filters.cities.length === 1) {
+        newParams.set('cidade', filters.cities[0]);
       }
       
       // Usar códigos curtos para tipos
       if (filters.type) {
         const types = filters.type.split(',');
-        if (types.length > 2) {
+        if (types.length > 1) {
           newParams.set('t', encodeArray(types, TYPE_CODES));
         } else {
           newParams.set('tipo', filters.type);
@@ -219,13 +250,15 @@ export const useFilterParams = () => {
       // Usar códigos curtos para bairros (apenas abreviando)
       if (filters.neighborhood) {
         const neighborhoods = filters.neighborhood.split(',');
-        if (neighborhoods.length > 2) {
+        if (neighborhoods.length > 1) {
           newParams.set('b', neighborhoods.map(n => n.toLowerCase().replace(/\s+/g, '-').substring(0, 6)).join(','));
         } else {
           newParams.set('bairro', filters.neighborhood);
         }
-      } else if (filters.neighborhoods && filters.neighborhoods.length > 2) {
+      } else if (filters.neighborhoods && filters.neighborhoods.length > 1) {
         newParams.set('b', filters.neighborhoods.map(n => n.toLowerCase().replace(/\s+/g, '-').substring(0, 6)).join(','));
+      } else if (filters.neighborhoods && filters.neighborhoods.length === 1) {
+        newParams.set('bairro', filters.neighborhoods[0]);
       }
       
       // Adicionar outros parâmetros normalmente
@@ -293,30 +326,34 @@ export const useFilterParams = () => {
     
     // Verificar se deve usar códigos curtos
     if (shouldUseShortCodes(filters)) {
-      if (filters.city && filters.city.split(',').length > 2) {
+      if (filters.city && filters.city.split(',').length > 1) {
         newParams.set('c', encodeArray(filters.city.split(','), CITY_CODES));
       } else if (filters.city) {
         newParams.set('cidade', filters.city);
       }
       
-      if (filters.type && filters.type.split(',').length > 2) {
+      if (filters.type && filters.type.split(',').length > 1) {
         newParams.set('t', encodeArray(filters.type.split(','), TYPE_CODES));
       } else if (filters.type) {
         newParams.set('tipo', filters.type);
       }
       
-      if (filters.neighborhood && filters.neighborhood.split(',').length > 2) {
+      if (filters.neighborhood && filters.neighborhood.split(',').length > 1) {
         newParams.set('b', filters.neighborhood.split(',').map(n => n.toLowerCase().replace(/\s+/g, '-').substring(0, 6)).join(','));
       } else if (filters.neighborhood) {
         newParams.set('bairro', filters.neighborhood);
       }
       
-      if (filters.cities && filters.cities.length > 2) {
+      if (filters.cities && filters.cities.length > 1) {
         newParams.set('c', encodeArray(filters.cities, CITY_CODES));
+      } else if (filters.cities && filters.cities.length === 1) {
+        newParams.set('cidade', filters.cities[0]);
       }
       
-      if (filters.neighborhoods && filters.neighborhoods.length > 2) {
+      if (filters.neighborhoods && filters.neighborhoods.length > 1) {
         newParams.set('b', filters.neighborhoods.map(n => n.toLowerCase().replace(/\s+/g, '-').substring(0, 6)).join(','));
+      } else if (filters.neighborhoods && filters.neighborhoods.length === 1) {
+        newParams.set('bairro', filters.neighborhoods[0]);
       }
       
       // Adicionar outros filtros

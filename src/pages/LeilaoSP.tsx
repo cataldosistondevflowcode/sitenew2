@@ -344,11 +344,24 @@ const LeilaoSP = () => {
       
       if (urlFilters.priceRange) {
         // Encontrar a faixa de preço correspondente
-        const priceRange = priceRanges.find(range => 
-          range.min === urlFilters.priceRange?.min && range.max === urlFilters.priceRange?.max
-        );
-        if (priceRange) {
-          setSelectedPriceRange(priceRange);
+        const range = urlFilters.priceRange;
+        const matchedRange = priceRanges.find(r => r.min === range.min && r.max === range.max);
+        if (matchedRange) {
+          setSelectedPriceRange(matchedRange);
+        } else {
+          // Criar faixa personalizada se não encontrou correspondência exata
+          const customRange: PriceRange = {
+            label: range.min && range.max 
+              ? `R$ ${(range.min / 1000).toFixed(0)}k a R$ ${(range.max / 1000).toFixed(0)}k`
+              : range.min 
+                ? `Acima de R$ ${(range.min / 1000).toFixed(0)}k`
+                : range.max 
+                  ? `Até R$ ${(range.max / 1000).toFixed(0)}k`
+                  : "Faixa personalizada",
+            min: range.min,
+            max: range.max
+          };
+          setSelectedPriceRange(customRange);
         }
       }
       

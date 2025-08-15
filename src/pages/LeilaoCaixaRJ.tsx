@@ -13,7 +13,6 @@ import { TestimonialsSection } from "@/components/testimonials";
 import { NewsletterBottomSection } from "@/components/NewsletterBottomSection";
 import { Footer } from "@/components/Footer";
 import OpportunityPopup from "@/components/OpportunityPopup";
-import WhatsAppModal from "@/components/WhatsAppModal";
 import { Search, MessageCircle, Filter, X, MapPin, ChevronDown, Home, Building, Tractor, Trees, FileText, Globe, DollarSign, CalendarIcon, Car, SquareStack, Warehouse, Gavel, Mail, Share2, Copy } from "lucide-react";
 import { WhatsAppIcon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
@@ -23,6 +22,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useFilterParams } from "@/hooks/useFilterParams";
 import { flexibleSearch } from "@/utils/stringUtils";
+import { executeWhatsAppAction, initializeWhatsAppScript } from "@/utils/whatsappScript";
 
 // Interface para os dados dos imóveis
 interface Property {
@@ -247,8 +247,12 @@ const LeilaoCaixaRJ = () => {
   const [interestPhone, setInterestPhone] = useState("");
   const [interestEmail, setInterestEmail] = useState("");
 
-  // Estados para o modal do WhatsApp
-  const [showWhatsAppModal, setShowWhatsAppModal] = useState(false);
+
+
+  // Carregar script do WhatsApp automaticamente
+  useEffect(() => {
+    initializeWhatsAppScript();
+  }, []);
 
   // Mostrar popup de oportunidades quando a página carregar
   useEffect(() => {
@@ -1178,8 +1182,8 @@ const LeilaoCaixaRJ = () => {
   return (
     <div className="min-h-screen bg-background">
       <CookieBar />
-      <SocialBar onWhatsAppClick={() => setShowWhatsAppModal(true)} />
-              <Header onContactClick={() => setShowWhatsAppModal(true)} />
+      <SocialBar onWhatsAppClick={() => executeWhatsAppAction()} />
+              <Header onContactClick={() => executeWhatsAppAction()} />
               <HeroSectionCaixaRJ onOpportunityClick={() => window.open('https://leilaodeimoveis-cataldosiston.com/contato-advogados-imobiliarios/', '_blank')} />
       
       {/* Properties Section - Movida para cima */}
@@ -1637,7 +1641,7 @@ const LeilaoCaixaRJ = () => {
                       financiamento={property.financiamento}
                       parcelamento={property.parcelamento}
                       rawPropertyData={property}
-                      onContactClick={() => setShowWhatsAppModal(true)}
+                      onContactClick={() => executeWhatsAppAction()}
                     />
                   ))
                 ) : (
@@ -1786,15 +1790,15 @@ const LeilaoCaixaRJ = () => {
 
       {/* Newsletter Bottom Section */}
       <NewsletterBottomSection 
-        onWhatsAppClick={() => setShowWhatsAppModal(true)}
+        onWhatsAppClick={() => executeWhatsAppAction()}
         onOpportunityClick={() => window.open('https://leilaodeimoveis-cataldosiston.com/contato-advogados-imobiliarios/', '_blank')}
       />
 
       {/* Footer */}
-      <Footer onWhatsAppClick={() => setShowWhatsAppModal(true)} />
+      <Footer onWhatsAppClick={() => executeWhatsAppAction()} />
 
       {/* Floating Buttons */}
-      <div className="fixed bottom-2 sm:bottom-4 right-2 sm:right-4 z-40 flex flex-col sm:flex-row gap-2 sm:gap-3 items-end">
+      <div className="fixed bottom-2 sm:bottom-4 right-[72px] sm:right-[102px] z-40 flex flex-col sm:flex-row gap-2 sm:gap-3 items-end">
         <Button 
           className="bg-primary hover:bg-primary/90 font-bold text-xs sm:text-sm px-3 sm:px-4 py-2 sm:py-3 flex items-center gap-2"
           onClick={() => setShowOpportunityPopup(true)}
@@ -1805,8 +1809,8 @@ const LeilaoCaixaRJ = () => {
         </Button>
         
         <Button 
-          className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-white hover:bg-gray-100 border border-gray-200"
-          onClick={() => setShowWhatsAppModal(true)}
+          className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-white hover:bg-gray-100 border border-gray-200 hidden"
+          onClick={() => executeWhatsAppAction()}
         >
           <WhatsAppIcon />
         </Button>
@@ -1818,13 +1822,7 @@ const LeilaoCaixaRJ = () => {
         onClose={closeOpportunityPopup} 
       />
 
-      {/* Modal do WhatsApp */}
-      {showWhatsAppModal && (
-        <WhatsAppModal 
-          isOpen={showWhatsAppModal} 
-          onClose={() => setShowWhatsAppModal(false)} 
-        />
-      )}
+
     </div>
   );
 };

@@ -4,7 +4,7 @@ export const WhatsAppButton = () => {
   return (
     <a 
       href="https://wa.me/5521977294848?text=Gostaria%20de%20saber%20mais%20sobre%20o%20im%C3%B3vel%20em%20leil%C3%A3o" 
-      className="fixed bottom-6 right-6 bg-green-600 text-white p-4 rounded-full shadow-lg hover:bg-green-700 transition-colors z-50 flex items-center justify-center"
+      className="fixed bottom-6 right-6 bg-green-600 text-white p-4 rounded-full shadow-lg hover:bg-green-700 transition-colors z-50 flex items-center justify-center hidden"
       aria-label="Abrir WhatsApp"
       target="_blank"
       rel="noopener noreferrer"

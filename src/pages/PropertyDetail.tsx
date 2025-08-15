@@ -13,7 +13,7 @@ import { Footer } from "@/components/Footer";
 import { WhatsAppButton } from "@/components/WhatsAppButton";
 import { SimilarPropertiesSection } from "@/components/SimilarPropertiesSection";
 import OpportunityPopup from "@/components/OpportunityPopup";
-import WhatsAppModal from "@/components/WhatsAppModal";
+import { executeWhatsAppAction, initializeWhatsAppScript } from "@/utils/whatsappScript";
 import { Mail } from "lucide-react";
 import { WhatsAppIcon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
@@ -51,7 +51,6 @@ const PropertyDetail = () => {
   
   // Estados para controlar os modais
   const [showOpportunityPopup, setShowOpportunityPopup] = useState(false);
-  const [showWhatsAppModal, setShowWhatsAppModal] = useState(false);
   
   // Extrai ID da URL (compatível com formato antigo e novo)
   const propertyId = id || extractPropertyIdFromUrl(location.pathname);
@@ -60,6 +59,11 @@ const PropertyDetail = () => {
   const closeOpportunityPopup = () => {
     setShowOpportunityPopup(false);
   };
+
+  // Carregar script do WhatsApp automaticamente
+  useEffect(() => {
+    initializeWhatsAppScript();
+  }, []);
 
   // Mostrar popup de oportunidades quando a página carregar
   useEffect(() => {
@@ -189,15 +193,15 @@ const PropertyDetail = () => {
 
   return (
     <div className="min-h-screen bg-white">
-      <SocialBar onWhatsAppClick={() => setShowWhatsAppModal(true)} />
-      <Header onContactClick={() => setShowWhatsAppModal(true)} />
+      <SocialBar onWhatsAppClick={() => executeWhatsAppAction()} />
+      <Header onContactClick={() => executeWhatsAppAction()} />
       
       <div className="w-full">
         <main className="container mx-auto px-4 py-8 pb-0 mb-0">
           <MainPropertyDetail 
             property={formattedProperty} 
             rawPropertyData={property}
-            onContactClick={() => setShowWhatsAppModal(true)}
+            onContactClick={() => executeWhatsAppAction()}
           />
         </main>
         
@@ -207,20 +211,20 @@ const PropertyDetail = () => {
           city={property.cidade}
           neighborhood={property.bairro}
           auctionType={property.tipo_leilao}
-          onContactClick={() => setShowWhatsAppModal(true)}
+          onContactClick={() => executeWhatsAppAction()}
         />
         
         <NewsletterSignup />
         
         <TestimonialsSection />
       </div>
-      <Newsletter onWhatsAppClick={() => setShowWhatsAppModal(true)} />
-      <Footer onWhatsAppClick={() => setShowWhatsAppModal(true)} />
+      <Newsletter onWhatsAppClick={() => executeWhatsAppAction()} />
+      <Footer onWhatsAppClick={() => executeWhatsAppAction()} />
       
       <CookieBar />
       
       {/* Floating Buttons */}
-      <div className="fixed bottom-2 sm:bottom-4 right-2 sm:right-4 z-40 flex flex-col sm:flex-row gap-2 sm:gap-3 items-end">
+      <div className="fixed bottom-2 sm:bottom-4 right-[72px] sm:right-[102px] z-40 flex flex-col sm:flex-row gap-2 sm:gap-3 items-end">
         <Button 
           className="bg-primary hover:bg-primary/90 font-bold text-xs sm:text-sm px-3 sm:px-4 py-2 sm:py-3 flex items-center gap-2"
           onClick={() => setShowOpportunityPopup(true)}
@@ -231,8 +235,8 @@ const PropertyDetail = () => {
         </Button>
         
         <Button 
-          className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-white hover:bg-gray-100 border border-gray-200"
-          onClick={() => setShowWhatsAppModal(true)}
+          className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-white hover:bg-gray-100 border border-gray-200 hidden"
+          onClick={() => executeWhatsAppAction()}
         >
           <WhatsAppIcon />
         </Button>
@@ -244,13 +248,7 @@ const PropertyDetail = () => {
         onClose={closeOpportunityPopup} 
       />
 
-      {/* Modal do WhatsApp */}
-      {showWhatsAppModal && (
-        <WhatsAppModal 
-          isOpen={showWhatsAppModal} 
-          onClose={() => setShowWhatsAppModal(false)} 
-        />
-      )}
+
     </div>
   );
 };

@@ -223,16 +223,16 @@ export const TestimonialsSection = () => {
         rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=Quicksand:wght@400&family=Inter:wght@400&display=swap"
       />
-      <section className="flex justify-center items-center self-stretch px-4 pt-8 pb-8 bg-neutral-100 h-[900px] max-md:h-[800px] max-sm:h-[750px] relative mt-0">
+      <section className="w-full relative py-12 max-md:py-8" style={{ backgroundColor: 'rgb(245, 245, 245)' }}>
         <img
           src="/assets/bg/fundo-marmore.png"
           alt="Fundo mármore"
           className="object-cover absolute inset-0 z-0 w-full h-full"
         />
 
-        <div className="flex flex-col items-center flex-[1_0_0] z-[1] relative h-full">
-          <div className="flex flex-col justify-center items-center self-stretch px-4 py-0 h-full">
-            <div className="flex flex-col gap-2 justify-center items-center h-full max-w-[1038px] w-full">
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="flex flex-col justify-center items-center min-h-[600px] max-md:min-h-[500px]">
+            <div className="flex flex-col gap-2 justify-center items-center w-full max-w-[1038px]">
               <h1 className="text-4xl font-medium leading-10 text-center text-black w-full max-md:text-3xl max-md:leading-8 max-sm:text-2xl max-sm:leading-7 mb-4">
                 Depoimentos
               </h1>

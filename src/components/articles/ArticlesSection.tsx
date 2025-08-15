@@ -85,11 +85,9 @@ export function ArticlesSection() {
   const visibleArticles = getVisibleArticles();
 
   return (
-    <section className="flex relative gap-4 justify-center items-start pt-10 pr-5 pb-0 pl-4 min-h-[430px]">
-      <div className="flex absolute inset-0 z-0 self-start bg-gray-200 w-full h-full" />
-      <div className="flex z-0 flex-col flex-1 shrink items-center my-auto basis-0 min-w-60 max-md:max-w-full">
-        <div className="px-4 max-w-full w-[960px]">
-          <div className="w-full max-md:max-w-full">
+    <section className="py-10 max-md:py-8 max-md:mt-12 max-md:mb-12">
+      <div className="container mx-auto px-4">
+        <div className="max-w-[960px] mx-auto">
             <header className="flex flex-col items-center w-full text-4xl font-medium leading-tight text-center text-black max-md:max-w-full">
               <div className="flex flex-col py-4 pr-px pl-2.5 max-w-full w-[802px]">
                 <h2 className="max-md:max-w-full">
@@ -100,9 +98,9 @@ export function ArticlesSection() {
                 </div>
               </div>
             </header>
-            <div className="flex relative flex-col items-start px-16 mt-2 w-full max-md:px-5 max-md:max-w-full">
-              <div className="overflow-hidden z-0 self-stretch pb-16 w-full max-md:max-w-full">
-                <div className="flex flex-wrap justify-center min-h-[527px]">
+            <div className="flex relative flex-col items-center px-16 mt-2 w-full max-md:px-5 max-md:max-w-full">
+              <div className="overflow-hidden z-0 self-stretch pb-16 w-full max-md:max-w-full max-md:pb-4">
+                <div className="flex flex-wrap justify-center min-h-[527px] max-md:min-h-auto">
                   {visibleArticles.map((article, index) => (
                     <ArticleCard
                       key={`${currentIndex}-${index}`}
@@ -115,6 +113,8 @@ export function ArticlesSection() {
                   ))}
                 </div>
               </div>
+              
+              {/* Botões de navegação para desktop */}
               <NavigationButton
                 iconUrl="https://cdn.builder.io/api/v1/image/assets/TEMP/a65b5aaab2a0afc03529b63a0c554d839d705705?placeholderIfAbsent=true&apiKey=ca38ae4db7a6428881f7c632440d043a"
                 direction="previous"
@@ -125,8 +125,45 @@ export function ArticlesSection() {
                 direction="next"
                 onClick={handleNextClick}
               />
+              
+              {/* Botões de navegação para mobile */}
+              <div className="flex md:hidden justify-center items-center gap-4 w-full mt-4">
+                <button
+                  onClick={handlePreviousClick}
+                  className="flex justify-center items-center h-[45px] w-[45px] bg-white/80 backdrop-blur-sm rounded-full shadow-lg hover:bg-white/90 transition-all duration-200"
+                  aria-label="Previous slide"
+                >
+                  <img
+                    src="https://cdn.builder.io/api/v1/image/assets/TEMP/a65b5aaab2a0afc03529b63a0c554d839d705705?placeholderIfAbsent=true&apiKey=ca38ae4db7a6428881f7c632440d043a"
+                    className="object-contain w-6 h-6"
+                    alt=""
+                  />
+                </button>
+                
+                <div className="flex gap-2">
+                  {articles.map((_, index) => (
+                    <div
+                      key={index}
+                      className={`h-2 w-2 rounded-full transition-colors duration-200 ${
+                        index === currentIndex ? 'bg-gray-800' : 'bg-gray-400'
+                      }`}
+                    />
+                  ))}
+                </div>
+                
+                <button
+                  onClick={handleNextClick}
+                  className="flex justify-center items-center h-[45px] w-[45px] bg-white/80 backdrop-blur-sm rounded-full shadow-lg hover:bg-white/90 transition-all duration-200"
+                  aria-label="Next slide"
+                >
+                  <img
+                    src="https://cdn.builder.io/api/v1/image/assets/TEMP/2088bc86f37e92fa8fd473cd08e0b624e148cd04?placeholderIfAbsent=true&apiKey=ca38ae4db7a6428881f7c632440d043a"
+                    className="object-contain w-6 h-6"
+                    alt=""
+                  />
+                </button>
+              </div>
             </div>
-          </div>
         </div>
       </div>
     </section>

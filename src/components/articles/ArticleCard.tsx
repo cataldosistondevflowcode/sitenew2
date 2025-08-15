@@ -17,10 +17,10 @@ export function ArticleCard({ imageUrl, title, description, readMoreIconUrl, lin
 
   return (
     <article 
-      className="flex flex-col grow shrink justify-center pr-2.5 min-w-60 w-[216px] cursor-pointer"
+      className="flex flex-col grow shrink justify-center pr-2.5 min-w-60 w-[216px] max-md:w-full max-md:max-w-sm max-md:mx-auto cursor-pointer"
       onClick={handleClick}
     >
-      <div className="w-full bg-neutral-800 h-[527px] max-w-[260px] shadow-[0px_0px_8px_rgba(0,0,0,0.75)] hover:shadow-[0px_0px_12px_rgba(0,0,0,0.9)] transition-shadow duration-300">
+      <div className="w-full bg-neutral-800 h-[527px] max-w-[260px] max-md:max-w-full max-md:h-auto shadow-[0px_0px_8px_rgba(0,0,0,0.75)] hover:shadow-[0px_0px_12px_rgba(0,0,0,0.9)] transition-shadow duration-300">
         <div className="flex justify-center items-start w-full">
           <img
             src={imageUrl}

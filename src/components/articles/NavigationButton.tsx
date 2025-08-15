@@ -11,7 +11,7 @@ export function NavigationButton({ iconUrl, direction, onClick }: NavigationButt
 
   return (
     <button
-      className={`flex absolute ${positionClass} z-0 justify-center items-center bottom-[272px] h-[45px] min-h-[45px] w-[45px]`}
+      className={`flex absolute ${positionClass} z-10 justify-center items-center top-1/2 -translate-y-1/2 h-[45px] min-h-[45px] w-[45px] bg-white/80 backdrop-blur-sm rounded-full shadow-lg hover:bg-white/90 transition-all duration-200 max-md:hidden`}
       onClick={onClick}
       aria-label={direction === "previous" ? "Previous slide" : "Next slide"}
     >

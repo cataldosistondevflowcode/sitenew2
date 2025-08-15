@@ -8,7 +8,7 @@ interface FooterProps {
 
 export const Footer: React.FC<FooterProps> = ({ onWhatsAppClick }) => {
   return (
-    <footer className="bg-gray-50 py-12">
+    <footer className="bg-gray-50 py-12 max-md:mt-12 max-md:pt-16">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
           {/* Company Info */}

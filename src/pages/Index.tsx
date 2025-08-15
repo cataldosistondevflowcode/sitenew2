@@ -236,6 +236,7 @@ const Index = () => {
   // Estados para os imóveis e paginação
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
+  const [filtersLoaded, setFiltersLoaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -574,10 +575,13 @@ const Index = () => {
         setDataFimSegundoLeilao(urlFilters.dataFimSegundoLeilao);
       }
     }
+    setFiltersLoaded(true);
   }, [parseFiltersFromURL]);
 
   // Carregar os imóveis do Supabase com filtros
   useEffect(() => {
+    if (!filtersLoaded) return; // Aguarda os filtros serem carregados da URL
+    
     const fetchProperties = async () => {
       setLoading(true);
       
@@ -780,7 +784,7 @@ const Index = () => {
     };
 
     fetchProperties();
-  }, [currentPage, filters]);
+  }, [currentPage, filters, filtersLoaded]);
 
   // Função para formatar datas
   const formatDate = (dateString?: string) => {

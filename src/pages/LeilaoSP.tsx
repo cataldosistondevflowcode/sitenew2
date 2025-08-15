@@ -113,6 +113,7 @@ const LeilaoSP = () => {
   // Estados para os imóveis e paginação
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
+  const [filtersLoaded, setFiltersLoaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -383,6 +384,7 @@ const LeilaoSP = () => {
       // Aplicar os filtros
       setFilters(urlFilters);
     }
+    setFiltersLoaded(true);
   }, [parseFiltersFromURL, propertyTypes]); // Dependência nos propertyTypes para garantir que estejam carregados
 
   // Função para buscar cidades de SP
@@ -554,6 +556,8 @@ const LeilaoSP = () => {
 
   // Carregar os imóveis do Supabase com filtros
   useEffect(() => {
+    if (!filtersLoaded) return; // Aguarda os filtros serem carregados da URL
+    
     const fetchProperties = async () => {
       setLoading(true);
       
@@ -761,7 +765,7 @@ const LeilaoSP = () => {
     };
 
     fetchProperties();
-  }, [currentPage, filters]);
+  }, [currentPage, filters, filtersLoaded]);
 
   // Função para formatar datas
   const formatDate = (dateString?: string) => {

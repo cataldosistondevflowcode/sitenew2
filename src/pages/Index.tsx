@@ -580,7 +580,7 @@ const Index = () => {
       }
     }
     setFiltersLoaded(true);
-  }, [parseFiltersFromURL]);
+  }, []);
 
   // Carregar os imóveis do Supabase com filtros
   useEffect(() => {

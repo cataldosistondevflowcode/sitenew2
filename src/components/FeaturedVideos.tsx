@@ -92,7 +92,8 @@ export const FeaturedVideos = () => {
         
         <div className="relative max-w-7xl mx-auto">
           {/* Container principal com flex para botões laterais */}
-          <div className="flex items-center justify-center">
+          {/* Layout Desktop com botões laterais */}
+          <div className="hidden md:flex items-center justify-center">
             {/* Botão anterior - lateral esquerda */}
             {totalPages > 1 && (
               <button 
@@ -106,9 +107,9 @@ export const FeaturedVideos = () => {
               </button>
             )}
 
-            {/* Container dos vídeos */}
+            {/* Container dos vídeos - Desktop */}
             <div className="flex-1 max-w-6xl">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              <div className="grid grid-cols-2 lg:grid-cols-3 gap-8">
                 {getCurrentVideos().map((video, idx) => {
                   const ytId = (video as any).youtubeId || (video as any).id;
                   const thumbnail = ytId
@@ -160,10 +161,68 @@ export const FeaturedVideos = () => {
               </button>
             )}
           </div>
+
+          {/* Layout Mobile com scroll horizontal */}
+          <div className="md:hidden">
+            <div className="relative">
+              {/* Indicador de scroll */}
+              <div className="flex items-center justify-center mb-4">
+                <div className="flex items-center gap-2 text-gray-600 text-sm">
+                  <span>Deslize para ver mais</span>
+                  <svg className="w-4 h-4 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </div>
+              </div>
+              
+              <div className="overflow-x-auto pb-4">
+                <div className="flex gap-4 px-4" style={{ width: 'max-content' }}>
+                  {videos.map((video, idx) => {
+                    const ytId = (video as any).youtubeId || (video as any).id;
+                    const thumbnail = ytId
+                      ? `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`
+                      : "/imagem-padrao.webp";
+                    const href = video.url || (ytId ? `https://www.youtube.com/watch?v=${ytId}` : undefined);
+                    return (
+                      <div key={`mobile-${video.title}-${idx}`} className="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col w-80 flex-shrink-0">
+                        <div className="relative aspect-w-16 aspect-h-9 bg-black">
+                          {href ? (
+                            <a href={href} target="_blank" rel="noopener noreferrer" className="block w-full h-full">
+                              <img src={thumbnail} alt={video.title} className="w-full h-48 object-cover" />
+                              <span className="absolute inset-0 flex items-center justify-center">
+                                <span className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-white/90 text-black shadow-md">
+                                  <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M6.5 5.5l8 4.5-8 4.5v-9z" /></svg>
+                                </span>
+                              </span>
+                            </a>
+                          ) : (
+                            <img src={thumbnail} alt={video.title} className="w-full h-48 object-cover" />
+                          )}
+                        </div>
+                        <div className="p-4 flex-1 flex flex-col">
+                          <h3 className="text-lg font-bold mb-3 text-gray-900">{video.title}</h3>
+                          {video.description && (
+                            <p className="text-gray-600 text-sm leading-relaxed line-clamp-3">{video.description}</p>
+                          )}
+                          <div className="mt-4 text-sm text-[#d68e08] font-semibold">
+                            Cataldo Siston Advogados
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+              
+              {/* Gradientes indicadores nas laterais para mobile */}
+              <div className="absolute top-16 left-0 w-4 h-64 bg-gradient-to-r from-white to-transparent pointer-events-none"></div>
+              <div className="absolute top-16 right-0 w-4 h-64 bg-gradient-to-l from-white to-transparent pointer-events-none"></div>
+            </div>
+          </div>
           
-          {/* Indicadores de página - apenas mostrados se houver mais de uma página */}
+          {/* Indicadores de página - apenas mostrados no desktop se houver mais de uma página */}
           {totalPages > 1 && (
-            <div className="flex justify-center mt-8">
+            <div className="hidden md:flex justify-center mt-8">
               {Array.from({ length: totalPages }, (_, index) => (
                 <button
                   key={index}

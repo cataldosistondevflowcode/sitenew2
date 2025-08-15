@@ -22,6 +22,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { flexibleSearch } from "@/utils/stringUtils";
+import { useFilterParams } from "@/hooks/useFilterParams";
 
 // Interface para os dados dos imóveis
 interface Property {
@@ -367,6 +368,9 @@ const Index = () => {
   // Estados para o modal do WhatsApp
   const [showWhatsAppModal, setShowWhatsAppModal] = useState(false);
 
+  // Hook para gerenciar sincronização com URL
+  const { parseFiltersFromURL, updateURL, clearFiltersFromURL } = useFilterParams();
+
   // Mostrar popup de oportunidades quando a página carregar
   useEffect(() => {
     // Verificar se o popup já foi exibido na sessão atual
@@ -484,6 +488,79 @@ const Index = () => {
     fetchRjCities();
     fetchPropertyTypes();
   }, []);
+
+  // Carregar filtros da URL quando a página carrega
+  useEffect(() => {
+    const urlFilters = parseFiltersFromURL();
+    if (Object.keys(urlFilters).length > 0) {
+      // Aplicar os filtros vindos da URL
+      setFilters(urlFilters);
+      
+      // Sincronizar estados visuais com os filtros da URL
+      if (urlFilters.city) {
+        const cities = urlFilters.city.split(',');
+        if (cities.length > 1) {
+          setSelectedCities(cities);
+          setSelectedCity(`${cities.length} cidades selecionadas`);
+        } else {
+          setSelectedCity(cities[0]);
+        }
+      }
+      
+      if (urlFilters.type) {
+        const types = urlFilters.type.split(',');
+        if (types.length > 1) {
+          const typeObjects = types.map(type => ({ 
+            label: type, 
+            icon: <Home className="h-4 w-4" />,
+            originalValue: type 
+          }));
+          setSelectedTypes(typeObjects);
+          setSelectedType({ label: `${types.length} tipos selecionados`, icon: <Home className="h-4 w-4" /> });
+        } else {
+          setSelectedType({ label: types[0], icon: <Home className="h-4 w-4" />, originalValue: types[0] });
+        }
+      }
+      
+      if (urlFilters.neighborhood) {
+        const neighborhoods = urlFilters.neighborhood.split(',');
+        if (neighborhoods.length > 1) {
+          setSelectedNeighborhoods(neighborhoods);
+          setSelectedNeighborhood(`${neighborhoods.length} bairros selecionados`);
+        } else {
+          setSelectedNeighborhood(neighborhoods[0]);
+        }
+      }
+      
+      if (urlFilters.priceRange) {
+        const range = urlFilters.priceRange;
+        const matchedRange = priceRanges.find(r => r.min === range.min && r.max === range.max);
+        if (matchedRange) {
+          setSelectedPriceRange(matchedRange);
+        }
+      }
+      
+      if (urlFilters.auctionType) {
+        setSelectedAuctionType(urlFilters.auctionType);
+      }
+      
+      if (urlFilters.hasSecondAuction) {
+        setFilterSecondAuction(true);
+      }
+      
+      if (urlFilters.location) {
+        setLocationInput(urlFilters.location);
+      }
+      
+      if (urlFilters.keyword) {
+        setKeywordInput(urlFilters.keyword);
+      }
+      
+      if (urlFilters.dataFimSegundoLeilao) {
+        setDataFimSegundoLeilao(urlFilters.dataFimSegundoLeilao);
+      }
+    }
+  }, [parseFiltersFromURL]);
 
   // Carregar os imóveis do Supabase com filtros
   useEffect(() => {
@@ -824,6 +901,9 @@ const Index = () => {
     
     // Aplicar filtros
     setFilters(newFilters);
+    
+    // Atualizar URL com os filtros aplicados
+    updateURL(newFilters);
     
     // Resetar para a primeira página quando aplicar filtros
     setCurrentPage(1);
@@ -1474,6 +1554,9 @@ const Index = () => {
     // Limpar os filtros e atualizar a exibição
     setFilters({});
     setCurrentPage(1);
+    
+    // Limpar filtros da URL
+    clearFiltersFromURL();
     
     // Notificação de filtros limpos
     toast.success('Filtros limpos com sucesso!');

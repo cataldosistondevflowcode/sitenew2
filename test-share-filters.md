@@ -1,8 +1,8 @@
-# Funcionalidade de URLs Shareáveis para Filtros
+# ✅ Funcionalidade de URLs Shareáveis para Filtros - REFATORADA
 
-## Implementação Concluída
+## Nova Implementação Simplificada e Consistente
 
-Foi implementada com sucesso a funcionalidade de URLs shareáveis para os filtros nas páginas de leilão (LeilaoCaixaRJ e LeilaoSP).
+A funcionalidade foi completamente refatorada para eliminar inconsistências e garantir que os filtros sejam sempre aplicados corretamente quando a URL é compartilhada.
 
 ## Como Funciona
 
@@ -16,10 +16,16 @@ Foi implementada com sucesso a funcionalidade de URLs shareáveis para os filtro
   - `getShareableURL()`: Retorna a URL atual para compartilhamento
   - `createShareableURL(filters)`: Cria uma URL com filtros específicos
 
-### 2. Parâmetros da URL Suportados
-- `cidade`: Cidade selecionada
-- `tipo`: Tipo de imóvel
-- `bairro`: Bairro selecionado
+### 2. Nova Lógica Simplificada
+- **REMOVEU** códigos curtos complexos que causavam inconsistências
+- **UMA ÚNICA FORMA** de salvar e ler cada parâmetro
+- **GARANTIA** de que `updateURL()` e `createShareableURL()` produzem URLs idênticas
+- **LÓGICA DIRETA**: o que você vê na URL é exatamente o que é aplicado
+
+### 3. Parâmetros da URL Suportados
+- `cidade`: Cidade selecionada (string direta)
+- `tipo`: Tipo de imóvel (string direta)
+- `bairro`: Bairro selecionado (string direta)
 - `localizacao`: Localização específica
 - `palavra_chave`: Palavra-chave de busca
 - `tipo_leilao`: Tipo de leilão (apenas SP)
@@ -27,10 +33,10 @@ Foi implementada com sucesso a funcionalidade de URLs shareáveis para os filtro
 - `financiamento`: true/false para leilões com financiamento
 - `fgts`: true/false para leilões que aceitam FGTS
 - `parcelamento`: true/false para parcelamento
-- `preco_min`: Preço mínimo
-- `preco_max`: Preço máximo
-- `bairros`: Lista de bairros separados por vírgula
-- `cidades`: Lista de cidades separadas por vírgula
+- `preco_min`: Preço mínimo (número)
+- `preco_max`: Preço máximo (número)
+- `bairros`: Lista de bairros separados por vírgula simples
+- `cidades`: Lista de cidades separadas por vírgula simples
 
 ### 3. Funcionalidades Implementadas
 

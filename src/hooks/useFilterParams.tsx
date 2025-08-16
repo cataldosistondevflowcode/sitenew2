@@ -1,5 +1,5 @@
 import { useSearchParams } from 'react-router-dom';
-import { useCallback, useEffect } from 'react';
+import { useCallback } from 'react';
 
 // Interface para os filtros base
 export interface FilterParams {
@@ -36,137 +36,22 @@ export interface SelectedType {
   originalValue?: string;
 }
 
-// Mapeamento de códigos curtos para cidades mais comuns
-const CITY_CODES: Record<string, string> = {
-  'Rio de Janeiro': 'rj',
-  'São Paulo': 'sp',
-  'Niterói': 'nit',
-  'São Gonçalo': 'sg',
-  'Duque de Caxias': 'dc',
-  'Nova Iguaçu': 'ni',
-  'Petrópolis': 'pet',
-  'Volta Redonda': 'vr',
-  'Campos dos Goytacazes': 'cmp',
-  'Macaé': 'mac',
-  'Cabo Frio': 'cf',
-  'Campinas': 'cam',
-  'Santos': 'san',
-  'Guarulhos': 'gru'
-};
-
-const CITY_CODES_REVERSE = Object.fromEntries(
-  Object.entries(CITY_CODES).map(([k, v]) => [v, k])
-);
-
-// Mapeamento de códigos curtos para tipos de imóveis
-const TYPE_CODES: Record<string, string> = {
-  'Apartamento': 'apt',
-  'Casa': 'cas',
-  'Comercial': 'com',
-  'Terreno': 'ter',
-  'Sala': 'sal',
-  'Loja': 'loj',
-  'Galpão': 'gal',
-  'Chácara': 'cha',
-  'Sítio': 'sit'
-};
-
-const TYPE_CODES_REVERSE = Object.fromEntries(
-  Object.entries(TYPE_CODES).map(([k, v]) => [v, k])
-);
-
-// Função para codificar arrays usando códigos curtos
-const encodeArray = (items: string[], codeMap: Record<string, string>): string => {
-  return items.map(item => {
-    const trimmed = item.trim();
-    return codeMap[trimmed] || trimmed.toLowerCase().replace(/\s+/g, '-').substring(0, 6);
-  }).join(',');
-};
-
-// Função para decodificar arrays usando códigos curtos
-const decodeArray = (encoded: string, reverseMap: Record<string, string>): string[] => {
-  return encoded.split(',').map(code => {
-    const trimmedCode = code.trim();
-    // Primeiro tenta encontrar no mapeamento reverso
-    if (reverseMap[trimmedCode]) {
-      return reverseMap[trimmedCode];
-    }
-    // Se não encontrou, reconstrói o nome a partir do código
-    return trimmedCode
-      .replace(/-/g, ' ')
-      .split(' ')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-      .join(' ');
-  });
-};
-
-// Função para verificar se os filtros devem usar códigos curtos
-const shouldUseShortCodes = (filters: FilterParams): boolean => {
-  const cityCount = filters.city ? filters.city.split(',').length : 0;
-  const typeCount = filters.type ? filters.type.split(',').length : 0;
-  const neighborhoodCount = filters.neighborhood ? filters.neighborhood.split(',').length : 0;
-  const citiesCount = filters.cities ? filters.cities.length : 0;
-  const neighborhoodsCount = filters.neighborhoods ? filters.neighborhoods.length : 0;
-  
-  // Usar códigos curtos se tem mais de 1 item em qualquer categoria OU total > 3
-  const totalItems = cityCount + typeCount + neighborhoodCount + citiesCount + neighborhoodsCount;
-  return (
-    cityCount > 1 ||
-    typeCount > 1 ||
-    neighborhoodCount > 1 ||
-    citiesCount > 1 ||
-    neighborhoodsCount > 1 ||
-    totalItems > 3
-  );
-};
-
 export const useFilterParams = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
-  // Função para converter params da URL para objeto de filtros
+  // Função SIMPLIFICADA para converter params da URL para objeto de filtros
   const parseFiltersFromURL = useCallback((): FilterParams => {
     const filters: FilterParams = {};
     
-    // Verificar primeiro se há parâmetros tradicionais (prioridade)
+    // Leitura direta e simples - SEM códigos curtos por enquanto
     const city = searchParams.get('cidade');
-    if (city) {
-      filters.city = city;
-    } else {
-      // Se não há parâmetros tradicionais, verificar códigos curtos
-      const shortCities = searchParams.get('c');
-      if (shortCities) {
-        filters.city = decodeArray(shortCities, CITY_CODES_REVERSE).join(',');
-      }
-    }
+    if (city) filters.city = city;
 
     const type = searchParams.get('tipo');
-    if (type) {
-      filters.type = type;
-    } else {
-      const shortTypes = searchParams.get('t');
-      if (shortTypes) {
-        filters.type = decodeArray(shortTypes, TYPE_CODES_REVERSE).join(',');
-      }
-    }
+    if (type) filters.type = type;
 
     const neighborhood = searchParams.get('bairro');
-    if (neighborhood) {
-      filters.neighborhood = neighborhood;
-    } else {
-      const shortNeighborhoods = searchParams.get('b');
-      if (shortNeighborhoods) {
-        // Usa a mesma lógica de decodificação que as cidades e tipos
-        const decodedNeighborhoods = shortNeighborhoods.split(',').map(code => {
-          const trimmedCode = code.trim();
-          return trimmedCode
-            .replace(/-/g, ' ')
-            .split(' ')
-            .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-            .join(' ');
-        });
-        filters.neighborhood = decodedNeighborhoods.join(',');
-      }
-    }
+    if (neighborhood) filters.neighborhood = neighborhood;
 
     const location = searchParams.get('localizacao');
     if (location) filters.location = location;
@@ -203,81 +88,25 @@ export const useFilterParams = () => {
     const dataFimSegundoLeilao = searchParams.get('data_fim_segundo_leilao');
     if (dataFimSegundoLeilao) filters.dataFimSegundoLeilao = dataFimSegundoLeilao;
 
-    // Arrays para múltiplos valores
+    // Arrays para múltiplos valores (usando vírgula simples)
     const neighborhoods = searchParams.get('bairros');
     if (neighborhoods) {
-      filters.neighborhoods = neighborhoods.split(',').filter(Boolean);
+      filters.neighborhoods = neighborhoods.split(',').map(n => n.trim()).filter(Boolean);
     }
 
     const cities = searchParams.get('cidades');
     if (cities) {
-      filters.cities = cities.split(',').filter(Boolean);
+      filters.cities = cities.split(',').map(c => c.trim()).filter(Boolean);
     }
 
     return filters;
   }, [searchParams]);
 
-  // Função para atualizar a URL com os filtros
+  // Função SIMPLIFICADA para atualizar a URL com os filtros
   const updateURL = useCallback((filters: FilterParams) => {
     const newParams = new URLSearchParams();
     
-    // Verificar se deve usar códigos curtos
-    if (shouldUseShortCodes(filters)) {
-      // Usar códigos curtos para cidades
-      if (filters.city) {
-        const cities = filters.city.split(',');
-        if (cities.length > 1) {
-          newParams.set('c', encodeArray(cities, CITY_CODES));
-        } else {
-          newParams.set('cidade', filters.city);
-        }
-      } else if (filters.cities && filters.cities.length > 1) {
-        newParams.set('c', encodeArray(filters.cities, CITY_CODES));
-      } else if (filters.cities && filters.cities.length === 1) {
-        newParams.set('cidade', filters.cities[0]);
-      }
-      
-      // Usar códigos curtos para tipos
-      if (filters.type) {
-        const types = filters.type.split(',');
-        if (types.length > 1) {
-          newParams.set('t', encodeArray(types, TYPE_CODES));
-        } else {
-          newParams.set('tipo', filters.type);
-        }
-      }
-      
-      // Usar códigos curtos para bairros (apenas abreviando)
-      if (filters.neighborhood) {
-        const neighborhoods = filters.neighborhood.split(',');
-        if (neighborhoods.length > 1) {
-          newParams.set('b', neighborhoods.map(n => n.toLowerCase().replace(/\s+/g, '-').substring(0, 6)).join(','));
-        } else {
-          newParams.set('bairro', filters.neighborhood);
-        }
-      } else if (filters.neighborhoods && filters.neighborhoods.length > 1) {
-        newParams.set('b', filters.neighborhoods.map(n => n.toLowerCase().replace(/\s+/g, '-').substring(0, 6)).join(','));
-      } else if (filters.neighborhoods && filters.neighborhoods.length === 1) {
-        newParams.set('bairro', filters.neighborhoods[0]);
-      }
-      
-      // Adicionar outros parâmetros normalmente
-      if (filters.location) newParams.set('localizacao', filters.location);
-      if (filters.keyword) newParams.set('palavra_chave', filters.keyword);
-      if (filters.auctionType) newParams.set('tipo_leilao', filters.auctionType);
-      if (filters.hasSecondAuction) newParams.set('segundo_leilao', 'true');
-      if (filters.financiamento) newParams.set('financiamento', 'true');
-      if (filters.fgts) newParams.set('fgts', 'true');
-      if (filters.parcelamento) newParams.set('parcelamento', 'true');
-      if (filters.priceRange?.min) newParams.set('preco_min', filters.priceRange.min.toString());
-      if (filters.priceRange?.max) newParams.set('preco_max', filters.priceRange.max.toString());
-      if (filters.dataFimSegundoLeilao) newParams.set('data_fim_segundo_leilao', filters.dataFimSegundoLeilao);
-      
-      setSearchParams(newParams, { replace: true });
-      return;
-    }
-
-    // Adicionar parâmetros simples
+    // Adicionar parâmetros de forma DIRETA e SIMPLES
     if (filters.city) newParams.set('cidade', filters.city);
     if (filters.type) newParams.set('tipo', filters.type);
     if (filters.neighborhood) newParams.set('bairro', filters.neighborhood);
@@ -298,7 +127,7 @@ export const useFilterParams = () => {
     // Adicionar filtro de data de encerramento do segundo leilão
     if (filters.dataFimSegundoLeilao) newParams.set('data_fim_segundo_leilao', filters.dataFimSegundoLeilao);
 
-    // Adicionar arrays
+    // Adicionar arrays (vírgula simples)
     if (filters.neighborhoods && filters.neighborhoods.length > 0) {
       newParams.set('bairros', filters.neighborhoods.join(','));
     }
@@ -324,55 +153,7 @@ export const useFilterParams = () => {
   const createShareableURL = useCallback((filters: FilterParams) => {
     const newParams = new URLSearchParams();
     
-    // Verificar se deve usar códigos curtos
-    if (shouldUseShortCodes(filters)) {
-      if (filters.city && filters.city.split(',').length > 1) {
-        newParams.set('c', encodeArray(filters.city.split(','), CITY_CODES));
-      } else if (filters.city) {
-        newParams.set('cidade', filters.city);
-      }
-      
-      if (filters.type && filters.type.split(',').length > 1) {
-        newParams.set('t', encodeArray(filters.type.split(','), TYPE_CODES));
-      } else if (filters.type) {
-        newParams.set('tipo', filters.type);
-      }
-      
-      if (filters.neighborhood && filters.neighborhood.split(',').length > 1) {
-        newParams.set('b', filters.neighborhood.split(',').map(n => n.toLowerCase().replace(/\s+/g, '-').substring(0, 6)).join(','));
-      } else if (filters.neighborhood) {
-        newParams.set('bairro', filters.neighborhood);
-      }
-      
-      if (filters.cities && filters.cities.length > 1) {
-        newParams.set('c', encodeArray(filters.cities, CITY_CODES));
-      } else if (filters.cities && filters.cities.length === 1) {
-        newParams.set('cidade', filters.cities[0]);
-      }
-      
-      if (filters.neighborhoods && filters.neighborhoods.length > 1) {
-        newParams.set('b', filters.neighborhoods.map(n => n.toLowerCase().replace(/\s+/g, '-').substring(0, 6)).join(','));
-      } else if (filters.neighborhoods && filters.neighborhoods.length === 1) {
-        newParams.set('bairro', filters.neighborhoods[0]);
-      }
-      
-      // Adicionar outros filtros
-      if (filters.location) newParams.set('localizacao', filters.location);
-      if (filters.keyword) newParams.set('palavra_chave', filters.keyword);
-      if (filters.auctionType) newParams.set('tipo_leilao', filters.auctionType);
-      if (filters.hasSecondAuction) newParams.set('segundo_leilao', 'true');
-      if (filters.financiamento) newParams.set('financiamento', 'true');
-      if (filters.fgts) newParams.set('fgts', 'true');
-      if (filters.parcelamento) newParams.set('parcelamento', 'true');
-      if (filters.priceRange?.min) newParams.set('preco_min', filters.priceRange.min.toString());
-      if (filters.priceRange?.max) newParams.set('preco_max', filters.priceRange.max.toString());
-      if (filters.dataFimSegundoLeilao) newParams.set('data_fim_segundo_leilao', filters.dataFimSegundoLeilao);
-      
-      const baseURL = window.location.origin + window.location.pathname;
-      return `${baseURL}?${newParams.toString()}`;
-    }
-
-    // Usar método normal se não comprimir
+    // USAR EXATAMENTE A MESMA LÓGICA que updateURL
     if (filters.city) newParams.set('cidade', filters.city);
     if (filters.type) newParams.set('tipo', filters.type);
     if (filters.neighborhood) newParams.set('bairro', filters.neighborhood);

@@ -350,7 +350,14 @@ const LeilaoSP = () => {
       if (urlFilters.priceRange) {
         // Encontrar a faixa de preço correspondente
         const range = urlFilters.priceRange;
-        const matchedRange = priceRanges.find(r => r.min === range.min && r.max === range.max);
+        const matchedRange = priceRanges.find(r => {
+          const rangeMin = r.min || undefined;
+          const rangeMax = r.max || undefined;
+          const urlMin = range.min || undefined;
+          const urlMax = range.max || undefined;
+          
+          return rangeMin === urlMin && rangeMax === urlMax;
+        });
         if (matchedRange) {
           setSelectedPriceRange(matchedRange);
         } else {
@@ -385,11 +392,13 @@ const LeilaoSP = () => {
         setDataFimSegundoLeilao(urlFilters.dataFimSegundoLeilao);
       }
       
-      // Aplicar os filtros
-      setFilters(urlFilters);
+      // Usar setTimeout para garantir que todos os estados sejam atualizados primeiro
+      setTimeout(() => {
+        applyFilters();
+      }, 100);
     }
     setFiltersLoaded(true);
-  }, [parseFiltersFromURL, propertyTypes]); // Dependência nos propertyTypes para garantir que estejam carregados
+  }, [parseFiltersFromURL, propertyTypes, applyFilters]); // Dependência nos propertyTypes para garantir que estejam carregados
 
   // Função para buscar cidades de SP
   const fetchSpCities = async () => {

@@ -343,9 +343,14 @@ const LeilaoCaixaRJ = () => {
       
       if (urlFilters.priceRange) {
         // Encontrar a faixa de preço correspondente
-        const priceRange = priceRanges.find(range => 
-          range.min === urlFilters.priceRange?.min && range.max === urlFilters.priceRange?.max
-        );
+        const priceRange = priceRanges.find(range => {
+          const rangeMin = range.min || undefined;
+          const rangeMax = range.max || undefined;
+          const urlMin = urlFilters.priceRange?.min || undefined;
+          const urlMax = urlFilters.priceRange?.max || undefined;
+          
+          return rangeMin === urlMin && rangeMax === urlMax;
+        });
         if (priceRange) {
           setSelectedPriceRange(priceRange);
         }
@@ -356,10 +361,12 @@ const LeilaoCaixaRJ = () => {
         setDataFimSegundoLeilao(urlFilters.dataFimSegundoLeilao);
       }
       
-      // Aplicar os filtros
-      setFilters(urlFilters);
+      // Usar setTimeout para garantir que todos os estados sejam atualizados primeiro
+      setTimeout(() => {
+        applyFilters();
+      }, 100);
     }
-  }, [parseFiltersFromURL, propertyTypes]); // Dependência nos propertyTypes para garantir que estejam carregados
+  }, [parseFiltersFromURL, propertyTypes, applyFilters]); // Dependência nos propertyTypes para garantir que estejam carregados
 
   // Carregar as cidades do estado RJ
   useEffect(() => {

@@ -17,7 +17,7 @@ import { Search, MessageCircle, Filter, X, MapPin, ChevronDown, Home, Building, 
 import { WhatsAppIcon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useFilterParams } from "@/hooks/useFilterParams";
@@ -230,6 +230,131 @@ const LeilaoSP = () => {
 
   // Estado para controlar o popup de oportunidades
   const [showOpportunityPopup, setShowOpportunityPopup] = useState(false);
+
+  // Função para aplicar filtros
+  const applyFilters = useCallback(() => {
+    const newFilters: Filters = {};
+    
+    // Verificar se há cidade selecionada
+    if (selectedCities.length > 0 && selectedCities[0] !== "TODO_SP_STATE") {
+      newFilters.city = selectedCities.join(','); // Passa como string separada por vírgula
+      newFilters.cities = selectedCities; // Para URL params
+    } else if (selectedCity && selectedCity !== "Selecione a cidade" && selectedCity !== "Todas cidades de SP") {
+      // Compatibilidade: se só uma cidade foi selecionada pelo modo antigo
+      const cityName = selectedCity.split(" (")[0];
+      newFilters.city = cityName;
+    }
+    // Se for "Todas cidades de SP" (TODO_SP_STATE), não aplicar filtro de cidade - apenas o estado='SP' já presente na query
+    
+    // Verificar se há tipo selecionado - usar múltipla seleção se disponível
+    if (selectedTypes.length > 0) {
+      // Usar múltiplos tipos
+      const typeValues = selectedTypes.map(type => type.originalValue || type.label.split(" (")[0]);
+      newFilters.type = typeValues.join(',');
+    } else if (selectedType && selectedType.label !== "Todos os imóveis" && !selectedType.label.includes("tipos selecionados")) {
+      // Compatibilidade: se só um tipo foi selecionado pelo modo antigo
+      newFilters.type = selectedType.originalValue || selectedType.label.split(" (")[0];
+    }
+    
+    // Verificar se há bairros selecionados (pode ser 1 ou vários)
+    if (selectedNeighborhoods.length > 0) {
+      newFilters.neighborhood = selectedNeighborhoods.join(','); // Passa como string separada por vírgula
+      newFilters.neighborhoods = selectedNeighborhoods; // Para URL params
+    } else if (selectedNeighborhood && selectedNeighborhood !== "Selecione o bairro") {
+      // Compatibilidade: se só um bairro foi selecionado pelo modo antigo
+      const neighborhoodName = selectedNeighborhood.split(" (")[0];
+      newFilters.neighborhood = neighborhoodName;
+    }
+    
+    // Verificar se há valor no input de localização
+    if (locationInput) {
+      newFilters.location = locationInput;
+    }
+    
+    // Verificar se há valor no input de palavra-chave
+    if (keywordInput) {
+      newFilters.keyword = keywordInput;
+    }
+    
+    // Adicionar filtro de segundo leilão
+    if (filterSecondAuction) {
+      newFilters.hasSecondAuction = true;
+    }
+    
+    // Adicionar filtro de faixa de preço - usar múltipla seleção se disponível
+    if (selectedPriceRanges.length > 0) {
+      // Para múltiplas faixas, usar o mínimo do menor e máximo do maior
+      const allMins = selectedPriceRanges.filter(range => range.min !== undefined).map(range => range.min!);
+      const allMaxs = selectedPriceRanges.filter(range => range.max !== undefined).map(range => range.max!);
+      
+      newFilters.priceRange = {
+        min: allMins.length > 0 ? Math.min(...allMins) : undefined,
+        max: allMaxs.length > 0 ? Math.max(...allMaxs) : undefined
+      };
+    } else if (selectedPriceRange && selectedPriceRange.label !== "Todos os preços" && !selectedPriceRange.label.includes("faixas selecionadas")) {
+      // Compatibilidade: se só uma faixa foi selecionada pelo modo antigo
+      newFilters.priceRange = {
+        min: selectedPriceRange.min,
+        max: selectedPriceRange.max
+      };
+    }
+    
+    // Adicionar filtro de tipo de leilão - usar múltipla seleção se disponível
+    if (selectedAuctionTypes.length > 0) {
+      // Para múltiplas modalidades, vamos definir uma lógica específica
+      let hasJudicial = selectedAuctionTypes.includes(AUCTION_TYPE_JUDICIAL);
+      let hasExtrajudicial = selectedAuctionTypes.includes(AUCTION_TYPE_EXTRAJUDICIAL);
+      let hasExtrajudicialFinanciamento = selectedAuctionTypes.includes(AUCTION_TYPE_EXTRAJUDICIAL_FINANCIAMENTO);
+      
+      if (hasJudicial && (hasExtrajudicial || hasExtrajudicialFinanciamento)) {
+        // Se tem judicial E extrajudicial, não filtrar por tipo específico (mostrar todos)
+        // Mas se só tem extrajudicial com financiamento, aplicar esse filtro
+        if (hasExtrajudicialFinanciamento && !hasExtrajudicial) {
+          newFilters.auctionType = "EXTRAJUDICIAL_CUSTOM";
+          newFilters.financiamento = true;
+        }
+      } else if (hasJudicial) {
+        newFilters.auctionType = "Judicial";
+      } else if (hasExtrajudicialFinanciamento) {
+        newFilters.auctionType = "EXTRAJUDICIAL_CUSTOM";
+        newFilters.financiamento = true;
+      } else if (hasExtrajudicial) {
+        newFilters.auctionType = "EXTRAJUDICIAL_CUSTOM";
+      }
+    } else if (selectedAuctionType && selectedAuctionType !== "Todos os tipos de leilão" && !selectedAuctionType.includes("modalidades selecionadas")) {
+      // Compatibilidade: se só uma modalidade foi selecionada pelo modo antigo
+      if (selectedAuctionType === AUCTION_TYPE_JUDICIAL) {
+        newFilters.auctionType = "Judicial";
+      } else if (selectedAuctionType === AUCTION_TYPE_EXTRAJUDICIAL_FINANCIAMENTO) {
+        newFilters.auctionType = "EXTRAJUDICIAL_CUSTOM";
+        newFilters.financiamento = true;
+      } else if (selectedAuctionType === AUCTION_TYPE_EXTRAJUDICIAL) {
+        newFilters.auctionType = "EXTRAJUDICIAL_CUSTOM";
+      }
+    }
+
+    // Adicionar filtro de data de encerramento do segundo leilão
+    if (dataFimSegundoLeilao) {
+      newFilters.dataFimSegundoLeilao = dataFimSegundoLeilao;
+    }
+    
+    // Aplicar filtros
+    setFilters(newFilters);
+    
+    // Atualizar URL com os filtros aplicados
+    updateURL(newFilters);
+    
+    // Resetar para a primeira página quando aplicar filtros
+    setCurrentPage(1);
+    
+    // Notificação de filtro aplicado
+    toast.success('Filtros aplicados com sucesso!');
+    
+    // Se estiver no mobile, fechar o painel de filtros
+    if (isMobile) {
+      setIsFilterOpen(false);
+    }
+  }, [selectedCities, selectedCity, selectedTypes, selectedType, selectedNeighborhoods, selectedNeighborhood, locationInput, keywordInput, filterSecondAuction, selectedPriceRanges, selectedPriceRange, selectedAuctionTypes, selectedAuctionType, dataFimSegundoLeilao, updateURL, isMobile]);
 
   // Função para fechar o popup de oportunidades
   const closeOpportunityPopup = () => {
@@ -807,130 +932,7 @@ const LeilaoSP = () => {
     });
   };
 
-  // Função para aplicar filtros
-  const applyFilters = () => {
-    const newFilters: Filters = {};
-    
-    // Verificar se há cidade selecionada
-    if (selectedCities.length > 0 && selectedCities[0] !== "TODO_SP_STATE") {
-      newFilters.city = selectedCities.join(','); // Passa como string separada por vírgula
-      newFilters.cities = selectedCities; // Para URL params
-    } else if (selectedCity && selectedCity !== "Selecione a cidade" && selectedCity !== "Todas cidades de SP") {
-      // Compatibilidade: se só uma cidade foi selecionada pelo modo antigo
-      const cityName = selectedCity.split(" (")[0];
-      newFilters.city = cityName;
-    }
-    // Se for "Todas cidades de SP" (TODO_SP_STATE), não aplicar filtro de cidade - apenas o estado='SP' já presente na query
-    
-    // Verificar se há tipo selecionado - usar múltipla seleção se disponível
-    if (selectedTypes.length > 0) {
-      // Usar múltiplos tipos
-      const typeValues = selectedTypes.map(type => type.originalValue || type.label.split(" (")[0]);
-      newFilters.type = typeValues.join(',');
-    } else if (selectedType && selectedType.label !== "Todos os imóveis" && !selectedType.label.includes("tipos selecionados")) {
-      // Compatibilidade: se só um tipo foi selecionado pelo modo antigo
-      newFilters.type = selectedType.originalValue || selectedType.label.split(" (")[0];
-    }
-    
-    // Verificar se há bairros selecionados (pode ser 1 ou vários)
-    if (selectedNeighborhoods.length > 0) {
-      newFilters.neighborhood = selectedNeighborhoods.join(','); // Passa como string separada por vírgula
-      newFilters.neighborhoods = selectedNeighborhoods; // Para URL params
-    } else if (selectedNeighborhood && selectedNeighborhood !== "Selecione o bairro") {
-      // Compatibilidade: se só um bairro foi selecionado pelo modo antigo
-      const neighborhoodName = selectedNeighborhood.split(" (")[0];
-      newFilters.neighborhood = neighborhoodName;
-    }
-    
-    // Verificar se há valor no input de localização
-    if (locationInput) {
-      newFilters.location = locationInput;
-    }
-    
-    // Verificar se há valor no input de palavra-chave
-    if (keywordInput) {
-      newFilters.keyword = keywordInput;
-    }
-    
-    // Adicionar filtro de segundo leilão
-    if (filterSecondAuction) {
-      newFilters.hasSecondAuction = true;
-    }
-    
-    // Adicionar filtro de faixa de preço - usar múltipla seleção se disponível
-    if (selectedPriceRanges.length > 0) {
-      // Para múltiplas faixas, usar o mínimo do menor e máximo do maior
-      const allMins = selectedPriceRanges.filter(range => range.min !== undefined).map(range => range.min!);
-      const allMaxs = selectedPriceRanges.filter(range => range.max !== undefined).map(range => range.max!);
-      
-      newFilters.priceRange = {
-        min: allMins.length > 0 ? Math.min(...allMins) : undefined,
-        max: allMaxs.length > 0 ? Math.max(...allMaxs) : undefined
-      };
-    } else if (selectedPriceRange && selectedPriceRange.label !== "Todos os preços" && !selectedPriceRange.label.includes("faixas selecionadas")) {
-      // Compatibilidade: se só uma faixa foi selecionada pelo modo antigo
-      newFilters.priceRange = {
-        min: selectedPriceRange.min,
-        max: selectedPriceRange.max
-      };
-    }
-    
-    // Adicionar filtro de tipo de leilão - usar múltipla seleção se disponível
-    if (selectedAuctionTypes.length > 0) {
-      // Para múltiplas modalidades, vamos definir uma lógica específica
-      let hasJudicial = selectedAuctionTypes.includes(AUCTION_TYPE_JUDICIAL);
-      let hasExtrajudicial = selectedAuctionTypes.includes(AUCTION_TYPE_EXTRAJUDICIAL);
-      let hasExtrajudicialFinanciamento = selectedAuctionTypes.includes(AUCTION_TYPE_EXTRAJUDICIAL_FINANCIAMENTO);
-      
-      if (hasJudicial && (hasExtrajudicial || hasExtrajudicialFinanciamento)) {
-        // Se tem judicial E extrajudicial, não filtrar por tipo específico (mostrar todos)
-        // Mas se só tem extrajudicial com financiamento, aplicar esse filtro
-        if (hasExtrajudicialFinanciamento && !hasExtrajudicial) {
-          newFilters.auctionType = "EXTRAJUDICIAL_CUSTOM";
-          newFilters.financiamento = true;
-        }
-      } else if (hasJudicial) {
-        newFilters.auctionType = "Judicial";
-      } else if (hasExtrajudicialFinanciamento) {
-        newFilters.auctionType = "EXTRAJUDICIAL_CUSTOM";
-        newFilters.financiamento = true;
-      } else if (hasExtrajudicial) {
-        newFilters.auctionType = "EXTRAJUDICIAL_CUSTOM";
-      }
-    } else if (selectedAuctionType && selectedAuctionType !== "Todos os tipos de leilão" && !selectedAuctionType.includes("modalidades selecionadas")) {
-      // Compatibilidade: se só uma modalidade foi selecionada pelo modo antigo
-      if (selectedAuctionType === AUCTION_TYPE_JUDICIAL) {
-        newFilters.auctionType = "Judicial";
-      } else if (selectedAuctionType === AUCTION_TYPE_EXTRAJUDICIAL_FINANCIAMENTO) {
-        newFilters.auctionType = "EXTRAJUDICIAL_CUSTOM";
-        newFilters.financiamento = true;
-      } else if (selectedAuctionType === AUCTION_TYPE_EXTRAJUDICIAL) {
-        newFilters.auctionType = "EXTRAJUDICIAL_CUSTOM";
-      }
-    }
 
-    // Adicionar filtro de data de encerramento do segundo leilão
-    if (dataFimSegundoLeilao) {
-      newFilters.dataFimSegundoLeilao = dataFimSegundoLeilao;
-    }
-    
-    // Aplicar filtros
-    setFilters(newFilters);
-    
-    // Atualizar URL com os filtros aplicados
-    updateURL(newFilters);
-    
-    // Resetar para a primeira página quando aplicar filtros
-    setCurrentPage(1);
-    
-    // Notificação de filtro aplicado
-    toast.success('Filtros aplicados com sucesso!');
-    
-    // Se estiver no mobile, fechar o painel de filtros
-    if (isMobile) {
-      setIsFilterOpen(false);
-    }
-  };
 
   // Função para mudar de página
   const handlePageChange = (page: number) => {

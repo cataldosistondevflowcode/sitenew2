@@ -341,11 +341,13 @@ const LeilaoSP = () => {
     // Aplicar filtros
     setFilters(newFilters);
     
-    // Atualizar URL com os filtros aplicados
-    updateURL(newFilters);
-    
     // Resetar para a primeira página quando aplicar filtros
     setCurrentPage(1);
+    
+    // Atualizar URL com os filtros aplicados (usar setTimeout para evitar loops)
+    setTimeout(() => {
+      updateURL(newFilters);
+    }, 0);
     
     // Notificação de filtro aplicado
     toast.success('Filtros aplicados com sucesso!');
@@ -354,7 +356,7 @@ const LeilaoSP = () => {
     if (isMobile) {
       setIsFilterOpen(false);
     }
-  }, [selectedCities, selectedCity, selectedTypes, selectedType, selectedNeighborhoods, selectedNeighborhood, locationInput, keywordInput, filterSecondAuction, selectedPriceRanges, selectedPriceRange, selectedAuctionTypes, selectedAuctionType, dataFimSegundoLeilao, updateURL, isMobile]);
+  }, [selectedCities, selectedCity, selectedTypes, selectedType, selectedNeighborhoods, selectedNeighborhood, locationInput, keywordInput, filterSecondAuction, selectedPriceRanges, selectedPriceRange, selectedAuctionTypes, selectedAuctionType, dataFimSegundoLeilao, isMobile]);
 
   // Função para fechar o popup de oportunidades
   const closeOpportunityPopup = () => {
@@ -393,96 +395,50 @@ const LeilaoSP = () => {
   // Carregar filtros da URL quando a página carrega
   useEffect(() => {
     const urlFilters = parseFiltersFromURL();
-    
     if (Object.keys(urlFilters).length > 0) {
-      // Aplicar filtros da URL ao estado
-      if (urlFilters.cities && urlFilters.cities.length > 0) {
-        setSelectedCities(urlFilters.cities);
-        if (urlFilters.cities.length === 1) {
-          if (urlFilters.cities[0] === "TODO_SP_STATE") {
-            setSelectedCity("Todas cidades de SP");
-            setSelectedCityName("TODO_SP_STATE");
-          } else {
-            setSelectedCity(urlFilters.cities[0]);
-            setSelectedCityName(urlFilters.cities[0]);
-          }
-        } else {
-          setSelectedCity(`Várias cidades (${urlFilters.cities.length})`);
-        }
-      } else if (urlFilters.city) {
-        if (urlFilters.city === "TODO_SP_STATE") {
-          setSelectedCity("Todas cidades de SP");
-          setSelectedCityName("TODO_SP_STATE");
-        } else {
-          setSelectedCity(urlFilters.city);
-          setSelectedCityName(urlFilters.city);
-        }
-        setSelectedCities([urlFilters.city]);
-      }
+      // Aplicar os filtros vindos da URL
+      setFilters(urlFilters);
       
-      if (urlFilters.neighborhoods && urlFilters.neighborhoods.length > 0) {
-        setSelectedNeighborhoods(urlFilters.neighborhoods);
-        if (urlFilters.neighborhoods.length === 1) {
-          setSelectedNeighborhood(urlFilters.neighborhoods[0]);
+      // Sincronizar estados visuais com os filtros da URL
+      if (urlFilters.city) {
+        const cities = urlFilters.city.split(',');
+        if (cities.length > 1) {
+          setSelectedCities(cities);
+          setSelectedCity(`${cities.length} cidades selecionadas`);
         } else {
-          setSelectedNeighborhood(`Vários bairros (${urlFilters.neighborhoods.length})`);
+          setSelectedCity(cities[0]);
+          setSelectedCityName(cities[0]);
         }
-      } else if (urlFilters.neighborhood) {
-        setSelectedNeighborhood(urlFilters.neighborhood);
-        setSelectedNeighborhoods([urlFilters.neighborhood]);
       }
       
       if (urlFilters.type) {
-        // Encontrar o tipo correspondente e aplicar
-        const propertyTypeData = propertyTypes.find(p => p.type === urlFilters.type);
-        if (propertyTypeData) {
-          const formattedTypeName = propertyTypeData.type.charAt(0).toUpperCase() + propertyTypeData.type.slice(1).toLowerCase();
-          let icon = <Globe className="h-4 w-4" />;
-          const typeLC = propertyTypeData.type.toLowerCase();
-          
-          if (typeLC === 'apartamento' || typeLC === 'comercial' || typeLC === 'prédio' || typeLC === 'galpão') {
-            icon = <Building className="h-4 w-4" />;
-          } else if (typeLC === 'casa') {
-            icon = <Home className="h-4 w-4" />;
-          } else if (typeLC === 'terreno') {
-            icon = <Trees className="h-4 w-4" />;
-          } else if (typeLC === 'rural' || typeLC === 'fazenda' || typeLC === 'chácara') {
-            icon = <Tractor className="h-4 w-4" />;
-          } else if (typeLC === 'estacionamento') {
-            icon = <Car className="h-4 w-4" />;
-          } else if (typeLC === 'área') {
-            icon = <SquareStack className="h-4 w-4" />;
-          } else {
-            icon = <FileText className="h-4 w-4" />;
-          }
-          
-          setSelectedType({ label: formattedTypeName, icon, originalValue: propertyTypeData.type });
+        const types = urlFilters.type.split(',');
+        if (types.length > 1) {
+          const typeObjects = types.map(type => ({ 
+            label: type, 
+            icon: <Home className="h-4 w-4" />,
+            originalValue: type 
+          }));
+          setSelectedTypes(typeObjects);
+          setSelectedType({ label: `${types.length} tipos selecionados`, icon: <Home className="h-4 w-4" /> });
+        } else {
+          setSelectedType({ label: types[0], icon: <Home className="h-4 w-4" />, originalValue: types[0] });
         }
       }
       
-      if (urlFilters.location) {
-        setLocationInput(urlFilters.location);
-      }
-      
-      if (urlFilters.keyword) {
-        setKeywordInput(urlFilters.keyword);
-      }
-      
-      if (urlFilters.hasSecondAuction) {
-        setFilterSecondAuction(true);
+      if (urlFilters.neighborhood) {
+        const neighborhoods = urlFilters.neighborhood.split(',');
+        if (neighborhoods.length > 1) {
+          setSelectedNeighborhoods(neighborhoods);
+          setSelectedNeighborhood(`${neighborhoods.length} bairros selecionados`);
+        } else {
+          setSelectedNeighborhood(neighborhoods[0]);
+        }
       }
       
       if (urlFilters.priceRange) {
-        // Encontrar a faixa de preço correspondente
         const range = urlFilters.priceRange;
-        const matchedRange = priceRanges.find(r => {
-          const rangeMin = r.min || undefined;
-          const rangeMax = r.max || undefined;
-          const urlMin = range.min || undefined;
-          const urlMax = range.max || undefined;
-          
-          return rangeMin === urlMin && rangeMax === urlMax;
-        });
+        const matchedRange = priceRanges.find(r => r.min === range.min && r.max === range.max);
         if (matchedRange) {
           setSelectedPriceRange(matchedRange);
         } else {
@@ -502,28 +458,32 @@ const LeilaoSP = () => {
         }
       }
       
+      if (urlFilters.location) {
+        setLocationInput(urlFilters.location);
+      }
+      
+      if (urlFilters.keyword) {
+        setKeywordInput(urlFilters.keyword);
+      }
+      
+      if (urlFilters.hasSecondAuction) {
+        setFilterSecondAuction(true);
+      }
+      
       if (urlFilters.auctionType) {
         if (urlFilters.auctionType === "Judicial") {
           setSelectedAuctionType(AUCTION_TYPE_JUDICIAL);
-        } else if (urlFilters.auctionType === "EXTRAJUDICIAL_CUSTOM" && urlFilters.financiamento) {
-          setSelectedAuctionType(AUCTION_TYPE_EXTRAJUDICIAL_FINANCIAMENTO);
         } else if (urlFilters.auctionType === "EXTRAJUDICIAL_CUSTOM") {
           setSelectedAuctionType(AUCTION_TYPE_EXTRAJUDICIAL);
         }
       }
-
-      // Restaurar filtro de data de encerramento do segundo leilão
+      
       if (urlFilters.dataFimSegundoLeilao) {
         setDataFimSegundoLeilao(urlFilters.dataFimSegundoLeilao);
       }
-      
-      // Usar setTimeout para garantir que todos os estados sejam atualizados primeiro
-      setTimeout(() => {
-        applyFilters();
-      }, 100);
     }
     setFiltersLoaded(true);
-  }, [parseFiltersFromURL, propertyTypes, applyFilters]); // Dependência nos propertyTypes para garantir que estejam carregados
+  }, []);
 
   // Função para buscar cidades de SP
   const fetchSpCities = async () => {

@@ -378,13 +378,18 @@ const Index = () => {
 
   // Mostrar popup de oportunidades quando a página carregar
   useEffect(() => {
-    // Verificar se o popup já foi exibido na sessão atual
-    const popupShown = sessionStorage.getItem('opportunity-popup-shown');
+    // Verificar se o popup já foi exibido na sessão atual com timestamp
+    const popupData = sessionStorage.getItem('opportunity-popup-shown');
+    const currentTime = Date.now();
     
-    if (!popupShown) {
+    // Se não existe ou expirou (opcional: adicionar expiração de sessão)
+    if (!popupData) {
       const timer = setTimeout(() => {
         setShowOpportunityPopup(true);
-        sessionStorage.setItem('opportunity-popup-shown', 'true');
+        sessionStorage.setItem('opportunity-popup-shown', JSON.stringify({
+          shown: true,
+          timestamp: currentTime
+        }));
       }, 3000); // Mostrar após 3 segundos
 
       return () => clearTimeout(timer);

@@ -256,6 +256,24 @@ const Index = () => {
   useEffect(() => {
     document.title = "Imóveis em Leilão RJ | Cataldo Siston";
     
+    // Adicionar Google Tag Manager script no head se ainda não existir
+    if (!document.querySelector('script[src*="gtm.js"]')) {
+      const gtmScript = document.createElement('script');
+      gtmScript.innerHTML = `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+      new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+      j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+      'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+      })(window,document,'script','dataLayer','GTM-PKRHXGM');`;
+      document.head.insertBefore(gtmScript, document.head.firstChild);
+    }
+
+    // Adicionar noscript do Google Tag Manager no body se ainda não existir
+    if (!document.querySelector('noscript iframe[src*="googletagmanager.com"]')) {
+      const noscriptElement = document.createElement('noscript');
+      noscriptElement.innerHTML = '<iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PKRHXGM" height="0" width="0" style="display:none;visibility:hidden"></iframe>';
+      document.body.insertBefore(noscriptElement, document.body.firstChild);
+    }
+    
     // Garantir que a meta description está correta para RJ
     const metaDescription = document.querySelector('meta[name="description"]');
     if (metaDescription) {

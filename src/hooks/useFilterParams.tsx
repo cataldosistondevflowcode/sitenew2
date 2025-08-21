@@ -13,6 +13,7 @@ export interface FilterParams {
     min?: number;
     max?: number;
   };
+  priceRanges?: string[]; // Para múltiplas faixas de preço selecionadas
   financiamento?: boolean;
   fgts?: boolean;
   parcelamento?: boolean;
@@ -88,6 +89,12 @@ export const useFilterParams = () => {
     const dataFimSegundoLeilao = searchParams.get('data_fim_segundo_leilao');
     if (dataFimSegundoLeilao) filters.dataFimSegundoLeilao = dataFimSegundoLeilao;
 
+    // Múltiplas faixas de preço selecionadas
+    const priceRanges = searchParams.get('faixas_preco');
+    if (priceRanges) {
+      filters.priceRanges = priceRanges.split(',').map(r => r.trim()).filter(Boolean);
+    }
+
     // Arrays para múltiplos valores (usando vírgula simples)
     const neighborhoods = searchParams.get('bairros');
     if (neighborhoods) {
@@ -126,6 +133,11 @@ export const useFilterParams = () => {
 
     // Adicionar filtro de data de encerramento do segundo leilão
     if (filters.dataFimSegundoLeilao) newParams.set('data_fim_segundo_leilao', filters.dataFimSegundoLeilao);
+
+    // Adicionar múltiplas faixas de preço
+    if (filters.priceRanges && filters.priceRanges.length > 0) {
+      newParams.set('faixas_preco', filters.priceRanges.join(','));
+    }
 
     // Adicionar arrays (vírgula simples)
     if (filters.neighborhoods && filters.neighborhoods.length > 0) {
@@ -170,6 +182,10 @@ export const useFilterParams = () => {
     if (filters.priceRange?.max) newParams.set('preco_max', filters.priceRange.max.toString());
 
     if (filters.dataFimSegundoLeilao) newParams.set('data_fim_segundo_leilao', filters.dataFimSegundoLeilao);
+
+    if (filters.priceRanges && filters.priceRanges.length > 0) {
+      newParams.set('faixas_preco', filters.priceRanges.join(','));
+    }
 
     if (filters.neighborhoods && filters.neighborhoods.length > 0) {
       newParams.set('bairros', filters.neighborhoods.join(','));

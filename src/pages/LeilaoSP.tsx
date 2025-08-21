@@ -284,11 +284,12 @@ const LeilaoSP = () => {
     // Adicionar filtro de faixa de preço - usar múltipla seleção se disponível
     if (selectedPriceRanges.length > 0) {
       // Para múltiplas faixas, usar o mínimo do menor e máximo do maior
-      const allMins = selectedPriceRanges.filter(range => range.min !== undefined).map(range => range.min!);
+      // Se alguma faixa não tem min (como "Até 300k"), considerar min como 0
+      const allMins = selectedPriceRanges.map(range => range.min ?? 0);
       const allMaxs = selectedPriceRanges.filter(range => range.max !== undefined).map(range => range.max!);
       
       newFilters.priceRange = {
-        min: allMins.length > 0 ? Math.min(...allMins) : undefined,
+        min: Math.min(...allMins),
         max: allMaxs.length > 0 ? Math.max(...allMaxs) : undefined
       };
     } else if (selectedPriceRange && selectedPriceRange.label !== "Todos os preços" && !selectedPriceRange.label.includes("faixas selecionadas")) {
@@ -336,6 +337,11 @@ const LeilaoSP = () => {
     // Adicionar filtro de data de encerramento do segundo leilão
     if (dataFimSegundoLeilao) {
       newFilters.dataFimSegundoLeilao = dataFimSegundoLeilao;
+    }
+    
+    // Adicionar múltiplas faixas de preço selecionadas para persistir na URL
+    if (selectedPriceRanges.length > 0) {
+      newFilters.priceRanges = selectedPriceRanges.map(range => range.label);
     }
     
     // Aplicar filtros
@@ -441,11 +447,30 @@ const LeilaoSP = () => {
         }
       }
       
-      if (urlFilters.priceRange) {
+      // Inicializar múltiplas faixas de preço se existirem na URL
+      if (urlFilters.priceRanges && urlFilters.priceRanges.length > 0) {
+        const rangeObjects: PriceRange[] = [];
+        urlFilters.priceRanges.forEach(rangeLabel => {
+          const matchedRange = priceRanges.find(r => r.label === rangeLabel);
+          if (matchedRange) {
+            rangeObjects.push(matchedRange);
+          }
+        });
+        if (rangeObjects.length > 0) {
+          setSelectedPriceRanges(rangeObjects);
+          if (rangeObjects.length === 1) {
+            setSelectedPriceRange(rangeObjects[0]);
+          } else {
+            setSelectedPriceRange({ label: `${rangeObjects.length} faixas selecionadas` });
+          }
+        }
+      } else if (urlFilters.priceRange) {
+        // Fallback para compatibilidade com URLs antigas de range único
         const range = urlFilters.priceRange;
         const matchedRange = priceRanges.find(r => r.min === range.min && r.max === range.max);
         if (matchedRange) {
           setSelectedPriceRange(matchedRange);
+          setSelectedPriceRanges([matchedRange]);
         } else {
           // Criar faixa personalizada se não encontrou correspondência exata
           const customRange: PriceRange = {
@@ -460,6 +485,7 @@ const LeilaoSP = () => {
             max: range.max
           };
           setSelectedPriceRange(customRange);
+          setSelectedPriceRanges([customRange]);
         }
       }
       

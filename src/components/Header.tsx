@@ -71,7 +71,7 @@ export const Header = ({ onContactClick }: HeaderProps) => {
     <header className="sticky top-0 bg-white shadow-md z-50">
       <div className="container mx-auto px-4 py-3 sm:py-4">
         <div className="flex items-center justify-between">
-          <a href="/" className="flex-shrink-0">
+          <a href="https://leilaodeimoveis-cataldosiston.com/" className="flex-shrink-0">
             <img 
               src="/logotipo_cataldo_siston.png" 
               alt="Cataldo Siston Advogados" 

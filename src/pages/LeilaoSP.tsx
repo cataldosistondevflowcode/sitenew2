@@ -803,6 +803,12 @@ const LeilaoSP = () => {
           query = query.eq('parcelamento', false);
         }
 
+        // Filtrar por data de encerramento do segundo leilão
+        if (filters.dataFimSegundoLeilao) {
+          const filterDate = new Date(filters.dataFimSegundoLeilao);
+          // Aplicar o filtro considerando tanto data_leilao_2 quanto data_leilao_1 como fallback
+          query = query.or(`data_leilao_2.lte.${filterDate.toISOString()},and(data_leilao_2.is.null,data_leilao_1.lte.${filterDate.toISOString()})`);
+        }
         
         // Obter a data atual para comparação no servidor
         const currentDateForFilter = new Date();
@@ -891,18 +897,7 @@ const LeilaoSP = () => {
             return dateA.getTime() - dateB.getTime();
           });
 
-        let filteredProperties = formattedProperties;
-        if (filters.dataFimSegundoLeilao) {
-          const filterDate = new Date(filters.dataFimSegundoLeilao);
-          filteredProperties = formattedProperties.filter(property => {
-            const effectiveDate = property.data_leilao_2_original || property.data_leilao_1_original;
-            if (!effectiveDate) return false;
-            const propertyDate = new Date(effectiveDate);
-            return propertyDate <= filterDate;
-          });
-        }
-
-        setProperties(filteredProperties);
+        setProperties(formattedProperties);
       } catch (err) {
         console.error('Erro ao buscar imóveis:', err);
         setError('Não foi possível carregar os imóveis. Tente novamente mais tarde.');

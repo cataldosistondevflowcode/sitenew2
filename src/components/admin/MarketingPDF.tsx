@@ -123,6 +123,48 @@ const MarketingPDF = () => {
 
     const iframeDoc = iframe.contentDocument;
     
+    // Bridge permanente para responder filtros mesmo sem modo de seleção
+    if (!iframeDoc.querySelector('#marketing-bridge')) {
+      const bridge = iframeDoc.createElement('script');
+      bridge.id = 'marketing-bridge';
+      bridge.textContent = `
+        (function() {
+          function getNumber(value) {
+            if (!value && value !== 0) return undefined;
+            const n = parseInt(String(value), 10);
+            return isNaN(n) ? undefined : n;
+          }
+          function getBool(value) { return (value === 'true' ? true : undefined); }
+          function getArray(value) { return (value ? value.split(',').map(v => v.trim()).filter(Boolean) : undefined); }
+          window.addEventListener('message', function(event) {
+            if (event.origin !== location.origin) return;
+            if (event.data.type === 'GET_ACTIVE_FILTERS') {
+              try {
+                const params = new URLSearchParams(window.location.search);
+                const filters = {
+                  cidade: params.get('cidade') || undefined,
+                  tipo_leilao: params.get('tipo_leilao') || undefined,
+                  valor_min: getNumber(params.get('preco_min')),
+                  valor_max: getNumber(params.get('preco_max')),
+                  search: params.get('palavra_chave') || undefined,
+                  fgts: getBool(params.get('fgts')),
+                  financiamento: getBool(params.get('financiamento')),
+                  parcelamento: getBool(params.get('parcelamento')),
+                  segundo_leilao: getBool(params.get('segundo_leilao')),
+                  bairros: getArray(params.get('bairros')),
+                  cidades: getArray(params.get('cidades')),
+                };
+                parent.postMessage({ type: 'ACTIVE_FILTERS_RESPONSE', filters }, location.origin);
+              } catch (e) {
+                parent.postMessage({ type: 'ACTIVE_FILTERS_RESPONSE', filters: {} }, location.origin);
+              }
+            }
+          });
+        })();
+      `;
+      iframeDoc.body.appendChild(bridge);
+    }
+
     // Injetar CSS para ocultar elementos desnecessários e destacar cards selecionáveis
     const style = iframeDoc.createElement('style');
     style.textContent = `
@@ -441,8 +483,10 @@ const MarketingPDF = () => {
               subtree: true
             });
 
-            // Escutar mensagens do componente pai para sincronizar seleções
+            // Escutar mensagens do componente pai para sincronizar seleções e capturar filtros
             window.addEventListener('message', function(event) {
+              if (event.origin !== location.origin) return;
+              
               if (event.data.type === 'UPDATE_SELECTIONS') {
                 window.marketingSelectedIds = event.data.selectedIds;
                 
@@ -456,6 +500,37 @@ const MarketingPDF = () => {
                     updateCardSelection(propertyId, isSelected);
                   }
                 });
+              } else if (event.data.type === 'GET_ACTIVE_FILTERS') {
+                try {
+                  const params = new URLSearchParams(window.location.search);
+                  
+                  const getNumber = (value) => {
+                    if (!value && value !== 0) return undefined;
+                    const n = parseInt(String(value), 10);
+                    return isNaN(n) ? undefined : n;
+                  };
+                  
+                  const getBool = (value) => (value === 'true' ? true : undefined);
+                  const getArray = (value) => (value ? value.split(',').map(v => v.trim()).filter(Boolean) : undefined);
+                  
+                  const filters = {
+                    cidade: params.get('cidade') || undefined,
+                    tipo_leilao: params.get('tipo_leilao') || undefined,
+                    valor_min: getNumber(params.get('preco_min')),
+                    valor_max: getNumber(params.get('preco_max')),
+                    search: params.get('palavra_chave') || undefined,
+                    fgts: getBool(params.get('fgts')),
+                    financiamento: getBool(params.get('financiamento')),
+                    parcelamento: getBool(params.get('parcelamento')),
+                    segundo_leilao: getBool(params.get('segundo_leilao')),
+                    bairros: getArray(params.get('bairros')),
+                    cidades: getArray(params.get('cidades')),
+                  };
+                  
+                  parent.postMessage({ type: 'ACTIVE_FILTERS_RESPONSE', filters }, location.origin);
+                } catch (e) {
+                  parent.postMessage({ type: 'ACTIVE_FILTERS_RESPONSE', filters: {} }, location.origin);
+                }
               }
             });
           })();
@@ -710,6 +785,21 @@ const MarketingPDF = () => {
       const activeFilters = await captureCurrentFilters();
       console.log('Filtros capturados:', activeFilters);
 
+      // Calcular próximo envio com base no fuso
+      const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/Sao_Paulo';
+      const { data: nextSendAtData, error: nextCalcError } = await supabase.rpc('calculate_next_send_time', {
+        p_from_date: new Date().toISOString(),
+        p_recurrence_interval: scheduleForm.recurrence_interval,
+        p_recurrence_type: scheduleForm.recurrence_type,
+        p_send_day_of_month: scheduleForm.recurrence_type === 'monthly' ? scheduleForm.send_day_of_month : 1,
+        p_send_time: scheduleForm.send_time,
+        p_send_weekdays: scheduleForm.recurrence_type === 'weekly' ? scheduleForm.send_weekdays : [1,2,3,4,5],
+        p_timezone: timezone
+      });
+      if (nextCalcError) {
+        console.error('Erro ao calcular próximo envio:', nextCalcError);
+      }
+
       // Criar agendamento
       const { error } = await supabase
         .from('email_schedules')
@@ -725,6 +815,8 @@ const MarketingPDF = () => {
           recurrence_type: scheduleForm.recurrence_type,
           recurrence_interval: scheduleForm.recurrence_interval,
           send_time: scheduleForm.send_time,
+          send_timezone: timezone,
+          next_send_at: nextSendAtData || null,
           send_weekdays: scheduleForm.recurrence_type === 'weekly' ? scheduleForm.send_weekdays : null,
           send_day_of_month: scheduleForm.recurrence_type === 'monthly' ? scheduleForm.send_day_of_month : null
         }]);

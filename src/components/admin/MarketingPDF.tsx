@@ -3,6 +3,9 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { 
   Download,
   CheckSquare,
@@ -14,7 +17,9 @@ import {
   Maximize2,
   X,
   Eye,
-  EyeOff
+  EyeOff,
+  Mail,
+  Send
 } from 'lucide-react';
 import { formatCurrency } from '@/utils/stringUtils';
 import { toast } from 'sonner';
@@ -45,6 +50,12 @@ const MarketingPDF = () => {
   const [generating, setGenerating] = useState(false);
   const [selectionMode, setSelectionMode] = useState(false);
   const [iframeLoaded, setIframeLoaded] = useState(false);
+  
+  // Estados para email
+  const [emailDialogOpen, setEmailDialogOpen] = useState(false);
+  const [recipientEmail, setRecipientEmail] = useState('');
+  const [emailSubject, setEmailSubject] = useState('');
+  const [sendingEmail, setSendingEmail] = useState(false);
   
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
@@ -221,6 +232,28 @@ const MarketingPDF = () => {
       .marketing-selection-mode main {
         padding-top: 60px !important;
       }
+
+      /* Estilo para placeholder de mapas */
+      .map-placeholder {
+        width: 100%;
+        height: 200px;
+        background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        border-radius: 8px;
+        border: 2px dashed #0369a1;
+        color: #0369a1;
+        font-weight: 600;
+      }
+
+      .map-placeholder svg {
+        width: 48px;
+        height: 48px;
+        margin-bottom: 8px;
+        opacity: 0.7;
+      }
     `;
     iframeDoc.head.appendChild(style);
 
@@ -324,6 +357,65 @@ const MarketingPDF = () => {
             });
             
             observer.observe(document.body, {
+              childList: true,
+              subtree: true
+            });
+
+            // Função para substituir imagens não encontradas por mapas
+            function replaceImagesWithMaps() {
+              const images = document.querySelectorAll('img');
+              images.forEach(img => {
+                const isImageNotFound = !img.src || 
+                                       img.src === '' || 
+                                       img.src.includes('/not-found') ||
+                                       img.src.includes('imovel_sao_goncalo.jpeg') ||
+                                       img.alt.includes('placeholder');
+                
+                if (isImageNotFound) {
+                  // Encontrar o card pai
+                  const card = img.closest('[href*="/imovel/"]');
+                  if (card) {
+                    // Extrair endereço do card (procurar por elementos que contenham endereço)
+                    const addressElement = card.querySelector('[class*="location"], [class*="address"], p');
+                    const addressText = addressElement ? addressElement.textContent.replace('📍', '').trim() : '';
+                    
+                    // Criar placeholder do mapa
+                    const mapPlaceholder = document.createElement('div');
+                    mapPlaceholder.className = 'map-placeholder';
+                    mapPlaceholder.innerHTML = \`
+                      <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                      </svg>
+                      <span>📍 Ver no Mapa</span>
+                      <small style="opacity: 0.7; margin-top: 4px; text-align: center; font-size: 12px;">\${addressText}</small>
+                    \`;
+                    
+                    // Substituir a imagem pelo placeholder
+                    img.style.display = 'none';
+                    img.parentNode.insertBefore(mapPlaceholder, img);
+                  }
+                }
+              });
+            }
+
+            // Executar substituição de imagens ao carregar
+            replaceImagesWithMaps();
+
+            // Observer para detectar novas imagens e substituí-las
+            const imageObserver = new MutationObserver(function(mutations) {
+              mutations.forEach(function(mutation) {
+                mutation.addedNodes.forEach(function(node) {
+                  if (node.nodeType === 1) {
+                    const newImages = node.querySelectorAll ? node.querySelectorAll('img') : [];
+                    if (newImages.length > 0 || node.tagName === 'IMG') {
+                      setTimeout(replaceImagesWithMaps, 100);
+                    }
+                  }
+                });
+              });
+            });
+            
+            imageObserver.observe(document.body, {
               childList: true,
               subtree: true
             });
@@ -475,6 +567,81 @@ const MarketingPDF = () => {
     }
   };
 
+  const sendPdfByEmail = async () => {
+    if (selectedProperties.length === 0) {
+      toast.error('Selecione pelo menos um imóvel para enviar por email');
+      return;
+    }
+
+    if (!recipientEmail) {
+      toast.error('Digite um email válido');
+      return;
+    }
+
+    setSendingEmail(true);
+    try {
+      // Chamar a Edge Function para gerar e enviar o PDF
+      const { data, error } = await supabase.functions.invoke('send-pdf-email', {
+        body: {
+          propertyIds: selectedProperties,
+          recipientEmail: recipientEmail,
+          pageType: currentPage,
+          subject: emailSubject || `Catálogo de Imóveis - Leilão ${currentPage} (${selectedProperties.length} propriedades)`
+        }
+      });
+
+      if (error) throw error;
+
+      toast.success(`PDF enviado com sucesso para ${recipientEmail}!`);
+      setEmailDialogOpen(false);
+      setRecipientEmail('');
+      setEmailSubject('');
+    } catch (error) {
+      console.error('Erro ao enviar PDF por email:', error);
+      toast.error('Erro ao enviar PDF por email. Tente novamente.');
+    } finally {
+      setSendingEmail(false);
+    }
+  };
+
+  const openEmailDialog = () => {
+    if (selectedProperties.length === 0) {
+      toast.error('Selecione pelo menos um imóvel primeiro');
+      return;
+    }
+    
+    // Definir assunto padrão
+    setEmailSubject(`Catálogo de Imóveis - Leilão ${currentPage} (${selectedProperties.length} propriedades)`);
+    setEmailDialogOpen(true);
+  };
+
+  // Função para gerar URL do Google Static Maps
+  const generateStaticMapUrl = (property: Property) => {
+    const address = [property.endereco, property.bairro, property.cidade, property.estado]
+      .filter(Boolean)
+      .join(', ');
+    
+    if (!address) return null;
+    
+    const encodedAddress = encodeURIComponent(address);
+    const apiKey = 'AIzaSyDgSXLV-7AdIZ_bm8mNWswm516VqcFwQzI'; // Chave da API do Google Maps do projeto
+    
+    return `https://maps.googleapis.com/maps/api/staticmap?center=${encodedAddress}&zoom=15&size=400x300&markers=color:red%7C${encodedAddress}&key=${apiKey}`;
+  };
+
+  // Função para criar URL do imóvel (mesma lógica do site)
+  const createPropertyUrl = (property: Property) => {
+    const baseUrl = window.location.origin;
+    const slug = property.titulo_propriedade
+      ?.toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
+      .trim() || 'imovel';
+    
+    return `${baseUrl}/imovel/${property.id}/${slug}`;
+  };
+
   const generateHTMLContent = (selectedPropertiesData: Property[]) => {
     const date = new Date().toLocaleDateString('pt-BR');
     const pageTitle = currentPage === 'RJ' ? 'Leilão RJ Imóveis' : 'Leilão SP Imóveis';
@@ -488,29 +655,35 @@ const MarketingPDF = () => {
         <style>
           * { margin: 0; padding: 0; box-sizing: border-box; }
           body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; }
-          .header { background: linear-gradient(135deg, #3b82f6, #1e40af); color: white; padding: 3rem 2rem; text-align: center; }
+          .header { background: linear-gradient(135deg, #d68e08, #e6a010, #d68e08); color: white; padding: 3rem 2rem; text-align: center; }
           .header h1 { font-size: 3rem; margin-bottom: 1rem; font-weight: 700; }
           .header p { font-size: 1.2rem; opacity: 0.9; margin-bottom: 0.5rem; }
-          .stats { background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 12px; margin-top: 2rem; }
+          .stats { background: rgba(255,255,255,0.15); padding: 1rem; border-radius: 12px; margin-top: 2rem; border: 1px solid rgba(255,255,255,0.2); }
           .container { max-width: 1400px; margin: 0 auto; padding: 3rem 2rem; }
           .property-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 2.5rem; margin-top: 3rem; }
-          .property-card { border: 1px solid #e5e7eb; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.1); break-inside: avoid; background: white; }
+          .property-card { border: 1px solid #e5e7eb; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.1); break-inside: avoid; background: white; transition: transform 0.3s ease; }
+          .property-card:hover { transform: translateY(-2px); box-shadow: 0 15px 35px rgba(0,0,0,0.15); }
           .property-image { width: 100%; height: 300px; object-fit: cover; background: #f3f4f6; }
           .property-content { padding: 2rem; }
           .property-title { font-size: 1.35rem; font-weight: 600; margin-bottom: 1rem; color: #1f2937; line-height: 1.3; }
+          .property-link { color: #d68e08; text-decoration: none; font-weight: 600; }
+          .property-link:hover { color: #b8780a; text-decoration: underline; }
           .property-location { color: #6b7280; margin-bottom: 1.5rem; font-size: 1rem; }
-          .property-price { font-size: 1.75rem; font-weight: 700; color: #dc2626; margin-bottom: 1.5rem; }
+          .property-price { font-size: 1.75rem; font-weight: 700; color: #d68e08; margin-bottom: 1.5rem; }
           .property-details { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
           .detail-item { font-size: 0.95rem; color: #4b5563; }
           .detail-label { font-weight: 600; color: #374151; margin-bottom: 0.25rem; }
           .property-features { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.5rem; }
-          .feature-badge { background: #dbeafe; color: #1e40af; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; font-weight: 500; }
+          .feature-badge { background: #fef3c7; color: #d68e08; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; font-weight: 500; border: 1px solid #e6a010; }
           .property-description { color: #6b7280; font-size: 0.95rem; line-height: 1.6; border-top: 1px solid #f3f4f6; padding-top: 1.5rem; }
-          .footer { margin-top: 4rem; padding: 3rem 2rem; background: #f9fafb; text-align: center; color: #6b7280; border-top: 1px solid #e5e7eb; }
-          .footer h3 { color: #1f2937; margin-bottom: 1rem; font-size: 1.5rem; }
+          .property-actions { margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #f3f4f6; text-align: center; }
+          .view-property-btn { display: inline-block; background: linear-gradient(135deg, #d68e08, #e6a010); color: white; padding: 0.75rem 1.5rem; border-radius: 8px; text-decoration: none; font-weight: 600; transition: all 0.3s ease; }
+          .view-property-btn:hover { background: linear-gradient(135deg, #b8780a, #c8920e); transform: translateY(-1px); }
+          .footer { margin-top: 4rem; padding: 3rem 2rem; background: linear-gradient(135deg, #f9fafb, #f3f4f6); text-align: center; color: #6b7280; border-top: 1px solid #e5e7eb; }
+          .footer h3 { color: #d68e08; margin-bottom: 1rem; font-size: 1.5rem; font-weight: 700; }
           .badge { display: inline-block; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
           .badge-judicial { background: #dcfce7; color: #166534; }
-          .badge-extrajudicial { background: #fef3c7; color: #92400e; }
+          .badge-extrajudicial { background: #fef3c7; color: #d68e08; }
           @media print { 
             .property-card { page-break-inside: avoid; margin-bottom: 2rem; }
             body { font-size: 11pt; }
@@ -533,14 +706,28 @@ const MarketingPDF = () => {
         
         <div class="container">
           <div class="property-grid">
-            ${selectedPropertiesData.map(property => `
+            ${selectedPropertiesData.map(property => {
+              const isImageNotFound = !property.imagem || 
+                                     property.imagem === '' || 
+                                     property.imagem.includes('/not-found') ||
+                                     property.imagem === 'https://kmiblhbe.manus.space/imovel_sao_goncalo.jpeg';
+              
+              const staticMapUrl = isImageNotFound ? generateStaticMapUrl(property) : null;
+              
+              return `
               <div class="property-card">
-                ${property.imagem ? 
+                ${!isImageNotFound ? 
                   `<img src="${property.imagem}" alt="${property.titulo_propriedade}" class="property-image" />` :
-                  `<div class="property-image" style="display: flex; align-items: center; justify-content: center; background: #f3f4f6; color: #9ca3af; font-size: 1.1rem;">📷 Imagem não disponível</div>`
+                  staticMapUrl ? 
+                    `<img src="${staticMapUrl}" alt="Mapa de ${property.titulo_propriedade}" class="property-image" />` :
+                    `<div class="property-image" style="display: flex; align-items: center; justify-content: center; background: #f3f4f6; color: #9ca3af; font-size: 1.1rem;">📍 Localização não disponível</div>`
                 }
                 <div class="property-content">
-                  <h3 class="property-title">${property.titulo_propriedade || 'Título não informado'}</h3>
+                  <h3 class="property-title">
+                    <a href="${createPropertyUrl(property)}" class="property-link" target="_blank" rel="noopener noreferrer">
+                      ${property.titulo_propriedade || 'Título não informado'}
+                    </a>
+                  </h3>
                   <p class="property-location">📍 ${[property.endereco, property.bairro, property.cidade, property.estado].filter(Boolean).join(', ')}</p>
                   <p class="property-price">${property.leilao_1 ? formatCurrency(property.leilao_1) : 'Valor não informado'}</p>
                   
@@ -578,17 +765,50 @@ const MarketingPDF = () => {
                       ${property.descricao.substring(0, 300)}${property.descricao.length > 300 ? '...' : ''}
                     </div>
                   ` : ''}
+                  
+                  <div class="property-actions">
+                    <a href="${createPropertyUrl(property)}" class="view-property-btn" target="_blank" rel="noopener noreferrer">
+                      📋 Ver Detalhes Completos
+                    </a>
+                    <p style="font-size: 0.8rem; color: #6b7280; margin-top: 0.5rem;">
+                      Clique no link para acessar todas as informações do imóvel
+                    </p>
+                  </div>
                 </div>
               </div>
-            `).join('')}
+              `;
+            }).join('')}
           </div>
         </div>
         
         <div class="footer">
           <h3>${pageTitle}</h3>
-          <p>Este catálogo foi gerado automaticamente pelo sistema de gestão de marketing</p>
-          <p>Para mais informações sobre os imóveis, visite nosso site ou entre em contato conosco</p>
-          <p><strong>Data de geração:</strong> ${date} | <strong>Total de imóveis:</strong> ${selectedPropertiesData.length}</p>
+          <p style="margin-bottom: 1rem;">Este catálogo foi gerado automaticamente pelo sistema de gestão de marketing</p>
+          
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; margin: 2rem 0; text-align: left;">
+            <div>
+              <h4 style="color: #d68e08; font-weight: 600; margin-bottom: 0.5rem;">📞 Contato</h4>
+              <p style="margin-bottom: 0.25rem;">Telefone: <a href="tel:+552131733795" style="color: #d68e08; text-decoration: none;">(21) 3173-3795</a></p>
+              <p>Email: <a href="mailto:contato@cataldosiston-adv.com.br" style="color: #d68e08; text-decoration: none;">contato@cataldosiston-adv.com.br</a></p>
+            </div>
+            
+            <div>
+              <h4 style="color: #d68e08; font-weight: 600; margin-bottom: 0.5rem;">🌐 Acesse Online</h4>
+              <p style="margin-bottom: 0.25rem;">Site: <a href="${window.location.origin}" style="color: #d68e08; text-decoration: none;">${window.location.origin}</a></p>
+              <p>Todos os imóveis com mais detalhes e fotos</p>
+            </div>
+            
+            <div>
+              <h4 style="color: #d68e08; font-weight: 600; margin-bottom: 0.5rem;">📋 Sobre Este Catálogo</h4>
+              <p style="margin-bottom: 0.25rem;"><strong>Data:</strong> ${date}</p>
+              <p><strong>Total:</strong> ${selectedPropertiesData.length} imóveis selecionados</p>
+            </div>
+          </div>
+          
+          <div style="margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #e5e7eb; text-align: center;">
+            <p style="color: #d68e08; font-weight: 600;">Cataldo Siston Advogados - Especialistas em Leilões de Imóveis</p>
+            <p style="font-size: 0.9rem; margin-top: 0.5rem;">Todos os links neste catálogo são clicáveis e direcionam para mais informações</p>
+          </div>
         </div>
       </body>
       </html>
@@ -677,14 +897,104 @@ const MarketingPDF = () => {
                 </span>
               </div>
 
-              <Button
-                onClick={generatePDF}
-                disabled={selectedProperties.length === 0 || generating}
-                className="flex items-center gap-2"
-              >
-                {generating ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
-                {generating ? 'Gerando PDF...' : 'Gerar PDF'}
-              </Button>
+              <div className="flex items-center gap-2">
+                <Button
+                  onClick={generatePDF}
+                  disabled={selectedProperties.length === 0 || generating}
+                  variant="outline"
+                  className="flex items-center gap-2"
+                >
+                  {generating ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
+                  {generating ? 'Gerando PDF...' : 'Gerar PDF'}
+                </Button>
+
+                <Dialog open={emailDialogOpen} onOpenChange={setEmailDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button
+                      onClick={openEmailDialog}
+                      disabled={selectedProperties.length === 0}
+                      className="flex items-center gap-2"
+                    >
+                      <Mail className="h-4 w-4" />
+                      Enviar por Email
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[425px]">
+                    <DialogHeader>
+                      <DialogTitle className="flex items-center gap-2">
+                        <Mail className="h-5 w-5" />
+                        Enviar PDF por Email
+                      </DialogTitle>
+                      <DialogDescription>
+                        Envie o catálogo com {selectedProperties.length} imóveis selecionados por email.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="email" className="text-right">
+                          Email
+                        </Label>
+                        <Input
+                          id="email"
+                          type="email"
+                          placeholder="destinatario@email.com"
+                          value={recipientEmail}
+                          onChange={(e) => setRecipientEmail(e.target.value)}
+                          className="col-span-3"
+                        />
+                      </div>
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="subject" className="text-right">
+                          Assunto
+                        </Label>
+                        <Input
+                          id="subject"
+                          placeholder="Assunto do email"
+                          value={emailSubject}
+                          onChange={(e) => setEmailSubject(e.target.value)}
+                          className="col-span-3"
+                        />
+                      </div>
+                      <div className="col-span-4 text-sm text-gray-600 bg-gray-50 p-3 rounded-lg">
+                        <p><strong>O email incluirá:</strong></p>
+                        <ul className="list-disc list-inside mt-1 space-y-1">
+                          <li>PDF com {selectedProperties.length} imóveis selecionados</li>
+                          <li>Informações detalhadas de cada propriedade</li>
+                          <li>Links clicáveis para ver mais detalhes</li>
+                          <li>Dados de contato da empresa</li>
+                        </ul>
+                      </div>
+                    </div>
+                    <DialogFooter>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => setEmailDialogOpen(false)}
+                        disabled={sendingEmail}
+                      >
+                        Cancelar
+                      </Button>
+                      <Button 
+                        onClick={sendPdfByEmail}
+                        disabled={!recipientEmail || sendingEmail}
+                        className="flex items-center gap-2"
+                      >
+                        {sendingEmail ? (
+                          <>
+                            <RefreshCw className="h-4 w-4 animate-spin" />
+                            Enviando...
+                          </>
+                        ) : (
+                          <>
+                            <Send className="h-4 w-4" />
+                            Enviar Email
+                          </>
+                        )}
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+              </div>
             </div>
           )}
 
@@ -696,8 +1006,17 @@ const MarketingPDF = () => {
               <li>2. Clique em "Ativar Seleção" para entrar no modo de seleção</li>
               <li>3. Use os filtros normais da página para encontrar imóveis</li>
               <li>4. Clique nos cards dos imóveis para selecioná-los (aparecerá um ✓ azul)</li>
-              <li>5. Clique em "Gerar PDF" para criar o catálogo com os imóveis selecionados</li>
+              <li>5. Clique em "Gerar PDF" para visualizar e imprimir o catálogo</li>
+              <li>6. Ou clique em "Enviar por Email" para enviar o PDF automaticamente</li>
             </ol>
+            
+            <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+              <h5 className="font-medium text-blue-900 mb-1">✨ Nova funcionalidade - Email automático:</h5>
+              <p className="text-sm text-blue-700">
+                O PDF será gerado automaticamente e enviado por email com design profissional, 
+                incluindo links clicáveis e informações de contato da empresa.
+              </p>
+            </div>
           </div>
         </CardContent>
       </Card>

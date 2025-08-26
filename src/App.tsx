@@ -16,6 +16,7 @@ import AdminAnalytics from "./pages/AdminAnalytics";
 import AdminMarketing from "./pages/AdminMarketing";
 import AnalyticsSimple from "./pages/AnalyticsSimple";
 import TestPage from "./pages/TestPage";
+import TestPdfEmail from "./pages/TestPdfEmail";
 
 const queryClient = new QueryClient();
 
@@ -55,6 +56,7 @@ const App = () => (
               </AdminRoute>
             } />
             <Route path="/test" element={<TestPage />} />
+            <Route path="/test-pdf-email" element={<TestPdfEmail />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

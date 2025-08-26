@@ -1358,20 +1358,7 @@ const MarketingPDF = () => {
                 Agendar Recorrente
               </Button>
 
-              {/* Botão de teste temporário */}
-              <Button
-                onClick={async () => {
-                  console.log('=== TESTE CAPTURA FILTROS ===');
-                  const filters = await captureCurrentFilters();
-                  console.log('Resultado do teste:', filters);
-                  toast.success(`Filtros capturados! Bairros: ${filters?.bairros?.length || 0}`);
-                }}
-                variant="outline"
-                size="sm"
-                className="flex items-center gap-2 bg-yellow-50 border-yellow-200 text-yellow-800"
-              >
-                🔍 Testar Captura
-              </Button>
+
             </div>
           </div>
         </div>
@@ -1440,16 +1427,7 @@ const MarketingPDF = () => {
                 Abrir Original
               </Button>
 
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={syncFiltersWithIframe}
-                className="flex items-center gap-2"
-                title="Sincronizar filtros atuais da página com o iframe"
-              >
-                <RefreshCw className="h-4 w-4" />
-                Sincronizar Filtros
-              </Button>
+
             </div>
           </div>
 
@@ -1784,13 +1762,7 @@ const MarketingPDF = () => {
               <li>6. Ou clique em "Enviar por Email" para enviar o PDF automaticamente</li>
             </ol>
             
-            <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-              <h5 className="font-medium text-blue-900 mb-1">✨ Nova funcionalidade - Email automático:</h5>
-              <p className="text-sm text-blue-700">
-                O PDF será gerado automaticamente e enviado por email com design profissional, 
-                incluindo links clicáveis e informações de contato da empresa.
-              </p>
-            </div>
+
           </div>
         </CardContent>
       </Card>

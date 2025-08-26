@@ -816,7 +816,93 @@ const MarketingPDF = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="relative">
+      {/* Header Flutuante Fixo */}
+      <div className="fixed top-0 left-0 right-0 bg-white shadow-lg z-50 border-b">
+        <div className="max-w-7xl mx-auto px-4 py-3">
+          <div className="flex items-center justify-between">
+            {/* Lado esquerdo */}
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <FileText className="h-5 w-5 text-gray-600" />
+                <span className="font-semibold text-gray-900">Marketing PDF</span>
+              </div>
+              <div className="flex items-center bg-gray-100 rounded-lg p-1">
+                <Button
+                  variant={currentPage === 'RJ' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setCurrentPage('RJ')}
+                  className="text-sm"
+                >
+                  RJ
+                </Button>
+                <Button
+                  variant={currentPage === 'SP' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setCurrentPage('SP')}
+                  className="text-sm"
+                >
+                  SP
+                </Button>
+              </div>
+            </div>
+
+            {/* Lado direito - Controles */}
+            <div className="flex items-center gap-3">
+              {/* Status de seleção */}
+              <div className="flex items-center gap-2 bg-blue-50 px-3 py-2 rounded-lg">
+                <CheckSquare className="h-4 w-4 text-blue-600" />
+                <span className="font-medium text-blue-800 text-sm">
+                  {selectedProperties.length} selecionados
+                </span>
+                {selectedProperties.length > 0 && (
+                  <Badge variant="secondary" className="bg-blue-100 text-blue-800 text-xs">
+                    {currentPage}
+                  </Badge>
+                )}
+              </div>
+
+              {/* Botão Modo Seleção */}
+              <Button
+                variant={selectionMode ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setSelectionMode(!selectionMode)}
+                className="flex items-center gap-2"
+              >
+                {selectionMode ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+                {selectionMode ? 'Seleção ON' : 'Seleção OFF'}
+              </Button>
+
+              {/* Botão Gerar PDF */}
+              <Button
+                onClick={generatePDF}
+                disabled={selectedProperties.length === 0 || generating}
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-2"
+              >
+                {generating ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
+                {generating ? 'Gerando...' : `PDF (${selectedProperties.length})`}
+              </Button>
+
+              {/* Botão Enviar Catálogo */}
+              <Button
+                onClick={openEmailDialog}
+                disabled={selectedProperties.length === 0}
+                size="sm"
+                className="flex items-center gap-2"
+              >
+                <Mail className="h-4 w-4" />
+                Enviar Catálogo
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Espaçamento para o header fixo */}
+      <div className="pt-16">
+        <div className="space-y-6">
       {/* Header de controle */}
       <Card>
         <CardHeader>
@@ -923,7 +1009,7 @@ const MarketingPDF = () => {
                     <DialogHeader>
                       <DialogTitle className="flex items-center gap-2">
                         <Mail className="h-5 w-5" />
-                        Enviar PDF por Email
+                        Enviar Catálogo por Email
                       </DialogTitle>
                       <DialogDescription>
                         Envie o catálogo com {selectedProperties.length} imóveis selecionados por email.
@@ -956,11 +1042,12 @@ const MarketingPDF = () => {
                         />
                       </div>
                       <div className="col-span-4 text-sm text-gray-600 bg-gray-50 p-3 rounded-lg">
-                        <p><strong>O email incluirá:</strong></p>
+                        <p><strong>O catálogo incluirá:</strong></p>
                         <ul className="list-disc list-inside mt-1 space-y-1">
-                          <li>PDF com {selectedProperties.length} imóveis selecionados</li>
+                          <li>Catálogo com {selectedProperties.length} imóveis selecionados</li>
                           <li>Informações detalhadas de cada propriedade</li>
-                          <li>Links clicáveis para ver mais detalhes</li>
+                          <li>Links clicáveis para ver mais detalhes e mapas</li>
+                          <li>Design otimizado para email</li>
                           <li>Dados de contato da empresa</li>
                         </ul>
                       </div>
@@ -1044,6 +1131,8 @@ const MarketingPDF = () => {
           </div>
         </CardContent>
       </Card>
+        </div>
+      </div>
     </div>
   );
 };

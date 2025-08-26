@@ -31,19 +31,19 @@ export function ArticleCard({ imageUrl, title, description, readMoreIconUrl, lin
         <div className="p-4 w-full">
           <h3 className="w-full text-lg font-medium leading-5 text-white">
             {title.split('\n').map((line, index) => (
-              <React.Fragment key={index}>
+              <span key={index}>
                 {line}
                 {index < title.split('\n').length - 1 && <br />}
-              </React.Fragment>
+              </span>
             ))}
           </h3>
           <div className="mt-4 w-full">
             <p className="w-full text-sm leading-6 text-white">
               {description.split('\n').map((line, index) => (
-                <React.Fragment key={index}>
+                <span key={index}>
                   {line}
                   {index < description.split('\n').length - 1 && <br />}
-                </React.Fragment>
+                </span>
               ))}
             </p>
             <div className="flex flex-col items-start mt-4 w-full">

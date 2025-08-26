@@ -29,6 +29,7 @@ interface EmailSchedule {
   max_properties: number;
   subject_template: string;
   recipient_emails: string[];
+  email_list_id?: string;
   recurrence_type: 'daily' | 'weekly' | 'monthly';
   recurrence_interval: number;
   send_time: string;
@@ -53,6 +54,7 @@ export function EmailScheduleForm({ schedule, onSuccess, onCancel }: EmailSchedu
     max_properties: 10,
     subject_template: 'Catálogo de Imóveis - {count} propriedades selecionadas',
     recipient_emails: [''],
+    email_list_id: undefined,
     recurrence_type: 'weekly',
     recurrence_interval: 1,
     send_time: '09:00',
@@ -66,13 +68,19 @@ export function EmailScheduleForm({ schedule, onSuccess, onCancel }: EmailSchedu
     tipos_leilao: [] as string[]
   });
 
+  // Listas de emails disponíveis
+  const [emailLists, setEmailLists] = useState<Array<{id: string, name: string, emails: string[]}>>([]);
+  const [useEmailList, setUseEmailList] = useState(false);
+
   useEffect(() => {
     fetchFilterOptions();
+    fetchEmailLists();
     if (schedule) {
       setFormData({
         ...schedule,
         recipient_emails: schedule.recipient_emails.length > 0 ? schedule.recipient_emails : ['']
       });
+      setUseEmailList(!!schedule.email_list_id);
     }
   }, [schedule]);
 
@@ -104,6 +112,22 @@ export function EmailScheduleForm({ schedule, onSuccess, onCancel }: EmailSchedu
     }
   };
 
+  const fetchEmailLists = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('email_lists')
+        .select('id, name, emails')
+        .eq('is_active', true)
+        .order('name');
+
+      if (error) throw error;
+      console.log('Listas de emails carregadas:', data);
+      setEmailLists(data || []);
+    } catch (error) {
+      console.error('Erro ao carregar listas de emails:', error);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -113,20 +137,30 @@ export function EmailScheduleForm({ schedule, onSuccess, onCancel }: EmailSchedu
       return;
     }
 
-    if (formData.recipient_emails.filter(email => email.trim()).length === 0) {
-      toast.error('Pelo menos um email destinatário é obrigatório');
-      return;
+    // Validar destinatários - ou lista ou emails manuais
+    if (useEmailList) {
+      if (!formData.email_list_id) {
+        toast.error('Selecione uma lista de emails');
+        return;
+      }
+    } else {
+      if (formData.recipient_emails.filter(email => email.trim()).length === 0) {
+        toast.error('Pelo menos um email destinatário é obrigatório');
+        return;
+      }
     }
 
-    // Validar emails
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const invalidEmails = formData.recipient_emails.filter(email => 
-      email.trim() && !emailRegex.test(email.trim())
-    );
-    
-    if (invalidEmails.length > 0) {
-      toast.error('Alguns emails são inválidos');
-      return;
+    // Validar emails manuais (só se não estiver usando lista)
+    if (!useEmailList) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      const invalidEmails = formData.recipient_emails.filter(email => 
+        email.trim() && !emailRegex.test(email.trim())
+      );
+      
+      if (invalidEmails.length > 0) {
+        toast.error('Alguns emails são inválidos');
+        return;
+      }
     }
 
     if (formData.recurrence_type === 'weekly' && (!formData.send_weekdays || formData.send_weekdays.length === 0)) {
@@ -145,7 +179,8 @@ export function EmailScheduleForm({ schedule, onSuccess, onCancel }: EmailSchedu
         filter_config: formData.filter_config,
         max_properties: formData.max_properties,
         subject_template: formData.subject_template.trim(),
-        recipient_emails: formData.recipient_emails.filter(email => email.trim()).map(email => email.trim()),
+        recipient_emails: useEmailList ? [] : formData.recipient_emails.filter(email => email.trim()).map(email => email.trim()),
+        email_list_id: useEmailList ? formData.email_list_id : null,
         recurrence_type: formData.recurrence_type,
         recurrence_interval: formData.recurrence_interval,
         send_time: formData.send_time,
@@ -313,41 +348,145 @@ export function EmailScheduleForm({ schedule, onSuccess, onCancel }: EmailSchedu
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Mail className="h-5 w-5" />
-            Destinatários
+            Destinatários e Listas
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          {formData.recipient_emails.map((email, index) => (
-            <div key={index} className="flex items-center gap-2">
-              <Input
-                type="email"
-                value={email}
-                onChange={(e) => updateEmail(index, e.target.value)}
-                placeholder="email@exemplo.com"
-                className="flex-1"
+          {/* Opção de usar lista ou emails manuais */}
+          <div className="space-y-3">
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="use-email-list"
+                checked={useEmailList}
+                onCheckedChange={(checked) => {
+                  setUseEmailList(checked as boolean);
+                  if (checked) {
+                    // Limpar emails manuais quando usar lista
+                    setFormData({ ...formData, recipient_emails: [''] });
+                  } else {
+                    // Limpar lista quando usar emails manuais
+                    setFormData({ ...formData, email_list_id: undefined });
+                  }
+                }}
               />
-              {formData.recipient_emails.length > 1 && (
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => removeEmailField(index)}
-                >
-                  <X className="h-4 w-4" />
-                </Button>
+              <Label htmlFor="use-email-list" className="text-sm font-medium">
+                Usar lista de emails existente
+              </Label>
+            </div>
+          
+          {/* Debug info */}
+          {process.env.NODE_ENV === 'development' && (
+            <div className="text-xs text-gray-500 bg-gray-100 p-2 rounded">
+              Debug: {emailLists.length} listas carregadas, useEmailList: {useEmailList.toString()}
+            </div>
+          )}
+
+            {emailLists.length === 0 && (
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                <p className="text-sm text-yellow-800">
+                  Nenhuma lista de emails encontrada. 
+                  <Button
+                    type="button"
+                    variant="link"
+                    className="p-0 h-auto text-yellow-800 underline ml-1"
+                    onClick={() => window.open('/admin/email-lists', '_blank')}
+                  >
+                    Criar uma lista
+                  </Button>
+                </p>
+              </div>
+            )}
+          </div>
+
+          {useEmailList ? (
+            /* Seleção de lista */
+            <div>
+              <Label htmlFor="email-list">Lista de Emails *</Label>
+              <Select
+                value={formData.email_list_id || ''}
+                onValueChange={(value) => 
+                  setFormData({ ...formData, email_list_id: value || undefined })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione uma lista" />
+                </SelectTrigger>
+                <SelectContent>
+                  {emailLists.map((list) => (
+                    <SelectItem key={list.id} value={list.id}>
+                      {list.name} ({list.emails.length} emails)
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              
+              {/* Preview da lista selecionada */}
+              {formData.email_list_id && (
+                <div className="mt-3 p-3 bg-gray-50 rounded-lg">
+                  {(() => {
+                    const selectedList = emailLists.find(l => l.id === formData.email_list_id);
+                    if (!selectedList) return null;
+                    
+                    return (
+                      <div>
+                        <p className="text-sm font-medium text-gray-700 mb-2">
+                          Preview da lista "{selectedList.name}":
+                        </p>
+                        <div className="flex flex-wrap gap-1">
+                          {selectedList.emails.slice(0, 5).map((email, index) => (
+                            <Badge key={index} variant="outline" className="text-xs">
+                              {email}
+                            </Badge>
+                          ))}
+                          {selectedList.emails.length > 5 && (
+                            <Badge variant="outline" className="text-xs">
+                              +{selectedList.emails.length - 5} mais
+                            </Badge>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })()}
+                </div>
               )}
             </div>
-          ))}
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={addEmailField}
-            className="flex items-center gap-2"
-          >
-            <Plus className="h-4 w-4" />
-            Adicionar Email
-          </Button>
+          ) : (
+            /* Emails manuais */
+            <div className="space-y-3">
+              <Label>Emails Manuais *</Label>
+              {formData.recipient_emails.map((email, index) => (
+                <div key={index} className="flex items-center gap-2">
+                  <Input
+                    type="email"
+                    value={email}
+                    onChange={(e) => updateEmail(index, e.target.value)}
+                    placeholder="email@exemplo.com"
+                    className="flex-1"
+                  />
+                  {formData.recipient_emails.length > 1 && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => removeEmailField(index)}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
+              ))}
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={addEmailField}
+                className="flex items-center gap-2"
+              >
+                <Plus className="h-4 w-4" />
+                Adicionar Email
+              </Button>
+            </div>
+          )}
         </CardContent>
       </Card>
 

@@ -2,7 +2,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import MarketingPDF from '@/components/admin/MarketingPDF';
-import { LogOut, User, FileText, Home, Settings } from 'lucide-react';
+import { LogOut, User, FileText, Home, Settings, Mail, Calendar } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const AdminMarketing = () => {
@@ -85,18 +85,81 @@ const AdminMarketing = () => {
             <div className="flex justify-between items-center">
               <div>
                 <h2 className="text-2xl font-bold mb-2">
-                  Gerador de Materiais de Marketing
+                  Marketing Dashboard
                 </h2>
                 <p className="text-orange-100">
-                  Crie catálogos profissionais em PDF selecionando imóveis da sua base de dados.
+                  Gerencie seus materiais de marketing, listas de emails e campanhas automáticas.
                 </p>
               </div>
               <div className="text-right">
-                <div className="text-white/90 text-sm mb-1">Sistema de PDF</div>
+                <div className="text-white/90 text-sm mb-1">Sistema de Marketing</div>
                 <div className="bg-green-500 text-white px-3 py-1 rounded-full text-xs font-semibold">
                   ✓ ATIVO
                 </div>
               </div>
+            </div>
+          </div>
+
+          {/* Menu de Ferramentas */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="bg-white rounded-lg shadow-sm border p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="bg-orange-100 p-3 rounded-lg">
+                  <FileText className="h-6 w-6 text-orange-600" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">Catálogos PDF</h3>
+                  <p className="text-sm text-gray-600">Gere materiais profissionais</p>
+                </div>
+              </div>
+              <p className="text-gray-600 text-sm mb-4">
+                Crie catálogos personalizados selecionando imóveis específicos da sua base de dados.
+              </p>
+              <div className="bg-orange-50 p-3 rounded-lg">
+                <p className="text-xs text-orange-800 font-medium">✓ Disponível abaixo nesta página</p>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-lg shadow-sm border p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="bg-blue-100 p-3 rounded-lg">
+                  <Mail className="h-6 w-6 text-blue-600" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">Listas de Emails</h3>
+                  <p className="text-sm text-gray-600">Gerencie destinatários</p>
+                </div>
+              </div>
+              <p className="text-gray-600 text-sm mb-4">
+                Crie e organize listas de emails para usar em campanhas automáticas.
+              </p>
+              <Button 
+                onClick={() => navigate('/admin/email-lists')}
+                className="w-full bg-blue-600 hover:bg-blue-700"
+              >
+                Gerenciar Listas
+              </Button>
+            </div>
+
+            <div className="bg-white rounded-lg shadow-sm border p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="bg-green-100 p-3 rounded-lg">
+                  <Calendar className="h-6 w-6 text-green-600" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">Emails Automáticos</h3>
+                  <p className="text-sm text-gray-600">Configure campanhas</p>
+                </div>
+              </div>
+              <p className="text-gray-600 text-sm mb-4">
+                Agende envios recorrentes de catálogos com filtros personalizados.
+              </p>
+              <Button 
+                onClick={() => navigate('/admin/email-schedules')}
+                className="w-full bg-green-600 hover:bg-green-700"
+              >
+                Gerenciar Agendamentos
+              </Button>
             </div>
           </div>
 

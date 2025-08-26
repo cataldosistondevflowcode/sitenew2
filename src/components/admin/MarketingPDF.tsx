@@ -69,6 +69,7 @@ const MarketingPDF = () => {
   const [scheduleForm, setScheduleForm] = useState({
     name: '',
     email: '',
+    email_list_id: undefined as string | undefined,
     recurrence_type: 'weekly' as 'daily' | 'weekly' | 'monthly',
     recurrence_interval: 1,
     send_time: '09:00',
@@ -77,6 +78,8 @@ const MarketingPDF = () => {
     max_properties: 10
   });
   const [creatingSchedule, setCreatingSchedule] = useState(false);
+  const [emailLists, setEmailLists] = useState<Array<{id: string, name: string, emails: string[]}>>([]);
+  const [useEmailList, setUseEmailList] = useState(false);
   
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
@@ -938,13 +941,33 @@ const MarketingPDF = () => {
     });
   };
 
+  // Função para carregar listas de emails
+  const fetchEmailLists = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('email_lists')
+        .select('id, name, emails')
+        .eq('is_active', true)
+        .order('name');
+
+      if (error) throw error;
+      setEmailLists(data || []);
+    } catch (error) {
+      console.error('Erro ao carregar listas de emails:', error);
+    }
+  };
+
   // Função para abrir dialog de agendamento
   const openScheduleDialog = () => {
     const defaultName = `Agendamento ${currentPage} - ${new Date().toLocaleDateString('pt-BR')}`;
     setScheduleForm({
       ...scheduleForm,
-      name: defaultName
+      name: defaultName,
+      email: '',
+      email_list_id: undefined
     });
+    setUseEmailList(false);
+    fetchEmailLists();
     setScheduleDialogOpen(true);
   };
 
@@ -959,16 +982,24 @@ const MarketingPDF = () => {
         return;
       }
 
-      if (!scheduleForm.email.trim()) {
-        toast.error('Email é obrigatório');
-        return;
-      }
+      // Validar destinatários - ou lista ou email manual
+      if (useEmailList) {
+        if (!scheduleForm.email_list_id) {
+          toast.error('Selecione uma lista de emails');
+          return;
+        }
+      } else {
+        if (!scheduleForm.email.trim()) {
+          toast.error('Email é obrigatório');
+          return;
+        }
 
-      // Validar email
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(scheduleForm.email.trim())) {
-        toast.error('Email inválido');
-        return;
+        // Validar email
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(scheduleForm.email.trim())) {
+          toast.error('Email inválido');
+          return;
+        }
       }
 
       if (scheduleForm.recurrence_type === 'weekly' && scheduleForm.send_weekdays.length === 0) {
@@ -1014,7 +1045,8 @@ const MarketingPDF = () => {
           selected_neighborhoods: activeFilters?.bairros || null,
           max_properties: scheduleForm.max_properties,
           subject_template: `${currentPage} - Catálogo com {count} imóveis`,
-          recipient_emails: [scheduleForm.email.trim()],
+          recipient_emails: useEmailList ? [] : [scheduleForm.email.trim()],
+          email_list_id: useEmailList ? scheduleForm.email_list_id : null,
           recurrence_type: scheduleForm.recurrence_type,
           recurrence_interval: scheduleForm.recurrence_interval,
           send_time: scheduleForm.send_time,
@@ -1033,6 +1065,7 @@ const MarketingPDF = () => {
       setScheduleForm({
         name: '',
         email: '',
+        email_list_id: undefined,
         recurrence_type: 'weekly',
         recurrence_interval: 1,
         send_time: '09:00',
@@ -1577,15 +1610,82 @@ const MarketingPDF = () => {
                     />
                   </div>
 
-                  <div>
-                    <Label htmlFor="schedule-email">Email Destinatário *</Label>
-                    <Input
-                      id="schedule-email"
-                      type="email"
-                      value={scheduleForm.email}
-                      onChange={(e) => setScheduleForm({ ...scheduleForm, email: e.target.value })}
-                      placeholder="destinatario@email.com"
-                    />
+                  {/* Seleção de destinatários */}
+                  <div className="space-y-3">
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        id="use-email-list"
+                        checked={useEmailList}
+                        onCheckedChange={(checked) => {
+                          setUseEmailList(checked as boolean);
+                          if (checked) {
+                            setScheduleForm({ ...scheduleForm, email: '' });
+                          } else {
+                            setScheduleForm({ ...scheduleForm, email_list_id: undefined });
+                          }
+                        }}
+                      />
+                      <Label htmlFor="use-email-list" className="text-sm font-medium">
+                        Usar lista de emails existente
+                      </Label>
+                    </div>
+
+                    {useEmailList ? (
+                      <div>
+                        <Label htmlFor="email-list">Lista de Emails *</Label>
+                        <Select
+                          value={scheduleForm.email_list_id || ''}
+                          onValueChange={(value) => 
+                            setScheduleForm({ ...scheduleForm, email_list_id: value || undefined })
+                          }
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecione uma lista" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {emailLists.map((list) => (
+                              <SelectItem key={list.id} value={list.id}>
+                                {list.name} ({list.emails.length} emails)
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        
+                        {/* Preview da lista selecionada */}
+                        {scheduleForm.email_list_id && (
+                          <div className="mt-2 p-2 bg-gray-50 rounded text-xs">
+                            {(() => {
+                              const selectedList = emailLists.find(l => l.id === scheduleForm.email_list_id);
+                              if (!selectedList) return 'Lista não encontrada';
+                              
+                              return (
+                                <div>
+                                  <strong>Preview:</strong> {selectedList.emails.slice(0, 3).join(', ')}
+                                  {selectedList.emails.length > 3 && ` +${selectedList.emails.length - 3} mais`}
+                                </div>
+                              );
+                            })()}
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <div>
+                        <Label htmlFor="schedule-email">Email Destinatário *</Label>
+                        <Input
+                          id="schedule-email"
+                          type="email"
+                          value={scheduleForm.email}
+                          onChange={(e) => setScheduleForm({ ...scheduleForm, email: e.target.value })}
+                          placeholder="destinatario@email.com"
+                        />
+                      </div>
+                    )}
+
+                    {emailLists.length === 0 && (
+                      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-2 text-xs text-yellow-800">
+                        Nenhuma lista encontrada. <a href="/admin/email-lists" target="_blank" className="underline">Criar lista</a>
+                      </div>
+                    )}
                   </div>
 
                   <div>
@@ -1731,7 +1831,12 @@ const MarketingPDF = () => {
                 </Button>
                 <Button 
                   onClick={createRecurringSchedule}
-                  disabled={!scheduleForm.name || !scheduleForm.email || creatingSchedule}
+                  disabled={
+                    !scheduleForm.name || 
+                    (!useEmailList && !scheduleForm.email) || 
+                    (useEmailList && !scheduleForm.email_list_id) || 
+                    creatingSchedule
+                  }
                   className="flex items-center gap-2"
                 >
                   {creatingSchedule ? (

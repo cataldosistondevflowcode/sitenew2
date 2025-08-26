@@ -94,6 +94,42 @@ export type Database = {
         }
         Relationships: []
       }
+      email_lists: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          emails: string[]
+          id: string
+          is_active: boolean | null
+          name: string
+          updated_at: string | null
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          emails?: string[]
+          id?: string
+          is_active?: boolean | null
+          name: string
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          emails?: string[]
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       email_schedule_logs: {
         Row: {
           created_at: string | null
@@ -152,6 +188,7 @@ export type Database = {
           created_at: string | null
           created_by: string | null
           description: string | null
+          email_list_id: string | null
           filter_config: Json | null
           id: string
           is_active: boolean | null
@@ -163,6 +200,7 @@ export type Database = {
           recipient_emails: string[]
           recurrence_interval: number | null
           recurrence_type: string
+          selected_neighborhoods: string[] | null
           send_day_of_month: number | null
           send_time: string
           send_timezone: string | null
@@ -176,6 +214,7 @@ export type Database = {
           created_at?: string | null
           created_by?: string | null
           description?: string | null
+          email_list_id?: string | null
           filter_config?: Json | null
           id?: string
           is_active?: boolean | null
@@ -187,6 +226,7 @@ export type Database = {
           recipient_emails: string[]
           recurrence_interval?: number | null
           recurrence_type: string
+          selected_neighborhoods?: string[] | null
           send_day_of_month?: number | null
           send_time: string
           send_timezone?: string | null
@@ -200,6 +240,7 @@ export type Database = {
           created_at?: string | null
           created_by?: string | null
           description?: string | null
+          email_list_id?: string | null
           filter_config?: Json | null
           id?: string
           is_active?: boolean | null
@@ -211,6 +252,7 @@ export type Database = {
           recipient_emails?: string[]
           recurrence_interval?: number | null
           recurrence_type?: string
+          selected_neighborhoods?: string[] | null
           send_day_of_month?: number | null
           send_time?: string
           send_timezone?: string | null
@@ -220,7 +262,15 @@ export type Database = {
           updated_at?: string | null
           updated_by?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "email_schedules_email_list_id_fkey"
+            columns: ["email_list_id"]
+            isOneToOne: false
+            referencedRelation: "email_lists"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       leiloes_imoveis: {
         Row: {

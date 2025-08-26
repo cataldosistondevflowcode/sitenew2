@@ -31,6 +31,7 @@ interface EmailSchedule {
   max_properties: number;
   subject_template: string;
   recipient_emails: string[];
+  email_list_id?: string;
   recurrence_type: 'daily' | 'weekly' | 'monthly';
   recurrence_interval: number;
   send_time: string;
@@ -44,12 +45,14 @@ interface EmailSchedule {
 
 export function EmailScheduleManager() {
   const [schedules, setSchedules] = useState<EmailSchedule[]>([]);
+  const [emailLists, setEmailLists] = useState<Array<{id: string, name: string}>>([]);
   const [loading, setLoading] = useState(true);
   const [formDialogOpen, setFormDialogOpen] = useState(false);
   const [editingSchedule, setEditingSchedule] = useState<EmailSchedule | null>(null);
 
   useEffect(() => {
     fetchSchedules();
+    fetchEmailLists();
   }, []);
 
   const fetchSchedules = async () => {
@@ -67,6 +70,20 @@ export function EmailScheduleManager() {
       toast.error('Erro ao carregar agendamentos');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchEmailLists = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('email_lists')
+        .select('id, name')
+        .order('name');
+
+      if (error) throw error;
+      setEmailLists(data || []);
+    } catch (error) {
+      console.error('Erro ao carregar listas de emails:', error);
     }
   };
 
@@ -175,6 +192,15 @@ export function EmailScheduleManager() {
     closeFormDialog();
   };
 
+  const getRecipientInfo = (schedule: EmailSchedule) => {
+    if (schedule.email_list_id) {
+      const emailList = emailLists.find(list => list.id === schedule.email_list_id);
+      return emailList ? `Lista: ${emailList.name}` : 'Lista não encontrada';
+    } else {
+      return `${schedule.recipient_emails.length} email${schedule.recipient_emails.length !== 1 ? 's' : ''} manual${schedule.recipient_emails.length !== 1 ? 'is' : ''}`;
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center p-8">
@@ -274,7 +300,7 @@ export function EmailScheduleManager() {
                   <div className="flex items-center gap-2">
                     <Mail className="h-4 w-4 text-gray-500" />
                     <span className="text-sm font-medium">Destinatários:</span>
-                    <span className="text-sm">{schedule.recipient_emails.length}</span>
+                    <span className="text-sm">{getRecipientInfo(schedule)}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Settings className="h-4 w-4 text-gray-500" />

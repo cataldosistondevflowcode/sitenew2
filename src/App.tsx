@@ -15,6 +15,7 @@ import Admin from "./pages/Admin";
 import AdminAnalytics from "./pages/AdminAnalytics";
 import AdminMarketing from "./pages/AdminMarketing";
 import AdminEmailSchedules from "./pages/AdminEmailSchedules";
+import AdminEmailLists from "./pages/AdminEmailLists";
 import AnalyticsSimple from "./pages/AnalyticsSimple";
 import TestPage from "./pages/TestPage";
 import TestPdfEmail from "./pages/TestPdfEmail";
@@ -54,6 +55,11 @@ const App = () => (
             <Route path="/admin/email-schedules" element={
               <AdminRoute>
                 <AdminEmailSchedules />
+              </AdminRoute>
+            } />
+            <Route path="/admin/email-lists" element={
+              <AdminRoute>
+                <AdminEmailLists />
               </AdminRoute>
             } />
             <Route path="/admin/analytics-simple" element={<AnalyticsSimple />} />

@@ -80,16 +80,50 @@ const MarketingPDF = () => {
   
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
-  // URLs das páginas originais
+  // URLs das páginas originais - agora dinâmicas com filtros
+  const getPageUrlWithFilters = (page: 'RJ' | 'SP') => {
+    const basePath = page === 'RJ' ? '/' : '/leilao-sp';
+    
+    // Se não há parâmetros na URL atual, retorna URL base
+    const currentParams = window.location.search;
+    console.log('Parâmetros da URL atual para iframe:', currentParams);
+    
+    // IMPORTANTE: Se você quer testar com bairros específicos, pode forçar aqui
+    // Por exemplo, se você sabe que quer testar com Caju,Catumbi:
+    let testParams = currentParams;
+    if (!currentParams || !currentParams.includes('neighborhood') && !currentParams.includes('bairros')) {
+      // Para testes, você pode descomentar a linha abaixo e definir bairros específicos:
+      // testParams = '?cidade=Rio de Janeiro&neighborhood=Caju,Catumbi';
+      console.log('Nenhum filtro de bairro encontrado na URL atual');
+    }
+    
+    if (!testParams) return basePath;
+    
+    // Retorna URL com filtros atuais (ou de teste)
+    const finalUrl = `${basePath}${testParams}`;
+    console.log('URL final para iframe:', finalUrl);
+    return finalUrl;
+  };
+
   const pageUrls = {
-    RJ: '/',
-    SP: '/leilao-sp'
+    RJ: getPageUrlWithFilters('RJ'),
+    SP: getPageUrlWithFilters('SP')
   };
 
   useEffect(() => {
     setIframeLoaded(false);
     setSelectedProperties([]);
   }, [currentPage]);
+
+  // Função para sincronizar filtros com iframe
+  const syncFiltersWithIframe = () => {
+    const iframe = iframeRef.current;
+    if (iframe) {
+      const newUrl = getPageUrlWithFilters(currentPage);
+      iframe.src = newUrl;
+      setIframeLoaded(false);
+    }
+  };
 
   // Função para detectar cliques nos cards do iframe
   useEffect(() => {
@@ -139,8 +173,106 @@ const MarketingPDF = () => {
           window.addEventListener('message', function(event) {
             if (event.origin !== location.origin) return;
             if (event.data.type === 'GET_ACTIVE_FILTERS') {
+              console.log('===== IFRAME: Recebida mensagem GET_ACTIVE_FILTERS =====');
+              console.log('URL do iframe:', window.location.href);
+              console.log('Search params:', window.location.search);
+              
               try {
                 const params = new URLSearchParams(window.location.search);
+                console.log('Params parseados:', Object.fromEntries(params.entries()));
+                
+                // Capturar bairros diretamente do DOM
+                function getSelectedNeighborhoods() {
+                  const neighborhoods = [];
+                  
+                  // Buscar por diferentes seletores de bairros (mais amplo e específico)
+                  const selectors = [
+                    // Checkboxes marcados com "bairro" no nome ou atributo
+                    'input[type="checkbox"]:checked[name*="bairro"]',
+                    'input[type="checkbox"]:checked[data-value*="bairro"]',
+                    'input[type="checkbox"]:checked[id*="bairro"]',
+                    
+                    // Checkboxes marcados com "neighborhood" 
+                    'input[type="checkbox"]:checked[name*="neighborhood"]',
+                    'input[type="checkbox"]:checked[data-value*="neighborhood"]',
+                    'input[type="checkbox"]:checked[id*="neighborhood"]',
+                    
+                    // Seletores por classes e data-testid
+                    '[data-testid*="neighborhood"] input:checked',
+                    '[data-testid*="bairro"] input:checked',
+                    '.neighborhood-filter input:checked',
+                    '.bairro-filter input:checked',
+                    '[class*="neighborhood"] input:checked',
+                    '[class*="bairro"] input:checked',
+                    
+                    // Checkboxes dentro de elementos com "bairro"
+                    '[class*="bairro"] input[type="checkbox"]:checked',
+                    '[class*="neighborhood"] input[type="checkbox"]:checked',
+                    
+                    // Select options selecionadas
+                    'select[name*="bairro"] option:checked',
+                    'select[name*="neighborhood"] option:checked'
+                  ];
+                  
+                  // Também capturar do URL se existir
+                  const urlParams = new URLSearchParams(window.location.search);
+                  const urlBairros = urlParams.get('bairros');
+                  if (urlBairros) {
+                    const urlNeighborhoods = urlBairros.split(',').map(b => b.trim()).filter(Boolean);
+                    neighborhoods.push(...urlNeighborhoods);
+                  }
+                  
+                  selectors.forEach(selector => {
+                    try {
+                      const elements = document.querySelectorAll(selector);
+                      elements.forEach(el => {
+                        let value = null;
+                        
+                        // Diferentes formas de obter o valor
+                        if (el.tagName.toLowerCase() === 'option') {
+                          value = el.value || el.textContent?.trim();
+                        } else {
+                          value = el.value || 
+                                  el.getAttribute('data-value') || 
+                                  el.getAttribute('data-neighborhood') ||
+                                  el.getAttribute('data-bairro') ||
+                                  el.nextElementSibling?.textContent?.trim() ||
+                                  el.parentElement?.textContent?.trim();
+                        }
+                        
+                        if (value && !neighborhoods.includes(value)) {
+                          neighborhoods.push(value);
+                        }
+                      });
+                    } catch (e) { 
+                      console.warn('Erro ao processar seletor:', selector, e);
+                    }
+                  });
+                  
+                  console.log('===== DEBUG BAIRROS =====');
+                  console.log('Bairros capturados do DOM:', neighborhoods);
+                  console.log('Total de bairros encontrados:', neighborhoods.length);
+                  
+                  // Debug adicional: listar todos os elementos de input na página
+                  const allInputs = document.querySelectorAll('input');
+                  console.log('Total de inputs na página:', allInputs.length);
+                  
+                  const checkedInputs = document.querySelectorAll('input:checked');
+                  console.log('Total de inputs marcados:', checkedInputs.length);
+                  checkedInputs.forEach((input, index) => {
+                    console.log('Input marcado ' + (index + 1) + ':', {
+                      type: input.type,
+                      name: input.name,
+                      value: input.value,
+                      id: input.id,
+                      className: input.className,
+                      parentText: input.parentElement?.textContent?.trim()?.substring(0, 50)
+                    });
+                  });
+                  
+                  return neighborhoods.length > 0 ? neighborhoods : undefined;
+                }
+                
                 const filters = {
                   cidade: params.get('cidade') || undefined,
                   tipo_leilao: params.get('tipo_leilao') || undefined,
@@ -151,11 +283,17 @@ const MarketingPDF = () => {
                   financiamento: getBool(params.get('financiamento')),
                   parcelamento: getBool(params.get('parcelamento')),
                   segundo_leilao: getBool(params.get('segundo_leilao')),
-                  bairros: getArray(params.get('bairros')),
+                  bairros: getSelectedNeighborhoods() || getArray(params.get('bairros')) || getArray(params.get('bairro')),
                   cidades: getArray(params.get('cidades')),
                 };
+                
+                console.log('===== ENVIANDO FILTROS =====');
+                console.log('Filtros completos capturados no iframe:', filters);
+                console.log('Especificamente - bairros:', filters.bairros);
+                
                 parent.postMessage({ type: 'ACTIVE_FILTERS_RESPONSE', filters }, location.origin);
               } catch (e) {
+                console.error('Erro ao capturar filtros:', e);
                 parent.postMessage({ type: 'ACTIVE_FILTERS_RESPONSE', filters: {} }, location.origin);
               }
             }
@@ -500,38 +638,6 @@ const MarketingPDF = () => {
                     updateCardSelection(propertyId, isSelected);
                   }
                 });
-              } else if (event.data.type === 'GET_ACTIVE_FILTERS') {
-                try {
-                  const params = new URLSearchParams(window.location.search);
-                  
-                  const getNumber = (value) => {
-                    if (!value && value !== 0) return undefined;
-                    const n = parseInt(String(value), 10);
-                    return isNaN(n) ? undefined : n;
-                  };
-                  
-                  const getBool = (value) => (value === 'true' ? true : undefined);
-                  const getArray = (value) => (value ? value.split(',').map(v => v.trim()).filter(Boolean) : undefined);
-                  
-                  const filters = {
-                    cidade: params.get('cidade') || undefined,
-                    tipo_leilao: params.get('tipo_leilao') || undefined,
-                    valor_min: getNumber(params.get('preco_min')),
-                    valor_max: getNumber(params.get('preco_max')),
-                    search: params.get('palavra_chave') || undefined,
-                    fgts: getBool(params.get('fgts')),
-                    financiamento: getBool(params.get('financiamento')),
-                    parcelamento: getBool(params.get('parcelamento')),
-                    segundo_leilao: getBool(params.get('segundo_leilao')),
-                    bairros: getArray(params.get('bairros')),
-                    cidades: getArray(params.get('cidades')),
-                  };
-                  
-                  parent.postMessage({ type: 'ACTIVE_FILTERS_RESPONSE', filters }, location.origin);
-                } catch (e) {
-                  parent.postMessage({ type: 'ACTIVE_FILTERS_RESPONSE', filters: {} }, location.origin);
-                }
-              }
             });
           })();
         `;
@@ -711,12 +817,83 @@ const MarketingPDF = () => {
     setEmailDialogOpen(true);
   };
 
+  // Função para capturar filtros da página principal (fora do iframe)
+  const captureMainPageFilters = (): any => {
+    const filters: any = {};
+    
+    // Capturar da URL atual
+    const currentParams = new URLSearchParams(window.location.search);
+    
+    console.log('===== DEBUG PÁGINA PRINCIPAL =====');
+    console.log('URL completa:', window.location.href);
+    console.log('Search params:', window.location.search);
+    console.log('Todos os parâmetros:', Object.fromEntries(currentParams.entries()));
+    
+    // Mapear parâmetros conhecidos
+    if (currentParams.get('cidade')) filters.cidade = currentParams.get('cidade');
+    
+    // Prioridade: bairro (singular) -> bairros (plural) -> neighborhood (inglês)
+    if (currentParams.get('bairro')) {
+      filters.bairros = currentParams.get('bairro')!.split(',').map(b => b.trim()).filter(Boolean);
+      console.log('Bairros encontrados em bairro (singular):', filters.bairros);
+    } else if (currentParams.get('bairros')) {
+      filters.bairros = currentParams.get('bairros')!.split(',').map(b => b.trim()).filter(Boolean);
+      console.log('Bairros encontrados em bairros (plural):', filters.bairros);
+    } else if (currentParams.get('neighborhood')) {
+      filters.bairros = currentParams.get('neighborhood')!.split(',').map(b => b.trim()).filter(Boolean);
+      console.log('Bairros encontrados em neighborhood:', filters.bairros);
+    }
+    
+    // Se ainda não encontrou bairros, tentar outros parâmetros possíveis
+    if (!filters.bairros) {
+      const possibleNeighborhoodParams = ['neighborhoods', 'district', 'districts'];
+      possibleNeighborhoodParams.forEach(param => {
+        const value = currentParams.get(param);
+        if (value && !filters.bairros) {
+          console.log(`Parâmetro ${param} encontrado:`, value);
+          filters.bairros = value.split(',').map(b => b.trim()).filter(Boolean);
+        }
+      });
+    }
+    
+    // Fallback: tentar capturar de elementos da própria página de marketing
+    if (!filters.bairros) {
+      try {
+        // Procurar por elementos que possam conter informações de bairro
+        const possibleElements = document.querySelectorAll('[data-neighborhood], [data-bairro], [data-selected-neighborhoods]');
+        possibleElements.forEach(el => {
+          const neighborhoods = el.getAttribute('data-neighborhood') || 
+                               el.getAttribute('data-bairro') || 
+                               el.getAttribute('data-selected-neighborhoods');
+          if (neighborhoods && !filters.bairros) {
+            filters.bairros = neighborhoods.split(',').map(b => b.trim()).filter(Boolean);
+            console.log('Bairros encontrados em elementos da página:', filters.bairros);
+          }
+        });
+      } catch (e) {
+        console.warn('Erro ao procurar bairros em elementos da página:', e);
+      }
+    }
+    
+    // Fallback final: se estamos em uma página de marketing mas viemos de uma página com filtros,
+    // tentar capturar do iframe que está carregando a página original
+    if (!filters.bairros && iframeRef.current) {
+      console.log('Tentando capturar bairros do iframe da página original...');
+    }
+    
+    console.log('Filtros finais da página principal:', filters);
+    return filters;
+  };
+
   // Função para capturar filtros ativos do iframe
   const captureCurrentFilters = async (): Promise<any> => {
+    // Primeiro tentar capturar da página principal
+    const mainPageFilters = captureMainPageFilters();
+    
     return new Promise((resolve) => {
       const iframe = iframeRef.current;
       if (!iframe) {
-        resolve({});
+        resolve(mainPageFilters);
         return;
       }
 
@@ -729,16 +906,34 @@ const MarketingPDF = () => {
         
         if (event.data.type === 'ACTIVE_FILTERS_RESPONSE') {
           window.removeEventListener('message', handleMessage);
-          resolve(event.data.filters || {});
+          
+          // Fallback: capturar bairros dos parâmetros da URL atual da página principal
+          const currentUrl = window.location.search;
+          const currentParams = new URLSearchParams(currentUrl);
+          const urlBairros = currentParams.get('bairros') || currentParams.get('neighborhood');
+          
+          let filters = event.data.filters || {};
+          
+          // Fazer merge com filtros da página principal (priorizando bairros da página principal)
+          const mergedFilters = {
+            ...filters,
+            ...mainPageFilters,
+            // Se temos bairros da página principal, usar eles
+            bairros: mainPageFilters.bairros || filters.bairros
+          };
+          
+          console.log('Filtros finais após merge:', mergedFilters);
+          resolve(mergedFilters);
         }
       };
 
       window.addEventListener('message', handleMessage);
 
-      // Timeout de 2 segundos
+      // Timeout de 2 segundos - se iframe não responder, usar filtros da página principal
       setTimeout(() => {
         window.removeEventListener('message', handleMessage);
-        resolve({});
+        console.warn('Timeout ao capturar filtros do iframe, usando filtros da página principal');
+        resolve(mainPageFilters);
       }, 2000);
     });
   };
@@ -783,7 +978,14 @@ const MarketingPDF = () => {
 
       // Capturar filtros ativos do iframe
       const activeFilters = await captureCurrentFilters();
-      console.log('Filtros capturados:', activeFilters);
+      console.log('Filtros capturados para agendamento:', activeFilters);
+      
+      // Debug específico para bairros
+      if (activeFilters?.bairros) {
+        console.log('Bairros encontrados nos filtros:', activeFilters.bairros);
+      } else {
+        console.warn('Nenhum bairro encontrado nos filtros ativos!');
+      }
 
       // Calcular próximo envio com base no fuso
       const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/Sao_Paulo';
@@ -809,6 +1011,7 @@ const MarketingPDF = () => {
           is_active: true,
           page_type: currentPage,
           filter_config: activeFilters,
+          selected_neighborhoods: activeFilters?.bairros || null,
           max_properties: scheduleForm.max_properties,
           subject_template: `${currentPage} - Catálogo com {count} imóveis`,
           recipient_emails: [scheduleForm.email.trim()],
@@ -1154,6 +1357,21 @@ const MarketingPDF = () => {
                 <Repeat className="h-4 w-4" />
                 Agendar Recorrente
               </Button>
+
+              {/* Botão de teste temporário */}
+              <Button
+                onClick={async () => {
+                  console.log('=== TESTE CAPTURA FILTROS ===');
+                  const filters = await captureCurrentFilters();
+                  console.log('Resultado do teste:', filters);
+                  toast.success(`Filtros capturados! Bairros: ${filters?.bairros?.length || 0}`);
+                }}
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-2 bg-yellow-50 border-yellow-200 text-yellow-800"
+              >
+                🔍 Testar Captura
+              </Button>
             </div>
           </div>
         </div>
@@ -1220,6 +1438,17 @@ const MarketingPDF = () => {
               >
                 <ExternalLink className="h-4 w-4" />
                 Abrir Original
+              </Button>
+
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={syncFiltersWithIframe}
+                className="flex items-center gap-2"
+                title="Sincronizar filtros atuais da página com o iframe"
+              >
+                <RefreshCw className="h-4 w-4" />
+                Sincronizar Filtros
               </Button>
             </div>
           </div>

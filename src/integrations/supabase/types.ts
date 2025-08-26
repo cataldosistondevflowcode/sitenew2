@@ -94,6 +94,134 @@ export type Database = {
         }
         Relationships: []
       }
+      email_schedule_logs: {
+        Row: {
+          created_at: string | null
+          email_details: Json | null
+          emails_sent: number | null
+          error_details: Json | null
+          error_message: string | null
+          executed_at: string
+          execution_time_ms: number | null
+          id: string
+          properties_found: number | null
+          properties_sent: number | null
+          schedule_id: string | null
+          status: string
+        }
+        Insert: {
+          created_at?: string | null
+          email_details?: Json | null
+          emails_sent?: number | null
+          error_details?: Json | null
+          error_message?: string | null
+          executed_at: string
+          execution_time_ms?: number | null
+          id?: string
+          properties_found?: number | null
+          properties_sent?: number | null
+          schedule_id?: string | null
+          status: string
+        }
+        Update: {
+          created_at?: string | null
+          email_details?: Json | null
+          emails_sent?: number | null
+          error_details?: Json | null
+          error_message?: string | null
+          executed_at?: string
+          execution_time_ms?: number | null
+          id?: string
+          properties_found?: number | null
+          properties_sent?: number | null
+          schedule_id?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "email_schedule_logs_schedule_id_fkey"
+            columns: ["schedule_id"]
+            isOneToOne: false
+            referencedRelation: "email_schedules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      email_schedules: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          filter_config: Json | null
+          id: string
+          is_active: boolean | null
+          last_sent_at: string | null
+          max_properties: number | null
+          name: string
+          next_send_at: string | null
+          page_type: string
+          recipient_emails: string[]
+          recurrence_interval: number | null
+          recurrence_type: string
+          send_day_of_month: number | null
+          send_time: string
+          send_timezone: string | null
+          send_weekdays: number[] | null
+          subject_template: string
+          total_emails_sent: number | null
+          updated_at: string | null
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          filter_config?: Json | null
+          id?: string
+          is_active?: boolean | null
+          last_sent_at?: string | null
+          max_properties?: number | null
+          name: string
+          next_send_at?: string | null
+          page_type: string
+          recipient_emails: string[]
+          recurrence_interval?: number | null
+          recurrence_type: string
+          send_day_of_month?: number | null
+          send_time: string
+          send_timezone?: string | null
+          send_weekdays?: number[] | null
+          subject_template: string
+          total_emails_sent?: number | null
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          filter_config?: Json | null
+          id?: string
+          is_active?: boolean | null
+          last_sent_at?: string | null
+          max_properties?: number | null
+          name?: string
+          next_send_at?: string | null
+          page_type?: string
+          recipient_emails?: string[]
+          recurrence_interval?: number | null
+          recurrence_type?: string
+          send_day_of_month?: number | null
+          send_time?: string
+          send_timezone?: string | null
+          send_weekdays?: number[] | null
+          subject_template?: string
+          total_emails_sent?: number | null
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       leiloes_imoveis: {
         Row: {
           bairro: string | null
@@ -165,6 +293,44 @@ export type Database = {
           url?: string | null
         }
         Relationships: []
+      }
+      property_clicks: {
+        Row: {
+          click_type: string
+          clicked_at: string | null
+          id: number
+          property_id: number | null
+          session_id: string | null
+          user_agent: string | null
+          visitor_ip: string | null
+        }
+        Insert: {
+          click_type: string
+          clicked_at?: string | null
+          id?: number
+          property_id?: number | null
+          session_id?: string | null
+          user_agent?: string | null
+          visitor_ip?: string | null
+        }
+        Update: {
+          click_type?: string
+          clicked_at?: string | null
+          id?: number
+          property_id?: number | null
+          session_id?: string | null
+          user_agent?: string | null
+          visitor_ip?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "property_clicks_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "leiloes_imoveis"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       property_views: {
         Row: {
@@ -316,7 +482,70 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      calculate_next_send_time: {
+        Args: {
+          p_from_date?: string
+          p_recurrence_interval: number
+          p_recurrence_type: string
+          p_send_day_of_month: number
+          p_send_time: string
+          p_send_weekdays: number[]
+          p_timezone: string
+        }
+        Returns: string
+      }
+      get_analytics_summary: {
+        Args: { days_back?: number }
+        Returns: {
+          avg_time_on_properties: number
+          total_daily_visits: number
+          total_leads: number
+          total_property_views: number
+          total_searches: number
+          total_unique_visitors: number
+        }[]
+      }
+      get_most_clicked_properties_v2: {
+        Args: { days_back?: number; limit_count?: number }
+        Returns: {
+          cidade: string
+          click_count: number
+          estado: string
+          last_clicked: string
+          property_id: number
+          titulo_propriedade: string
+        }[]
+      }
+      get_most_viewed_properties: {
+        Args: { days_back?: number; limit_count?: number }
+        Returns: {
+          avg_time_spent: number
+          cidade: string
+          estado: string
+          property_id: number
+          titulo_propriedade: string
+          unique_viewers: number
+          view_count: number
+        }[]
+      }
+      get_popular_filters: {
+        Args: { limit_count?: number }
+        Returns: {
+          filter_count: number
+          filter_name: string
+        }[]
+      }
+      get_popular_searches: {
+        Args: { limit_count?: number }
+        Returns: {
+          search_count: number
+          search_query: string
+        }[]
+      }
+      increment_daily_visit: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never

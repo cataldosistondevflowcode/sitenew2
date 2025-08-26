@@ -5,6 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { 
   Download,
@@ -19,7 +21,12 @@ import {
   Eye,
   EyeOff,
   Mail,
-  Send
+  Send,
+  Calendar,
+  Clock,
+  Repeat,
+  Plus,
+  Settings
 } from 'lucide-react';
 import { formatCurrency } from '@/utils/stringUtils';
 import { toast } from 'sonner';
@@ -56,6 +63,20 @@ const MarketingPDF = () => {
   const [recipientEmail, setRecipientEmail] = useState('');
   const [emailSubject, setEmailSubject] = useState('');
   const [sendingEmail, setSendingEmail] = useState(false);
+  
+  // Estados para agendamento recorrente
+  const [scheduleDialogOpen, setScheduleDialogOpen] = useState(false);
+  const [scheduleForm, setScheduleForm] = useState({
+    name: '',
+    email: '',
+    recurrence_type: 'weekly' as 'daily' | 'weekly' | 'monthly',
+    recurrence_interval: 1,
+    send_time: '09:00',
+    send_weekdays: [1, 2, 3, 4, 5], // Seg-Sex
+    send_day_of_month: 1,
+    max_properties: 10
+  });
+  const [creatingSchedule, setCreatingSchedule] = useState(false);
   
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
@@ -615,6 +636,141 @@ const MarketingPDF = () => {
     setEmailDialogOpen(true);
   };
 
+  // Função para capturar filtros ativos do iframe
+  const captureCurrentFilters = async (): Promise<any> => {
+    return new Promise((resolve) => {
+      const iframe = iframeRef.current;
+      if (!iframe) {
+        resolve({});
+        return;
+      }
+
+      // Enviar mensagem para o iframe capturar os filtros ativos
+      iframe.contentWindow?.postMessage({ type: 'GET_ACTIVE_FILTERS' }, window.location.origin);
+
+      // Escutar resposta
+      const handleMessage = (event: MessageEvent) => {
+        if (event.origin !== window.location.origin) return;
+        
+        if (event.data.type === 'ACTIVE_FILTERS_RESPONSE') {
+          window.removeEventListener('message', handleMessage);
+          resolve(event.data.filters || {});
+        }
+      };
+
+      window.addEventListener('message', handleMessage);
+
+      // Timeout de 2 segundos
+      setTimeout(() => {
+        window.removeEventListener('message', handleMessage);
+        resolve({});
+      }, 2000);
+    });
+  };
+
+  // Função para abrir dialog de agendamento
+  const openScheduleDialog = () => {
+    const defaultName = `Agendamento ${currentPage} - ${new Date().toLocaleDateString('pt-BR')}`;
+    setScheduleForm({
+      ...scheduleForm,
+      name: defaultName
+    });
+    setScheduleDialogOpen(true);
+  };
+
+  // Função para criar agendamento recorrente
+  const createRecurringSchedule = async () => {
+    try {
+      setCreatingSchedule(true);
+
+      // Validações
+      if (!scheduleForm.name.trim()) {
+        toast.error('Nome é obrigatório');
+        return;
+      }
+
+      if (!scheduleForm.email.trim()) {
+        toast.error('Email é obrigatório');
+        return;
+      }
+
+      // Validar email
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(scheduleForm.email.trim())) {
+        toast.error('Email inválido');
+        return;
+      }
+
+      if (scheduleForm.recurrence_type === 'weekly' && scheduleForm.send_weekdays.length === 0) {
+        toast.error('Selecione pelo menos um dia da semana');
+        return;
+      }
+
+      // Capturar filtros ativos do iframe
+      const activeFilters = await captureCurrentFilters();
+      console.log('Filtros capturados:', activeFilters);
+
+      // Criar agendamento
+      const { error } = await supabase
+        .from('email_schedules')
+        .insert([{
+          name: scheduleForm.name.trim(),
+          description: `Agendamento criado a partir dos filtros ativos na página ${currentPage}`,
+          is_active: true,
+          page_type: currentPage,
+          filter_config: activeFilters,
+          max_properties: scheduleForm.max_properties,
+          subject_template: `${currentPage} - Catálogo com {count} imóveis`,
+          recipient_emails: [scheduleForm.email.trim()],
+          recurrence_type: scheduleForm.recurrence_type,
+          recurrence_interval: scheduleForm.recurrence_interval,
+          send_time: scheduleForm.send_time,
+          send_weekdays: scheduleForm.recurrence_type === 'weekly' ? scheduleForm.send_weekdays : null,
+          send_day_of_month: scheduleForm.recurrence_type === 'monthly' ? scheduleForm.send_day_of_month : null
+        }]);
+
+      if (error) throw error;
+
+      toast.success('Agendamento criado com sucesso!');
+      setScheduleDialogOpen(false);
+      
+      // Reset form
+      setScheduleForm({
+        name: '',
+        email: '',
+        recurrence_type: 'weekly',
+        recurrence_interval: 1,
+        send_time: '09:00',
+        send_weekdays: [1, 2, 3, 4, 5],
+        send_day_of_month: 1,
+        max_properties: 10
+      });
+
+    } catch (error) {
+      console.error('Erro ao criar agendamento:', error);
+      toast.error('Erro ao criar agendamento');
+    } finally {
+      setCreatingSchedule(false);
+    }
+  };
+
+  // Função para handle mudança dos dias da semana
+  const handleWeekdayChange = (day: number, checked: boolean) => {
+    const current = scheduleForm.send_weekdays;
+    let newWeekdays;
+    
+    if (checked) {
+      newWeekdays = [...current, day].sort();
+    } else {
+      newWeekdays = current.filter(d => d !== day);
+    }
+    
+    setScheduleForm({
+      ...scheduleForm,
+      send_weekdays: newWeekdays
+    });
+  };
+
   // Função para gerar URL do Google Static Maps
   const generateStaticMapUrl = (property: Property) => {
     const address = [property.endereco, property.bairro, property.cidade, property.estado]
@@ -895,6 +1051,17 @@ const MarketingPDF = () => {
                 <Mail className="h-4 w-4" />
                 Enviar Catálogo
               </Button>
+
+              {/* Botão Agendamento Recorrente */}
+              <Button
+                onClick={openScheduleDialog}
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-2"
+              >
+                <Repeat className="h-4 w-4" />
+                Agendar Recorrente
+              </Button>
             </div>
           </div>
         </div>
@@ -1084,6 +1251,205 @@ const MarketingPDF = () => {
               </div>
             </div>
           )}
+
+          {/* Dialog de Agendamento Recorrente */}
+          <Dialog open={scheduleDialogOpen} onOpenChange={setScheduleDialogOpen}>
+            <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2">
+                  <Repeat className="h-5 w-5" />
+                  Criar Agendamento Recorrente
+                </DialogTitle>
+                <DialogDescription>
+                  Configure um envio automático baseado nos filtros atuais da página {currentPage}
+                </DialogDescription>
+              </DialogHeader>
+
+              <div className="grid gap-6 py-4">
+                {/* Informações básicas */}
+                <div className="grid gap-4">
+                  <div>
+                    <Label htmlFor="schedule-name">Nome do Agendamento *</Label>
+                    <Input
+                      id="schedule-name"
+                      value={scheduleForm.name}
+                      onChange={(e) => setScheduleForm({ ...scheduleForm, name: e.target.value })}
+                      placeholder="Ex: Catálogo RJ Semanal"
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="schedule-email">Email Destinatário *</Label>
+                    <Input
+                      id="schedule-email"
+                      type="email"
+                      value={scheduleForm.email}
+                      onChange={(e) => setScheduleForm({ ...scheduleForm, email: e.target.value })}
+                      placeholder="destinatario@email.com"
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="max-properties">Máximo de Imóveis</Label>
+                    <Input
+                      id="max-properties"
+                      type="number"
+                      min="1"
+                      max="50"
+                      value={scheduleForm.max_properties}
+                      onChange={(e) => setScheduleForm({ ...scheduleForm, max_properties: parseInt(e.target.value) || 10 })}
+                    />
+                  </div>
+                </div>
+
+                {/* Configurações de recorrência */}
+                <div className="border-t pt-4">
+                  <h4 className="font-medium mb-4 flex items-center gap-2">
+                    <Calendar className="h-4 w-4" />
+                    Configurações de Recorrência
+                  </h4>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label>Tipo de Recorrência</Label>
+                      <Select
+                        value={scheduleForm.recurrence_type}
+                        onValueChange={(value: 'daily' | 'weekly' | 'monthly') => 
+                          setScheduleForm({ ...scheduleForm, recurrence_type: value })
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="daily">Diário</SelectItem>
+                          <SelectItem value="weekly">Semanal</SelectItem>
+                          <SelectItem value="monthly">Mensal</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div>
+                      <Label>Intervalo</Label>
+                      <Input
+                        type="number"
+                        min="1"
+                        max="30"
+                        value={scheduleForm.recurrence_interval}
+                        onChange={(e) => setScheduleForm({ 
+                          ...scheduleForm, 
+                          recurrence_interval: parseInt(e.target.value) || 1 
+                        })}
+                      />
+                      <p className="text-xs text-gray-500 mt-1">
+                        {scheduleForm.recurrence_type === 'daily' && 'A cada X dias'}
+                        {scheduleForm.recurrence_type === 'weekly' && 'A cada X semanas'}
+                        {scheduleForm.recurrence_type === 'monthly' && 'A cada X meses'}
+                      </p>
+                    </div>
+
+                    <div>
+                      <Label>Horário de Envio</Label>
+                      <Input
+                        type="time"
+                        value={scheduleForm.send_time}
+                        onChange={(e) => setScheduleForm({ ...scheduleForm, send_time: e.target.value })}
+                      />
+                    </div>
+
+                    {scheduleForm.recurrence_type === 'monthly' && (
+                      <div>
+                        <Label>Dia do Mês</Label>
+                        <Input
+                          type="number"
+                          min="1"
+                          max="31"
+                          value={scheduleForm.send_day_of_month}
+                          onChange={(e) => setScheduleForm({ 
+                            ...scheduleForm, 
+                            send_day_of_month: parseInt(e.target.value) || 1 
+                          })}
+                        />
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Dias da semana para recorrência semanal */}
+                  {scheduleForm.recurrence_type === 'weekly' && (
+                    <div className="mt-4">
+                      <Label>Dias da Semana</Label>
+                      <div className="flex flex-wrap gap-3 mt-2">
+                        {[
+                          { value: 1, label: 'Seg' },
+                          { value: 2, label: 'Ter' },
+                          { value: 3, label: 'Qua' },
+                          { value: 4, label: 'Qui' },
+                          { value: 5, label: 'Sex' },
+                          { value: 6, label: 'Sáb' },
+                          { value: 0, label: 'Dom' }
+                        ].map((day) => (
+                          <div key={day.value} className="flex items-center space-x-2">
+                            <Checkbox
+                              id={`day-${day.value}`}
+                              checked={scheduleForm.send_weekdays.includes(day.value)}
+                              onCheckedChange={(checked) => handleWeekdayChange(day.value, checked as boolean)}
+                            />
+                            <Label htmlFor={`day-${day.value}`} className="text-sm">
+                              {day.label}
+                            </Label>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Informações dos filtros */}
+                <div className="border-t pt-4">
+                  <h4 className="font-medium mb-2 flex items-center gap-2">
+                    <Settings className="h-4 w-4" />
+                    Filtros Atuais da Página
+                  </h4>
+                  <div className="bg-blue-50 p-3 rounded-lg">
+                    <p className="text-sm text-blue-800">
+                      <strong>Página:</strong> {currentPage}
+                    </p>
+                    <p className="text-xs text-blue-600 mt-1">
+                      Os filtros ativos no iframe serão capturados automaticamente (cidade, busca, etc.)
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <DialogFooter>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setScheduleDialogOpen(false)}
+                  disabled={creatingSchedule}
+                >
+                  Cancelar
+                </Button>
+                <Button 
+                  onClick={createRecurringSchedule}
+                  disabled={!scheduleForm.name || !scheduleForm.email || creatingSchedule}
+                  className="flex items-center gap-2"
+                >
+                  {creatingSchedule ? (
+                    <>
+                      <RefreshCw className="h-4 w-4 animate-spin" />
+                      Criando...
+                    </>
+                  ) : (
+                    <>
+                      <Plus className="h-4 w-4" />
+                      Criar Agendamento
+                    </>
+                  )}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
 
           {/* Instruções */}
           <div className="bg-gray-50 p-4 rounded-lg">

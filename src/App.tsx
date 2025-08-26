@@ -14,9 +14,11 @@ import AdminLogin from "./pages/AdminLogin";
 import Admin from "./pages/Admin";
 import AdminAnalytics from "./pages/AdminAnalytics";
 import AdminMarketing from "./pages/AdminMarketing";
+import AdminEmailSchedules from "./pages/AdminEmailSchedules";
 import AnalyticsSimple from "./pages/AnalyticsSimple";
 import TestPage from "./pages/TestPage";
 import TestPdfEmail from "./pages/TestPdfEmail";
+import TestScheduleProcessor from "./pages/TestScheduleProcessor";
 
 const queryClient = new QueryClient();
 
@@ -49,6 +51,11 @@ const App = () => (
                 <AdminMarketing />
               </AdminRoute>
             } />
+            <Route path="/admin/email-schedules" element={
+              <AdminRoute>
+                <AdminEmailSchedules />
+              </AdminRoute>
+            } />
             <Route path="/admin/analytics-simple" element={<AnalyticsSimple />} />
             <Route path="/admin/analytics-protected" element={
               <AdminRoute>
@@ -57,6 +64,7 @@ const App = () => (
             } />
             <Route path="/test" element={<TestPage />} />
             <Route path="/test-pdf-email" element={<TestPdfEmail />} />
+            <Route path="/test-schedule-processor" element={<TestScheduleProcessor />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

@@ -5,6 +5,7 @@ import { loadGoogleMaps } from "../integrations/googlemaps/client";
 import { formatPropertyAddress } from "../utils/addressFormatter";
 import { createPropertyUrl } from "../utils/slugUtils";
 import { ShareModal } from "./ShareModal";
+import { supabase } from "@/integrations/supabase/client";
 
 interface PropertyCardProps {
   id: number;
@@ -54,6 +55,32 @@ export const PropertyCard = ({
     image === 'https://kmiblhbe.manus.space/imovel_sao_goncalo.jpeg'
   );
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+
+  // Função para registrar clique no "Saiba Mais"
+  const handleSaibaMaisClick = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    
+    try {
+      console.log('Registrando clique para propriedade ID:', id);
+      
+      // Registrar o clique na nova tabela específica
+      const { data, error } = await supabase.from('property_clicks').insert({
+        property_id: id,
+        click_type: 'saiba_mais',
+        visitor_ip: '192.168.1.' + Math.floor(Math.random() * 255),
+        user_agent: navigator.userAgent,
+        session_id: `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+      });
+
+      if (error) {
+        console.error('Erro do Supabase ao registrar clique:', error);
+      } else {
+        console.log('Clique registrado com sucesso na tabela property_clicks:', data);
+      }
+    } catch (error) {
+      console.warn('Erro ao registrar clique do Saiba Mais:', error);
+    }
+  };
 
   // Initialize map when image is not found
   useEffect(() => {
@@ -194,8 +221,8 @@ export const PropertyCard = ({
               onError={handleImageError}
             />
           )}
-          <Link 
-                          to={createPropertyUrl(
+                    <a
+            href={createPropertyUrl(
                 id, 
                 rawPropertyData?.endereco || location, 
                 rawPropertyData?.bairro, 
@@ -205,10 +232,23 @@ export const PropertyCard = ({
             target="_blank"
             rel="noopener noreferrer"
             className="absolute top-2 sm:top-3 left-2 sm:left-3 bg-[#d68e08] text-white px-2 sm:px-3 py-1.5 sm:py-2 rounded text-xs sm:text-sm font-bold z-10 hover:bg-[#b8780a] transition-colors"
-            onClick={(e) => e.stopPropagation()}
+            onClick={async (e) => {
+              e.preventDefault();
+              await handleSaibaMaisClick(e);
+              // Pequeno delay para garantir que o registro seja salvo
+              setTimeout(() => {
+                window.open(createPropertyUrl(
+                  id, 
+                  rawPropertyData?.endereco || location, 
+                  rawPropertyData?.bairro, 
+                  rawPropertyData?.cidade, 
+                  rawPropertyData?.estado
+                ), '_blank');
+              }, 100);
+            }}
           >
             Saiba Mais
-          </Link>
+          </a>
           <button 
             className="absolute top-2 sm:top-3 right-2 sm:right-3 bg-[#25d366] text-white px-2 sm:px-3 py-1.5 sm:py-2 rounded text-xs sm:text-sm font-bold z-10 hover:bg-[#20b858] transition-colors"
             onClick={(e) => {

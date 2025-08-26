@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { BarChart3, Users, Home, Calendar, TrendingUp } from 'lucide-react';
+import { BarChart3, Users, Home, Calendar, TrendingUp, Eye } from 'lucide-react';
 
 interface StatsData {
   totalProperties: number;
@@ -11,6 +11,8 @@ interface StatsData {
   averagePrice: number;
   citiesCount: number;
   recentProperties: number;
+  dailyVisits: number;
+  totalPropertyViews: number;
 }
 
 const DashboardStats = () => {
@@ -21,9 +23,10 @@ const DashboardStats = () => {
     averagePrice: 0,
     citiesCount: 0,
     recentProperties: 0,
+    dailyVisits: 0,
+    totalPropertyViews: 0,
   });
   const [loading, setLoading] = useState(true);
-  const [dailyAccess] = useState(Math.floor(Math.random() * 500) + 150); // Simulado
 
   useEffect(() => {
     fetchStats();
@@ -64,6 +67,14 @@ const DashboardStats = () => {
       // Propriedades recentes (simulado - não temos data de criação)
       const recentProperties = Math.floor((totalProperties || 0) * 0.1);
 
+      // Obter estatísticas de analytics
+      const { data: analyticsData } = await supabase
+        .rpc('get_analytics_summary', { days_back: 1 });
+
+      const analytics = analyticsData?.[0];
+      const dailyVisits = analytics?.total_visits || 0;
+      const totalPropertyViews = analytics?.total_property_views || 0;
+
       setStats({
         totalProperties: totalProperties || 0,
         propertiesWithFGTS,
@@ -71,6 +82,8 @@ const DashboardStats = () => {
         averagePrice,
         citiesCount,
         recentProperties,
+        dailyVisits,
+        totalPropertyViews,
       });
     } catch (error) {
       console.error('Erro ao buscar estatísticas:', error);
@@ -90,8 +103,8 @@ const DashboardStats = () => {
 
   const statCards = [
     {
-      title: 'Acesso Diário',
-      value: dailyAccess.toString(),
+      title: 'Visitas Hoje',
+      value: stats.dailyVisits.toString(),
       icon: Users,
       description: 'Visitantes únicos hoje',
       color: 'text-blue-600',
@@ -106,10 +119,10 @@ const DashboardStats = () => {
       bgColor: 'bg-green-100',
     },
     {
-      title: 'Cidades Atendidas',
-      value: stats.citiesCount.toString(),
-      icon: BarChart3,
-      description: 'Diferentes localidades',
+      title: 'Visualizações de Imóveis',
+      value: stats.totalPropertyViews.toString(),
+      icon: Eye,
+      description: 'Páginas de detalhes acessadas',
       color: 'text-purple-600',
       bgColor: 'bg-purple-100',
     },

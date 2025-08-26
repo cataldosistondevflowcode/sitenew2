@@ -3,12 +3,14 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import { useNavigate } from 'react-router-dom';
 import DashboardStats from '@/components/admin/DashboardStats';
 import PropertiesTable from '@/components/admin/PropertiesTable';
-import { LogOut, Settings, MessageCircle, AlertTriangle, User } from 'lucide-react';
+import { LogOut, Settings, MessageCircle, AlertTriangle, User, BarChart3, Home } from 'lucide-react';
 
 const Admin = () => {
   const { logout, user } = useAuth();
+  const navigate = useNavigate();
 
   const handleLogout = () => {
     logout();
@@ -39,8 +41,8 @@ const Admin = () => {
               </div>
             </div>
             
-            <div className="flex items-center space-x-4">
-              <Badge className="flex items-center gap-2 bg-gray-100 text-gray-800 border-gray-300">
+            <div className="flex items-center space-x-3">
+              <Badge variant="outline" className="flex items-center gap-2 text-xs">
                 <User className="h-3 w-3" />
                 {user?.email}
               </Badge>
@@ -48,11 +50,31 @@ const Admin = () => {
               <Button
                 variant="outline"
                 size="sm"
+                onClick={() => navigate('/')}
+                className="flex items-center gap-2 text-gray-600 hover:text-gray-800 hover:bg-gray-50 border-gray-300"
+              >
+                <Home className="h-4 w-4" />
+                <span className="hidden sm:inline">Site</span>
+              </Button>
+
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigate('/admin/analytics')}
+                className="flex items-center gap-2 border-2 font-medium bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-300 hover:border-blue-400"
+              >
+                <BarChart3 className="h-4 w-4" />
+                <span className="hidden sm:inline">Analytics</span>
+              </Button>
+              
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={handleLogout}
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 text-red-600 hover:text-red-700 hover:bg-red-50 border-red-300"
               >
                 <LogOut className="h-4 w-4" />
-                Sair
+                <span className="hidden sm:inline">Sair</span>
               </Button>
             </div>
           </div>

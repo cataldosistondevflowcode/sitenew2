@@ -6,7 +6,12 @@ interface AdminRouteProps {
 }
 
 const AdminRoute = ({ children }: AdminRouteProps) => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, loading } = useAuth();
+
+  // Aguardar o carregamento da verificação de autenticação
+  if (loading) {
+    return <div style={{ padding: '20px' }}>Carregando...</div>;
+  }
 
   if (!isAuthenticated) {
     return <Navigate to="/admin/login" replace />;

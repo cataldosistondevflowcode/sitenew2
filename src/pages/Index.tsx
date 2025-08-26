@@ -23,6 +23,7 @@ import { toast } from "sonner";
 import { flexibleSearch } from "@/utils/stringUtils";
 import { useFilterParams } from "@/hooks/useFilterParams";
 import { executeWhatsAppAction, initializeWhatsAppScript } from "@/utils/whatsappScript";
+// import { useAnalytics } from "@/hooks/useAnalytics";
 
 // Interface para os dados dos imóveis
 interface Property {
@@ -58,6 +59,7 @@ interface Filters {
     min?: number;
     max?: number;
   };
+  priceRanges?: string[]; // Multiple price ranges
   auctionType?: string; // Filtro para tipo de leilão (inclui EXTRAJUDICIAL_CUSTOM)
   financiamento?: boolean; // Filtro para leilão com financiamento
   fgts?: boolean; // Filtro para leilão que aceita FGTS
@@ -244,6 +246,11 @@ const Index = () => {
 
   const [isMobile, setIsMobile] = useState(false);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  
+  // Analytics tracking (temporariamente desabilitado)
+  const trackSearch = (query: any, filters: any, count: any) => {
+    console.log('Index trackSearch:', { query, filters, count });
+  };
   
   // Estados para controlar os dropdowns
   const [showTypeMenu, setShowTypeMenu] = useState(false);
@@ -822,6 +829,25 @@ const Index = () => {
           });
 
         setProperties(formattedProperties);
+
+        // Tracking de pesquisa
+        const searchQuery = filters.keyword || filters.location || null;
+        const appliedFilters = {
+          city: filters.city,
+          type: filters.type,
+          neighborhood: filters.neighborhood,
+          priceRange: filters.priceRange,
+          auctionType: filters.auctionType,
+          fgts: filters.fgts,
+          financiamento: filters.financiamento,
+          parcelamento: filters.parcelamento,
+          hasSecondAuction: filters.hasSecondAuction,
+          dataFimSegundoLeilao: filters.dataFimSegundoLeilao
+        };
+
+        // Registrar a pesquisa no analytics
+        trackSearch(searchQuery, appliedFilters, total);
+
       } catch (err) {
         console.error('Erro ao buscar imóveis:', err);
         setError('Não foi possível carregar os imóveis. Tente novamente mais tarde.');

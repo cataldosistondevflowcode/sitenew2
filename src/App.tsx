@@ -12,6 +12,9 @@ import NotFound from "./pages/NotFound";
 import PropertyDetail from "./pages/PropertyDetail";
 import AdminLogin from "./pages/AdminLogin";
 import Admin from "./pages/Admin";
+import AdminAnalytics from "./pages/AdminAnalytics";
+import AnalyticsSimple from "./pages/AnalyticsSimple";
+import TestPage from "./pages/TestPage";
 
 const queryClient = new QueryClient();
 
@@ -34,6 +37,18 @@ const App = () => (
                 <Admin />
               </AdminRoute>
             } />
+            <Route path="/admin/analytics" element={
+              <AdminRoute>
+                <AdminAnalytics />
+              </AdminRoute>
+            } />
+            <Route path="/admin/analytics-simple" element={<AnalyticsSimple />} />
+            <Route path="/admin/analytics-protected" element={
+              <AdminRoute>
+                <AnalyticsSimple />
+              </AdminRoute>
+            } />
+            <Route path="/test" element={<TestPage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

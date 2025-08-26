@@ -5,6 +5,7 @@ interface AuthContextType {
   login: (email: string, password: string) => boolean;
   logout: () => void;
   user: { email: string } | null;
+  loading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -12,14 +13,17 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<{ email: string } | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     // Verificar se há sessão salva no localStorage
     const savedAuth = localStorage.getItem('admin_auth');
+    
     if (savedAuth === 'true') {
       setIsAuthenticated(true);
       setUser({ email: 'adm@hotmail.com' });
     }
+    setLoading(false);
   }, []);
 
   const login = (email: string, password: string): boolean => {
@@ -40,7 +44,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout, user }}>
+    <AuthContext.Provider value={{ isAuthenticated, login, logout, user, loading }}>
       {children}
     </AuthContext.Provider>
   );

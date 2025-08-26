@@ -14,6 +14,7 @@ import { WhatsAppButton } from "@/components/WhatsAppButton";
 import { SimilarPropertiesSection } from "@/components/SimilarPropertiesSection";
 import OpportunityPopup from "@/components/OpportunityPopup";
 import { executeWhatsAppAction, initializeWhatsAppScript } from "@/utils/whatsappScript";
+import { useAnalytics } from "@/hooks/useAnalytics";
 import { Mail } from "lucide-react";
 import { WhatsAppIcon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
@@ -49,11 +50,15 @@ const PropertyDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
-  // Estados para controlar os modais
-  const [showOpportunityPopup, setShowOpportunityPopup] = useState(false);
-  
   // Extrai ID da URL (compatível com formato antigo e novo)
   const propertyId = id || extractPropertyIdFromUrl(location.pathname);
+  
+  // Inicializar analytics com tracking automático
+  const propertyIdForAnalytics = property?.id || (propertyId ? Number(propertyId) : null);
+  const { trackContact } = useAnalytics(propertyIdForAnalytics);
+  
+  // Estados para controlar os modais
+  const [showOpportunityPopup, setShowOpportunityPopup] = useState(false);
 
   // Função para fechar o popup de oportunidades
   const closeOpportunityPopup = () => {

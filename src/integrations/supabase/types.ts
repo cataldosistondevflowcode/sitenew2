@@ -7,32 +7,112 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
+  // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "12.2.3 (519615d)"
   }
   public: {
     Tables: {
+      contact_leads: {
+        Row: {
+          contact_method: string | null
+          created_at: string | null
+          email: string | null
+          id: number
+          message: string | null
+          name: string | null
+          phone: string | null
+          property_id: number | null
+          utm_campaign: string | null
+          utm_medium: string | null
+          utm_source: string | null
+        }
+        Insert: {
+          contact_method?: string | null
+          created_at?: string | null
+          email?: string | null
+          id?: number
+          message?: string | null
+          name?: string | null
+          phone?: string | null
+          property_id?: number | null
+          utm_campaign?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+        }
+        Update: {
+          contact_method?: string | null
+          created_at?: string | null
+          email?: string | null
+          id?: number
+          message?: string | null
+          name?: string | null
+          phone?: string | null
+          property_id?: number | null
+          utm_campaign?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contact_leads_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "leiloes_imoveis"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      daily_visits: {
+        Row: {
+          created_at: string | null
+          date: string
+          id: number
+          page_views: number | null
+          unique_visitors: number | null
+          updated_at: string | null
+          visits_count: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          date?: string
+          id?: number
+          page_views?: number | null
+          unique_visitors?: number | null
+          updated_at?: string | null
+          visits_count?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          date?: string
+          id?: number
+          page_views?: number | null
+          unique_visitors?: number | null
+          updated_at?: string | null
+          visits_count?: number | null
+        }
+        Relationships: []
+      }
       leiloes_imoveis: {
         Row: {
           bairro: string | null
           cidade: string
-          consorcio: boolean
+          consorcio: boolean | null
           data_leilao_1: string | null
           data_leilao_2: string | null
           descricao: string | null
           endereco: string | null
           estado: string
-          fgts: boolean
-          financiamento: boolean
+          fgts: boolean | null
+          financiamento: boolean | null
           id: number
           imagem: string | null
           leilao_1: number | null
           leilao_2: number | null
           leiloeiro_nome: string | null
           numero_processo: string | null
-          parcelamento: boolean
+          parcelamento: boolean | null
           tipo_leilao: string | null
           tipo_propriedade: string | null
           titulo_propriedade: string | null
@@ -41,21 +121,21 @@ export type Database = {
         Insert: {
           bairro?: string | null
           cidade: string
-          consorcio?: boolean
+          consorcio?: boolean | null
           data_leilao_1?: string | null
           data_leilao_2?: string | null
           descricao?: string | null
           endereco?: string | null
           estado: string
-          fgts?: boolean
-          financiamento?: boolean
+          fgts?: boolean | null
+          financiamento?: boolean | null
           id: number
           imagem?: string | null
           leilao_1?: number | null
           leilao_2?: number | null
           leiloeiro_nome?: string | null
           numero_processo?: string | null
-          parcelamento?: boolean
+          parcelamento?: boolean | null
           tipo_leilao?: string | null
           tipo_propriedade?: string | null
           titulo_propriedade?: string | null
@@ -64,27 +144,109 @@ export type Database = {
         Update: {
           bairro?: string | null
           cidade?: string
-          consorcio?: boolean
+          consorcio?: boolean | null
           data_leilao_1?: string | null
           data_leilao_2?: string | null
           descricao?: string | null
           endereco?: string | null
           estado?: string
-          fgts?: boolean
-          financiamento?: boolean
+          fgts?: boolean | null
+          financiamento?: boolean | null
           id?: number
           imagem?: string | null
           leilao_1?: number | null
           leilao_2?: number | null
           leiloeiro_nome?: string | null
           numero_processo?: string | null
-          parcelamento?: boolean
+          parcelamento?: boolean | null
           tipo_leilao?: string | null
           tipo_propriedade?: string | null
           titulo_propriedade?: string | null
           url?: string | null
         }
         Relationships: []
+      }
+      property_views: {
+        Row: {
+          id: number
+          property_id: number | null
+          referrer: string | null
+          session_id: string | null
+          time_spent_seconds: number | null
+          user_agent: string | null
+          viewed_at: string | null
+          visitor_ip: string | null
+        }
+        Insert: {
+          id?: number
+          property_id?: number | null
+          referrer?: string | null
+          session_id?: string | null
+          time_spent_seconds?: number | null
+          user_agent?: string | null
+          viewed_at?: string | null
+          visitor_ip?: string | null
+        }
+        Update: {
+          id?: number
+          property_id?: number | null
+          referrer?: string | null
+          session_id?: string | null
+          time_spent_seconds?: number | null
+          user_agent?: string | null
+          viewed_at?: string | null
+          visitor_ip?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "property_views_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "leiloes_imoveis"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      search_analytics: {
+        Row: {
+          clicked_property_id: number | null
+          filters_used: Json | null
+          id: number
+          results_count: number | null
+          search_query: string | null
+          searched_at: string | null
+          session_id: string | null
+          visitor_ip: string | null
+        }
+        Insert: {
+          clicked_property_id?: number | null
+          filters_used?: Json | null
+          id?: number
+          results_count?: number | null
+          search_query?: string | null
+          searched_at?: string | null
+          session_id?: string | null
+          visitor_ip?: string | null
+        }
+        Update: {
+          clicked_property_id?: number | null
+          filters_used?: Json | null
+          id?: number
+          results_count?: number | null
+          search_query?: string | null
+          searched_at?: string | null
+          session_id?: string | null
+          visitor_ip?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "search_analytics_clicked_property_id_fkey"
+            columns: ["clicked_property_id"]
+            isOneToOne: false
+            referencedRelation: "leiloes_imoveis"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       sp_bairros_cd2022: {
         Row: {

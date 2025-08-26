@@ -527,6 +527,57 @@ export type Database = {
         }
         Relationships: []
       }
+      static_pages: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          expires_at: string | null
+          id: string
+          is_active: boolean | null
+          last_viewed_at: string | null
+          page_id: string
+          page_type: string
+          properties_data: Json | null
+          property_ids: number[]
+          title: string
+          total_properties: number
+          view_count: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          last_viewed_at?: string | null
+          page_id: string
+          page_type?: string
+          properties_data?: Json | null
+          property_ids?: number[]
+          title: string
+          total_properties?: number
+          view_count?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          last_viewed_at?: string | null
+          page_id?: string
+          page_type?: string
+          properties_data?: Json | null
+          property_ids?: number[]
+          title?: string
+          total_properties?: number
+          view_count?: number | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

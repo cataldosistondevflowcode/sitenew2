@@ -16,6 +16,7 @@ import AdminAnalytics from "./pages/AdminAnalytics";
 import AdminMarketing from "./pages/AdminMarketing";
 import AdminEmailSchedules from "./pages/AdminEmailSchedules";
 import AdminEmailLists from "./pages/AdminEmailLists";
+import StaticCatalog from "./pages/StaticCatalog";
 import AnalyticsSimple from "./pages/AnalyticsSimple";
 import TestPage from "./pages/TestPage";
 import TestPdfEmail from "./pages/TestPdfEmail";
@@ -62,6 +63,7 @@ const App = () => (
                 <AdminEmailLists />
               </AdminRoute>
             } />
+            <Route path="/catalogo/:pageId" element={<StaticCatalog />} />
             <Route path="/admin/analytics-simple" element={<AnalyticsSimple />} />
             <Route path="/admin/analytics-protected" element={
               <AdminRoute>

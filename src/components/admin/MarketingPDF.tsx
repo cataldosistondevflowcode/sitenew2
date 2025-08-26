@@ -26,7 +26,8 @@ import {
   Clock,
   Repeat,
   Plus,
-  Settings
+  Settings,
+  Globe
 } from 'lucide-react';
 import { formatCurrency } from '@/utils/stringUtils';
 import { toast } from 'sonner';
@@ -63,6 +64,7 @@ const MarketingPDF = () => {
   const [recipientEmail, setRecipientEmail] = useState('');
   const [emailSubject, setEmailSubject] = useState('');
   const [sendingEmail, setSendingEmail] = useState(false);
+  const [generatingStaticPage, setGeneratingStaticPage] = useState(false);
   
   // Estados para agendamento recorrente
   const [scheduleDialogOpen, setScheduleDialogOpen] = useState(false);
@@ -792,6 +794,72 @@ const MarketingPDF = () => {
     }
   };
 
+  const generateStaticPage = async () => {
+    if (selectedProperties.length === 0) {
+      toast.error('Selecione pelo menos um imóvel para gerar a página estática');
+      return;
+    }
+
+    try {
+      setGeneratingStaticPage(true);
+
+      // Buscar dados completos dos imóveis selecionados
+      const { data: selectedPropertiesData, error: propertiesError } = await supabase
+        .from('leiloes_imoveis')
+        .select('*')
+        .in('id', selectedProperties);
+
+      if (propertiesError) throw propertiesError;
+
+      // Gerar ID único para a página
+      const pageId = `catalog-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      
+      // Criar título da página
+      const title = `Catálogo ${currentPage} - ${selectedProperties.length} Imóveis`;
+      const description = `Catálogo com ${selectedProperties.length} imóveis selecionados do leilão ${currentPage}. Gerado em ${new Date().toLocaleDateString('pt-BR')}.`;
+
+      // Salvar página estática no Supabase
+      const { data: staticPage, error: pageError } = await supabase
+        .from('static_pages')
+        .insert({
+          page_id: pageId,
+          title: title,
+          description: description,
+          page_type: currentPage,
+          property_ids: selectedProperties,
+          properties_data: selectedPropertiesData || [],
+          total_properties: selectedProperties.length
+        })
+        .select()
+        .single();
+
+      if (pageError) throw pageError;
+
+      // Gerar URL da página
+      const pageUrl = `${window.location.origin}/catalogo/${pageId}`;
+
+      // Copiar URL para clipboard
+      await navigator.clipboard.writeText(pageUrl);
+
+      toast.success(
+        <div>
+          <p className="font-semibold">Página estática criada com sucesso!</p>
+          <p className="text-sm text-gray-600 mt-1">Link copiado para a área de transferência</p>
+          <p className="text-xs text-blue-600 mt-2 break-all">{pageUrl}</p>
+        </div>
+      );
+
+      // Abrir página em nova aba
+      window.open(pageUrl, '_blank');
+
+    } catch (error) {
+      console.error('Erro ao gerar página estática:', error);
+      toast.error('Erro ao gerar página estática. Tente novamente.');
+    } finally {
+      setGeneratingStaticPage(false);
+    }
+  };
+
   const openEmailDialog = () => {
     if (selectedProperties.length === 0) {
       toast.error('Selecione pelo menos um imóvel primeiro');
@@ -1352,6 +1420,18 @@ const MarketingPDF = () => {
                 {generating ? 'Gerando...' : `PDF (${selectedProperties.length})`}
               </Button>
 
+              {/* Botão Gerar Página Estática */}
+              <Button
+                onClick={generateStaticPage}
+                disabled={selectedProperties.length === 0 || generatingStaticPage}
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-2"
+              >
+                {generatingStaticPage ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Globe className="h-4 w-4" />}
+                {generatingStaticPage ? 'Gerando...' : `Página (${selectedProperties.length})`}
+              </Button>
+
               {/* Botão Enviar Catálogo */}
               <Button
                 onClick={openEmailDialog}
@@ -1474,6 +1554,16 @@ const MarketingPDF = () => {
                 >
                   {generating ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
                   {generating ? 'Gerando PDF...' : 'Gerar PDF'}
+                </Button>
+
+                <Button
+                  onClick={generateStaticPage}
+                  disabled={selectedProperties.length === 0 || generatingStaticPage}
+                  variant="outline"
+                  className="flex items-center gap-2"
+                >
+                  {generatingStaticPage ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Globe className="h-4 w-4" />}
+                  {generatingStaticPage ? 'Gerando Página...' : 'Gerar Página'}
                 </Button>
 
                 <Dialog open={emailDialogOpen} onOpenChange={setEmailDialogOpen}>

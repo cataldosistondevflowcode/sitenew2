@@ -6,7 +6,7 @@ import { Separator } from '@/components/ui/separator';
 import { useNavigate } from 'react-router-dom';
 
 import PropertiesTable from '@/components/admin/PropertiesTable';
-import { LogOut, Settings, MessageCircle, AlertTriangle, User, BarChart3, Home } from 'lucide-react';
+import { LogOut, Settings, MessageCircle, AlertTriangle, User, BarChart3, Home, FileText } from 'lucide-react';
 
 const Admin = () => {
   const { logout, user } = useAuth();
@@ -65,6 +65,16 @@ const Admin = () => {
               >
                 <BarChart3 className="h-4 w-4" />
                 <span className="hidden sm:inline">Analytics</span>
+              </Button>
+
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigate('/admin/marketing')}
+                className="flex items-center gap-2 border-2 font-medium bg-orange-50 hover:bg-orange-100 text-orange-700 border-orange-300 hover:border-orange-400"
+              >
+                <FileText className="h-4 w-4" />
+                <span className="hidden sm:inline">Marketing</span>
               </Button>
               
               <Button

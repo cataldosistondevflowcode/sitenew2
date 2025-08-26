@@ -10,7 +10,8 @@ import DashboardStats from '@/components/admin/DashboardStats';
 import PropertiesTable from '@/components/admin/PropertiesTable';
 import AnalyticsDashboard from '@/components/admin/AnalyticsDashboard';
 import AnalyticsTablesView from '@/components/admin/AnalyticsTablesView';
-import { LogOut, Settings, MessageCircle, AlertTriangle, User, BarChart3, Home, Database } from 'lucide-react';
+import MarketingPDF from '@/components/admin/MarketingPDF';
+import { LogOut, Settings, MessageCircle, AlertTriangle, User, BarChart3, Home, Database, FileText } from 'lucide-react';
 
 const AdminDashboard = () => {
   const { logout, user } = useAuth();
@@ -173,7 +174,7 @@ const AdminDashboard = () => {
 
           {/* Abas para diferentes seções */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-3">
+            <TabsList className="grid w-full grid-cols-4">
               <TabsTrigger value="properties" className="flex items-center gap-2">
                 <Home className="h-4 w-4" />
                 Gestão de Imóveis
@@ -181,6 +182,10 @@ const AdminDashboard = () => {
               <TabsTrigger value="analytics" className="flex items-center gap-2">
                 <BarChart3 className="h-4 w-4" />
                 Analytics Dashboard
+              </TabsTrigger>
+              <TabsTrigger value="marketing" className="flex items-center gap-2">
+                <FileText className="h-4 w-4" />
+                Marketing
               </TabsTrigger>
               <TabsTrigger value="tables" className="flex items-center gap-2">
                 <Database className="h-4 w-4" />
@@ -203,6 +208,20 @@ const AdminDashboard = () => {
                   </p>
                 </div>
                 <AnalyticsDashboard />
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="marketing" className="mt-6">
+              <div className="space-y-6">
+                <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
+                  <h3 className="text-lg font-semibold text-orange-800 mb-2">
+                    📄 Gerador de Material de Marketing
+                  </h3>
+                  <p className="text-orange-700 text-sm">
+                    Selecione imóveis da base de dados para gerar catálogos em PDF para campanhas de marketing.
+                  </p>
+                </div>
+                <MarketingPDF />
               </div>
             </TabsContent>
             

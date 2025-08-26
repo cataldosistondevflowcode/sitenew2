@@ -27,4 +27,12 @@ export const flexibleSearch = (text: string, search: string): boolean => {
   
   // Verifica se todas as palavras da busca estão presentes no texto
   return searchWords.every(word => normalizedText.includes(word));
+};
+
+// Função para formatar valores monetários em Real
+export const formatCurrency = (value: number): string => {
+  return new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL'
+  }).format(value);
 }; 

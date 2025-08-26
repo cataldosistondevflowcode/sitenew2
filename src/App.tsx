@@ -13,6 +13,7 @@ import PropertyDetail from "./pages/PropertyDetail";
 import AdminLogin from "./pages/AdminLogin";
 import Admin from "./pages/Admin";
 import AdminAnalytics from "./pages/AdminAnalytics";
+import AdminMarketing from "./pages/AdminMarketing";
 import AnalyticsSimple from "./pages/AnalyticsSimple";
 import TestPage from "./pages/TestPage";
 
@@ -40,6 +41,11 @@ const App = () => (
             <Route path="/admin/analytics" element={
               <AdminRoute>
                 <AdminAnalytics />
+              </AdminRoute>
+            } />
+            <Route path="/admin/marketing" element={
+              <AdminRoute>
+                <AdminMarketing />
               </AdminRoute>
             } />
             <Route path="/admin/analytics-simple" element={<AnalyticsSimple />} />

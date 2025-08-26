@@ -221,12 +221,6 @@ export function EmailScheduleManager() {
           <p className="text-gray-600">Gerencie agendamentos automáticos de envio de catálogos</p>
         </div>
         <Dialog open={formDialogOpen} onOpenChange={setFormDialogOpen}>
-          <DialogTrigger asChild>
-            <Button className="flex items-center gap-2">
-              <Plus className="h-4 w-4" />
-              Novo Agendamento
-            </Button>
-          </DialogTrigger>
           <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>
@@ -251,13 +245,10 @@ export function EmailScheduleManager() {
           <CardContent className="flex flex-col items-center justify-center py-12">
             <Calendar className="h-12 w-12 text-gray-400 mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">Nenhum agendamento</h3>
-            <p className="text-gray-600 text-center mb-4">
-              Crie seu primeiro agendamento de envio recorrente
+            <p className="text-gray-600 text-center">
+              Os agendamentos de envio recorrente aparecem aqui.<br/>
+              Use o botão "Criar Agendamento Recorrente" na página de Marketing para criar novos agendamentos.
             </p>
-            <Button onClick={() => setFormDialogOpen(true)} className="flex items-center gap-2">
-              <Plus className="h-4 w-4" />
-              Criar Agendamento
-            </Button>
           </CardContent>
         </Card>
       ) : (

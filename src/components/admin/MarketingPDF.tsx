@@ -436,6 +436,54 @@ const MarketingPDF = () => {
       .marketing-selection-mode main {
         padding-top: 60px !important;
       }
+      
+      /* Estilos para links de imóveis em modo de seleção */
+      .marketing-selection-mode [href*="/imovel/"] {
+        cursor: pointer !important;
+        user-select: none !important;
+        transition: all 0.2s ease;
+        position: relative;
+        pointer-events: auto !important;
+      }
+      
+      .marketing-selection-mode [href*="/imovel/"]:hover {
+        transform: scale(1.02);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+        z-index: 10;
+      }
+      
+      .marketing-selection-mode [href*="/imovel/"].selected {
+        border: 3px solid #3b82f6 !important;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2) !important;
+        background: rgba(59, 130, 246, 0.05) !important;
+      }
+      
+      .marketing-selection-mode [href*="/imovel/"].selected::after {
+        content: '✓';
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: #3b82f6;
+        color: white;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 14px;
+        z-index: 100;
+      }
+      
+      /* Sobrescrever qualquer pointer-events que possa estar bloqueando */
+      .marketing-selection-mode [href*="/imovel/"] * {
+        pointer-events: none !important;
+      }
+      
+      .marketing-selection-mode [href*="/imovel/"] {
+        pointer-events: auto !important;
+      }
 
       /* Estilo para placeholder de mapas */
       .map-placeholder {
@@ -480,51 +528,66 @@ const MarketingPDF = () => {
         </span>
       `;
 
-      // Injetar JavaScript para capturar cliques (apenas uma vez)
+      // Injetar JavaScript para capturar cliques (versão simplificada e mais robusta)
       if (!iframeDoc.querySelector('#marketing-script')) {
         const script = iframeDoc.createElement('script');
         script.id = 'marketing-script';
         script.textContent = `
           (function() {
+            console.log('🚀 Script de seleção iniciado');
+            
             // Array para rastrear IDs selecionados localmente
             window.marketingSelectedIds = window.marketingSelectedIds || [];
             
-            function updateCardSelection(propertyId, isSelected) {
-              const cards = document.querySelectorAll('[href*="/imovel/' + propertyId + '"]');
-              cards.forEach(card => {
-                if (isSelected) {
-                  card.classList.add('selected');
-                } else {
-                  card.classList.remove('selected');
-                }
-              });
-            }
-            
-            function handlePropertyCardClick(event) {
-              event.preventDefault();
-              event.stopPropagation();
+            // Função para interceptar TODOS os cliques na página
+            function globalClickHandler(event) {
+              console.log('🔍 Clique global detectado:', event.target);
               
-              let target = event.target;
-              let card = target.closest('[href*="/imovel/"]');
+              // Verificar se estamos em modo de seleção
+              if (!document.body.classList.contains('marketing-selection-mode')) {
+                console.log('⚠️ Não está em modo de seleção');
+                return;
+              }
+              
+              // Procurar o card de imóvel mais próximo
+              let element = event.target;
+              let card = null;
+              
+              // Buscar até 10 níveis acima para encontrar o link do imóvel
+              for (let i = 0; i < 10 && element; i++) {
+                if (element.tagName === 'A' && element.href && element.href.includes('/imovel/')) {
+                  card = element;
+                  break;
+                }
+                element = element.parentElement;
+              }
               
               if (card) {
-                const href = card.getAttribute('href');
-                const match = href.match(/\\/imovel\\/(\\d+)/);
+                console.log('✅ Card encontrado:', card.href);
+                
+                // PARAR COMPLETAMENTE o evento
+                event.preventDefault();
+                event.stopPropagation();
+                event.stopImmediatePropagation();
+                
+                const match = card.href.match(/\\/imovel\\/(\\d+)/);
                 if (match) {
                   const propertyId = parseInt(match[1]);
+                  console.log('🎯 ID do imóvel:', propertyId);
                   
-                  // Toggle no array local
+                  // Toggle seleção
                   const index = window.marketingSelectedIds.indexOf(propertyId);
                   const isSelected = index === -1;
                   
                   if (isSelected) {
                     window.marketingSelectedIds.push(propertyId);
+                    card.classList.add('selected');
                   } else {
                     window.marketingSelectedIds.splice(index, 1);
+                    card.classList.remove('selected');
                   }
                   
-                  // Atualizar visual
-                  updateCardSelection(propertyId, isSelected);
+                  console.log('📋 Selecionados:', window.marketingSelectedIds);
                   
                   // Enviar mensagem para o componente pai
                   parent.postMessage({
@@ -533,115 +596,40 @@ const MarketingPDF = () => {
                     isSelected: isSelected
                   }, '*');
                 }
+                
+                return false;
               }
             }
             
-            // Adicionar listeners a todos os cards existentes
-            function addListenersToCards() {
-              document.querySelectorAll('[href*="/imovel/"]').forEach(card => {
-                card.removeEventListener('click', handlePropertyCardClick);
-                card.addEventListener('click', handlePropertyCardClick);
-              });
-            }
+            // Adicionar listener global no documento com capture
+            document.addEventListener('click', globalClickHandler, true);
             
-            addListenersToCards();
-            
-            // Observer para novos cards
-            const observer = new MutationObserver(function(mutations) {
-              mutations.forEach(function(mutation) {
-                mutation.addedNodes.forEach(function(node) {
-                  if (node.nodeType === 1) {
-                    const newCards = node.querySelectorAll('[href*="/imovel/"]');
-                    if (newCards.length > 0) {
-                      addListenersToCards();
-                    }
-                  }
-                });
-              });
-            });
-            
-            observer.observe(document.body, {
-              childList: true,
-              subtree: true
-            });
-
-            // Função para substituir imagens não encontradas por mapas
-            function replaceImagesWithMaps() {
-              const images = document.querySelectorAll('img');
-              images.forEach(img => {
-                const isImageNotFound = !img.src || 
-                                       img.src === '' || 
-                                       img.src.includes('/not-found') ||
-                                       img.src.includes('imovel_sao_goncalo.jpeg') ||
-                                       img.alt.includes('placeholder');
-                
-                if (isImageNotFound) {
-                  // Encontrar o card pai
-                  const card = img.closest('[href*="/imovel/"]');
-                  if (card) {
-                    // Extrair endereço do card (procurar por elementos que contenham endereço)
-                    const addressElement = card.querySelector('[class*="location"], [class*="address"], p');
-                    const addressText = addressElement ? addressElement.textContent.replace('📍', '').trim() : '';
-                    
-                    // Criar placeholder do mapa
-                    const mapPlaceholder = document.createElement('div');
-                    mapPlaceholder.className = 'map-placeholder';
-                    mapPlaceholder.innerHTML = \`
-                      <svg viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
-                      </svg>
-                      <span>📍 Ver no Mapa</span>
-                      <small style="opacity: 0.7; margin-top: 4px; text-align: center; font-size: 12px;">\${addressText}</small>
-                    \`;
-                    
-                    // Substituir a imagem pelo placeholder
-                    img.style.display = 'none';
-                    img.parentNode.insertBefore(mapPlaceholder, img);
-                  }
-                }
-              });
-            }
-
-            // Executar substituição de imagens ao carregar
-            replaceImagesWithMaps();
-
-            // Observer para detectar novas imagens e substituí-las
-            const imageObserver = new MutationObserver(function(mutations) {
-              mutations.forEach(function(mutation) {
-                mutation.addedNodes.forEach(function(node) {
-                  if (node.nodeType === 1) {
-                    const newImages = node.querySelectorAll ? node.querySelectorAll('img') : [];
-                    if (newImages.length > 0 || node.tagName === 'IMG') {
-                      setTimeout(replaceImagesWithMaps, 100);
-                    }
-                  }
-                });
-              });
-            });
-            
-            imageObserver.observe(document.body, {
-              childList: true,
-              subtree: true
-            });
-
-            // Escutar mensagens do componente pai para sincronizar seleções e capturar filtros
+            // Escutar mensagens do componente pai
             window.addEventListener('message', function(event) {
               if (event.origin !== location.origin) return;
               
               if (event.data.type === 'UPDATE_SELECTIONS') {
                 window.marketingSelectedIds = event.data.selectedIds;
+                console.log('🔄 Sincronizando seleções:', window.marketingSelectedIds);
                 
                 // Atualizar visual de todos os cards
-                document.querySelectorAll('[href*="/imovel/"]').forEach(card => {
-                  const href = card.getAttribute('href');
-                  const match = href.match(/\\/imovel\\/(\\d+)/);
+                document.querySelectorAll('a[href*="/imovel/"]').forEach(card => {
+                  const match = card.href.match(/\\/imovel\\/(\\d+)/);
                   if (match) {
                     const propertyId = parseInt(match[1]);
                     const isSelected = window.marketingSelectedIds.includes(propertyId);
-                    updateCardSelection(propertyId, isSelected);
+                    
+                    if (isSelected) {
+                      card.classList.add('selected');
+                    } else {
+                      card.classList.remove('selected');
+                    }
                   }
                 });
+              }
             });
+            
+            console.log('✅ Script de seleção configurado');
           })();
         `;
         iframeDoc.body.appendChild(script);
@@ -658,20 +646,24 @@ const MarketingPDF = () => {
 
   }, [iframeLoaded, selectionMode, selectedProperties.length]);
 
+  // Sincronizar seleções com iframe sempre que selectedProperties mudar
+  useEffect(() => {
+    if (!iframeLoaded || !selectionMode) return;
+
+    const iframe = iframeRef.current;
+    if (iframe && iframe.contentWindow) {
+      iframe.contentWindow.postMessage({
+        type: 'UPDATE_SELECTIONS',
+        selectedIds: selectedProperties
+      }, '*');
+    }
+  }, [iframeLoaded, selectionMode, selectedProperties]);
+
   const handleSelectProperty = (propertyId: number) => {
     setSelectedProperties(prev => {
       const newSelection = prev.includes(propertyId) 
         ? prev.filter(id => id !== propertyId)
         : [...prev, propertyId];
-      
-      // Sincronizar com o iframe
-      const iframe = iframeRef.current;
-      if (iframe && iframe.contentWindow) {
-        iframe.contentWindow.postMessage({
-          type: 'UPDATE_SELECTIONS',
-          selectedIds: newSelection
-        }, '*');
-      }
       
       return newSelection;
     });
@@ -700,15 +692,6 @@ const MarketingPDF = () => {
       const newSelection = selectedProperties.length === allIds.length ? [] : allIds;
       
       setSelectedProperties(newSelection);
-      
-      // Sincronizar com o iframe
-      const iframe = iframeRef.current;
-      if (iframe && iframe.contentWindow) {
-        iframe.contentWindow.postMessage({
-          type: 'UPDATE_SELECTIONS',
-          selectedIds: newSelection
-        }, '*');
-      }
       
     } catch (error) {
       console.error('Erro ao buscar propriedades:', error);
@@ -1639,10 +1622,10 @@ const MarketingPDF = () => {
                             setScheduleForm({ ...scheduleForm, email_list_id: value || undefined })
                           }
                         >
-                          <SelectTrigger>
+                          <SelectTrigger className="bg-white">
                             <SelectValue placeholder="Selecione uma lista" />
                           </SelectTrigger>
-                          <SelectContent>
+                          <SelectContent className="bg-white">
                             {emailLists.map((list) => (
                               <SelectItem key={list.id} value={list.id}>
                                 {list.name} ({list.emails.length} emails)
@@ -1717,10 +1700,10 @@ const MarketingPDF = () => {
                           setScheduleForm({ ...scheduleForm, recurrence_type: value })
                         }
                       >
-                        <SelectTrigger>
+                        <SelectTrigger className="bg-white">
                           <SelectValue />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="bg-white">
                           <SelectItem value="daily">Diário</SelectItem>
                           <SelectItem value="weekly">Semanal</SelectItem>
                           <SelectItem value="monthly">Mensal</SelectItem>

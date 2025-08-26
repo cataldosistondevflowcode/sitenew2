@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { useNavigate } from 'react-router-dom';
-import DashboardStats from '@/components/admin/DashboardStats';
+
 import PropertiesTable from '@/components/admin/PropertiesTable';
 import { LogOut, Settings, MessageCircle, AlertTriangle, User, BarChart3, Home } from 'lucide-react';
 
@@ -93,16 +93,6 @@ const Admin = () => {
               Gerencie todos os aspectos do seu site de leilões de imóveis em um só lugar.
             </p>
           </div>
-
-          {/* Estatísticas do Dashboard */}
-          <div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              Visão Geral do Sistema
-            </h3>
-            <DashboardStats />
-          </div>
-
-          <Separator />
 
           {/* Seção do WhatsApp */}
           <div>

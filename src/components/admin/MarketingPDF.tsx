@@ -28,7 +28,8 @@ import {
   Plus,
   Settings,
   Globe,
-  MessageCircle
+  MessageCircle,
+  Filter
 } from 'lucide-react';
 import { formatCurrency } from '@/utils/stringUtils';
 import { toast } from 'sonner';
@@ -52,7 +53,30 @@ interface Property {
   parcelamento?: boolean;
 }
 
+interface AppliedFilters {
+  cidade?: string;
+  bairros?: string[];
+  valor_min?: number;
+  valor_max?: number;
+  search?: string;
+  fgts?: boolean;
+  financiamento?: boolean;
+  parcelamento?: boolean;
+  tipo_leilao?: string;
+  segundo_leilao?: boolean;
+  cidades?: string[];
+}
+
 const MarketingPDF = () => {
+  // Função utilitária para gerar URLs corretas (sem barras duplas)
+  const generateCorrectUrl = (path: string) => {
+    const baseUrl = window.location.origin.endsWith('/') 
+      ? window.location.origin.slice(0, -1) 
+      : window.location.origin;
+    const cleanPath = path.startsWith('/') ? path : `/${path}`;
+    return `${baseUrl}${cleanPath}`;
+  };
+
   // Estado para controlar qual página está sendo exibida
   const [currentPage, setCurrentPage] = useState<'RJ' | 'SP'>('RJ');
   const [selectedProperties, setSelectedProperties] = useState<number[]>([]);
@@ -72,6 +96,11 @@ const MarketingPDF = () => {
   const [whatsappNumber, setWhatsappNumber] = useState('');
   const [sendingWhatsapp, setSendingWhatsapp] = useState(false);
   const [lastGeneratedPageUrl, setLastGeneratedPageUrl] = useState('');
+  
+  // Estados para geração por filtros
+  const [generateByFiltersDialogOpen, setGenerateByFiltersDialogOpen] = useState(false);
+  const [filterQuantity, setFilterQuantity] = useState(10);
+  const [generatingByFilters, setGeneratingByFilters] = useState(false);
   
   // Estados para agendamento recorrente
   const [scheduleDialogOpen, setScheduleDialogOpen] = useState(false);
@@ -801,6 +830,166 @@ const MarketingPDF = () => {
     }
   };
 
+  // Função para gerar página estática baseada apenas em filtros
+  const generateStaticPageByFilters = async () => {
+    try {
+      setGeneratingByFilters(true);
+
+      // Capturar filtros ativos do iframe
+      console.log('🎯 Capturando filtros ativos para geração automática...');
+      const activeFilters = await captureCurrentFilters();
+      console.log('📋 Filtros capturados:', activeFilters);
+
+      if (!activeFilters || Object.keys(activeFilters).length === 0) {
+        toast.error('Nenhum filtro ativo encontrado. Aplique alguns filtros primeiro.');
+        return;
+      }
+
+      // Construir query baseada nos filtros
+      let query = supabase
+        .from('leiloes_imoveis')
+        .select('*');
+
+      // Aplicar filtros na query
+      if (currentPage === 'RJ') {
+        query = query.eq('estado', 'RJ');
+      } else if (currentPage === 'SP') {
+        query = query.eq('estado', 'SP');
+      }
+
+      if (activeFilters.cidade) {
+        query = query.eq('cidade', activeFilters.cidade);
+      }
+
+      if (activeFilters.bairros && activeFilters.bairros.length > 0) {
+        query = query.in('bairro', activeFilters.bairros);
+      }
+
+      if (activeFilters.valor_min) {
+        query = query.gte('leilao_1', activeFilters.valor_min);
+      }
+
+      if (activeFilters.valor_max) {
+        query = query.lte('leilao_1', activeFilters.valor_max);
+      }
+
+      if (activeFilters.tipo_leilao) {
+        query = query.eq('tipo_leilao', activeFilters.tipo_leilao);
+      }
+
+      if (activeFilters.fgts === true) {
+        query = query.eq('fgts', true);
+      }
+
+      if (activeFilters.financiamento === true) {
+        query = query.eq('financiamento', true);
+      }
+
+      if (activeFilters.parcelamento === true) {
+        query = query.eq('parcelamento', true);
+      }
+
+      if (activeFilters.search) {
+        query = query.or(`titulo_propriedade.ilike.%${activeFilters.search}%,descricao.ilike.%${activeFilters.search}%,endereco.ilike.%${activeFilters.search}%`);
+      }
+
+      // Ordenar e limitar resultados
+      query = query.order('data_leilao_1', { ascending: true });
+      query = query.limit(filterQuantity);
+
+      const { data: propertiesData, error: propertiesError } = await query;
+
+      if (propertiesError) throw propertiesError;
+
+      if (!propertiesData || propertiesData.length === 0) {
+        toast.error('Nenhum imóvel encontrado com os filtros aplicados.');
+        return;
+      }
+
+      console.log(`🏠 Encontrados ${propertiesData.length} imóveis com os filtros aplicados`);
+
+      // Extrair IDs dos imóveis
+      const propertyIds = propertiesData.map(p => p.id);
+
+      // Gerar ID único para a página
+      const pageId = `filters-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      
+      // Criar título e descrição baseados nos filtros
+      const filterDetails = [];
+      
+      if (activeFilters.cidade) {
+        filterDetails.push(activeFilters.cidade);
+      }
+      
+      if (activeFilters.bairros && activeFilters.bairros.length > 0) {
+        if (activeFilters.bairros.length === 1) {
+          filterDetails.push(activeFilters.bairros[0]);
+        } else {
+          filterDetails.push(`${activeFilters.bairros.length} bairros`);
+        }
+      }
+      
+      if (activeFilters.valor_min || activeFilters.valor_max) {
+        const valorRange = [];
+        if (activeFilters.valor_min) valorRange.push(`R$ ${activeFilters.valor_min.toLocaleString('pt-BR')}+`);
+        if (activeFilters.valor_max) valorRange.push(`até R$ ${activeFilters.valor_max.toLocaleString('pt-BR')}`);
+        filterDetails.push(valorRange.join(' '));
+      }
+
+      const filterSummary = filterDetails.length > 0 ? ` - ${filterDetails.join(', ')}` : '';
+      const title = `Catálogo ${currentPage}${filterSummary} - ${propertiesData.length} Imóveis`;
+      const description = `Catálogo gerado automaticamente com ${propertiesData.length} imóveis baseado em filtros aplicados. ${filterDetails.length > 0 ? `Filtros: ${filterDetails.join(', ')}.` : ''} Gerado em ${new Date().toLocaleDateString('pt-BR')}.`;
+
+      // Salvar página estática no Supabase
+      const { data: staticPage, error: pageError } = await supabase
+        .from('static_pages')
+        .insert({
+          page_id: pageId,
+          title: title,
+          description: description,
+          page_type: currentPage,
+          property_ids: propertyIds,
+          properties_data: propertiesData,
+          total_properties: propertiesData.length,
+          filter_config: activeFilters,
+          applied_filters: activeFilters,
+        })
+        .select()
+        .single();
+
+      if (pageError) throw pageError;
+
+      // Gerar URL da página
+      // Gerar URL da página
+      const pageUrl = generateCorrectUrl(`/catalogo/${pageId}`);
+      console.log('🔗 URL gerada para página estática:', pageUrl);
+      
+      // Salvar URL da última página gerada para WhatsApp
+      setLastGeneratedPageUrl(pageUrl);
+
+      // Copiar URL para clipboard
+      await navigator.clipboard.writeText(pageUrl);
+
+      toast.success(
+        <div>
+          <p className="font-semibold">Página criada com filtros automáticos!</p>
+          <p className="text-sm text-gray-600 mt-1">{propertiesData.length} imóveis encontrados e incluídos</p>
+          <p className="text-xs text-blue-600 mt-2 break-all">{pageUrl}</p>
+        </div>
+      );
+
+      // Fechar dialog e abrir página em nova aba
+      setGenerateByFiltersDialogOpen(false);
+      window.open(pageUrl, '_blank');
+
+    } catch (error) {
+      console.error('Erro ao gerar página estática por filtros:', error);
+      toast.error('Erro ao gerar página estática. Tente novamente.');
+    } finally {
+      setGeneratingByFilters(false);
+    }
+  };
+
   const generateStaticPage = async () => {
     if (selectedProperties.length === 0) {
       toast.error('Selecione pelo menos um imóvel para gerar a página estática');
@@ -809,6 +998,31 @@ const MarketingPDF = () => {
 
     try {
       setGeneratingStaticPage(true);
+
+      // Capturar filtros ativos do iframe - usar mesma lógica do agendamento recorrente  
+      console.log('🎯 Capturando filtros ativos do iframe para página estática...');
+      const activeFilters = await captureCurrentFilters();
+      console.log('📋 Filtros capturados para página estática:', activeFilters);
+      
+      // Debug específico para bairros (igual ao agendamento recorrente)
+      if (activeFilters?.bairros) {
+        console.log('✅ Bairros encontrados nos filtros da página estática:', activeFilters.bairros);
+      } else {
+        console.warn('⚠️ Nenhum bairro encontrado nos filtros ativos da página estática!');
+      }
+      
+      // Debug completo dos filtros (igual ao agendamento)
+      console.log('🔍 Debug completo dos filtros capturados:', {
+        cidade: activeFilters?.cidade,
+        bairros: activeFilters?.bairros,
+        valor_min: activeFilters?.valor_min,
+        valor_max: activeFilters?.valor_max,
+        search: activeFilters?.search,
+        total_filters: activeFilters ? Object.keys(activeFilters).length : 0
+      });
+      
+      // Converter para o tipo correto
+      const appliedFilters: AppliedFilters = activeFilters || {};
 
       // Buscar dados completos dos imóveis selecionados
       const { data: selectedPropertiesData, error: propertiesError } = await supabase
@@ -821,11 +1035,48 @@ const MarketingPDF = () => {
       // Gerar ID único para a página
       const pageId = `catalog-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
       
-      // Criar título da página
-      const title = `Catálogo ${currentPage} - ${selectedProperties.length} Imóveis`;
-      const description = `Catálogo com ${selectedProperties.length} imóveis selecionados do leilão ${currentPage}. Gerado em ${new Date().toLocaleDateString('pt-BR')}.`;
+      // Criar título e descrição mais detalhados baseados nos filtros
+      let titleSuffix = '';
+      let descriptionDetails = '';
+      
+      if (activeFilters && Object.keys(activeFilters).length > 0) {
+        const filterDetails = [];
+        
+        if (activeFilters.cidade) {
+          filterDetails.push(`cidade: ${activeFilters.cidade}`);
+        }
+        
+        if (activeFilters.bairros && activeFilters.bairros.length > 0) {
+          filterDetails.push(`bairros: ${activeFilters.bairros.join(', ')}`);
+        }
+        
+        if (activeFilters.valor_min || activeFilters.valor_max) {
+          const valorRange = [];
+          if (activeFilters.valor_min) valorRange.push(`mín: R$ ${activeFilters.valor_min.toLocaleString('pt-BR')}`);
+          if (activeFilters.valor_max) valorRange.push(`máx: R$ ${activeFilters.valor_max.toLocaleString('pt-BR')}`);
+          if (valorRange.length > 0) filterDetails.push(`valor: ${valorRange.join(' - ')}`);
+        }
+        
+        if (activeFilters.search) {
+          filterDetails.push(`busca: "${activeFilters.search}"`);
+        }
+        
+        const features = [];
+        if (activeFilters.fgts) features.push('FGTS');
+        if (activeFilters.financiamento) features.push('Financiamento');
+        if (activeFilters.parcelamento) features.push('Parcelamento');
+        if (features.length > 0) filterDetails.push(`características: ${features.join(', ')}`);
+        
+        if (filterDetails.length > 0) {
+          titleSuffix = ` - Filtrado`;
+          descriptionDetails = ` Filtros aplicados: ${filterDetails.join('; ')}.`;
+        }
+      }
+      
+      const title = `Catálogo ${currentPage} - ${selectedProperties.length} Imóveis${titleSuffix}`;
+      const description = `Catálogo com ${selectedProperties.length} imóveis selecionados do leilão ${currentPage}. Gerado em ${new Date().toLocaleDateString('pt-BR')}.${descriptionDetails}`;
 
-      // Salvar página estática no Supabase
+      // Salvar página estática no Supabase com filtros aplicados (igual ao agendamento recorrente)
       const { data: staticPage, error: pageError } = await supabase
         .from('static_pages')
         .insert({
@@ -835,7 +1086,9 @@ const MarketingPDF = () => {
           page_type: currentPage,
           property_ids: selectedProperties,
           properties_data: selectedPropertiesData || [],
-          total_properties: selectedProperties.length
+          total_properties: selectedProperties.length,
+          filter_config: activeFilters, // Usar activeFilters diretamente como no agendamento
+          applied_filters: activeFilters, // Salvar também em applied_filters para compatibilidade
         })
         .select()
         .single();
@@ -843,7 +1096,9 @@ const MarketingPDF = () => {
       if (pageError) throw pageError;
 
       // Gerar URL da página
-      const pageUrl = `${window.location.origin}/catalogo/${pageId}`;
+      // Gerar URL da página
+      const pageUrl = generateCorrectUrl(`/catalogo/${pageId}`);
+      console.log('🔗 URL gerada para página estática:', pageUrl);
       
       // Salvar URL da última página gerada para WhatsApp
       setLastGeneratedPageUrl(pageUrl);
@@ -851,13 +1106,21 @@ const MarketingPDF = () => {
       // Copiar URL para clipboard
       await navigator.clipboard.writeText(pageUrl);
 
-      toast.success(
+      const successMessage = activeFilters && Object.keys(activeFilters).length > 0 ? (
+        <div>
+          <p className="font-semibold">Página estática criada com filtros!</p>
+          <p className="text-sm text-gray-600 mt-1">Filtros aplicados foram salvos junto com a página</p>
+          <p className="text-xs text-blue-600 mt-2 break-all">{pageUrl}</p>
+        </div>
+      ) : (
         <div>
           <p className="font-semibold">Página estática criada com sucesso!</p>
           <p className="text-sm text-gray-600 mt-1">Link copiado para a área de transferência</p>
           <p className="text-xs text-blue-600 mt-2 break-all">{pageUrl}</p>
         </div>
       );
+
+      toast.success(successMessage);
 
       // Abrir página em nova aba
       window.open(pageUrl, '_blank');
@@ -903,6 +1166,12 @@ const MarketingPDF = () => {
 
     setSendingWhatsapp(true);
     try {
+      console.log('📱 Enviando pelo WhatsApp:', {
+        phoneNumber: whatsappNumber.trim(),
+        pageUrl: lastGeneratedPageUrl,
+        pageType: currentPage
+      });
+      
       // Chamar a Edge Function para enviar pelo WhatsApp
       const { data, error } = await supabase.functions.invoke('send-whatsapp-page', {
         body: {
@@ -1481,9 +1750,24 @@ const MarketingPDF = () => {
                 variant="outline"
                 size="sm"
                 className="flex items-center gap-2"
+                title={selectionMode ? 'Gerar página estática com filtros aplicados' : 'Gerar página estática'}
               >
                 {generatingStaticPage ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Globe className="h-4 w-4" />}
-                {generatingStaticPage ? 'Gerando...' : `Página (${selectedProperties.length})`}
+                {generatingStaticPage ? 'Gerando...' : 
+                  selectionMode ? `Página + Filtros (${selectedProperties.length})` : `Página (${selectedProperties.length})`}
+              </Button>
+
+              {/* Botão Gerar por Filtros */}
+              <Button
+                onClick={() => setGenerateByFiltersDialogOpen(true)}
+                disabled={generatingByFilters}
+                variant="default"
+                size="sm"
+                className="flex items-center gap-2"
+                title="Gerar página estática automaticamente baseada nos filtros aplicados"
+              >
+                {generatingByFilters ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Filter className="h-4 w-4" />}
+                {generatingByFilters ? 'Gerando...' : 'Gerar por Filtros'}
               </Button>
 
               {/* Botão Enviar WhatsApp */}
@@ -1628,9 +1912,21 @@ const MarketingPDF = () => {
                   disabled={selectedProperties.length === 0 || generatingStaticPage}
                   variant="outline"
                   className="flex items-center gap-2"
+                  title={selectionMode ? 'Gerar página estática com filtros aplicados' : 'Gerar página estática'}
                 >
                   {generatingStaticPage ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Globe className="h-4 w-4" />}
-                  {generatingStaticPage ? 'Gerando Página...' : 'Gerar Página'}
+                  {generatingStaticPage ? 'Gerando...' : 
+                    selectionMode ? 'Página + Filtros' : 'Gerar Página'}
+                </Button>
+
+                <Button
+                  onClick={() => setGenerateByFiltersDialogOpen(true)}
+                  disabled={generatingByFilters}
+                  className="flex items-center gap-2"
+                  title="Gerar página estática automaticamente baseada nos filtros aplicados"
+                >
+                  {generatingByFilters ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Filter className="h-4 w-4" />}
+                  {generatingByFilters ? 'Gerando...' : 'Gerar por Filtros'}
                 </Button>
 
                 <Button
@@ -2006,6 +2302,85 @@ const MarketingPDF = () => {
             </DialogContent>
           </Dialog>
 
+          {/* Dialog de Geração por Filtros */}
+          <Dialog open={generateByFiltersDialogOpen} onOpenChange={setGenerateByFiltersDialogOpen}>
+            <DialogContent className="sm:max-w-[500px]">
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2">
+                  <Filter className="h-5 w-5" />
+                  Gerar Página por Filtros
+                </DialogTitle>
+                <DialogDescription>
+                  Gere uma página estática automaticamente baseada nos filtros aplicados no iframe
+                </DialogDescription>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="filter-quantity">
+                    Quantidade máxima de imóveis
+                  </Label>
+                  <Input
+                    id="filter-quantity"
+                    type="number"
+                    min="1"
+                    max="50"
+                    value={filterQuantity}
+                    onChange={(e) => setFilterQuantity(parseInt(e.target.value) || 10)}
+                    className="w-full"
+                  />
+                  <p className="text-xs text-gray-500">
+                    Quantos imóveis no máximo incluir na página (1-50)
+                  </p>
+                </div>
+                
+                <div className="bg-blue-50 p-3 rounded-lg">
+                  <p className="text-sm text-blue-800 font-medium mb-1">Como funciona:</p>
+                  <ul className="text-xs text-blue-700 space-y-1">
+                    <li>• Os filtros ativos no iframe serão capturados automaticamente</li>
+                    <li>• O sistema buscará imóveis que atendem aos critérios</li>
+                    <li>• Será gerada uma página com até {filterQuantity} imóveis encontrados</li>
+                    <li>• Ordenação: próximos leilões primeiro</li>
+                  </ul>
+                </div>
+
+                <div className="bg-yellow-50 p-3 rounded-lg">
+                  <p className="text-sm text-yellow-800 font-medium mb-1">⚠️ Importante:</p>
+                  <p className="text-xs text-yellow-700">
+                    Certifique-se de aplicar filtros no iframe antes de gerar a página. 
+                    Sem filtros ativos, a geração será cancelada.
+                  </p>
+                </div>
+              </div>
+              <DialogFooter>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setGenerateByFiltersDialogOpen(false)}
+                  disabled={generatingByFilters}
+                >
+                  Cancelar
+                </Button>
+                <Button 
+                  onClick={generateStaticPageByFilters}
+                  disabled={generatingByFilters}
+                  className="flex items-center gap-2"
+                >
+                  {generatingByFilters ? (
+                    <>
+                      <RefreshCw className="h-4 w-4 animate-spin" />
+                      Gerando...
+                    </>
+                  ) : (
+                    <>
+                      <Filter className="h-4 w-4" />
+                      Gerar Página
+                    </>
+                  )}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+
           {/* Dialog do WhatsApp */}
           <Dialog open={whatsappDialogOpen} onOpenChange={setWhatsappDialogOpen}>
             <DialogContent className="sm:max-w-[425px]">
@@ -2085,15 +2460,39 @@ const MarketingPDF = () => {
             <h4 className="font-medium text-gray-900 mb-2">Como usar:</h4>
             <ol className="text-sm text-gray-600 space-y-1">
               <li>1. Escolha a página (RJ ou SP) que deseja usar</li>
-              <li>2. Clique em "Ativar Seleção" para entrar no modo de seleção</li>
-              <li>3. Use os filtros normais da página para encontrar imóveis</li>
-              <li>4. Clique nos cards dos imóveis para selecioná-los (aparecerá um ✓ azul)</li>
-              <li>5. Clique em "Gerar PDF" para visualizar e imprimir o catálogo</li>
-              <li>6. Clique em "Gerar Página" para criar uma página estática</li>
-              <li>7. Clique em "WhatsApp" para enviar a página por WhatsApp</li>
-              <li>8. Ou clique em "Enviar por Email" para enviar o PDF automaticamente</li>
+              <li>2. <strong>OPÇÃO A - Seleção Manual:</strong></li>
+              <li>   • Clique em "Ativar Seleção" para entrar no modo de seleção</li>
+              <li>   • Use os filtros para encontrar imóveis e clique para selecioná-los</li>
+              <li>   • Clique em "Página + Filtros" para criar página com seleções manuais</li>
+              <li>3. <strong>🔥 OPÇÃO B - Geração Automática por Filtros:</strong></li>
+              <li>   • Apply filtros normais da página (cidade, bairros, valor, etc.)</li>
+              <li>   • Clique em "Gerar por Filtros" e defina a quantidade de imóveis</li>
+              <li>   • O sistema busca e inclui automaticamente os imóveis que atendem os filtros!</li>
+              <li>4. Clique em "Gerar PDF" para visualizar e imprimir o catálogo</li>
+              <li>5. Clique em "WhatsApp" para enviar a página por WhatsApp</li>
+              <li>6. Ou clique em "Enviar por Email" para enviar o PDF automaticamente</li>
+              <li>7. Clique em "Agendar Recorrente" para criar envios automáticos com os filtros atuais</li>
             </ol>
             
+            <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg">
+              <h5 className="font-medium text-green-900 mb-1">🚀 Novo! Geração Automática por Filtros</h5>
+              <p className="text-xs text-green-700 mb-2">
+                <strong>Agora você pode gerar páginas estáticas automaticamente!</strong> Basta aplicar filtros 
+                (cidade, bairros, preço, etc.) e clicar em "Gerar por Filtros". O sistema busca e inclui 
+                automaticamente os imóveis que atendem aos critérios, sem precisar selecionar um por um.
+              </p>
+              <p className="text-xs text-green-600">
+                ✅ Muito mais rápido • ✅ Perfeito para campanhas • ✅ Funciona com qualquer filtro
+              </p>
+            </div>
+
+            <div className="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+              <h5 className="font-medium text-blue-900 mb-1">💡 Filtros em Páginas Estáticas</h5>
+              <p className="text-xs text-blue-700">
+                Todos os filtros aplicados são automaticamente capturados e salvos junto com a página estática, 
+                permitindo recriar catálogos específicos baseados nos mesmos critérios de filtragem.
+              </p>
+            </div>
 
           </div>
         </CardContent>

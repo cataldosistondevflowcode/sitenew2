@@ -10,7 +10,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { useToast } from '@/hooks/use-toast';
 
 declare global {
   interface Window {
@@ -47,6 +47,7 @@ const WhatsAppScheduleModal: React.FC<WhatsAppScheduleModalProps> = ({
   onClose,
   currentUrl = ''
 }) => {
+  const { toast } = useToast();
   const containerRef = useRef<HTMLDivElement>(null);
   const [activeTab, setActiveTab] = useState<'now' | 'schedule'>('now');
   const [isFormLoaded, setIsFormLoaded] = useState(false);
@@ -252,7 +253,11 @@ const WhatsAppScheduleModal: React.FC<WhatsAppScheduleModalProps> = ({
         console.error('Erro ao verificar duplicata:', checkError);
         // Continua mesmo com erro, melhor enviar do que bloquear
       } else if (alreadySent) {
-        toast.warning('Esta mensagem já foi enviada para este número anteriormente.');
+        toast({
+          title: "Aviso",
+          description: "Esta mensagem já foi enviada para este número anteriormente.",
+          variant: "destructive"
+        });
         setIsSubmitting(false);
         return;
       }

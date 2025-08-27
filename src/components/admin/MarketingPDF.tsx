@@ -732,13 +732,21 @@ const MarketingPDF = () => {
       
     } catch (error) {
       console.error('Erro ao buscar propriedades:', error);
-      toast.error('Erro ao selecionar todas as propriedades');
+      toast({
+        title: "Erro",
+        description: "Erro ao selecionar todas as propriedades",
+        variant: "destructive"
+      });
     }
   };
 
   const generatePDF = async () => {
     if (selectedProperties.length === 0) {
-      toast.error('Selecione pelo menos um imóvel para gerar o PDF');
+      toast({
+        title: "Erro",
+        description: "Selecione pelo menos um imóvel para gerar o PDF",
+        variant: "destructive"
+      });
       return;
     }
 
@@ -1312,26 +1320,42 @@ const MarketingPDF = () => {
 
       // Validações
       if (!scheduleForm.name.trim()) {
-        toast.error('Nome é obrigatório');
+        toast({
+          title: "Erro",
+          description: "Nome é obrigatório",
+          variant: "destructive"
+        });
         return;
       }
 
       // Validar destinatários - ou lista ou email manual
       if (useEmailList) {
         if (!scheduleForm.email_list_id) {
-          toast.error('Selecione uma lista de emails');
+          toast({
+            title: "Erro",
+            description: "Selecione uma lista de emails",
+            variant: "destructive"
+          });
           return;
         }
       } else {
         if (!scheduleForm.email.trim()) {
-          toast.error('Email é obrigatório');
+          toast({
+            title: "Erro",
+            description: "Email é obrigatório",
+            variant: "destructive"
+          });
           return;
         }
 
         // Validar email
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(scheduleForm.email.trim())) {
-          toast.error('Email inválido');
+          toast({
+            title: "Erro",
+            description: "Email inválido",
+            variant: "destructive"
+          });
           return;
         }
       }
@@ -1392,7 +1416,10 @@ const MarketingPDF = () => {
 
       if (error) throw error;
 
-      toast.success('Agendamento criado com sucesso!');
+      toast({
+        title: "Sucesso!",
+        description: "Agendamento criado com sucesso!"
+      });
       setScheduleDialogOpen(false);
       
       // Reset form
@@ -1410,7 +1437,11 @@ const MarketingPDF = () => {
 
     } catch (error) {
       console.error('Erro ao criar agendamento:', error);
-      toast.error('Erro ao criar agendamento');
+      toast({
+        title: "Erro",
+        description: "Erro ao criar agendamento",
+        variant: "destructive"
+      });
     } finally {
       setCreatingSchedule(false);
     }

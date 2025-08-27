@@ -173,22 +173,7 @@ const AnalyticsDashboard = () => {
       color: 'text-purple-600',
       bgColor: 'bg-purple-100',
     },
-    {
-      title: 'Pesquisas Realizadas',
-      value: analytics.total_searches?.toString() || '0',
-      icon: Search,
-      description: 'Buscas e filtros aplicados',
-      color: 'text-orange-600',
-      bgColor: 'bg-orange-100',
-    },
-    {
-      title: 'Leads Gerados',
-      value: analytics.total_leads?.toString() || '0',
-      icon: MessageSquare,
-      description: 'Contatos recebidos',
-      color: 'text-red-600',
-      bgColor: 'bg-red-100',
-    },
+
     {
       title: 'Tempo Médio por Imóvel',
       value: analytics.avg_time_on_properties ? formatTime(Number(analytics.avg_time_on_properties)) : '0s',
@@ -242,7 +227,7 @@ const AnalyticsDashboard = () => {
       </div>
 
       {/* Cards de Estatísticas Principais */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {statCards.map((stat, index) => {
           const Icon = stat.icon;
           return (

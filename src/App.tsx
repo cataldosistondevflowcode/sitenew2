@@ -22,6 +22,8 @@ import TestPage from "./pages/TestPage";
 import TestPdfEmail from "./pages/TestPdfEmail";
 import TestScheduleProcessor from "./pages/TestScheduleProcessor";
 import TestWhatsAppScheduleProcessor from "./pages/TestWhatsAppScheduleProcessor";
+import WhatsAppPhoneLists from "./components/admin/WhatsAppPhoneLists";
+import WhatsAppSchedules from "./components/admin/WhatsAppSchedules";
 
 const queryClient = new QueryClient();
 
@@ -75,6 +77,8 @@ const App = () => (
             <Route path="/test-pdf-email" element={<TestPdfEmail />} />
             <Route path="/test-schedule-processor" element={<TestScheduleProcessor />} />
             <Route path="/test-whatsapp-schedule-processor" element={<TestWhatsAppScheduleProcessor />} />
+            <Route path="/admin/whatsapp-phone-lists" element={<AdminRoute><WhatsAppPhoneLists /></AdminRoute>} />
+            <Route path="/admin/whatsapp-schedules" element={<AdminRoute><WhatsAppSchedules /></AdminRoute>} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

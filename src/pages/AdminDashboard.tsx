@@ -11,7 +11,7 @@ import PropertiesTable from '@/components/admin/PropertiesTable';
 import AnalyticsDashboard from '@/components/admin/AnalyticsDashboard';
 import AnalyticsTablesView from '@/components/admin/AnalyticsTablesView';
 import MarketingPDF from '@/components/admin/MarketingPDF';
-import { LogOut, Settings, MessageCircle, AlertTriangle, User, BarChart3, Home, Database, FileText } from 'lucide-react';
+import { LogOut, Settings, MessageCircle, AlertTriangle, User, BarChart3, Home, Database, FileText, Phone, Calendar } from 'lucide-react';
 
 const AdminDashboard = () => {
   const { logout, user } = useAuth();
@@ -131,43 +131,51 @@ const AdminDashboard = () => {
           {/* Seção do WhatsApp */}
           <div>
             <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              Integrações
+              Sistema WhatsApp
             </h3>
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <MessageCircle className="h-5 w-5 text-green-600" />
-                  Conexão WhatsApp Business
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <p className="text-sm text-gray-600 mb-2">
-                      Conecte sua conta do WhatsApp Business para receber leads diretamente no seu celular.
-                    </p>
-                    <div className="flex items-center gap-2">
-                      <Badge variant="outline" className="flex items-center gap-1">
-                        <AlertTriangle className="h-3 w-3 text-orange-500" />
-                        Em Manutenção
-                      </Badge>
-                      <span className="text-xs text-gray-500">
-                        Funcionalidade será disponibilizada em breve
-                      </span>
-                    </div>
-                  </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Phone className="h-5 w-5 text-green-600" />
+                    Listas de Telefones
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-gray-600 mb-4">
+                    Gerencie listas de telefones para envios automáticos de WhatsApp.
+                  </p>
                   <Button 
-                    onClick={handleWhatsAppConnect}
-                    disabled
-                    className="ml-4"
-                    variant="outline"
+                    onClick={() => navigate('/admin/whatsapp-phone-lists')}
+                    className="w-full bg-green-600 hover:bg-green-700"
                   >
-                    <MessageCircle className="h-4 w-4 mr-2" />
-                    Conectar WhatsApp
+                    <Phone className="h-4 w-4 mr-2" />
+                    Gerenciar Listas
                   </Button>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Calendar className="h-5 w-5 text-blue-600" />
+                    Agendamentos WhatsApp
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-gray-600 mb-4">
+                    Visualize e gerencie agendamentos de envio automático.
+                  </p>
+                  <Button 
+                    onClick={() => navigate('/admin/whatsapp-schedules')}
+                    className="w-full bg-blue-600 hover:bg-blue-700"
+                  >
+                    <Calendar className="h-4 w-4 mr-2" />
+                    Ver Agendamentos
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
           </div>
 
           <Separator />

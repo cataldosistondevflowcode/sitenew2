@@ -21,11 +21,14 @@ serve(async (req) => {
 
     // Buscar agendamentos que precisam ser executados
     const now = new Date().toISOString()
+    console.log(`⏰ Horário atual: ${now}`)
+    
     const { data: schedulesToProcess, error: fetchError } = await supabaseClient
       .from('whatsapp_schedules')
       .select('*')
       .eq('is_active', true)
-      .or(`next_send_at.is.null,next_send_at.lte.${now}`)
+      .not('next_send_at', 'is', null)
+      .lte('next_send_at', now)
 
     if (fetchError) {
       console.error('❌ Erro ao buscar agendamentos:', fetchError)
@@ -33,6 +36,13 @@ serve(async (req) => {
     }
 
     console.log(`📋 Encontrados ${schedulesToProcess?.length || 0} agendamentos para processar`)
+    
+    // Log detalhado dos agendamentos encontrados
+    if (schedulesToProcess && schedulesToProcess.length > 0) {
+      schedulesToProcess.forEach(schedule => {
+        console.log(`   📅 ${schedule.name}: next_send_at=${schedule.next_send_at}, is_active=${schedule.is_active}`)
+      })
+    }
 
     if (!schedulesToProcess || schedulesToProcess.length === 0) {
       return Response.json({
@@ -40,7 +50,9 @@ serve(async (req) => {
         processed: 0,
         successful: 0,
         total_messages_sent: 0,
-        results: []
+        results: [],
+        current_time: now,
+        message: 'Nenhum agendamento pronto para executar no horário atual'
       }, { headers: corsHeaders })
     }
 

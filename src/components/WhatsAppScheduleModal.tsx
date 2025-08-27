@@ -185,7 +185,11 @@ const WhatsAppScheduleModal: React.FC<WhatsAppScheduleModalProps> = ({
     e.preventDefault();
     
     if (!formData.phone) {
-      toast.error('Telefone é obrigatório');
+      toast({
+        title: "Erro",
+        description: "Telefone é obrigatório",
+        variant: "destructive"
+      });
       return;
     }
 
@@ -211,7 +215,11 @@ const WhatsAppScheduleModal: React.FC<WhatsAppScheduleModalProps> = ({
       }
 
       if (!pageUrl) {
-        toast.error('URL da página não encontrada');
+        toast({
+          title: "Erro",
+          description: "URL da página não encontrada",
+          variant: "destructive"
+        });
         setIsSubmitting(false);
         return;
       }
@@ -293,7 +301,10 @@ const WhatsAppScheduleModal: React.FC<WhatsAppScheduleModalProps> = ({
         console.error('Erro ao registrar mensagem:', regError);
       }
 
-      toast.success('Mensagem enviada pelo WhatsApp com sucesso!');
+      toast({
+        title: "Sucesso!",
+        description: "Mensagem enviada pelo WhatsApp com sucesso!"
+      });
       
       // Fechar o modal e limpar os campos
       setFormData({ name: '', email: '', phone: '' });
@@ -301,7 +312,11 @@ const WhatsAppScheduleModal: React.FC<WhatsAppScheduleModalProps> = ({
 
     } catch (error) {
       console.error('Erro ao enviar pelo WhatsApp:', error);
-      toast.error('Erro ao enviar pelo WhatsApp. Tente novamente.');
+      toast({
+        title: "Erro",
+        description: "Erro ao enviar pelo WhatsApp. Tente novamente.",
+        variant: "destructive"
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -313,34 +328,67 @@ const WhatsAppScheduleModal: React.FC<WhatsAppScheduleModalProps> = ({
     
     // Validações
     if (!scheduleData.name.trim()) {
-      toast.error('Nome é obrigatório');
+      toast({
+        title: "Erro",
+        description: "Nome é obrigatório",
+        variant: "destructive"
+      });
       return;
     }
 
     // Validar destinatários - ou lista ou telefones manuais
     if (usePhoneList) {
       if (!scheduleData.phone_list_id) {
-        toast.error('Selecione uma lista de telefones');
+        toast({
+          title: "Erro",
+          description: "Selecione uma lista de telefones",
+          variant: "destructive"
+        });
         return;
       }
     } else {
       if (scheduleData.recipient_phones.filter(phone => phone.trim()).length === 0) {
-        toast.error('Pelo menos um telefone destinatário é obrigatório');
+        toast({
+          title: "Erro",
+          description: "Pelo menos um telefone destinatário é obrigatório",
+          variant: "destructive"
+        });
         return;
       }
     }
 
     if (scheduleData.recurrence_type === 'weekly' && (!scheduleData.send_weekdays || scheduleData.send_weekdays.length === 0)) {
-      toast.error('Selecione pelo menos um dia da semana');
+      toast({
+        title: "Erro",
+        description: "Selecione pelo menos um dia da semana",
+        variant: "destructive"
+      });
       return;
     }
 
     try {
       setLoading(true);
 
-      // Calcular próximo envio se não for 'once'
+      // Calcular próximo envio
       let nextSendAt = null;
-      if (scheduleData.recurrence_type !== 'once') {
+      
+      if (scheduleData.recurrence_type === 'once') {
+        // Para agendamentos únicos, calcular próximo horário disponível
+        const today = new Date();
+        const [hours, minutes] = scheduleData.send_time.split(':').map(Number);
+        
+        // Criar data para hoje no horário especificado
+        const scheduledTime = new Date();
+        scheduledTime.setHours(hours, minutes, 0, 0);
+        
+        // Se o horário já passou hoje, agendar para amanhã
+        if (scheduledTime <= today) {
+          scheduledTime.setDate(scheduledTime.getDate() + 1);
+        }
+        
+        nextSendAt = scheduledTime.toISOString();
+      } else {
+        // Para agendamentos recorrentes, usar a função do banco
         const { data: nextSendData, error: nextSendError } = await supabase
           .rpc('calculate_next_whatsapp_send_time', {
             p_recurrence_type: scheduleData.recurrence_type,
@@ -382,11 +430,18 @@ const WhatsAppScheduleModal: React.FC<WhatsAppScheduleModalProps> = ({
 
       if (error) throw error;
       
-      toast.success('Agendamento criado com sucesso');
+      toast({
+        title: "Sucesso!",
+        description: "Agendamento criado com sucesso"
+      });
       onClose();
     } catch (error) {
       console.error('Erro ao salvar agendamento:', error);
-      toast.error('Erro ao salvar agendamento');
+      toast({
+        title: "Erro",
+        description: "Erro ao salvar agendamento",
+        variant: "destructive"
+      });
     } finally {
       setLoading(false);
     }

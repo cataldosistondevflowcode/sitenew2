@@ -33,6 +33,7 @@ import {
 } from 'lucide-react';
 import { formatCurrency } from '@/utils/stringUtils';
 import { toast } from 'sonner';
+import WhatsAppModal from '@/components/WhatsAppModal';
 
 interface Property {
   id: number;
@@ -93,8 +94,6 @@ const MarketingPDF = () => {
   
   // Estados para WhatsApp
   const [whatsappDialogOpen, setWhatsappDialogOpen] = useState(false);
-  const [whatsappNumber, setWhatsappNumber] = useState('');
-  const [sendingWhatsapp, setSendingWhatsapp] = useState(false);
   const [lastGeneratedPageUrl, setLastGeneratedPageUrl] = useState('');
   
   // Estados para geração por filtros
@@ -1153,46 +1152,7 @@ const MarketingPDF = () => {
     setWhatsappDialogOpen(true);
   };
 
-  const sendPageByWhatsapp = async () => {
-    if (!whatsappNumber.trim()) {
-      toast.error('Digite um número de WhatsApp válido');
-      return;
-    }
 
-    if (!lastGeneratedPageUrl) {
-      toast.error('Nenhuma página gerada encontrada');
-      return;
-    }
-
-    setSendingWhatsapp(true);
-    try {
-      console.log('📱 Enviando pelo WhatsApp:', {
-        phoneNumber: whatsappNumber.trim(),
-        pageUrl: lastGeneratedPageUrl,
-        pageType: currentPage
-      });
-      
-      // Chamar a Edge Function para enviar pelo WhatsApp
-      const { data, error } = await supabase.functions.invoke('send-whatsapp-page', {
-        body: {
-          phoneNumber: whatsappNumber.trim(),
-          pageUrl: lastGeneratedPageUrl,
-          pageType: currentPage
-        }
-      });
-
-      if (error) throw error;
-
-      toast.success(`Página enviada com sucesso pelo WhatsApp para ${whatsappNumber}!`);
-      setWhatsappDialogOpen(false);
-      setWhatsappNumber('');
-    } catch (error) {
-      console.error('Erro ao enviar pelo WhatsApp:', error);
-      toast.error('Erro ao enviar pelo WhatsApp. Tente novamente.');
-    } finally {
-      setSendingWhatsapp(false);
-    }
-  };
 
   // Função para capturar filtros da página principal (fora do iframe)
   const captureMainPageFilters = (): any => {
@@ -2381,79 +2341,12 @@ const MarketingPDF = () => {
             </DialogContent>
           </Dialog>
 
-          {/* Dialog do WhatsApp */}
-          <Dialog open={whatsappDialogOpen} onOpenChange={setWhatsappDialogOpen}>
-            <DialogContent className="sm:max-w-[425px]">
-              <DialogHeader>
-                <DialogTitle className="flex items-center gap-2">
-                  <MessageCircle className="h-5 w-5" />
-                  Enviar Página pelo WhatsApp
-                </DialogTitle>
-                <DialogDescription>
-                  Envie a página gerada para um número de WhatsApp
-                </DialogDescription>
-              </DialogHeader>
-              <div className="grid gap-4 py-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="whatsapp-number">
-                    Número do WhatsApp
-                  </Label>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm text-gray-500 bg-gray-100 px-2 py-2 rounded border">+55</span>
-                    <Input
-                      id="whatsapp-number"
-                      type="tel"
-                      placeholder="61998515960"
-                      value={whatsappNumber}
-                      onChange={(e) => setWhatsappNumber(e.target.value.replace(/\D/g, ''))}
-                      className="flex-1"
-                      maxLength={11}
-                    />
-                  </div>
-                  <p className="text-xs text-gray-500">
-                    Digite apenas os números (DDD + número). O +55 será adicionado automaticamente.
-                  </p>
-                </div>
-                
-                {lastGeneratedPageUrl && (
-                  <div className="bg-blue-50 p-3 rounded-lg">
-                    <Label className="text-sm font-medium text-blue-800">Página a ser enviada:</Label>
-                    <p className="text-xs text-blue-600 break-all mt-1">{lastGeneratedPageUrl}</p>
-                    <p className="text-xs text-blue-600 mt-1">
-                      <strong>Destino:</strong> Webhook {currentPage === 'RJ' ? 'wpprj' : 'wppsp'}
-                    </p>
-                  </div>
-                )}
-              </div>
-              <DialogFooter>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setWhatsappDialogOpen(false)}
-                  disabled={sendingWhatsapp}
-                >
-                  Cancelar
-                </Button>
-                <Button 
-                  onClick={sendPageByWhatsapp}
-                  disabled={!whatsappNumber || sendingWhatsapp}
-                  className="flex items-center gap-2"
-                >
-                  {sendingWhatsapp ? (
-                    <>
-                      <RefreshCw className="h-4 w-4 animate-spin" />
-                      Enviando...
-                    </>
-                  ) : (
-                    <>
-                      <MessageCircle className="h-4 w-4" />
-                      Enviar WhatsApp
-                    </>
-                  )}
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+          {/* Modal do WhatsApp */}
+          <WhatsAppModal
+            isOpen={whatsappDialogOpen}
+            onClose={() => setWhatsappDialogOpen(false)}
+            currentUrl={lastGeneratedPageUrl}
+          />
 
           {/* Instruções */}
           <div className="bg-gray-50 p-4 rounded-lg">

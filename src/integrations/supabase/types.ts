@@ -187,6 +187,7 @@ export type Database = {
         Row: {
           created_at: string | null
           created_by: string | null
+          delivery_method: string | null
           description: string | null
           email_list_id: string | null
           filter_config: Json | null
@@ -209,10 +210,13 @@ export type Database = {
           total_emails_sent: number | null
           updated_at: string | null
           updated_by: string | null
+          whatsapp_list_id: string | null
+          whatsapp_numbers: string[] | null
         }
         Insert: {
           created_at?: string | null
           created_by?: string | null
+          delivery_method?: string | null
           description?: string | null
           email_list_id?: string | null
           filter_config?: Json | null
@@ -235,10 +239,13 @@ export type Database = {
           total_emails_sent?: number | null
           updated_at?: string | null
           updated_by?: string | null
+          whatsapp_list_id?: string | null
+          whatsapp_numbers?: string[] | null
         }
         Update: {
           created_at?: string | null
           created_by?: string | null
+          delivery_method?: string | null
           description?: string | null
           email_list_id?: string | null
           filter_config?: Json | null
@@ -261,6 +268,8 @@ export type Database = {
           total_emails_sent?: number | null
           updated_at?: string | null
           updated_by?: string | null
+          whatsapp_list_id?: string | null
+          whatsapp_numbers?: string[] | null
         }
         Relationships: [
           {
@@ -268,6 +277,13 @@ export type Database = {
             columns: ["email_list_id"]
             isOneToOne: false
             referencedRelation: "email_lists"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "email_schedules_whatsapp_list_id_fkey"
+            columns: ["whatsapp_list_id"]
+            isOneToOne: false
+            referencedRelation: "whatsapp_lists"
             referencedColumns: ["id"]
           },
         ]
@@ -529,10 +545,12 @@ export type Database = {
       }
       static_pages: {
         Row: {
+          applied_filters: Json | null
           created_at: string | null
           created_by: string | null
           description: string | null
           expires_at: string | null
+          filter_config: Json | null
           id: string
           is_active: boolean | null
           last_viewed_at: string | null
@@ -545,10 +563,12 @@ export type Database = {
           view_count: number | null
         }
         Insert: {
+          applied_filters?: Json | null
           created_at?: string | null
           created_by?: string | null
           description?: string | null
           expires_at?: string | null
+          filter_config?: Json | null
           id?: string
           is_active?: boolean | null
           last_viewed_at?: string | null
@@ -561,10 +581,12 @@ export type Database = {
           view_count?: number | null
         }
         Update: {
+          applied_filters?: Json | null
           created_at?: string | null
           created_by?: string | null
           description?: string | null
           expires_at?: string | null
+          filter_config?: Json | null
           id?: string
           is_active?: boolean | null
           last_viewed_at?: string | null
@@ -577,6 +599,258 @@ export type Database = {
           view_count?: number | null
         }
         Relationships: []
+      }
+      whatsapp_lists: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          phone_numbers: string[]
+          updated_at: string | null
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          phone_numbers?: string[]
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          phone_numbers?: string[]
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
+      whatsapp_phone_lists: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          phones: string[] | null
+          updated_at: string | null
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          phones?: string[] | null
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          phones?: string[] | null
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
+      whatsapp_schedule_logs: {
+        Row: {
+          created_at: string | null
+          error_details: Json | null
+          error_message: string | null
+          executed_at: string
+          execution_time_ms: number | null
+          id: string
+          message_details: Json | null
+          messages_sent: number | null
+          properties_found: number | null
+          properties_sent: number | null
+          schedule_id: string | null
+          status: string
+        }
+        Insert: {
+          created_at?: string | null
+          error_details?: Json | null
+          error_message?: string | null
+          executed_at: string
+          execution_time_ms?: number | null
+          id?: string
+          message_details?: Json | null
+          messages_sent?: number | null
+          properties_found?: number | null
+          properties_sent?: number | null
+          schedule_id?: string | null
+          status: string
+        }
+        Update: {
+          created_at?: string | null
+          error_details?: Json | null
+          error_message?: string | null
+          executed_at?: string
+          execution_time_ms?: number | null
+          id?: string
+          message_details?: Json | null
+          messages_sent?: number | null
+          properties_found?: number | null
+          properties_sent?: number | null
+          schedule_id?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "whatsapp_schedule_logs_schedule_id_fkey"
+            columns: ["schedule_id"]
+            isOneToOne: false
+            referencedRelation: "whatsapp_schedules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      whatsapp_schedules: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          filter_config: Json | null
+          id: string
+          is_active: boolean | null
+          last_sent_at: string | null
+          max_properties: number | null
+          message_template: string
+          name: string
+          next_send_at: string | null
+          page_type: string
+          phone_list_id: string | null
+          recipient_phones: string[] | null
+          recurrence_interval: number | null
+          recurrence_type: string
+          send_day_of_month: number | null
+          send_time: string
+          send_timezone: string | null
+          send_weekdays: number[] | null
+          total_messages_sent: number | null
+          updated_at: string | null
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          filter_config?: Json | null
+          id?: string
+          is_active?: boolean | null
+          last_sent_at?: string | null
+          max_properties?: number | null
+          message_template?: string
+          name: string
+          next_send_at?: string | null
+          page_type: string
+          phone_list_id?: string | null
+          recipient_phones?: string[] | null
+          recurrence_interval?: number | null
+          recurrence_type: string
+          send_day_of_month?: number | null
+          send_time?: string
+          send_timezone?: string | null
+          send_weekdays?: number[] | null
+          total_messages_sent?: number | null
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          filter_config?: Json | null
+          id?: string
+          is_active?: boolean | null
+          last_sent_at?: string | null
+          max_properties?: number | null
+          message_template?: string
+          name?: string
+          next_send_at?: string | null
+          page_type?: string
+          phone_list_id?: string | null
+          recipient_phones?: string[] | null
+          recurrence_interval?: number | null
+          recurrence_type?: string
+          send_day_of_month?: number | null
+          send_time?: string
+          send_timezone?: string | null
+          send_weekdays?: number[] | null
+          total_messages_sent?: number | null
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_whatsapp_schedules_phone_list"
+            columns: ["phone_list_id"]
+            isOneToOne: false
+            referencedRelation: "whatsapp_phone_lists"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      whatsapp_sent_messages: {
+        Row: {
+          created_at: string | null
+          id: string
+          message_hash: string
+          page_url: string
+          phone_number: string
+          schedule_id: string | null
+          sent_at: string | null
+          webhook_response: Json | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          message_hash: string
+          page_url: string
+          phone_number: string
+          schedule_id?: string | null
+          sent_at?: string | null
+          webhook_response?: Json | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          message_hash?: string
+          page_url?: string
+          phone_number?: string
+          schedule_id?: string | null
+          sent_at?: string | null
+          webhook_response?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "whatsapp_sent_messages_schedule_id_fkey"
+            columns: ["schedule_id"]
+            isOneToOne: false
+            referencedRelation: "whatsapp_schedules"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
@@ -593,6 +867,26 @@ export type Database = {
           p_send_weekdays: number[]
           p_timezone: string
         }
+        Returns: string
+      }
+      calculate_next_whatsapp_send_time: {
+        Args: {
+          p_from_date?: string
+          p_recurrence_interval: number
+          p_recurrence_type: string
+          p_send_day_of_month?: number
+          p_send_time: string
+          p_send_weekdays?: number[]
+          p_timezone?: string
+        }
+        Returns: string
+      }
+      check_whatsapp_message_sent: {
+        Args: { phone: string; url: string }
+        Returns: boolean
+      }
+      generate_whatsapp_message_hash: {
+        Args: { phone: string; url: string }
         Returns: string
       }
       get_analytics_summary: {
@@ -643,9 +937,26 @@ export type Database = {
           search_query: string
         }[]
       }
+      get_whatsapp_lists: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          id: string
+          name: string
+          phone_numbers: string[]
+        }[]
+      }
       increment_daily_visit: {
         Args: Record<PropertyKey, never>
         Returns: undefined
+      }
+      register_whatsapp_message_sent: {
+        Args: {
+          phone: string
+          schedule_id_param?: string
+          url: string
+          webhook_response_param?: Json
+        }
+        Returns: string
       }
     }
     Enums: {

@@ -17,8 +17,10 @@ interface DeleteConfirmDialogProps {
   isOpen: boolean;
   onClose: () => void;
   property: Property | null;
-  onConfirm: (propertyId: number) => Promise<void>;
+  onConfirm: (propertyId?: number) => Promise<void>;
   isLoading?: boolean;
+  isMultiple?: boolean;
+  selectedCount?: number;
 }
 
 const DeleteConfirmDialog = ({ 
@@ -26,11 +28,15 @@ const DeleteConfirmDialog = ({
   onClose, 
   property, 
   onConfirm, 
-  isLoading = false 
+  isLoading = false,
+  isMultiple = false,
+  selectedCount = 0
 }: DeleteConfirmDialogProps) => {
   
   const handleConfirm = async () => {
-    if (property) {
+    if (isMultiple) {
+      await onConfirm();
+    } else if (property) {
       await onConfirm(property.id);
     }
   };
@@ -51,9 +57,21 @@ const DeleteConfirmDialog = ({
           </AlertDialogTitle>
           <AlertDialogDescription className="space-y-2">
             <div>
-              Tem certeza que deseja excluir esta propriedade? Esta ação não pode ser desfeita.
+              {isMultiple 
+                ? `Tem certeza que deseja excluir ${selectedCount} propriedade(s) selecionada(s)? Esta ação não pode ser desfeita.`
+                : 'Tem certeza que deseja excluir esta propriedade? Esta ação não pode ser desfeita.'
+              }
             </div>
-            {property && (
+            {isMultiple ? (
+              <div className="bg-red-50 border border-red-200 p-3 rounded-md mt-3">
+                <div className="text-sm text-red-800">
+                  <div className="font-medium">⚠️ Atenção:</div>
+                  <div>• {selectedCount} propriedade(s) serão excluída(s) permanentemente</div>
+                  <div>• Esta ação não pode ser desfeita</div>
+                  <div>• Todos os dados relacionados serão perdidos</div>
+                </div>
+              </div>
+            ) : property && (
               <div className="bg-gray-50 p-3 rounded-md mt-3">
                 <div className="text-sm">
                   <div><strong>ID:</strong> {property.id}</div>
@@ -77,7 +95,7 @@ const DeleteConfirmDialog = ({
             disabled={isLoading}
             className="bg-red-600 hover:bg-red-700 focus:ring-red-600"
           >
-            {isLoading ? 'Excluindo...' : 'Excluir'}
+            {isLoading ? 'Excluindo...' : isMultiple ? `Excluir ${selectedCount} propriedade(s)` : 'Excluir'}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

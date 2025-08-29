@@ -14,7 +14,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Search, Filter, Eye, RefreshCw, ChevronLeft, ChevronRight, Download, Edit, ExternalLink, Plus, Trash2 } from 'lucide-react';
+import { Search, Filter, Eye, RefreshCw, ChevronLeft, ChevronRight, Download, Edit, ExternalLink, Plus, Trash2, Trash } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { createPropertyUrl } from '@/utils/slugUtils';
 import { formatPropertyAddress } from '@/utils/addressFormatter';
@@ -53,6 +53,11 @@ const PropertiesTable = () => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
   const [crudLoading, setCrudLoading] = useState(false);
+  
+  // Estados para seleção múltipla
+  const [selectedProperties, setSelectedProperties] = useState<Set<number>>(new Set());
+  const [isDeleteMultipleDialogOpen, setIsDeleteMultipleDialogOpen] = useState(false);
+  const [deleteMultipleLoading, setDeleteMultipleLoading] = useState(false);
 
   const pageSize = 20;
 
@@ -60,6 +65,11 @@ const PropertiesTable = () => {
     try {
       setLoading(true);
       setError(null);
+      
+      // Limpar seleção quando mudar de página
+      if (page !== currentPage) {
+        setSelectedProperties(new Set());
+      }
       
       const from = page * pageSize;
       const to = from + pageSize - 1;
@@ -173,8 +183,9 @@ const PropertiesTable = () => {
   }, []);
 
   useEffect(() => {
-    // Quando filtros mudam, voltar para primeira página
+    // Quando filtros mudam, voltar para primeira página e limpar seleção
     setCurrentPage(0);
+    setSelectedProperties(new Set());
     fetchProperties(0);
   }, [searchTerm, cityFilter, stateFilter, typeFilter, auctionTypeFilter, fgtsFilter, financingFilter, showCurrentOnly]);
 
@@ -202,6 +213,7 @@ const PropertiesTable = () => {
     setFgtsFilter('all');
     setFinancingFilter('all');
     setShowCurrentOnly(false); // Limpar também o filtro "Atual"
+    setSelectedProperties(new Set()); // Limpar seleção
     setCurrentPage(0);
     fetchProperties(0);
   };
@@ -243,6 +255,63 @@ const PropertiesTable = () => {
     } finally {
       setCrudLoading(false);
     }
+  };
+
+  // Funções para seleção múltipla
+  const handleSelectProperty = (propertyId: number, checked: boolean) => {
+    const newSelected = new Set(selectedProperties);
+    if (checked) {
+      newSelected.add(propertyId);
+    } else {
+      newSelected.delete(propertyId);
+    }
+    setSelectedProperties(newSelected);
+  };
+
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      const allIds = properties.map(p => p.id);
+      setSelectedProperties(new Set(allIds));
+    } else {
+      setSelectedProperties(new Set());
+    }
+  };
+
+  const handleDeleteMultiple = async () => {
+    try {
+      setDeleteMultipleLoading(true);
+      const propertyIds = Array.from(selectedProperties);
+      
+      // Excluir propriedades em paralelo
+      await Promise.all(propertyIds.map(id => PropertyCRUD.deleteProperty(id)));
+      
+      toast({
+        title: "Sucesso!",
+        description: `${propertyIds.length} propriedade(s) excluída(s) com sucesso.`,
+      });
+      
+      setIsDeleteMultipleDialogOpen(false);
+      setSelectedProperties(new Set());
+      fetchProperties(currentPage); // Recarregar página atual
+      fetchMetadata(); // Atualizar metadados
+    } catch (error) {
+      console.error('Erro ao excluir propriedades:', error);
+      toast({
+        title: "Erro",
+        description: "Erro ao excluir propriedades. Tente novamente.",
+        variant: "destructive",
+      });
+    } finally {
+      setDeleteMultipleLoading(false);
+    }
+  };
+
+  const openDeleteMultipleDialog = () => {
+    setIsDeleteMultipleDialogOpen(true);
+  };
+
+  const closeDeleteMultipleDialog = () => {
+    setIsDeleteMultipleDialogOpen(false);
   };
 
   const openCreateModal = () => {
@@ -305,17 +374,36 @@ const PropertiesTable = () => {
     <Card>
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2">
-            <Eye className="h-5 w-5" />
-            Propriedades ({startRecord}-{endRecord} de {totalCount})
-          </CardTitle>
-          <Button 
-            onClick={openCreateModal}
-            className="bg-blue-600 hover:bg-blue-700 text-white"
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            Nova Propriedade
-          </Button>
+          <div className="flex items-center gap-4">
+            <CardTitle className="flex items-center gap-2">
+              <Eye className="h-5 w-5" />
+              Propriedades ({startRecord}-{endRecord} de {totalCount})
+            </CardTitle>
+            {selectedProperties.size > 0 && (
+              <Badge variant="secondary" className="bg-blue-100 text-blue-800 border-blue-200">
+                {selectedProperties.size} selecionado(s)
+              </Badge>
+            )}
+          </div>
+          <div className="flex items-center gap-2">
+            {selectedProperties.size > 0 && (
+              <Button 
+                onClick={openDeleteMultipleDialog}
+                variant="destructive"
+                className="bg-red-600 hover:bg-red-700 text-white"
+              >
+                <Trash className="h-4 w-4 mr-2" />
+                Excluir {selectedProperties.size} selecionado(s)
+              </Button>
+            )}
+            <Button 
+              onClick={openCreateModal}
+              className="bg-blue-600 hover:bg-blue-700 text-white"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Nova Propriedade
+            </Button>
+          </div>
         </div>
         
         {/* Filtros */}
@@ -446,6 +534,13 @@ const PropertiesTable = () => {
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead className="w-12">
+                  <Checkbox
+                    checked={selectedProperties.size === properties.length && properties.length > 0}
+                    onCheckedChange={handleSelectAll}
+                    className="ml-2"
+                  />
+                </TableHead>
                 <TableHead className="w-16">ID</TableHead>
                 <TableHead className="min-w-64">Título</TableHead>
                 <TableHead className="min-w-48">Endereço</TableHead>
@@ -471,6 +566,13 @@ const PropertiesTable = () => {
             <TableBody>
               {properties.map((property) => (
                 <TableRow key={property.id} className="hover:bg-gray-50">
+                  <TableCell className="w-12">
+                    <Checkbox
+                      checked={selectedProperties.has(property.id)}
+                      onCheckedChange={(checked) => handleSelectProperty(property.id, checked as boolean)}
+                      className="ml-2"
+                    />
+                  </TableCell>
                   <TableCell className="font-medium text-xs">
                     <a 
                       href={createPropertyUrl(
@@ -730,6 +832,17 @@ const PropertiesTable = () => {
         property={selectedProperty}
         onConfirm={handleDeleteProperty}
         isLoading={crudLoading}
+      />
+
+      {/* Dialog de Confirmação de Exclusão Múltipla */}
+      <DeleteConfirmDialog
+        isOpen={isDeleteMultipleDialogOpen}
+        onClose={closeDeleteMultipleDialog}
+        property={null}
+        onConfirm={handleDeleteMultiple}
+        isLoading={deleteMultipleLoading}
+        isMultiple={true}
+        selectedCount={selectedProperties.size}
       />
     </Card>
   );

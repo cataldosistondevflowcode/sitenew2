@@ -14,13 +14,14 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Search, Filter, Eye, RefreshCw, ChevronLeft, ChevronRight, Download, Edit, ExternalLink, Plus, Trash2, Trash } from 'lucide-react';
+import { Search, Filter, Eye, RefreshCw, ChevronLeft, ChevronRight, Download, Edit, ExternalLink, Plus, Trash2, Trash, FileSpreadsheet } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { createPropertyUrl } from '@/utils/slugUtils';
 import { formatPropertyAddress } from '@/utils/addressFormatter';
 import { toast } from '@/hooks/use-toast';
 import PropertyModal from './PropertyModal';
 import DeleteConfirmDialog from './DeleteConfirmDialog';
+import BulkImportModal from './BulkImportModal';
 import { PropertyCRUD } from './PropertyCRUD';
 
 type Property = Tables<'leiloes_imoveis'>;
@@ -58,6 +59,9 @@ const PropertiesTable = () => {
   const [selectedProperties, setSelectedProperties] = useState<Set<number>>(new Set());
   const [isDeleteMultipleDialogOpen, setIsDeleteMultipleDialogOpen] = useState(false);
   const [deleteMultipleLoading, setDeleteMultipleLoading] = useState(false);
+  
+  // Estados para importação em lote
+  const [isBulkImportModalOpen, setIsBulkImportModalOpen] = useState(false);
 
   const pageSize = 20;
 
@@ -314,6 +318,19 @@ const PropertiesTable = () => {
     setIsDeleteMultipleDialogOpen(false);
   };
 
+  const openBulkImportModal = () => {
+    setIsBulkImportModalOpen(true);
+  };
+
+  const closeBulkImportModal = () => {
+    setIsBulkImportModalOpen(false);
+  };
+
+  const handleBulkImportSuccess = () => {
+    fetchProperties(currentPage);
+    fetchMetadata();
+  };
+
   const openCreateModal = () => {
     setSelectedProperty(null);
     setIsModalOpen(true);
@@ -396,6 +413,14 @@ const PropertiesTable = () => {
                 Excluir {selectedProperties.size} selecionado(s)
               </Button>
             )}
+            <Button 
+              onClick={openBulkImportModal}
+              variant="outline"
+              className="bg-green-50 hover:bg-green-100 text-green-700 border-green-300 hover:border-green-400"
+            >
+              <FileSpreadsheet className="h-4 w-4 mr-2" />
+              Importar em Lote
+            </Button>
             <Button 
               onClick={openCreateModal}
               className="bg-blue-600 hover:bg-blue-700 text-white"
@@ -843,6 +868,13 @@ const PropertiesTable = () => {
         isLoading={deleteMultipleLoading}
         isMultiple={true}
         selectedCount={selectedProperties.size}
+      />
+
+      {/* Modal de Importação em Lote */}
+      <BulkImportModal
+        isOpen={isBulkImportModalOpen}
+        onClose={closeBulkImportModal}
+        onSuccess={handleBulkImportSuccess}
       />
     </Card>
   );

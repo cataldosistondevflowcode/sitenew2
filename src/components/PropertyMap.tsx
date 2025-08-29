@@ -5,16 +5,16 @@ import { formatPropertyAddress } from '../utils/addressFormatter';
 
 interface PropertyMapProps {
   property: {
-    image: string;
-    title: string;
+    image?: string | null;
+    title?: string | null;
   };
   rawPropertyData?: any;
 }
 
 export const PropertyMap: React.FC<PropertyMapProps> = ({ property, rawPropertyData }) => {
-  const isImageNotFound = property.image.includes('/not-found') || 
-                          !property.image || 
+  const isImageNotFound = !property.image || 
                           property.image === '' ||
+                          property.image.includes('/not-found') || 
                           property.image === 'https://kmiblhbe.manus.space/imovel_sao_goncalo.jpeg';
   const [activeTab, setActiveTab] = useState<'foto' | 'mapa' | 'street'>(isImageNotFound ? 'mapa' : 'foto');
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -26,9 +26,9 @@ export const PropertyMap: React.FC<PropertyMapProps> = ({ property, rawPropertyD
   const streetViewInstanceRef = useRef<google.maps.StreetViewPanorama | null>(null);
   
   const images = [
-    property.image,
+    property.image || "/assets/logos/cataldo-siston-logo.png",
     "/assets/logos/cataldo-siston-logo.png",
-    property.image
+    property.image || "/assets/logos/cataldo-siston-logo.png"
   ];
 
   const nextImage = () => {
@@ -80,7 +80,7 @@ export const PropertyMap: React.FC<PropertyMapProps> = ({ property, rawPropertyD
           new google.maps.Marker({
             position: results[0].geometry.location,
             map: map,
-            title: property.title,
+            title: property.title || 'Propriedade',
           });
 
           mapInstanceRef.current = map;
@@ -215,7 +215,7 @@ export const PropertyMap: React.FC<PropertyMapProps> = ({ property, rawPropertyD
         {activeTab === 'foto' && !isImageNotFound && (
           <img 
             src={images[currentImageIndex]} 
-            alt={property.title} 
+            alt={property.title || 'Imagem da propriedade'} 
             className="w-full h-full object-cover"
           />
         )}

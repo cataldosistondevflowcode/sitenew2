@@ -9,12 +9,18 @@ export class PropertyCRUD {
   // Criar nova propriedade
   static async createProperty(data: Partial<Property>): Promise<Property> {
     try {
-      // Remove o ID se estiver presente (será auto-gerado)
-      const { id, ...dataWithoutId } = data as any;
+      // Gerar um ID único baseado no timestamp atual + random
+      const uniqueId = Date.now() + Math.floor(Math.random() * 1000);
+      
+      // Preparar dados para inserção com ID único
+      const dataToInsert = {
+        ...data,
+        id: uniqueId
+      };
       
       const { data: newProperty, error } = await supabase
         .from('leiloes_imoveis')
-        .insert([dataWithoutId])
+        .insert([dataToInsert])
         .select()
         .single();
 

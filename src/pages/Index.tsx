@@ -86,25 +86,25 @@ const ITEMS_PER_PAGE = 40;
 // Definição dos bairros por zona do Rio de Janeiro e principais cidades do RJ
 const bairrosPorZonaRJ: Record<string, string[]> = {
   'Zona Central (Rio de Janeiro)': [
-    'Benfica', 'Caju', 'Catumbi', 'Centro', 'Cidade Nova', 'Estácio', 'Gamboa', 'Glória', 'Lapa', 'Paquetá', 'Rio Comprido', 'Santa Teresa', 'Santo Cristo', 'São Cristóvão', 'Saúde', 'Vasco da Gama'
+    'Benfica', 'Caju', 'Catumbi', 'Centro', 'Cidade Nova', 'Estácio', 'Gamboa', 'Glória', 'Lapa', 'Paquetá', 'Rio Comprido', 'Santa Teresa', 'Santo Cristo', 'São Cristóvão', 'Saúde'
   ],
   'Zona Norte (Rio de Janeiro)': [
-    'Abolição', 'Acari', 'Água Santa', 'Alto da Boa Vista', 'Anchieta', 'Andaraí', 'Barros Filho', 'Bento Ribeiro', 'Bonsucesso', 'Brás de Pina', 'Cachambi', 'Campinho', 'Cascadura', 'Cavalcanti', 'Cidade Universitária', 'Coelho Neto', 'Colégio', 'Cordovil', 'Costa Barros', 'Del Castilho', 'Encantado', 'Engenheiro Leal', 'Engenho da Rainha', 'Engenho de Dentro', 'Engenho Novo', 'Grajaú', 'Guadalupe', 'Higienópolis', 'Honório Gurgel', 
+    'Abolição', 'Água Santa', 'Alto da Boa Vista', 'Anchieta', 'Andaraí', 'Barros Filho', 'Bento Ribeiro', 'Bonsucesso', 'Brás de Pina', 'Cachambi', 'Campinho', 'Cascadura', 'Cidade Universitária', 'Coelho Neto', 'Cordovil', 'Del Castilho', 'Encantado', 'Engenho da Rainha', 'Engenho de Dentro', 'Engenho Novo', 'Grajaú', 'Guadalupe', 'Higienópolis', 
     // Ilha do Governador (mantida na busca principal com sub-bairros)
     'Ilha do Governador', 'Bancários', 'Cacuia', 'Cocotá', 'Freguesia', 'Galeão', 'Jardim Carioca', 'Jardim Guanabara', 'Moneró', 'Pitangueiras', 'Portuguesa', 'Praia da Bandeira', 'Ribeira', 'Tauá', 'Zumbi',
-    'Inhaúma', 'Irajá', 'Jacaré', 'Jardim América', 'Lins de Vasconcelos', 'Madureira', 'Mangueira', 'Manguinhos', 'Maracanã', 'Marechal Hermes', 'Maria da Graça', 'Méier', 'Olaria', 'Oswaldo Cruz', 'Parada de Lucas', 'Pavuna', 'Penha', 'Penha Circular', 'Piedade', 'Pilares', 'Praça da Bandeira', 'Quintino Bocaiuva', 'Ramos', 'Riachuelo', 'Ricardo de Albuquerque', 'Rocha', 'Rocha Miranda', 'Sampaio', 'São Francisco Xavier', 'Tijuca', 'Todos os Santos', 'Tomás Coelho', 'Turiaçu', 'Vaz Lobo', 'Vicente de Carvalho', 'Vila da Penha', 'Vila Isabel', 'Vista Alegre', 'Vigário Geral', 'Complexo do Alemão', 'Maré'
+    'Inhaúma', 'Irajá', 'Jardim América', 'Lins de Vasconcelos', 'Madureira', 'Mangueira', 'Maracanã', 'Marechal Hermes', 'Maria da Graça', 'Méier', 'Olaria', 'Pavuna', 'Penha', 'Penha Circular', 'Piedade', 'Pilares', 'Praça da Bandeira', 'Ramos', 'Riachuelo', 'Rocha', 'Rocha Miranda', 'São Francisco Xavier', 'Tijuca', 'Todos os Santos', 'Vaz Lobo', 'Vicente de Carvalho', 'Vila da Penha', 'Vila Isabel', 'Vista Alegre'
   ],
   'Zona Oeste (Rio de Janeiro)': [
     'Bangu', 'Barra da Tijuca', 'Barra de Guaratiba',
     // Barra Olímpica (mantida na busca principal com sub-bairros)
     'Barra Olímpica', 'Camorim',
-    'Campo dos Afonsos', 'Campo Grande', 'Cosmos', 'Deodoro', 'Grumari', 'Guaratiba', 'Inhoaíba', 'Itanhangá',
+    'Campo dos Afonsos', 'Campo Grande', 'Cosmos', 'Deodoro', 'Grumari', 'Guaratiba', 'Itanhangá',
     // Jacarepaguá (mantida na busca principal com sub-bairros)
     'Jacarepaguá', 'Anil', 'Curicica', 'Freguesia', 'Pechincha', 'Praça Seca', 'Tanque', 'Taquara', 'Vila Valqueire',
-    'Jardim Sulacap', 'Joá', 'Magalhães Bastos', 'Paciência', 'Padre Miguel', 'Pedra de Guaratiba', 'Realengo', 'Recreio dos Bandeirantes', 'Santa Cruz', 'Santíssimo', 'Senador Camará', 'Senador Vasconcelos', 'Sepetiba', 'Vargem Grande', 'Vargem Pequena', 'Vila Militar', 'Vila Kennedy', 'Cidade de Deus', 'Gardênia Azul', 'Gericinó'
+    'Jardim Sulacap', 'Joá', 'Padre Miguel', 'Pedra de Guaratiba', 'Realengo', 'Recreio dos Bandeirantes', 'Santa Cruz', 'Santíssimo', 'Senador Vasconcelos', 'Sepetiba', 'Vargem Grande', 'Vargem Pequena', 'Vila Militar', 'Vila Kennedy'
   ],
   'Zona Sul (Rio de Janeiro)': [
-    'Botafogo', 'Catete', 'Copacabana', 'Cosme Velho', 'Flamengo', 'Gávea', 'Humaitá', 'Ipanema', 'Jardim Botânico', 'Lagoa', 'Laranjeiras', 'Leblon', 'Leme', 'São Conrado', 'Urca', 'Rocinha', 'Vidigal'
+    'Botafogo', 'Catete', 'Copacabana', 'Cosme Velho', 'Flamengo', 'Gávea', 'Humaitá', 'Ipanema', 'Jardim Botânico', 'Lagoa', 'Laranjeiras', 'Leblon', 'Leme', 'São Conrado', 'Urca', 'Vidigal'
   ],
   'Niterói - Região Norte e Central': [
     'Baldeador', 'Barreto', 'Caramujo', 'Cubango', 'Engenhoca', 'Fonseca', 'Ilha da Conceição', 'Santa Bárbara', 'Santana', 'São Lourenço', 'Tenente Jardim', 'Viçoso Jardim', 'Centro'
@@ -113,7 +113,7 @@ const bairrosPorZonaRJ: Record<string, string[]> = {
     'Bairro de Fátima', 'Boa Viagem', 'Cachoeiras', 'Charitas', 'Gragoatá', 'Icaraí', 'Ingá', 'Jurujuba', 'Pé Pequeno', 'Santa Rosa', 'São Domingos', 'São Francisco', 'Viradouro', 'Vital Brazil'
   ],
   'Niterói - Região Oceânica': [
-    'Cafubá', 'Camboinhas', 'Engenho do Mato', 'Itacoatiara', 'Itaipu', 'Jacaré', 'Jardim Imbuí', 'Maravista', 'Piratininga', 'Santo Antônio', 'Serra Grande'
+    'Cafubá', 'Camboinhas', 'Engenho do Mato', 'Itacoatiara', 'Itaipu', 'Jardim Imbuí', 'Maravista', 'Piratininga', 'Santo Antônio', 'Serra Grande'
   ],
   'Niterói - Região de Pendotiba': [
     'Badu', 'Cantagalo', 'Ititioca', 'Largo da Batalha', 'Maceió', 'Maria Paula', 'Matapaca', 'Sapê', 'Vila Progresso'
@@ -133,11 +133,8 @@ const bairrosPorZonaRJ: Record<string, string[]> = {
   'São João de Meriti': [
     'Agostinho Porto', 'Centro', 'Coelho da Rocha', 'Éden', 'Jardim Meriti', 'Tomazinho', 'Vilar dos Teles'
   ],
-  'Belford Roxo': [
-    'Areia Branca', 'Babi', 'Heliópolis', 'Lote XV', 'Nova Aurora', 'Parque Amorim', 'São Bento', 'Wona'
-  ],
   'Cabo Frio': [
-    'Algodoal', 'Braga', 'Centro', 'Jacaré', 'Jardim Caiçara', 'Jardim Esperança', 'Jardim Excelsior', 'Maria Joaquina', 'Novo Portinho', 'Palmeiras', 'Parque Burle', 'Passagem', 'Peró', 'Portinho', 'Praia do Forte', 'Praia do Siqueira', 'São Bento da Lagoa', 'Tamoios', 'Unamar'
+    'Algodoal', 'Braga', 'Centro', 'Jardim Caiçara', 'Jardim Esperança', 'Jardim Excelsior', 'Maria Joaquina', 'Novo Portinho', 'Palmeiras', 'Parque Burle', 'Passagem', 'Peró', 'Portinho', 'Praia do Forte', 'Praia do Siqueira', 'São Bento da Lagoa', 'Tamoios', 'Unamar'
   ],
   'Campos dos Goytacazes': [
     'Centro', 'Guarus', 'Pelinca', 'Parque Califórnia', 'Parque Riachuelo', 'Parque Santo Amaro', 'Parque Tamandaré', 'Ururaí', 'Jardim Carioca', 'Horto', 'Parque Leopoldina', 'Parque Imperial'
@@ -183,7 +180,7 @@ const bairrosPorRegiaoNiteroi: Record<string, string[]> = {
     'Bairro de Fátima', 'Boa Viagem', 'Cachoeiras', 'Centro', 'Charitas', 'Gragoatá', 'Icaraí', 'Ingá', 'Jurujuba', 'Pé Pequeno', 'Santa Rosa', 'São Domingos', 'São Francisco', 'Viradouro', 'Vital Brazil'
   ],
   'Região Oceânica': [
-    'Cafubá', 'Camboinhas', 'Engenho do Mato', 'Itacoatiara', 'Itaipu', 'Jacaré', 'Jardim Imbuí', 'Maravista', 'Piratininga', 'Santo Antônio', 'Serra Grande'
+    'Cafubá', 'Camboinhas', 'Engenho do Mato', 'Itacoatiara', 'Itaipu', 'Jardim Imbuí', 'Maravista', 'Piratininga', 'Santo Antônio', 'Serra Grande'
   ],
   'Região de Pendotiba': [
     'Badu', 'Cantagalo', 'Ititioca', 'Largo da Batalha', 'Maceió', 'Maria Paula', 'Matapaca', 'Sapê', 'Vila Progresso'
@@ -201,9 +198,8 @@ const AUCTION_TYPE_EXTRAJUDICIAL_FINANCIAMENTO = "EXTRAJUDICIAL FINANCIÁVEL";
 const cidadesPorRegiaoRJ: Record<string, string[]> = {
   "Região Metropolitana": [
     "Rio de Janeiro", "Niterói", "São Gonçalo", "Duque de Caxias", "Nova Iguaçu", "São João de Meriti", 
-    "Belford Roxo", "Nilópolis", "Itaboraí", "Maricá", "Magé", "Guapimirim", "Queimados", "Japeri", 
-    "Seropédica", "Paracambi", "Itaguaí", "Mangaratiba", "Mesquita", "Tanguá", "Cachoeiras de Macacu", 
-    "Rio Bonito"
+    "Itaboraí", "Maricá", "Magé", "Guapimirim", "Seropédica", "Paracambi", "Itaguaí", "Mangaratiba", 
+    "Tanguá", "Cachoeiras de Macacu", "Rio Bonito"
   ],
   "Região dos Lagos": [
     "Cabo Frio", "Búzios", "Arraial do Cabo", "São Pedro da Aldeia", "Araruama", "Saquarema", 

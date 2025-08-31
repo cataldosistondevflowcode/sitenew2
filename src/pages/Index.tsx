@@ -86,13 +86,15 @@ const ITEMS_PER_PAGE = 40;
 // Definição dos bairros por zona do Rio de Janeiro e principais cidades do RJ
 const bairrosPorZonaRJ: Record<string, string[]> = {
   'Zona Central (Rio de Janeiro)': [
-    'Benfica', 'Caju', 'Catumbi', 'Centro', 'Cidade Nova', 'Estácio', 'Gamboa', 'Glória', 'Lapa', 'Paquetá', 'Rio Comprido', 'Santa Teresa', 'Santo Cristo', 'São Cristóvão', 'Saúde'
+    'Benfica', 'Caju', 'Catumbi', 'Centro', 'Cidade Nova', 'Gamboa', 'Glória', 'Lapa', 'Paquetá', 'Santa Teresa', 'Santo Cristo', 'São Cristóvão', 'Saúde'
   ],
   'Zona Norte (Rio de Janeiro)': [
-    'Abolição', 'Água Santa', 'Alto da Boa Vista', 'Anchieta', 'Andaraí', 'Barros Filho', 'Bento Ribeiro', 'Bonsucesso', 'Brás de Pina', 'Cachambi', 'Campinho', 'Cascadura', 'Cidade Universitária', 'Coelho Neto', 'Cordovil', 'Del Castilho', 'Encantado', 'Engenho da Rainha', 'Engenho de Dentro', 'Engenho Novo', 'Grajaú', 'Guadalupe', 'Higienópolis', 
+    'Abolição', 'Água Santa', 'Anchieta', 'Barros Filho', 'Bento Ribeiro', 'Bonsucesso', 'Brás de Pina', 'Cachambi', 'Campinho', 'Cascadura', 'Cidade Universitária', 'Coelho Neto', 'Cordovil', 'Del Castilho', 'Encantado', 'Engenho da Rainha', 'Engenho de Dentro', 'Engenho Novo', 'Guadalupe', 'Higienópolis', 
+    // Grande Tijuca (mantida na busca principal com sub-bairros)
+    'Grande Tijuca', 'Tijuca', 'Vila Isabel', 'Maracanã', 'Andaraí', 'Grajaú', 'Alto da Boa Vista', 'São Francisco Xavier', 'Rio Comprido', 'Estácio', 'Praça da Bandeira', 'Usina',
     // Ilha do Governador (mantida na busca principal com sub-bairros)
     'Ilha do Governador', 'Bancários', 'Cacuia', 'Cocotá', 'Freguesia', 'Galeão', 'Jardim Carioca', 'Jardim Guanabara', 'Moneró', 'Pitangueiras', 'Portuguesa', 'Praia da Bandeira', 'Ribeira', 'Tauá', 'Zumbi',
-    'Inhaúma', 'Irajá', 'Jardim América', 'Lins de Vasconcelos', 'Madureira', 'Mangueira', 'Maracanã', 'Marechal Hermes', 'Maria da Graça', 'Méier', 'Olaria', 'Pavuna', 'Penha', 'Penha Circular', 'Piedade', 'Pilares', 'Praça da Bandeira', 'Ramos', 'Riachuelo', 'Rocha', 'Rocha Miranda', 'São Francisco Xavier', 'Tijuca', 'Todos os Santos', 'Vaz Lobo', 'Vicente de Carvalho', 'Vila da Penha', 'Vila Isabel', 'Vista Alegre'
+    'Inhaúma', 'Irajá', 'Jardim América', 'Lins de Vasconcelos', 'Madureira', 'Mangueira', 'Marechal Hermes', 'Maria da Graça', 'Méier', 'Olaria', 'Pavuna', 'Penha', 'Penha Circular', 'Piedade', 'Pilares', 'Ramos', 'Riachuelo', 'Rocha', 'Rocha Miranda', 'Todos os Santos', 'Vaz Lobo', 'Vicente de Carvalho', 'Vila da Penha', 'Vista Alegre'
   ],
   'Zona Oeste (Rio de Janeiro)': [
     'Bangu', 'Barra da Tijuca', 'Barra de Guaratiba',
@@ -160,6 +162,9 @@ const bairrosPorZonaRJ: Record<string, string[]> = {
 
 // Definição das áreas especiais e seus sub-bairros
 const areasEspeciaisRJ: Record<string, string[]> = {
+  'Grande Tijuca': [
+    'Tijuca', 'Vila Isabel', 'Maracanã', 'Andaraí', 'Grajaú', 'Alto da Boa Vista', 'São Francisco Xavier', 'Rio Comprido', 'Estácio', 'Praça da Bandeira', 'Usina'
+  ],
   'Ilha do Governador': [
     'Ilha do Governador', 'Bancários', 'Cacuia', 'Cocotá', 'Freguesia', 'Galeão', 'Jardim Carioca', 'Jardim Guanabara', 'Moneró', 'Pitangueiras', 'Portuguesa', 'Praia da Bandeira', 'Ribeira', 'Tauá', 'Zumbi'
   ],
@@ -1292,6 +1297,32 @@ const Index = () => {
       return;
     }
 
+    // Verificar se é Grande Tijuca - implementar toggle especial
+    if (neighborhood === 'Grande Tijuca') {
+      const grandeTijucaBairros = areasEspeciaisRJ['Grande Tijuca'];
+      const allGrandeTijucaSelected = grandeTijucaBairros.every(bairro => selectedNeighborhoods.includes(bairro));
+      
+      if (allGrandeTijucaSelected) {
+        // Se todos estão selecionados, remover todos
+        const newNeighborhoods = selectedNeighborhoods.filter(n => !grandeTijucaBairros.includes(n));
+        setSelectedNeighborhoods(newNeighborhoods);
+        
+        if (newNeighborhoods.length === 0) {
+          setSelectedNeighborhood("Selecione o bairro");
+        } else if (newNeighborhoods.length === 1) {
+          setSelectedNeighborhood(newNeighborhoods[0]);
+        } else {
+          setSelectedNeighborhood(`${newNeighborhoods.length} bairros selecionados`);
+        }
+      } else {
+        // Se nem todos estão selecionados, selecionar todos
+        const newNeighborhoods = [...new Set([...selectedNeighborhoods, ...grandeTijucaBairros])];
+        setSelectedNeighborhoods(newNeighborhoods);
+        setSelectedNeighborhood(`${newNeighborhoods.length} bairros selecionados`);
+      }
+      return;
+    }
+
     const neighborhoodExists = selectedNeighborhoods.includes(neighborhood);
     
     if (neighborhoodExists) {
@@ -1990,19 +2021,25 @@ const Index = () => {
                                   <div
                                     key={neighborhoodData.neighborhood}
                                     className={`py-2 px-4 flex items-center cursor-pointer ${
-                                      isSelected ? 'bg-blue-100 text-blue-800' : 'hover:bg-gray-100'
+                                      neighborhoodData.neighborhood === 'Grande Tijuca' 
+                                        ? 'font-bold text-primary bg-gray-100 border-b border-gray-200 hover:bg-yellow-100'
+                                        : isSelected 
+                                          ? 'bg-blue-100 text-blue-800' 
+                                          : 'hover:bg-gray-100'
                                     }`}
                                     onClick={(e) => {
                                       e.stopPropagation();
                                       toggleNeighborhood(neighborhoodData.neighborhood);
                                     }}
                                   >
-                                    <input
-                                      type="checkbox"
-                                      checked={isSelected}
-                                      onChange={() => {}} // Controlled by parent onClick
-                                      className="mr-2 h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
-                                    />
+                                    {neighborhoodData.neighborhood !== 'Grande Tijuca' && (
+                                      <input
+                                        type="checkbox"
+                                        checked={isSelected}
+                                        onChange={() => {}} // Controlled by parent onClick
+                                        className="mr-2 h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                                      />
+                                    )}
                                     {neighborhoodData.neighborhood}
                                   </div>
                                 );

@@ -92,18 +92,22 @@ const bairrosPorZonaRJ: Record<string, string[]> = {
     'Abolição', 'Água Santa', 'Anchieta', 'Barros Filho', 'Bento Ribeiro', 'Bonsucesso', 'Brás de Pina', 'Cachambi', 'Campinho', 'Cascadura', 'Cidade Universitária', 'Coelho Neto', 'Cordovil', 'Del Castilho', 'Encantado', 'Engenho da Rainha', 'Engenho de Dentro', 'Engenho Novo', 'Guadalupe', 'Higienópolis', 
     // Grande Tijuca (mantida na busca principal com sub-bairros)
     'Grande Tijuca', 'Tijuca', 'Vila Isabel', 'Maracanã', 'Andaraí', 'Grajaú', 'Alto da Boa Vista', 'São Francisco Xavier', 'Rio Comprido', 'Estácio', 'Praça da Bandeira', 'Usina',
+    // Grande Méier (mantida na busca principal com sub-bairros)
+    'Grande Méier', 'Méier', 'Abolição', 'Água Santa', 'Encantado', 'Engenho de Dentro', 'Engenho Novo', 'Engenho da Rainha', 'Inhaúma', 'Pilares', 'Riachuelo', 'Piedade', 'Todos os Santos', 'Rocha', 'Maria da Graça', 'Lins de Vasconcelos', 'Cachambi', 'Higienópolis', 'Del Castilho',
     // Ilha do Governador (mantida na busca principal com sub-bairros)
     'Ilha do Governador', 'Bancários', 'Cacuia', 'Cocotá', 'Freguesia', 'Galeão', 'Jardim Carioca', 'Jardim Guanabara', 'Moneró', 'Pitangueiras', 'Portuguesa', 'Praia da Bandeira', 'Ribeira', 'Tauá', 'Zumbi',
-    'Inhaúma', 'Irajá', 'Jardim América', 'Lins de Vasconcelos', 'Madureira', 'Mangueira', 'Marechal Hermes', 'Maria da Graça', 'Méier', 'Olaria', 'Pavuna', 'Penha', 'Penha Circular', 'Piedade', 'Pilares', 'Ramos', 'Riachuelo', 'Rocha', 'Rocha Miranda', 'Todos os Santos', 'Vaz Lobo', 'Vicente de Carvalho', 'Vila da Penha', 'Vista Alegre'
+    'Irajá', 'Jardim América', 'Madureira', 'Mangueira', 'Marechal Hermes', 'Olaria', 'Pavuna', 'Penha', 'Penha Circular', 'Ramos', 'Rocha Miranda', 'Vaz Lobo', 'Vicente de Carvalho', 'Vila da Penha', 'Vista Alegre'
   ],
   'Zona Oeste (Rio de Janeiro)': [
-    'Bangu', 'Barra da Tijuca', 'Barra de Guaratiba',
+    'Bangu', 'Barra de Guaratiba',
+    // Barra e Adjacências (mantida na busca principal com sub-bairros)
+    'Barra e Adjacências', 'Barra da Tijuca', 'Recreio dos Bandeirantes', 'Barra Olímpica', 'Freguesia de Jacarepaguá', 'Joá', 'Itanhangá',
     // Barra Olímpica (mantida na busca principal com sub-bairros)
-    'Barra Olímpica', 'Camorim',
-    'Campo dos Afonsos', 'Campo Grande', 'Cosmos', 'Deodoro', 'Grumari', 'Guaratiba', 'Itanhangá',
+    'Camorim',
+    'Campo dos Afonsos', 'Campo Grande', 'Cosmos', 'Deodoro', 'Grumari', 'Guaratiba',
     // Jacarepaguá (mantida na busca principal com sub-bairros)
     'Jacarepaguá', 'Anil', 'Curicica', 'Freguesia', 'Pechincha', 'Praça Seca', 'Tanque', 'Taquara', 'Vila Valqueire',
-    'Jardim Sulacap', 'Joá', 'Padre Miguel', 'Pedra de Guaratiba', 'Realengo', 'Recreio dos Bandeirantes', 'Santa Cruz', 'Santíssimo', 'Senador Vasconcelos', 'Sepetiba', 'Vargem Grande', 'Vargem Pequena', 'Vila Militar', 'Vila Kennedy'
+    'Jardim Sulacap', 'Padre Miguel', 'Pedra de Guaratiba', 'Realengo', 'Santa Cruz', 'Santíssimo', 'Senador Vasconcelos', 'Sepetiba', 'Vargem Grande', 'Vargem Pequena', 'Vila Militar', 'Vila Kennedy'
   ],
   'Zona Sul (Rio de Janeiro)': [
     'Botafogo', 'Catete', 'Copacabana', 'Cosme Velho', 'Flamengo', 'Gávea', 'Humaitá', 'Ipanema', 'Jardim Botânico', 'Lagoa', 'Laranjeiras', 'Leblon', 'Leme', 'São Conrado', 'Urca', 'Vidigal'
@@ -164,6 +168,12 @@ const bairrosPorZonaRJ: Record<string, string[]> = {
 const areasEspeciaisRJ: Record<string, string[]> = {
   'Grande Tijuca': [
     'Tijuca', 'Vila Isabel', 'Maracanã', 'Andaraí', 'Grajaú', 'Alto da Boa Vista', 'São Francisco Xavier', 'Rio Comprido', 'Estácio', 'Praça da Bandeira', 'Usina'
+  ],
+  'Grande Méier': [
+    'Méier', 'Abolição', 'Água Santa', 'Encantado', 'Engenho de Dentro', 'Engenho Novo', 'Engenho da Rainha', 'Inhaúma', 'Pilares', 'Riachuelo', 'Piedade', 'Todos os Santos', 'Rocha', 'Maria da Graça', 'Lins de Vasconcelos', 'Cachambi', 'Higienópolis', 'Del Castilho'
+  ],
+  'Barra e Adjacências': [
+    'Barra da Tijuca', 'Recreio dos Bandeirantes', 'Barra Olímpica', 'Freguesia de Jacarepaguá', 'Joá', 'Itanhangá'
   ],
   'Ilha do Governador': [
     'Ilha do Governador', 'Bancários', 'Cacuia', 'Cocotá', 'Freguesia', 'Galeão', 'Jardim Carioca', 'Jardim Guanabara', 'Moneró', 'Pitangueiras', 'Portuguesa', 'Praia da Bandeira', 'Ribeira', 'Tauá', 'Zumbi'
@@ -1323,6 +1333,58 @@ const Index = () => {
       return;
     }
 
+    // Verificar se é Grande Méier - implementar toggle especial
+    if (neighborhood === 'Grande Méier') {
+      const grandeMeierBairros = areasEspeciaisRJ['Grande Méier'];
+      const allGrandeMeierSelected = grandeMeierBairros.every(bairro => selectedNeighborhoods.includes(bairro));
+      
+      if (allGrandeMeierSelected) {
+        // Se todos estão selecionados, remover todos
+        const newNeighborhoods = selectedNeighborhoods.filter(n => !grandeMeierBairros.includes(n));
+        setSelectedNeighborhoods(newNeighborhoods);
+        
+        if (newNeighborhoods.length === 0) {
+          setSelectedNeighborhood("Selecione o bairro");
+        } else if (newNeighborhoods.length === 1) {
+          setSelectedNeighborhood(newNeighborhoods[0]);
+        } else {
+          setSelectedNeighborhood(`${newNeighborhoods.length} bairros selecionados`);
+        }
+      } else {
+        // Se nem todos estão selecionados, selecionar todos
+        const newNeighborhoods = [...new Set([...selectedNeighborhoods, ...grandeMeierBairros])];
+        setSelectedNeighborhoods(newNeighborhoods);
+        setSelectedNeighborhood(`${newNeighborhoods.length} bairros selecionados`);
+      }
+      return;
+    }
+
+    // Verificar se é Barra e Adjacências - implementar toggle especial
+    if (neighborhood === 'Barra e Adjacências') {
+      const barraAdjacenciasBairros = areasEspeciaisRJ['Barra e Adjacências'];
+      const allBarraAdjacenciasSelected = barraAdjacenciasBairros.every(bairro => selectedNeighborhoods.includes(bairro));
+      
+      if (allBarraAdjacenciasSelected) {
+        // Se todos estão selecionados, remover todos
+        const newNeighborhoods = selectedNeighborhoods.filter(n => !barraAdjacenciasBairros.includes(n));
+        setSelectedNeighborhoods(newNeighborhoods);
+        
+        if (newNeighborhoods.length === 0) {
+          setSelectedNeighborhood("Selecione o bairro");
+        } else if (newNeighborhoods.length === 1) {
+          setSelectedNeighborhood(newNeighborhoods[0]);
+        } else {
+          setSelectedNeighborhood(`${newNeighborhoods.length} bairros selecionados`);
+        }
+      } else {
+        // Se nem todos estão selecionados, selecionar todos
+        const newNeighborhoods = [...new Set([...selectedNeighborhoods, ...barraAdjacenciasBairros])];
+        setSelectedNeighborhoods(newNeighborhoods);
+        setSelectedNeighborhood(`${newNeighborhoods.length} bairros selecionados`);
+      }
+      return;
+    }
+
     const neighborhoodExists = selectedNeighborhoods.includes(neighborhood);
     
     if (neighborhoodExists) {
@@ -2021,7 +2083,7 @@ const Index = () => {
                                   <div
                                     key={neighborhoodData.neighborhood}
                                     className={`py-2 px-4 flex items-center cursor-pointer ${
-                                      neighborhoodData.neighborhood === 'Grande Tijuca' 
+                                      neighborhoodData.neighborhood === 'Grande Tijuca' || neighborhoodData.neighborhood === 'Grande Méier' || neighborhoodData.neighborhood === 'Barra e Adjacências'
                                         ? 'font-bold text-primary bg-gray-100 border-b border-gray-200 hover:bg-yellow-100'
                                         : isSelected 
                                           ? 'bg-blue-100 text-blue-800' 
@@ -2032,7 +2094,7 @@ const Index = () => {
                                       toggleNeighborhood(neighborhoodData.neighborhood);
                                     }}
                                   >
-                                    {neighborhoodData.neighborhood !== 'Grande Tijuca' && (
+                                    {neighborhoodData.neighborhood !== 'Grande Tijuca' && neighborhoodData.neighborhood !== 'Grande Méier' && neighborhoodData.neighborhood !== 'Barra e Adjacências' && (
                                       <input
                                         type="checkbox"
                                         checked={isSelected}

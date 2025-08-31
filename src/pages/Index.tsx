@@ -891,13 +891,14 @@ const Index = () => {
     const newFilters: Filters = {};
     
     // Verificar se há cidade selecionada
-    if (selectedCities.length > 0) {
+    if (selectedCities.length > 0 && selectedCities[0] !== "TODO_RJ_STATE") {
       newFilters.city = selectedCities.join(','); // Passa como string separada por vírgula
-    } else if (selectedCity && selectedCity !== "Selecione a cidade") {
+    } else if (selectedCity && selectedCity !== "Selecione a cidade" && selectedCity !== "Todas cidades do RJ") {
       // Compatibilidade: se só uma cidade foi selecionada pelo modo antigo
       const cityName = selectedCity.split(" (")[0];
       newFilters.city = cityName;
     }
+    // Se for "Todas cidades do RJ" (TODO_RJ_STATE), não aplicar filtro de cidade - apenas o estado='RJ' já presente na query
     
     // Verificar se há tipo selecionado - usar múltipla seleção se disponível
     if (selectedTypes.length > 0) {
@@ -1165,15 +1166,27 @@ const Index = () => {
     setSelectedNeighborhood("Selecione o bairro");
     setSelectedNeighborhoods([]);
     fetchNeighborhoodsByCity(city);
+    setShowCityMenu(false);
   };
 
   // Nova função para múltipla seleção de cidades
   const toggleCity = (city: string) => {
-    // Se é "Todas as cidades", limpar todas as seleções
-    if (city === "Todas as cidades" || city.includes("(todos)")) {
+    // Se é "Todas as cidades" ou "Todas cidades do RJ", limpar todas as seleções
+    if (city === "Todas as cidades" || city === "Todas cidades do RJ" || city.includes("(todos)")) {
       setSelectedCities([]);
       setSelectedCity("Selecione a cidade");
       setSelectedCityName("");
+      setSelectedNeighborhood("Selecione o bairro");
+      setSelectedNeighborhoods([]);
+      return;
+    }
+
+    // Se "TODO_RJ_STATE" está selecionado, limpar primeiro
+    if (selectedCities.includes("TODO_RJ_STATE")) {
+      setSelectedCities([city]);
+      setSelectedCity(city);
+      setSelectedCityName(city);
+      fetchNeighborhoodsByCity(city);
       setSelectedNeighborhood("Selecione o bairro");
       setSelectedNeighborhoods([]);
       return;
@@ -1240,6 +1253,25 @@ const Index = () => {
     setSelectedNeighborhoods(bairros);
     setShowNeighborhoodMenu(false);
   };
+
+  const selectAllStateRJ = () => {
+    setSelectedCity("Todas cidades do RJ");
+    setSelectedCityName("TODO_RJ_STATE"); // Valor especial para identificar que é todo o estado
+    setSelectedCities(["TODO_RJ_STATE"]);
+    setShowRegionMenu(false);
+    setShowCityMenu(false);
+    setSelectedRegion(null);
+    setSelectedNeighborhood("Selecione o bairro");
+    setSelectedNeighborhoods([]);
+  };
+
+  const selectAllRioDeJaneiro = () => {
+    // Seleciona todos os bairros de todas as zonas do Rio de Janeiro
+    const todosBairros = Object.values(bairrosPorZonaRJ).flat();
+    setSelectedNeighborhood("Todo Rio de Janeiro");
+    setSelectedNeighborhoods(todosBairros);
+    setShowNeighborhoodMenu(false);
+  };
   
   const selectNeighborhood = (neighborhood: string) => {
     // Verificar se é uma área especial
@@ -1257,8 +1289,8 @@ const Index = () => {
 
   // Nova função para múltipla seleção de bairros
   const toggleNeighborhood = (neighborhood: string) => {
-    // Se é "Todos os bairros" ou zona, limpar todas as seleções
-    if (neighborhood.includes("(todos)") || neighborhood === "Todos os bairros") {
+    // Se é "Todos os bairros", "Todo Rio de Janeiro" ou zona, limpar todas as seleções
+    if (neighborhood.includes("(todos)") || neighborhood === "Todos os bairros" || neighborhood === "Todo Rio de Janeiro") {
       setSelectedNeighborhoods([]);
       setSelectedNeighborhood("Selecione o bairro");
       return;
@@ -1336,6 +1368,16 @@ const Index = () => {
   // Nova função para múltipla seleção de regiões (cidades)
   const toggleRegion = (region: string) => {
     const cidades = cidadesPorRegiaoRJ[region] || [];
+    
+    // Se "TODO_RJ_STATE" está selecionado, limpar primeiro
+    if (selectedCities.includes("TODO_RJ_STATE")) {
+      setSelectedCities(cidades);
+      setSelectedCity(`${region} (todos)`);
+      setSelectedCityName(region);
+      setSelectedNeighborhood("Selecione o bairro");
+      setSelectedNeighborhoods([]);
+      return;
+    }
     
     // Verificar se todas as cidades da região já estão selecionadas
     const allRegionCitiesSelected = cidades.every(cidade => selectedCities.includes(cidade));
@@ -1630,6 +1672,8 @@ const Index = () => {
   const clearAllFilters = () => {
     setSelectedType({ label: "Todos os imóveis", icon: <Globe className="h-4 w-4" /> });
     setSelectedCity("Selecione a cidade");
+    setSelectedCityName("");
+    setSelectedCities([]);
     setSelectedNeighborhood("Selecione o bairro");
     setSelectedNeighborhoods([]); // Limpar array de bairros selecionados
     setSelectedPriceRange({ label: "Todos os preços" });
@@ -1675,8 +1719,8 @@ const Index = () => {
     <div className="min-h-screen bg-background">
       <CookieBar />
       <SocialBar onWhatsAppClick={() => executeWhatsAppAction()} />
-              <Header onContactClick={() => executeWhatsAppAction()} />
-              <HeroSection onOpportunityClick={() => window.open('https://leilaodeimoveis-cataldosiston.com/contato-advogados-imobiliarios/', '_blank')} />
+      <Header onContactClick={() => executeWhatsAppAction()} />
+      <HeroSection onOpportunityClick={() => window.open('https://leilaodeimoveis-cataldosiston.com/contato-advogados-imobiliarios/', '_blank')} />
       
       {/* Properties Section - Movida para cima */}
       <section className="py-16 bg-background opportunities">
@@ -1813,6 +1857,17 @@ const Index = () => {
                           onClick={(e) => e.stopPropagation()}
                         />
                       </div>
+                      {(citySearchTerm === '' || 'todas cidades do rj'.includes(citySearchTerm.toLowerCase())) && (
+                        <div
+                          className="py-2 px-4 font-bold text-white bg-primary cursor-pointer hover:bg-yellow-700"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            selectAllStateRJ();
+                          }}
+                        >
+                          Todas cidades do RJ
+                        </div>
+                      )}
                       {Object.keys(cidadesPorRegiaoRJ)
                         .filter(regiao => 
                           citySearchTerm === '' || 
@@ -1895,7 +1950,19 @@ const Index = () => {
                         />
                       </div>
                       {selectedCityName.toLowerCase() === 'rio de janeiro' ? (
-                        Object.keys(rjNeighborhoods)
+                        <>
+                          {(neighborhoodSearchTerm === '' || 'todo rio de janeiro'.includes(neighborhoodSearchTerm.toLowerCase())) && (
+                            <div
+                              className="py-2 px-4 font-bold text-white bg-primary cursor-pointer hover:bg-yellow-700"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                selectAllRioDeJaneiro();
+                              }}
+                            >
+                              Todo Rio de Janeiro
+                            </div>
+                          )}
+                          {Object.keys(rjNeighborhoods)
                           .filter(zona => {
                             if (neighborhoodSearchTerm === '') return true;
                             return flexibleSearch(zona, neighborhoodSearchTerm) ||
@@ -1945,7 +2012,8 @@ const Index = () => {
                                 );
                               })}
                           </div>
-                        ))
+                        ))}
+                        </>
                       ) : selectedCityName.toLowerCase() === 'niterói' ? (
                         Object.keys(rjNeighborhoods)
                           .filter(regiao => {

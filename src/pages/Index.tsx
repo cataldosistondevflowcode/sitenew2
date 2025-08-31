@@ -106,7 +106,7 @@ const bairrosPorZonaRJ: Record<string, string[]> = {
     'Camorim',
     'Campo dos Afonsos', 'Campo Grande', 'Cosmos', 'Deodoro', 'Grumari', 'Guaratiba',
     // Jacarepaguá (mantida na busca principal com sub-bairros)
-    'Jacarepaguá', 'Anil', 'Curicica', 'Freguesia', 'Pechincha', 'Praça Seca', 'Tanque', 'Taquara', 'Vila Valqueire',
+    'Jacarepaguá', 'Anil', 'Curicica', 'Pechincha', 'Praça Seca', 'Tanque', 'Taquara', 'Vila Valqueire',
     'Jardim Sulacap', 'Padre Miguel', 'Pedra de Guaratiba', 'Realengo', 'Santa Cruz', 'Santíssimo', 'Senador Vasconcelos', 'Sepetiba', 'Vargem Grande', 'Vargem Pequena', 'Vila Militar', 'Vila Kennedy'
   ],
   'Zona Sul (Rio de Janeiro)': [
@@ -182,7 +182,7 @@ const areasEspeciaisRJ: Record<string, string[]> = {
     'Barra Olímpica', 'Barra da Tijuca', 'Camorim', 'Jacarepaguá'
   ],
   'Jacarepaguá': [
-    'Jacarepaguá', 'Anil', 'Curicica', 'Freguesia', 'Pechincha', 'Praça Seca', 'Tanque', 'Taquara', 'Vila Valqueire'
+    'Jacarepaguá', 'Anil', 'Curicica', 'Pechincha', 'Praça Seca', 'Tanque', 'Taquara', 'Vila Valqueire'
   ]
 };
 
@@ -1674,12 +1674,31 @@ const Index = () => {
         // Adicionar bairros "Outros" que estão no banco mas não na lista fixa
         Object.keys(neighborhoodCount).forEach(bairro => {
           let found = false;
+          
+          // Normalizar o nome do bairro para comparação (tratar casos como Cajú -> Caju)
+          const bairroNormalizado = bairro.toLowerCase()
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, ''); // Remove acentos
+          
           for (const zona of zonasRJ) {
-            if (bairrosPorZonaRJ[zona] && bairrosPorZonaRJ[zona].map(b => b.toLowerCase()).includes(bairro.toLowerCase())) {
-              found = true;
-              break;
+            if (bairrosPorZonaRJ[zona]) {
+              const bairrosNormalizados = bairrosPorZonaRJ[zona].map(b => 
+                b.toLowerCase()
+                  .normalize('NFD')
+                  .replace(/[\u0300-\u036f]/g, '')
+              );
+              if (bairrosNormalizados.includes(bairroNormalizado)) {
+                found = true;
+                break;
+              }
             }
           }
+          
+          // Pular especificamente o bairro "Cajú" que deve ser mapeado para "Caju"
+          if (bairro.toLowerCase().includes('cajú') || bairro.toLowerCase().includes('caju')) {
+            found = true; // Marcar como encontrado para não aparecer em "Outros"
+          }
+          
           if (!found) {
             if (!bairrosAgrupados['Outros']) bairrosAgrupados['Outros'] = [];
             bairrosAgrupados['Outros'].push({ neighborhood: bairro, count: neighborhoodCount[bairro] });

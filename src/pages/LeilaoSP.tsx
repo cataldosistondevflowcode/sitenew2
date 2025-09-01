@@ -599,12 +599,11 @@ const LeilaoSP = () => {
         Object.keys(bairrosPorZonaSP).forEach(zona => {
           bairrosAgrupados[zona] = [];
           bairrosPorZonaSP[zona].forEach(bairro => {
-            if (neighborhoodCount[bairro]) {
-              bairrosAgrupados[zona].push({
-                neighborhood: bairro,
-                count: neighborhoodCount[bairro]
-              });
-            }
+            // Mostrar todos os bairros, independente de terem imóveis ou não
+            bairrosAgrupados[zona].push({
+              neighborhood: bairro,
+              count: neighborhoodCount[bairro] || 0
+            });
           });
         });
         
@@ -630,12 +629,12 @@ const LeilaoSP = () => {
           );
         }
         
-        // Remover zonas vazias
-        Object.keys(bairrosAgrupados).forEach(zona => {
-          if (bairrosAgrupados[zona].length === 0) {
-            delete bairrosAgrupados[zona];
-          }
-        });
+        // Manter todas as zonas, mesmo se não tiverem imóveis
+        // Object.keys(bairrosAgrupados).forEach(zona => {
+        //   if (bairrosAgrupados[zona].length === 0) {
+        //     delete bairrosAgrupados[zona];
+        //   }
+        // });
         
         setRjNeighborhoods(bairrosAgrupados as any);
       } else {

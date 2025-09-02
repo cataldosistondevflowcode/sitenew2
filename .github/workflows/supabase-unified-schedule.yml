@@ -1,0 +1,21 @@
+name: Supabase Schedule - process-unified-schedules
+
+on:
+  schedule:
+    - cron: "* * * * *"  # a cada 1 minuto
+  workflow_dispatch: {}
+
+jobs:
+  call-edge-function:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call process-unified-schedules
+        env:
+          SUPABASE_URL: https://jmcurflvrvuvzoddjkcg.supabase.co
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          curl -s -X POST \
+            -H "Content-Type: application/json" \
+            -H "apikey: $SUPABASE_SERVICE_ROLE_KEY" \
+            -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY" \
+            "$SUPABASE_URL/functions/v1/process-unified-schedules" | jq .

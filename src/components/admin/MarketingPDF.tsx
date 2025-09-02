@@ -1152,8 +1152,8 @@ const MarketingPDF = () => {
   };
 
   const openWhatsappDialog = () => {
-    if (!lastGeneratedPageUrl) {
-      toast.error('Gere uma página estática primeiro antes de enviar pelo WhatsApp');
+    if (selectedProperties.length === 0) {
+      toast.error('Selecione pelo menos um imóvel primeiro');
       return;
     }
     
@@ -1761,19 +1761,6 @@ const MarketingPDF = () => {
                 {generatingByFilters ? 'Gerando...' : 'Gerar por Filtros'}
               </Button>
 
-              {/* Botão Enviar WhatsApp */}
-              <Button
-                onClick={openWhatsappDialog}
-                disabled={!lastGeneratedPageUrl}
-                variant="outline"
-                size="sm"
-                className="flex items-center gap-2"
-                title={!lastGeneratedPageUrl ? 'Gere uma página estática primeiro' : 'Enviar página pelo WhatsApp'}
-              >
-                <MessageCircle className="h-4 w-4" />
-                WhatsApp
-              </Button>
-
               {/* Botão Enviar Catálogo */}
               <Button
                 onClick={openEmailDialog}
@@ -1783,17 +1770,6 @@ const MarketingPDF = () => {
               >
                 <Mail className="h-4 w-4" />
                 Enviar Catálogo
-              </Button>
-
-              {/* Botão Agendamento Recorrente */}
-              <Button
-                onClick={openScheduleDialog}
-                variant="outline"
-                size="sm"
-                className="flex items-center gap-2"
-              >
-                <Repeat className="h-4 w-4" />
-                Agendar Recorrente
               </Button>
 
 
@@ -1922,10 +1898,10 @@ const MarketingPDF = () => {
 
                 <Button
                   onClick={openWhatsappDialog}
-                  disabled={!lastGeneratedPageUrl}
+                  disabled={selectedProperties.length === 0}
                   variant="outline"
                   className="flex items-center gap-2"
-                  title={!lastGeneratedPageUrl ? 'Gere uma página estática primeiro' : 'Enviar página pelo WhatsApp'}
+                  title={selectedProperties.length === 0 ? 'Selecione pelo menos um imóvel primeiro' : 'Enviar pelo WhatsApp'}
                 >
                   <MessageCircle className="h-4 w-4" />
                   WhatsApp

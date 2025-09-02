@@ -104,49 +104,7 @@ const Admin = () => {
             </p>
           </div>
 
-          {/* Seção do WhatsApp */}
-          <div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              Integrações
-            </h3>
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <MessageCircle className="h-5 w-5 text-green-600" />
-                  Conexão WhatsApp Business
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <p className="text-sm text-gray-600 mb-2">
-                      Conecte sua conta do WhatsApp Business para receber leads diretamente no seu celular.
-                    </p>
-                    <div className="flex items-center gap-2">
-                      <Badge className="flex items-center gap-1 bg-orange-100 text-orange-800 border-orange-200">
-                        <AlertTriangle className="h-3 w-3 text-orange-600" />
-                        Em Manutenção
-                      </Badge>
-                      <span className="text-xs text-gray-500">
-                        Funcionalidade será disponibilizada em breve
-                      </span>
-                    </div>
-                  </div>
-                  <Button 
-                    onClick={handleWhatsAppConnect}
-                    disabled
-                    className="ml-4 bg-gray-100 text-gray-600 border-gray-300 hover:bg-gray-200"
-                    variant="outline"
-                  >
-                    <MessageCircle className="h-4 w-4 mr-2" />
-                    Conectar WhatsApp
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
 
-          <Separator />
 
           {/* Tabela de Propriedades */}
           <div>
@@ -154,63 +112,6 @@ const Admin = () => {
               Gestão de Imóveis
             </h3>
             <PropertiesTable />
-          </div>
-
-          {/* Informações Adicionais */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Próximas Funcionalidades</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-2 text-sm text-gray-600">
-                  <li className="flex items-center gap-2">
-                    <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                    Integração com WhatsApp Business API
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                    Relatórios avançados de analytics
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                    Sistema de notificações em tempo real
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                    Gestão de leads e contatos
-                  </li>
-                </ul>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Informações do Sistema</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Versão:</span>
-                    <Badge className="bg-blue-100 text-blue-800 border-blue-200">v1.0.0</Badge>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Banco de Dados:</span>
-                    <Badge className="bg-green-500 text-white border-green-600">Conectado</Badge>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Última Atualização:</span>
-                    <span className="text-gray-500">
-                      {new Date().toLocaleDateString('pt-BR')}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Ambiente:</span>
-                    <Badge className="bg-purple-100 text-purple-800 border-purple-200">Produção</Badge>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
           </div>
         </div>
       </main>

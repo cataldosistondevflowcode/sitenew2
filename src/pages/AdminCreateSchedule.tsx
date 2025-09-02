@@ -459,35 +459,53 @@ const AdminCreateSchedule = () => {
               </div>
 
               {/* Seleção de Tipo - Grupo ou Leads Individuais */}
-              <div>
-                <Label>Tipo de Seleção</Label>
-                <div className="flex items-center space-x-6 mt-2">
-                  <div className="flex items-center space-x-2">
-                    <input
-                      type="radio"
-                      id="selection-group"
-                      name="selectionType"
-                      value="group"
-                      checked={formData.selectionType === 'group'}
-                      onChange={(e) => handleInputChange('selectionType', e.target.value)}
-                      className="rounded"
-                    />
-                    <Label htmlFor="selection-group">Selecionar por Grupo</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <input
-                      type="radio"
-                      id="selection-individual"
-                      name="selectionType"
-                      value="individual"
-                      checked={formData.selectionType === 'individual'}
-                      onChange={(e) => handleInputChange('selectionType', e.target.value)}
-                      className="rounded"
-                    />
-                    <Label htmlFor="selection-individual">Selecionar Leads Individuais</Label>
+              {selectedLeads.length === 0 && (
+                <div>
+                  <Label>Tipo de Seleção</Label>
+                  <div className="flex items-center space-x-6 mt-2">
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="radio"
+                        id="selection-group"
+                        name="selectionType"
+                        value="group"
+                        checked={formData.selectionType === 'group'}
+                        onChange={(e) => handleInputChange('selectionType', e.target.value)}
+                        className="rounded"
+                      />
+                      <Label htmlFor="selection-group">Selecionar por Grupo</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="radio"
+                        id="selection-individual"
+                        name="selectionType"
+                        value="individual"
+                        checked={formData.selectionType === 'individual'}
+                        onChange={(e) => handleInputChange('selectionType', e.target.value)}
+                        className="rounded"
+                      />
+                      <Label htmlFor="selection-individual">Selecionar Leads Individuais</Label>
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
+
+              {/* Mensagem quando leads já foram pré-selecionados */}
+              {selectedLeads.length > 0 && (
+                <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
+                    <span className="text-sm font-medium text-blue-900">
+                      Leads Pré-selecionados
+                    </span>
+                  </div>
+                  <div className="text-sm text-blue-700 mt-2">
+                    • {selectedLeads.length} lead(s) já selecionado(s) da listagem
+                    • Você pode adicionar ou remover leads individualmente abaixo
+                  </div>
+                </div>
+              )}
 
               {/* Grupo - Só aparece se seleção por grupo for escolhida */}
               {formData.selectionType === 'group' && (

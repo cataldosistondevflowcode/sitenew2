@@ -92,16 +92,6 @@ const Admin = () => {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={handleGoToMarketing}
-                className="flex items-center gap-2 border-2 font-medium bg-orange-50 hover:bg-orange-100 text-orange-700 border-orange-300 hover:border-orange-400"
-              >
-                <FileText className="h-4 w-4" />
-                <span className="hidden sm:inline">Marketing</span>
-              </Button>
-              
-              <Button
-                variant="outline"
-                size="sm"
                 onClick={handleLogout}
                 className="flex items-center gap-2 text-red-600 hover:text-red-700 hover:bg-red-50 border-red-300"
               >
@@ -116,18 +106,6 @@ const Admin = () => {
       {/* Conteúdo Principal */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="space-y-8">
-          {/* Bem-vindo */}
-          <div className="bg-gradient-to-r from-blue-600 to-blue-800 rounded-lg p-6 text-white">
-            <h2 className="text-2xl font-bold mb-2">
-              Bem-vindo ao Painel Administrativo!
-            </h2>
-            <p className="text-blue-100">
-              Gerencie todos os aspectos do seu site de leilões de imóveis em um só lugar.
-            </p>
-          </div>
-
-
-
           {/* Tabela de Propriedades */}
           <div>
             <h3 className="text-lg font-semibold text-gray-900 mb-4">

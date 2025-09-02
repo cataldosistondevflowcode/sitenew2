@@ -61,9 +61,9 @@ const AdminSchedules = () => {
         return 'Data inválida';
       }
       
-      // Formatar para o fuso horário local (Brasil)
+      // Formatar para o fuso horário local (Brasil) sem conversão automática
+      // O horário já está correto no banco, só precisamos exibir
       return date.toLocaleString('pt-BR', {
-        timeZone: 'America/Sao_Paulo',
         day: '2-digit',
         month: '2-digit',
         year: 'numeric',

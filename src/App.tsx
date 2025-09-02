@@ -24,6 +24,12 @@ import TestScheduleProcessor from "./pages/TestScheduleProcessor";
 import TestWhatsAppScheduleProcessor from "./pages/TestWhatsAppScheduleProcessor";
 import WhatsAppPhoneLists from "./components/admin/WhatsAppPhoneLists";
 import WhatsAppSchedules from "./components/admin/WhatsAppSchedules";
+import AdminLeads from "./pages/AdminLeads";
+import AdminSchedules from "./pages/AdminSchedules";
+import AdminCreateSchedule from "./pages/AdminCreateSchedule";
+import AdminCreateLead from "./pages/AdminCreateLead";
+import AdminGroups from "./pages/AdminGroups";
+import TestUnifiedScheduleProcessor from "./pages/TestUnifiedScheduleProcessor";
 
 const queryClient = new QueryClient();
 
@@ -77,8 +83,39 @@ const App = () => (
             <Route path="/test-pdf-email" element={<TestPdfEmail />} />
             <Route path="/test-schedule-processor" element={<TestScheduleProcessor />} />
             <Route path="/test-whatsapp-schedule-processor" element={<TestWhatsAppScheduleProcessor />} />
+            <Route path="/test-unified-schedule-processor" element={<TestUnifiedScheduleProcessor />} />
             <Route path="/admin/whatsapp-phone-lists" element={<AdminRoute><WhatsAppPhoneLists /></AdminRoute>} />
             <Route path="/admin/whatsapp-schedules" element={<AdminRoute><WhatsAppSchedules /></AdminRoute>} />
+            <Route path="/admin/leads" element={
+              <AdminRoute>
+                <AdminLeads />
+              </AdminRoute>
+            } />
+            <Route path="/admin/leads/create" element={
+              <AdminRoute>
+                <AdminCreateLead />
+              </AdminRoute>
+            } />
+            <Route path="/admin/leads/edit" element={
+              <AdminRoute>
+                <AdminCreateLead />
+              </AdminRoute>
+            } />
+            <Route path="/admin/groups" element={
+              <AdminRoute>
+                <AdminGroups />
+              </AdminRoute>
+            } />
+            <Route path="/admin/schedules" element={
+              <AdminRoute>
+                <AdminSchedules />
+              </AdminRoute>
+            } />
+            <Route path="/admin/schedules/create" element={
+              <AdminRoute>
+                <AdminCreateSchedule />
+              </AdminRoute>
+            } />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

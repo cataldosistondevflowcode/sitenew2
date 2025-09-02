@@ -72,16 +72,7 @@ const AdminCreateSchedule = () => {
   useEffect(() => {
     fetchGroups();
     fetchAllLeads();
-    
-    // Se há leads pré-selecionados, definir automaticamente como individual
-    if (selectedLeads && selectedLeads.length > 0) {
-      setFormData(prev => ({
-        ...prev,
-        selectionType: 'individual'
-      }));
-      setSelectedIndividualLeads(selectedLeads);
-    }
-  }, [selectedLeads]);
+  }, []);
 
 
 
@@ -496,6 +487,22 @@ const AdminCreateSchedule = () => {
                       />
                       <Label htmlFor="selection-individual">Selecionar Leads Individuais</Label>
                     </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Mensagem quando leads já foram pré-selecionados */}
+              {selectedLeads.length > 0 && (
+                <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
+                    <span className="text-sm font-medium text-blue-900">
+                      Leads Pré-selecionados
+                    </span>
+                  </div>
+                  <div className="text-sm text-blue-700 mt-2">
+                    • {selectedLeads.length} lead(s) já selecionado(s) da listagem
+                    • Você pode adicionar ou remover leads individualmente abaixo
                   </div>
                 </div>
               )}

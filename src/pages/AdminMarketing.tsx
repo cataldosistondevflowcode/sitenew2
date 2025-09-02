@@ -271,8 +271,8 @@ const AdminMarketing = () => {
             </div>
           </div>
 
-          {/* Componente Principal */}
-          <MarketingPDF />
+          {/* Componente Principal - OCULTO */}
+          {/* <MarketingPDF /> */}
         </div>
       </main>
     </div>

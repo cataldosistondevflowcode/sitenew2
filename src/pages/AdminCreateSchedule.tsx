@@ -151,34 +151,13 @@ const AdminCreateSchedule = () => {
       // VALIDAÇÃO OBRIGATÓRIA: Verificar se há leads ou grupo selecionado
       const allSelectedLeads = [...selectedLeads, ...selectedIndividualLeads];
       const hasSelectedLeads = allSelectedLeads.length > 0;
-      const hasSelectedGroup = formData.group && formData.group.trim() !== '';
       
-      if (!hasSelectedLeads && !hasSelectedGroup) {
-        alert('ERRO: É obrigatório selecionar pelo menos um lead ou um grupo para criar o agendamento!');
+      if (!hasSelectedLeads) {
+        alert('ERRO: É obrigatório selecionar pelo menos um lead para criar o agendamento!');
         setLoading(false);
         return;
       }
       
-      // Se tem grupo selecionado, verificar se o grupo tem leads
-      if (hasSelectedGroup && !hasSelectedLeads) {
-        const { data: groupLeads, error: groupError } = await (supabase as any)
-          .from('contact_leads')
-          .select('id')
-          .eq('group_id', parseInt(formData.group));
-          
-        if (groupError) {
-          console.error('Erro ao verificar leads do grupo:', groupError);
-          alert('Erro ao verificar leads do grupo selecionado');
-          setLoading(false);
-          return;
-        }
-        
-        if (!groupLeads || groupLeads.length === 0) {
-          alert('ERRO: O grupo selecionado não possui leads associados!');
-          setLoading(false);
-          return;
-        }
-      }
       // Upload da imagem se existir
       let imageUrl = null;
       if (formData.whatsappImage) {
@@ -458,154 +437,62 @@ const AdminCreateSchedule = () => {
                 />
               </div>
 
-              {/* Seleção de Tipo - Grupo ou Leads Individuais */}
-              {selectedLeads.length === 0 && (
-                <div>
-                  <Label>Tipo de Seleção</Label>
-                  <div className="flex items-center space-x-6 mt-2">
-                    <div className="flex items-center space-x-2">
-                      <input
-                        type="radio"
-                        id="selection-group"
-                        name="selectionType"
-                        value="group"
-                        checked={formData.selectionType === 'group'}
-                        onChange={(e) => handleInputChange('selectionType', e.target.value)}
-                        className="rounded"
+              {/* Seleção Individual de Leads - Sempre visível */}
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <Label>Selecionar Leads</Label>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={toggleAllLeads}
+                    className="text-xs"
+                  >
+                    {selectedIndividualLeads.length === allLeads.length ? 'Deselecionar Todos' : 'Selecionar Todos'}
+                  </Button>
+                </div>
+                
+                <div className="max-h-60 overflow-y-auto border rounded-lg p-2 space-y-2">
+                  {allLeads.map((lead) => (
+                    <div key={lead.id} className="flex items-center space-x-2 p-2 hover:bg-gray-50 rounded">
+                      <Checkbox
+                        id={`lead-${lead.id}`}
+                        checked={selectedIndividualLeads.includes(lead.id)}
+                        onCheckedChange={() => handleLeadToggle(lead.id)}
                       />
-                      <Label htmlFor="selection-group">Selecionar por Grupo</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <input
-                        type="radio"
-                        id="selection-individual"
-                        name="selectionType"
-                        value="individual"
-                        checked={formData.selectionType === 'individual'}
-                        onChange={(e) => handleInputChange('selectionType', e.target.value)}
-                        className="rounded"
-                      />
-                      <Label htmlFor="selection-individual">Selecionar Leads Individuais</Label>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Mensagem quando leads já foram pré-selecionados */}
-              {selectedLeads.length > 0 && (
-                <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
-                    <span className="text-sm font-medium text-blue-900">
-                      Leads Pré-selecionados
-                    </span>
-                  </div>
-                  <div className="text-sm text-blue-700 mt-2">
-                    • {selectedLeads.length} lead(s) já selecionado(s) da listagem
-                    • Você pode adicionar ou remover leads individualmente abaixo
-                  </div>
-                </div>
-              )}
-
-              {/* Grupo - Só aparece se seleção por grupo for escolhida */}
-              {formData.selectionType === 'group' && (
-                <div>
-                  <Label htmlFor="group">Grupo</Label>
-                  <Select value={formData.group} onValueChange={(value) => handleInputChange('group', value)}>
-                    <SelectTrigger className="bg-white">
-                      <SelectValue placeholder="Selecione um grupo" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-white">
-                      {groups.map((group) => (
-                        <SelectItem key={group.id} value={group.id.toString()}>
-                          {group.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              )}
-
-              {/* Seleção Individual de Leads - Só aparece se seleção individual for escolhida */}
-              {formData.selectionType === 'individual' && (
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <Label>Selecionar Leads Individualmente</Label>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={toggleAllLeads}
-                      className="text-xs"
-                    >
-                      {selectedIndividualLeads.length === allLeads.length ? 'Deselecionar Todos' : 'Selecionar Todos'}
-                    </Button>
-                  </div>
-                  
-                  <div className="max-h-60 overflow-y-auto border rounded-lg p-2 space-y-2">
-                    {allLeads.map((lead) => (
-                      <div key={lead.id} className="flex items-center space-x-2 p-2 hover:bg-gray-50 rounded">
-                        <Checkbox
-                          id={`lead-${lead.id}`}
-                          checked={selectedIndividualLeads.includes(lead.id)}
-                          onCheckedChange={() => handleLeadToggle(lead.id)}
-                        />
-                        <div className="flex-1">
-                          <div className="font-medium">{lead.name || 'Sem nome'}</div>
-                          <div className="text-sm text-gray-500">
-                            {lead.email && <span>{lead.email}</span>}
-                            {lead.phone && <span className="ml-2">{lead.phone}</span>}
-                          </div>
-                          {lead.filter_config && (
-                            <div className="text-xs text-blue-600 mt-1">
-                              Filtro: {lead.filter_config}
-                            </div>
-                          )}
+                      <div className="flex-1">
+                        <div className="font-medium">{lead.name || 'Sem nome'}</div>
+                        <div className="text-sm text-gray-500">
+                          {lead.email && <span>{lead.email}</span>}
+                          {lead.phone && <span className="ml-2">{lead.phone}</span>}
                         </div>
+                        {lead.filter_config && (
+                          <div className="text-xs text-blue-600 mt-1">
+                            Filtro: {lead.filter_config}
+                          </div>
+                        )}
                       </div>
-                    ))}
-                  </div>
-                  
-                  {selectedIndividualLeads.length > 0 && (
-                    <div className="text-sm text-blue-600 mt-2">
-                      {selectedIndividualLeads.length} lead(s) selecionado(s)
                     </div>
-                  )}
+                  ))}
                 </div>
-              )}
+                
+                {selectedIndividualLeads.length > 0 && (
+                  <div className="text-sm text-blue-600 mt-2">
+                    {selectedIndividualLeads.length} lead(s) selecionado(s)
+                  </div>
+                )}
+              </div>
 
 
 
-              {/* Método de Envio */}
+              {/* Método de Envio - Apenas WhatsApp */}
               <div>
                 <Label>Método de Envio</Label>
-                <div className="grid grid-cols-3 gap-4 mt-2">
-                  <div 
-                    className={getMethodCardClass('whatsapp')}
-                    onClick={() => handleInputChange('method', 'whatsapp')}
-                  >
+                <div className="grid grid-cols-1 gap-3 mt-2">
+                  <div className="border-2 border-green-500 bg-green-50 p-4 rounded-lg cursor-pointer">
                     <div className="flex items-center gap-2">
                       <MessageCircle className="h-5 w-5 text-green-600" />
                       <span className="font-medium">WhatsApp</span>
-                    </div>
-                  </div>
-                  <div 
-                    className={getMethodCardClass('email')}
-                    onClick={() => handleInputChange('method', 'email')}
-                  >
-                    <div className="flex items-center gap-2">
-                      <Mail className="h-5 w-5 text-blue-600" />
-                      <span className="font-medium">E-mail</span>
-                    </div>
-                  </div>
-                  <div 
-                    className={getMethodCardClass('both')}
-                    onClick={() => handleInputChange('method', 'both')}
-                  >
-                    <div className="flex items-center gap-2">
-                      <MessageCircle className="h-5 w-5 text-green-600" />
-                      <Mail className="h-5 w-5 text-blue-600" />
-                      <span className="font-medium">Ambos</span>
                     </div>
                   </div>
                 </div>
@@ -763,67 +650,56 @@ const AdminCreateSchedule = () => {
               {(() => {
                 const allSelectedLeads = [...selectedLeads, ...selectedIndividualLeads];
                 const hasSelectedLeads = allSelectedLeads.length > 0;
-                const hasSelectedGroup = formData.group && formData.group.trim() !== '';
-                const canSubmit = (formData.selectionType === 'group' && hasSelectedGroup) || 
-                                (formData.selectionType === 'individual' && hasSelectedLeads);
                 
                 return (
                   <div className="space-y-4">
-                    {!canSubmit && (
+                    {!hasSelectedLeads && (
                       <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-                    <div className="flex items-center gap-2">
-                      <XCircle className="h-4 w-4 text-red-600" />
-                      <span className="text-sm font-medium text-red-900">
-                        ATENÇÃO: É obrigatório selecionar pelo menos um lead ou um grupo!
-                      </span>
-                    </div>
-                    <div className="text-sm text-red-700 mt-2">
-                      {formData.selectionType === 'group' 
-                        ? '• Escolha um grupo que contenha leads'
-                        : '• Selecione leads individualmente na lista acima'
-                      }
+                        <div className="flex items-center gap-2">
+                          <XCircle className="h-4 w-4 text-red-600" />
+                          <span className="text-sm font-medium text-red-900">
+                            ATENÇÃO: É obrigatório selecionar pelo menos um lead!
+                          </span>
+                        </div>
+                        <div className="text-sm text-red-700 mt-2">
+                          • Selecione leads individualmente na lista acima
+                        </div>
+                      </div>
+                    )}
+                    
+                    {hasSelectedLeads && (
+                      <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+                        <div className="flex items-center gap-2">
+                          <CheckCircle className="h-4 w-4 text-green-600" />
+                          <span className="text-sm font-medium text-green-900">
+                            ✓ Agendamento pronto para ser criado
+                          </span>
+                        </div>
+                        <div className="text-sm text-green-700 mt-2">
+                          • {allSelectedLeads.length} lead(s) selecionado(s)
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Botões */}
+                    <div className="flex justify-end space-x-4 pt-6">
+                      <Button
+                        variant="outline"
+                        onClick={handleBackToSchedules}
+                      >
+                        Cancelar
+                      </Button>
+                      <Button
+                        onClick={handleSubmit}
+                        disabled={loading || !hasSelectedLeads}
+                        className={`${hasSelectedLeads ? 'bg-orange-600 hover:bg-orange-700' : 'bg-gray-400 cursor-not-allowed'}`}
+                      >
+                        {loading ? 'Criando...' : 'Criar Agendamento'}
+                      </Button>
                     </div>
                   </div>
-                )}
-                
-                {canSubmit && (
-                  <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-                    <div className="flex items-center gap-2">
-                      <CheckCircle className="h-4 w-4 text-green-600" />
-                      <span className="text-sm font-medium text-green-900">
-                        ✓ Agendamento pronto para ser criado
-                      </span>
-                    </div>
-                    <div className="text-sm text-green-700 mt-2">
-                      {formData.selectionType === 'individual' && hasSelectedLeads && (
-                        <span>• {allSelectedLeads.length} lead(s) selecionado(s)</span>
-                      )}
-                      {formData.selectionType === 'group' && hasSelectedGroup && (
-                        <span>• Grupo selecionado: {groups.find(g => g.id.toString() === formData.group)?.name}</span>
-                      )}
-                    </div>
-                  </div>
-                )}
-                
-                {/* Botões */}
-                <div className="flex justify-end space-x-4 pt-6">
-                  <Button
-                    variant="outline"
-                    onClick={handleBackToSchedules}
-                  >
-                    Cancelar
-                  </Button>
-                  <Button
-                    onClick={handleSubmit}
-                    disabled={loading || !canSubmit}
-                    className={`${canSubmit ? 'bg-orange-600 hover:bg-orange-700' : 'bg-gray-400 cursor-not-allowed'}`}
-                  >
-                    {loading ? 'Criando...' : 'Criar Agendamento'}
-                  </Button>
-                </div>
-              </div>
-            );
-          })()}
+                );
+              })()}
             </CardContent>
           </Card>
         </div>

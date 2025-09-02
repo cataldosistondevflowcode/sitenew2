@@ -88,7 +88,7 @@ serve(async (req) => {
       }, { headers: corsHeaders })
     }
 
-    const results = []
+    const results: any[] = []
     let totalEmailsSent = 0
     let totalWhatsAppSent = 0
     let successfulSchedules = 0

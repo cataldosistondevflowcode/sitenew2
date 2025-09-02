@@ -50,6 +50,7 @@ const AdminCreateSchedule = () => {
   const [formData, setFormData] = useState({
     name: '',
     group: '',
+    selectionType: 'group' as 'group' | 'individual', // NOVO: tipo de seleção
 
     method: 'whatsapp' as 'email' | 'whatsapp' | 'both',
     frequency: 'semanal',
@@ -77,7 +78,7 @@ const AdminCreateSchedule = () => {
 
   const fetchGroups = async () => {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('lead_groups')
         .select('id, name')
         .eq('is_active', true);
@@ -91,7 +92,7 @@ const AdminCreateSchedule = () => {
 
   const fetchAllLeads = async () => {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('contact_leads')
         .select('id, name, email, phone, filter_config')
         .order('name');
@@ -160,7 +161,7 @@ const AdminCreateSchedule = () => {
       
       // Se tem grupo selecionado, verificar se o grupo tem leads
       if (hasSelectedGroup && !hasSelectedLeads) {
-        const { data: groupLeads, error: groupError } = await supabase
+        const { data: groupLeads, error: groupError } = await (supabase as any)
           .from('contact_leads')
           .select('id')
           .eq('group_id', parseInt(formData.group));
@@ -256,7 +257,7 @@ const AdminCreateSchedule = () => {
 
       console.log('Payload do agendamento:', schedulePayload);
 
-      const { data: scheduleData, error: scheduleError } = await supabase
+      const { data: scheduleData, error: scheduleError } = await (supabase as any)
         .from('unified_schedules')
         .insert(schedulePayload)
         .select()
@@ -276,7 +277,7 @@ const AdminCreateSchedule = () => {
           lead_id: leadId
         }));
 
-        await supabase
+        await (supabase as any)
           .from('schedule_leads')
           .insert(leadRelations);
       }
@@ -302,7 +303,7 @@ const AdminCreateSchedule = () => {
         
         // Atualizar a mensagem no banco
         if (finalWhatsAppMessage !== formData.whatsappMessage) {
-          await supabase
+          await (supabase as any)
             .from('unified_schedules')
             .update({ 
               whatsapp_message: finalWhatsAppMessage
@@ -457,8 +458,39 @@ const AdminCreateSchedule = () => {
                 />
               </div>
 
-              {/* Grupo - Só aparece se não houver leads selecionados */}
-              {selectedLeads.length === 0 && (
+              {/* Seleção de Tipo - Grupo ou Leads Individuais */}
+              <div>
+                <Label>Tipo de Seleção</Label>
+                <div className="flex items-center space-x-6 mt-2">
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="radio"
+                      id="selection-group"
+                      name="selectionType"
+                      value="group"
+                      checked={formData.selectionType === 'group'}
+                      onChange={(e) => handleInputChange('selectionType', e.target.value)}
+                      className="rounded"
+                    />
+                    <Label htmlFor="selection-group">Selecionar por Grupo</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="radio"
+                      id="selection-individual"
+                      name="selectionType"
+                      value="individual"
+                      checked={formData.selectionType === 'individual'}
+                      onChange={(e) => handleInputChange('selectionType', e.target.value)}
+                      className="rounded"
+                    />
+                    <Label htmlFor="selection-individual">Selecionar Leads Individuais</Label>
+                  </div>
+                </div>
+              </div>
+
+              {/* Grupo - Só aparece se seleção por grupo for escolhida */}
+              {formData.selectionType === 'group' && (
                 <div>
                   <Label htmlFor="group">Grupo</Label>
                   <Select value={formData.group} onValueChange={(value) => handleInputChange('group', value)}>
@@ -476,8 +508,8 @@ const AdminCreateSchedule = () => {
                 </div>
               )}
 
-              {/* Seleção Individual de Leads - Só aparece se não houver leads pré-selecionados */}
-              {selectedLeads.length === 0 && (
+              {/* Seleção Individual de Leads - Só aparece se seleção individual for escolhida */}
+              {formData.selectionType === 'individual' && (
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <Label>Selecionar Leads Individualmente</Label>
@@ -619,6 +651,35 @@ const AdminCreateSchedule = () => {
                {(formData.method === 'whatsapp' || formData.method === 'both') && (
                  <div>
                    <Label htmlFor="whatsapp-content">Mensagem WhatsApp</Label>
+                   
+                   {/* Choice Tips para WhatsApp */}
+                   <div className="flex gap-2 mb-3">
+                     <Button
+                       type="button"
+                       variant="outline"
+                       size="sm"
+                       onClick={() => {
+                         const rjMessage = "Olá, Aqui é da Cataldo Siston escritório especializado em Leilões, Trouxemos as melhores oportunidades de Imóveis em Leilão no Rio De Janeiro para você.* Clique no botão abaixo e veja agora mesmo.";
+                         handleInputChange('whatsappMessage', rjMessage);
+                       }}
+                       className="text-xs bg-blue-50 hover:bg-blue-100 border-blue-300 text-blue-700"
+                     >
+                       RJ
+                     </Button>
+                     <Button
+                       type="button"
+                       variant="outline"
+                       size="sm"
+                       onClick={() => {
+                         const spMessage = "Olá, Aqui é da Cataldo Siston escritório especializado em Leilões, Trouxemos as melhores oportunidades de Imóveis em Leilão de São Paulo para você.* Clique no botão abaixo e veja agora mesmo.";
+                         handleInputChange('whatsappMessage', spMessage);
+                       }}
+                       className="text-xs bg-green-50 hover:bg-green-100 border-green-300 text-green-700"
+                     >
+                       SP
+                     </Button>
+                   </div>
+                   
                    <Textarea
                      id="whatsapp-content"
                      placeholder="Escreva aqui a mensagem que será enviada via WhatsApp..."
@@ -668,24 +729,15 @@ const AdminCreateSchedule = () => {
                {(formData.method === 'email' || formData.method === 'both') && (
                  <div className="space-y-4">
                    <div>
-                     <Label htmlFor="email-subject">Assunto do Email</Label>
+                     <Label htmlFor="email-subject">Título do Email</Label>
                      <Input
                        id="email-subject"
-                       placeholder="Assunto do email..."
+                       placeholder="Título do email..."
                        value={formData.emailSubject}
                        onChange={(e) => handleInputChange('emailSubject', e.target.value)}
                      />
                    </div>
-                   <div>
-                     <Label htmlFor="email-content">Mensagem Email</Label>
-                     <Textarea
-                       id="email-content"
-                       placeholder="Escreva aqui a mensagem que será enviada via email..."
-                       value={formData.emailMessage}
-                       onChange={(e) => handleInputChange('emailMessage', e.target.value)}
-                       rows={4}
-                     />
-                   </div>
+                   {/* Campo de mensagem do email removido conforme solicitado */}
                  </div>
                )}
 
@@ -694,7 +746,8 @@ const AdminCreateSchedule = () => {
                 const allSelectedLeads = [...selectedLeads, ...selectedIndividualLeads];
                 const hasSelectedLeads = allSelectedLeads.length > 0;
                 const hasSelectedGroup = formData.group && formData.group.trim() !== '';
-                const canSubmit = hasSelectedLeads || hasSelectedGroup;
+                const canSubmit = (formData.selectionType === 'group' && hasSelectedGroup) || 
+                                (formData.selectionType === 'individual' && hasSelectedLeads);
                 
                 return (
                   <div className="space-y-4">
@@ -707,8 +760,10 @@ const AdminCreateSchedule = () => {
                       </span>
                     </div>
                     <div className="text-sm text-red-700 mt-2">
-                      • Selecione leads individualmente na lista acima, OU
-                      • Escolha um grupo que contenha leads
+                      {formData.selectionType === 'group' 
+                        ? '• Escolha um grupo que contenha leads'
+                        : '• Selecione leads individualmente na lista acima'
+                      }
                     </div>
                   </div>
                 )}
@@ -722,10 +777,10 @@ const AdminCreateSchedule = () => {
                       </span>
                     </div>
                     <div className="text-sm text-green-700 mt-2">
-                      {hasSelectedLeads && (
+                      {formData.selectionType === 'individual' && hasSelectedLeads && (
                         <span>• {allSelectedLeads.length} lead(s) selecionado(s)</span>
                       )}
-                      {hasSelectedGroup && (
+                      {formData.selectionType === 'group' && hasSelectedGroup && (
                         <span>• Grupo selecionado: {groups.find(g => g.id.toString() === formData.group)?.name}</span>
                       )}
                     </div>

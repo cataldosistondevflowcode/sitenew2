@@ -539,9 +539,6 @@ const Index = () => {
   useEffect(() => {
     const urlFilters = parseFiltersFromURL();
     if (Object.keys(urlFilters).length > 0) {
-      // Aplicar os filtros vindos da URL
-      setFilters(urlFilters);
-      
       // Sincronizar estados visuais com os filtros da URL
       if (urlFilters.city) {
         const cities = urlFilters.city.split(',');
@@ -622,6 +619,22 @@ const Index = () => {
       
       if (urlFilters.auctionType) {
         setSelectedAuctionType(urlFilters.auctionType);
+        
+        // Converter auctionType da URL para selectedAuctionTypes
+        if (urlFilters.auctionType === "EXTRAJUDICIAL_COMPOSTO") {
+          // Se é EXTRAJUDICIAL_COMPOSTO, significa que ambos EXTRAJUDICIAL e EXTRAJUDICIAL_FINANCIAMENTO foram selecionados
+          // IGNORAR o parâmetro financiamento da URL neste caso
+          setSelectedAuctionTypes([AUCTION_TYPE_EXTRAJUDICIAL, AUCTION_TYPE_EXTRAJUDICIAL_FINANCIAMENTO]);
+        } else if (urlFilters.auctionType === "EXTRAJUDICIAL_CUSTOM") {
+          // Se é EXTRAJUDICIAL_CUSTOM, verificar se tem financiamento
+          if (urlFilters.financiamento === true) {
+            setSelectedAuctionTypes([AUCTION_TYPE_EXTRAJUDICIAL_FINANCIAMENTO]);
+          } else {
+            setSelectedAuctionTypes([AUCTION_TYPE_EXTRAJUDICIAL]);
+          }
+        } else if (urlFilters.auctionType === "Judicial") {
+          setSelectedAuctionTypes([AUCTION_TYPE_JUDICIAL]);
+        }
       }
       
       if (urlFilters.hasSecondAuction) {
@@ -638,6 +651,15 @@ const Index = () => {
       
       if (urlFilters.dataFimSegundoLeilao) {
         setDataFimSegundoLeilao(urlFilters.dataFimSegundoLeilao);
+      }
+      
+      // Aplicar os filtros vindos da URL APÓS toda a lógica de conversão
+      // Se for EXTRAJUDICIAL_COMPOSTO, remover o financiamento dos filtros
+      if (urlFilters.auctionType === "EXTRAJUDICIAL_COMPOSTO") {
+        const correctedFilters = { ...urlFilters, financiamento: undefined };
+        setFilters(correctedFilters);
+      } else {
+        setFilters(urlFilters);
       }
     }
     setFiltersLoaded(true);
@@ -717,6 +739,10 @@ const Index = () => {
         if (filters.auctionType) {
           if (filters.auctionType === "EXTRAJUDICIAL_CUSTOM") {
             // EXTRAJUDICIAL: tipo_leilao != "Judicial"
+            query = query.neq('tipo_leilao', 'Judicial');
+          } else if (filters.auctionType === "EXTRAJUDICIAL_COMPOSTO") {
+            // NOVO: EXTRAJUDICIAL + EXTRAJUDICIAL FINANCIÁVEL
+            // Mostrar todos os extrajudiciais (com ou sem financiamento)
             query = query.neq('tipo_leilao', 'Judicial');
           } else {
             query = query.eq('tipo_leilao', filters.auctionType);
@@ -983,13 +1009,19 @@ const Index = () => {
           newFilters.auctionType = "EXTRAJUDICIAL_CUSTOM";
           newFilters.financiamento = true;
         }
+      } else if (hasExtrajudicial && hasExtrajudicialFinanciamento) {
+        // NOVO: Se tem EXTRAJUDICIAL E EXTRAJUDICIAL FINANCIÁVEL, usar filtro composto
+        newFilters.auctionType = "EXTRAJUDICIAL_COMPOSTO";
+        newFilters.financiamento = undefined; // Será tratado na query
       } else if (hasJudicial) {
         newFilters.auctionType = "Judicial";
+        newFilters.financiamento = undefined;
       } else if (hasExtrajudicialFinanciamento) {
         newFilters.auctionType = "EXTRAJUDICIAL_CUSTOM";
         newFilters.financiamento = true;
       } else if (hasExtrajudicial) {
         newFilters.auctionType = "EXTRAJUDICIAL_CUSTOM";
+        newFilters.financiamento = undefined;
       }
     } else if (selectedAuctionType && selectedAuctionType !== "Todos os tipos de leilão" && !selectedAuctionType.includes("modalidades selecionadas")) {
       // Compatibilidade: se só uma modalidade foi selecionada pelo modo antigo

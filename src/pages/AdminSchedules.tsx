@@ -348,8 +348,18 @@ const AdminSchedules = () => {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={handleBackToMarketing}
+                onClick={() => navigate('/admin/leads')}
                 className="flex items-center gap-2 border-2 font-medium bg-purple-50 hover:bg-purple-100 text-purple-700 border-purple-300 hover:border-purple-400"
+              >
+                <Users className="h-4 w-4" />
+                <span className="hidden sm:inline">Leads</span>
+              </Button>
+
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigate('/admin/marketing')}
+                className="flex items-center gap-2 border-2 font-medium bg-orange-50 hover:bg-orange-100 text-orange-700 border-orange-300 hover:border-orange-400"
               >
                 <FileText className="h-4 w-4" />
                 <span className="hidden sm:inline">Marketing</span>

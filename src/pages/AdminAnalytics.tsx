@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import AnalyticsDashboard from '@/components/admin/AnalyticsDashboard';
 import AnalyticsTablesView from '@/components/admin/AnalyticsTablesView';
-import { LogOut, User, BarChart3, Database, ArrowLeft, Home, Settings } from 'lucide-react';
+import { LogOut, User, BarChart3, Database, ArrowLeft, Home, Settings, Users, Calendar, FileText } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const AdminAnalytics = () => {
@@ -20,9 +20,21 @@ const AdminAnalytics = () => {
     navigate('/admin');
   };
 
+  const handleGoToLeads = () => {
+    navigate('/admin/leads');
+  };
+
+  const handleGoToSchedules = () => {
+    navigate('/admin/schedules');
+  };
+
+  const handleGoToMarketing = () => {
+    navigate('/admin/marketing');
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header do Admin */}
+      
       <header className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
@@ -54,6 +66,36 @@ const AdminAnalytics = () => {
               >
                 <Home className="h-4 w-4" />
                 <span className="hidden sm:inline">Site</span>
+              </Button>
+
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleGoToLeads}
+                className="flex items-center gap-2 border-2 font-medium bg-purple-50 hover:bg-purple-100 text-purple-700 border-purple-300 hover:border-purple-400"
+              >
+                <Users className="h-4 w-4" />
+                <span className="hidden sm:inline">Leads</span>
+              </Button>
+
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleGoToSchedules}
+                className="flex items-center gap-2 border-2 font-medium bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-300 hover:border-blue-400"
+              >
+                <Calendar className="h-4 w-4" />
+                <span className="hidden sm:inline">Agendamentos</span>
+              </Button>
+
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleGoToMarketing}
+                className="flex items-center gap-2 border-2 font-medium bg-orange-50 hover:bg-orange-100 text-orange-700 border-orange-300 hover:border-orange-400"
+              >
+                <FileText className="h-4 w-4" />
+                <span className="hidden sm:inline">Marketing</span>
               </Button>
 
               <Button

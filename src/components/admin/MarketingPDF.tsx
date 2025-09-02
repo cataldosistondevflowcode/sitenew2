@@ -2416,6 +2416,10 @@ const MarketingPDF = () => {
               src={pageUrls[currentPage]}
               className="w-full h-screen border-0"
               onLoad={() => setIframeLoaded(true)}
+              onError={() => {
+                console.error('Erro ao carregar iframe:', pageUrls[currentPage]);
+                setIframeLoaded(false);
+              }}
               title={`Página ${currentPage} - Marketing Mode`}
             />
           </div>

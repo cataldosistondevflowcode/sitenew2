@@ -112,9 +112,7 @@ const AdminCreateSchedule = () => {
     navigate('/admin/schedules');
   };
 
-  const handleBackToMarketing = () => {
-    navigate('/admin/marketing');
-  };
+
 
   const handleBackToAdmin = () => {
     navigate('/admin');
@@ -356,11 +354,11 @@ const AdminCreateSchedule = () => {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={handleBackToMarketing}
+                onClick={() => navigate('/admin/leads')}
                 className="flex items-center gap-2 border-2 font-medium bg-purple-50 hover:bg-purple-100 text-purple-700 border-purple-300 hover:border-purple-400"
               >
-                <FileText className="h-4 w-4" />
-                <span className="hidden sm:inline">Marketing</span>
+                <Users className="h-4 w-4" />
+                <span className="hidden sm:inline">Leads</span>
               </Button>
 
               <Button
@@ -498,35 +496,63 @@ const AdminCreateSchedule = () => {
                 </div>
               </div>
 
-              {/* Frequência */}
-              <div>
-                <Label htmlFor="frequency">Frequência</Label>
-                                 <Select value={formData.frequency} onValueChange={(value) => handleInputChange('frequency', value)}>
-                   <SelectTrigger className="bg-white">
-                     <SelectValue />
-                   </SelectTrigger>
-                   <SelectContent className="bg-white">
-                     <SelectItem value="diario">Diário</SelectItem>
-                     <SelectItem value="semanal">Semanal</SelectItem>
-                     <SelectItem value="quinzenal">Quinzenal</SelectItem>
-                     <SelectItem value="mensal">Mensal</SelectItem>
-                   </SelectContent>
-                 </Select>
+              {/* Tipo de Envio */}
+              <div className="space-y-4">
+                <Label>Tipo de Envio</Label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                     <div className="flex items-center space-x-3 p-4 border-2 rounded-lg cursor-pointer transition-all hover:border-blue-300 hover:bg-blue-50"
+                        onClick={() => handleInputChange('recurring', true)}>
+                     <input
+                       type="radio"
+                       name="envio-tipo"
+                       checked={formData.recurring}
+                       onChange={() => handleInputChange('recurring', true)}
+                       className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                     />
+                     <div className="flex items-center gap-2">
+                       <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                       <span className="font-medium text-gray-900">Envio Recorrente</span>
+                     </div>
+                   </div>
+                  
+                                     <div className="flex items-center space-x-3 p-4 border-2 rounded-lg cursor-pointer transition-all hover:border-orange-300 hover:bg-orange-50"
+                        onClick={() => handleInputChange('recurring', false)}>
+                     <input
+                       type="radio"
+                       name="envio-tipo"
+                       checked={!formData.recurring}
+                       onChange={() => handleInputChange('recurring', false)}
+                       className="w-4 h-4 text-orange-600 border-gray-300 focus:ring-orange-500"
+                     />
+                     <div className="flex items-center gap-2">
+                       <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
+                       <span className="font-medium text-gray-900">Envio Pontual</span>
+                     </div>
+                   </div>
+                </div>
               </div>
 
-                             {/* Agendamento */}
+              {/* Frequência - Apenas para envio recorrente */}
+              {formData.recurring && (
+                <div>
+                  <Label htmlFor="frequency">Frequência</Label>
+                  <Select value={formData.frequency} onValueChange={(value) => handleInputChange('frequency', value)}>
+                    <SelectTrigger className="bg-white">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-white">
+                      <SelectItem value="diario">Diário</SelectItem>
+                      <SelectItem value="semanal">Semanal</SelectItem>
+                      <SelectItem value="quinzenal">Quinzenal</SelectItem>
+                      <SelectItem value="mensal">Mensal</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+
+                             {/* Configuração de Horário */}
                <div className="space-y-4">
-                 <div className="flex items-center space-x-2">
-                   <input
-                     type="checkbox"
-                     id="recurring"
-                     checked={formData.recurring}
-                     onChange={(e) => handleInputChange('recurring', e.target.checked)}
-                     className="rounded"
-                   />
-                   <Label htmlFor="recurring">Envio recorrente</Label>
-                 </div>
-                 
+                 <h3 className="text-lg font-medium text-gray-900">Configuração de Horário</h3>
                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                    <div>
                      <Label htmlFor="sendTime">Horário</Label>

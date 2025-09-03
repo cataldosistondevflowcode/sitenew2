@@ -39,8 +39,6 @@ const PropertiesTable = () => {
   const [cityFilter, setCityFilter] = useState('all');
   const [typeFilter, setTypeFilter] = useState('all');
   const [auctionTypeFilter, setAuctionTypeFilter] = useState('all');
-  const [fgtsFilter, setFgtsFilter] = useState('all');
-  const [financingFilter, setFinancingFilter] = useState('all');
   const [showCurrentOnly, setShowCurrentOnly] = useState(false); // Novo estado para filtro "Atual"
   
   // Estados para metadados
@@ -103,18 +101,6 @@ const PropertiesTable = () => {
 
       if (auctionTypeFilter && auctionTypeFilter !== 'all') {
         query = query.eq('tipo_leilao', auctionTypeFilter);
-      }
-
-      if (fgtsFilter === 'true') {
-        query = query.eq('fgts', true);
-      } else if (fgtsFilter === 'false') {
-        query = query.eq('fgts', false);
-      }
-
-      if (financingFilter === 'true') {
-        query = query.eq('financiamento', true);
-      } else if (financingFilter === 'false') {
-        query = query.eq('financiamento', false);
       }
 
       // Filtro "Atual" - apenas leilões que ainda não passaram
@@ -191,7 +177,7 @@ const PropertiesTable = () => {
     setCurrentPage(0);
     setSelectedProperties(new Set());
     fetchProperties(0);
-  }, [searchTerm, cityFilter, stateFilter, typeFilter, auctionTypeFilter, fgtsFilter, financingFilter, showCurrentOnly]);
+  }, [searchTerm, cityFilter, stateFilter, typeFilter, auctionTypeFilter, showCurrentOnly]);
 
 
 
@@ -214,8 +200,7 @@ const PropertiesTable = () => {
     setCityFilter('all');
     setTypeFilter('all');
     setAuctionTypeFilter('all');
-    setFgtsFilter('all');
-    setFinancingFilter('all');
+
     setShowCurrentOnly(false); // Limpar também o filtro "Atual"
     setSelectedProperties(new Set()); // Limpar seleção
     setCurrentPage(0);
@@ -496,28 +481,6 @@ const PropertiesTable = () => {
               </SelectContent>
             </Select>
 
-            <Select value={fgtsFilter} onValueChange={setFgtsFilter}>
-              <SelectTrigger className="w-32">
-                <SelectValue placeholder="FGTS" />
-              </SelectTrigger>
-              <SelectContent className="bg-white">
-                <SelectItem value="all">Todos</SelectItem>
-                <SelectItem value="true">Com FGTS</SelectItem>
-                <SelectItem value="false">Sem FGTS</SelectItem>
-              </SelectContent>
-            </Select>
-
-            <Select value={financingFilter} onValueChange={setFinancingFilter}>
-              <SelectTrigger className="w-40">
-                <SelectValue placeholder="Financ." />
-              </SelectTrigger>
-              <SelectContent className="bg-white">
-                <SelectItem value="all">Todos</SelectItem>
-                <SelectItem value="true">Com Financ.</SelectItem>
-                <SelectItem value="false">Sem Financ.</SelectItem>
-              </SelectContent>
-            </Select>
-
             <div className="flex items-center space-x-2 bg-white px-3 py-2 rounded-md border border-gray-200">
               <Checkbox
                 id="show-current-only"
@@ -578,10 +541,6 @@ const PropertiesTable = () => {
                 <TableHead className="w-28">Data 1º</TableHead>
                 <TableHead className="w-28">Data 2º</TableHead>
                 <TableHead className="min-w-32">Tipo Leilão</TableHead>
-                <TableHead className="w-24">FGTS</TableHead>
-                <TableHead className="w-24">Financ.</TableHead>
-                <TableHead className="w-24">Parcel.</TableHead>
-                <TableHead className="w-24">Consórc.</TableHead>
                 <TableHead className="min-w-48">Leiloeiro</TableHead>
                 <TableHead className="min-w-32">Processo</TableHead>
                 <TableHead className="min-w-64">Descrição</TableHead>
@@ -652,34 +611,7 @@ const PropertiesTable = () => {
                       </Badge>
                     ) : 'N/A'}
                   </TableCell>
-                  <TableCell>
-                    {property.fgts ? (
-                      <Badge className="text-xs bg-green-100 text-green-800 border-green-200">✓</Badge>
-                    ) : (
-                      <Badge variant="outline" className="text-xs text-gray-500">✗</Badge>
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    {property.financiamento ? (
-                      <Badge className="text-xs bg-orange-100 text-orange-800 border-orange-200">✓</Badge>
-                    ) : (
-                      <Badge variant="outline" className="text-xs text-gray-500">✗</Badge>
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    {property.parcelamento ? (
-                      <Badge className="text-xs bg-yellow-100 text-yellow-800 border-yellow-200">✓</Badge>
-                    ) : (
-                      <Badge variant="outline" className="text-xs text-gray-500">✗</Badge>
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    {property.consorcio ? (
-                      <Badge className="text-xs bg-purple-100 text-purple-800 border-purple-200">✓</Badge>
-                    ) : (
-                      <Badge variant="outline" className="text-xs text-gray-500">✗</Badge>
-                    )}
-                  </TableCell>
+
                   <TableCell className="max-w-48">
                     <div className="truncate text-xs" title={property.leiloeiro_nome || 'N/A'}>
                       {property.leiloeiro_nome || 'N/A'}

@@ -17,10 +17,7 @@ export const EXCEL_COLUMNS = [
   { key: 'data_leilao_1', label: 'Data 1º Leilão (DD/MM/AAAA)', required: false },
   { key: 'data_leilao_2', label: 'Data 2º Leilão (DD/MM/AAAA)', required: false },
   { key: 'tipo_leilao', label: 'Tipo de Leilão', required: false },
-  { key: 'fgts', label: 'Aceita FGTS (SIM/NÃO)', required: false },
-  { key: 'financiamento', label: 'Aceita Financiamento (SIM/NÃO)', required: false },
-  { key: 'parcelamento', label: 'Aceita Parcelamento (SIM/NÃO)', required: false },
-  { key: 'consorcio', label: 'Aceita Consórcio (SIM/NÃO)', required: false },
+  { key: 'imagem', label: 'URL da Imagem', required: false },
   { key: 'leiloeiro_nome', label: 'Nome do Leiloeiro', required: false },
   { key: 'numero_processo', label: 'Número do Processo', required: false },
   { key: 'descricao', label: 'Descrição', required: false },
@@ -39,11 +36,8 @@ const EXAMPLE_DATA = [
     leilao_2: '400000',
     data_leilao_1: '15/12/2024',
     data_leilao_2: '20/12/2024',
-    tipo_leilao: 'Judicial',
-    fgts: 'SIM',
-    financiamento: 'SIM',
-    parcelamento: 'NÃO',
-    consorcio: 'NÃO',
+    tipo_leilao: 'JUDICIAL',
+    imagem: 'https://exemplo.com/imagens/casa-3-quartos.jpg',
     leiloeiro_nome: 'João Silva',
     numero_processo: '0001234-12.2023.8.19.0001',
     descricao: 'Casa em excelente localização, próxima ao metrô',
@@ -59,11 +53,8 @@ const EXAMPLE_DATA = [
     leilao_2: '700000',
     data_leilao_1: '18/12/2024',
     data_leilao_2: '25/12/2024',
-    tipo_leilao: 'Extrajudicial',
-    fgts: 'NÃO',
-    financiamento: 'SIM',
-    parcelamento: 'SIM',
-    consorcio: 'SIM',
+    tipo_leilao: 'EXTRAJUDICIAL FINANCIÁVEL',
+    imagem: 'https://exemplo.com/imagens/apt-2-quartos.jpg',
     leiloeiro_nome: 'Maria Santos',
     numero_processo: '0005678-12.2023.8.19.0001',
     descricao: 'Apartamento com vista para o mar',
@@ -87,20 +78,20 @@ export const generateExcelTemplate = () => {
     [''],
     ['1. Preencha os dados nas colunas correspondentes'],
     ['2. Campos obrigatórios: Título da Propriedade, Endereço, Cidade, Estado, Tipo de Propriedade'],
-    ['3. Para campos booleanos (FGTS, Financiamento, etc.), use SIM ou NÃO'],
-    ['4. Para valores monetários, use apenas números (ex: 500000 para R$ 500.000,00)'],
-    ['5. Para datas, use o formato DD/MM/AAAA'],
+    ['3. Para valores monetários, use apenas números (ex: 500000 para R$ 500.000,00)'],
+    ['4. Para datas, use o formato DD/MM/AAAA'],
+    ['5. Para imagem, cole a URL completa da imagem'],
     ['6. Não altere os nomes das colunas'],
     ['7. Não deixe linhas vazias entre os dados'],
     ['8. Salve o arquivo em formato .xlsx'],
     [''],
     ['FORMATOS ACEITOS:'],
-    ['- Tipo de Propriedade: Casa, Apartamento, Terreno, Comercial, etc.'],
+    ['- Tipo de Propriedade: Casa, Apartamento, Terreno, Comercial, Rural, etc.'],
     ['- Estado: Sigla com 2 letras (RJ, SP, MG, etc.)'],
-    ['- Tipo de Leilão: Judicial, Extrajudicial, etc.'],
+    ['- Tipo de Leilão: JUDICIAL, EXTRAJUDICIAL, EXTRAJUDICIAL FINANCIÁVEL'],
     ['- Valores: Apenas números (sem pontos, vírgulas ou R$)'],
     ['- Datas: DD/MM/AAAA'],
-    ['- Booleanos: SIM ou NÃO'],
+    ['- Imagem: URL completa (ex: https://exemplo.com/imagem.jpg)'],
   ];
   
   const wsInstructions = XLSX.utils.aoa_to_sheet(instructions);
@@ -163,18 +154,16 @@ export const processExcelFile = async (file: File): Promise<{ success: Property[
                     case 'leilao_2':
                       processedValue = parseFloat(value.toString().replace(/[^\d.,]/g, '').replace(',', '.'));
                       break;
-                    case 'fgts':
-                    case 'financiamento':
-                    case 'parcelamento':
-                    case 'consorcio':
-                      processedValue = value.toString().toUpperCase() === 'SIM';
-                      break;
                     case 'data_leilao_1':
                     case 'data_leilao_2':
                       if (value) {
                         const [day, month, year] = value.toString().split('/');
                         processedValue = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
                       }
+                      break;
+                    case 'tipo_leilao':
+                      // Garantir que o tipo de leilão esteja em maiúsculas
+                      processedValue = value.toString().toUpperCase();
                       break;
                   }
                   
@@ -192,6 +181,13 @@ export const processExcelFile = async (file: File): Promise<{ success: Property[
             if (missingFields.length > 0) {
               errors.push(`Linha ${index + 2}: Campos obrigatórios faltando: ${missingFields.map(f => f.label).join(', ')}`);
               return;
+            }
+            
+            // Aplicar lógica automática para financiamento baseado no tipo de leilão
+            if (property.tipo_leilao === 'EXTRAJUDICIAL FINANCIÁVEL') {
+              (property as any).financiamento = true;
+            } else {
+              (property as any).financiamento = false;
             }
             
             // Adicionar à lista de sucesso
@@ -254,6 +250,11 @@ export const validatePropertyData = (property: Partial<Property>): string[] => {
     if (isNaN(date2.getTime())) {
       errors.push('Data do 2º leilão deve estar no formato YYYY-MM-DD');
     }
+  }
+  
+  // Validar tipo de leilão
+  if (property.tipo_leilao && !['JUDICIAL', 'EXTRAJUDICIAL', 'EXTRAJUDICIAL FINANCIÁVEL'].includes(property.tipo_leilao)) {
+    errors.push('Tipo de leilão deve ser: JUDICIAL, EXTRAJUDICIAL ou EXTRAJUDICIAL FINANCIÁVEL');
   }
   
   return errors;

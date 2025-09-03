@@ -3,11 +3,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Badge } from '@/components/ui/badge';
 import { Tables } from '@/integrations/supabase/types';
-import { Save, X } from 'lucide-react';
+import { Save, X, Upload, Image, Trash2 } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
 type Property = Tables<'leiloes_imoveis'>;
 
@@ -36,11 +38,17 @@ const PropertyForm = ({ property, onSubmit, onCancel, isLoading = false }: Prope
     numero_processo: '',
     tipo_leilao: '',
     tipo_propriedade: '',
-    consorcio: false,
-    parcelamento: false,
-    fgts: false,
+    // Campos de financiamento
     financiamento: false,
+    parcelamento: false,
+    consorcio: false,
+    fgts: false,
   });
+
+  // Estados para upload de imagem
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
 
   useEffect(() => {
     if (property) {
@@ -52,29 +60,164 @@ const PropertyForm = ({ property, onSubmit, onCancel, isLoading = false }: Prope
         data_leilao_2: property.data_leilao_2 ? 
           new Date(property.data_leilao_2).toISOString().slice(0, 16) : null,
       });
+      
+      // Definir preview da imagem se existir
+      if (property.imagem) {
+        setImagePreview(property.imagem);
+      }
+      
+      // Garantir que campos de financiamento tenham valores booleanos
+      setFormData(prev => ({
+        ...prev,
+        financiamento: property.financiamento || false,
+        parcelamento: property.parcelamento || false,
+        consorcio: property.consorcio || false,
+        fgts: property.fgts || false,
+      }));
     }
   }, [property]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Converter datas de volta para formato ISO
-    const dataToSubmit = {
-      ...formData,
-      data_leilao_1: formData.data_leilao_1 ? 
-        new Date(formData.data_leilao_1).toISOString() : null,
-      data_leilao_2: formData.data_leilao_2 ? 
-        new Date(formData.data_leilao_2).toISOString() : null,
-    };
+    try {
+      // Fazer upload da imagem se houver uma nova selecionada
+      let imageUrl = formData.imagem;
+      if (selectedImage) {
+        imageUrl = await uploadImage();
+      }
 
-    await onSubmit(dataToSubmit);
+      // Converter datas de volta para formato ISO
+      const dataToSubmit = {
+        ...formData,
+        imagem: imageUrl,
+        data_leilao_1: formData.data_leilao_1 ? 
+          new Date(formData.data_leilao_1).toISOString() : null,
+        data_leilao_2: formData.data_leilao_2 ? 
+          new Date(formData.data_leilao_2).toISOString() : null,
+      };
+
+      await onSubmit(dataToSubmit);
+    } catch (error) {
+      console.error('Erro ao processar formulário:', error);
+      throw error;
+    }
   };
 
   const handleInputChange = (field: keyof Property, value: any) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData(prev => {
+      const newData = { ...prev, [field]: value };
+      
+      // Lógica automática para campo financiamento baseado no tipo de leilão
+      if (field === 'tipo_leilao') {
+        if (value === 'EXTRAJUDICIAL FINANCIÁVEL') {
+          newData.financiamento = true;
+          console.log('✅ Financiamento marcado automaticamente para EXTRAJUDICIAL FINANCIÁVEL');
+        } else {
+          newData.financiamento = false;
+          console.log('❌ Financiamento desmarcado para:', value);
+        }
+      }
+      
+      return newData;
+    });
+  };
+
+  const handleImageSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setSelectedImage(file);
+      // Criar preview da imagem
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setImagePreview(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setSelectedImage(null);
+    setImagePreview(null);
+    setFormData(prev => ({ ...prev, imagem: '' }));
+  };
+
+  const uploadImage = async (): Promise<string | null> => {
+    if (!selectedImage) return formData.imagem || null;
+
+    try {
+      setUploadingImage(true);
+      
+      // Gerar nome único para o arquivo
+      const fileExt = selectedImage.name.split('.').pop();
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+      const filePath = `backup/${fileName}`;
+
+      // Upload para o Supabase
+      const { data, error } = await supabase.storage
+        .from('images')
+        .upload(filePath, selectedImage);
+
+      if (error) {
+        console.error('Erro no upload:', error);
+        throw error;
+      }
+
+      // Obter URL pública
+      const { data: urlData } = supabase.storage
+        .from('images')
+        .getPublicUrl(filePath);
+
+      return urlData.publicUrl;
+    } catch (error) {
+      console.error('Erro ao fazer upload da imagem:', error);
+      throw error;
+    } finally {
+      setUploadingImage(false);
+    }
   };
 
   const isEditing = !!property?.id;
+
+  // Função para determinar opções de financiamento baseado no tipo de leilão
+  const getFinancingOptions = () => {
+    switch (formData.tipo_leilao) {
+      case 'JUDICIAL':
+        return {
+          showFinancing: false,
+          showParcelamento: false,
+          showConsorcio: false,
+          showFgts: false,
+          description: 'Leilões judiciais são pagos à vista'
+        };
+      case 'EXTRAJUDICIAL':
+        return {
+          showFinancing: true,
+          showParcelamento: true,
+          showConsorcio: true,
+          showFgts: true,
+          description: 'Leilões extrajudiciais podem ter opções de financiamento'
+        };
+      case 'EXTRAJUDICIAL FINANCIÁVEL':
+        return {
+          showFinancing: true,
+          showParcelamento: true,
+          showConsorcio: true,
+          showFgts: true,
+          description: 'Leilões extrajudiciais com financiamento facilitado. Campo "Financiamento" marcado automaticamente.'
+        };
+      default:
+        return {
+          showFinancing: false,
+          showParcelamento: false,
+          showConsorcio: false,
+          showFgts: false,
+          description: 'Selecione o tipo de leilão para ver as opções'
+        };
+    }
+  };
+
+  const financingOptions = getFinancingOptions();
 
   return (
     <Card className="w-full max-w-4xl mx-auto">
@@ -108,14 +251,18 @@ const PropertyForm = ({ property, onSubmit, onCancel, isLoading = false }: Prope
                 <SelectTrigger>
                   <SelectValue placeholder="Selecione o tipo" />
                 </SelectTrigger>
-                <SelectContent className="bg-white">
-                  <SelectItem value="Casa">Casa</SelectItem>
-                  <SelectItem value="Apartamento">Apartamento</SelectItem>
-                  <SelectItem value="Terreno">Terreno</SelectItem>
-                  <SelectItem value="Comercial">Comercial</SelectItem>
-                  <SelectItem value="Rural">Rural</SelectItem>
-                  <SelectItem value="Outros">Outros</SelectItem>
-                </SelectContent>
+                                 <SelectContent className="bg-white">
+                   <SelectItem value="Apartamento">Apartamento</SelectItem>
+                   <SelectItem value="Área">Área</SelectItem>
+                   <SelectItem value="Casa">Casa</SelectItem>
+                   <SelectItem value="Chácara">Chácara</SelectItem>
+                   <SelectItem value="Comercial">Comercial</SelectItem>
+                   <SelectItem value="Fazenda">Fazenda</SelectItem>
+                   <SelectItem value="Outros">Outros</SelectItem>
+                   <SelectItem value="Prédio">Prédio</SelectItem>
+                   <SelectItem value="Rural">Rural</SelectItem>
+                   <SelectItem value="Terreno">Terreno</SelectItem>
+                 </SelectContent>
               </Select>
             </div>
           </div>
@@ -182,13 +329,9 @@ const PropertyForm = ({ property, onSubmit, onCancel, isLoading = false }: Prope
                   <SelectValue placeholder="Selecione o tipo" />
                 </SelectTrigger>
                 <SelectContent className="bg-white">
-                  <SelectItem value="Judicial">Judicial</SelectItem>
-                  <SelectItem value="Extrajudicial">Extrajudicial</SelectItem>
-                  <SelectItem value="Caixa Econômica Federal">Caixa Econômica Federal</SelectItem>
-                  <SelectItem value="Banco do Brasil">Banco do Brasil</SelectItem>
-                  <SelectItem value="Santander">Santander</SelectItem>
-                  <SelectItem value="Itaú">Itaú</SelectItem>
-                  <SelectItem value="Bradesco">Bradesco</SelectItem>
+                  <SelectItem value="JUDICIAL">JUDICIAL</SelectItem>
+                  <SelectItem value="EXTRAJUDICIAL">EXTRAJUDICIAL</SelectItem>
+                  <SelectItem value="EXTRAJUDICIAL FINANCIÁVEL">EXTRAJUDICIAL FINANCIÁVEL</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -279,14 +422,58 @@ const PropertyForm = ({ property, onSubmit, onCancel, isLoading = false }: Prope
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="imagem">URL da Imagem</Label>
-              <Input
-                id="imagem"
-                type="url"
-                value={formData.imagem || ''}
-                onChange={(e) => handleInputChange('imagem', e.target.value)}
-                placeholder="https://exemplo.com/imagem.jpg"
-              />
+              <Label htmlFor="imagem">Imagem da Propriedade</Label>
+              
+              {/* Preview da imagem atual ou selecionada */}
+              {imagePreview && (
+                <div className="relative mb-3">
+                  <img 
+                    src={imagePreview} 
+                    alt="Preview da propriedade" 
+                    className="w-full h-48 object-cover rounded-lg border border-gray-200"
+                  />
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    size="sm"
+                    onClick={handleRemoveImage}
+                    className="absolute top-2 right-2"
+                    disabled={uploadingImage}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              )}
+
+              {/* Upload de nova imagem */}
+              <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-gray-400 transition-colors">
+                <input
+                  type="file"
+                  id="imagem"
+                  accept="image/*"
+                  onChange={handleImageSelect}
+                  className="hidden"
+                  disabled={uploadingImage}
+                />
+                <label htmlFor="imagem" className="cursor-pointer">
+                  {uploadingImage ? (
+                    <div className="flex items-center justify-center gap-2 text-gray-600">
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                      Fazendo upload...
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center gap-2">
+                      <Upload className="h-8 w-8 text-gray-400" />
+                      <span className="text-sm font-medium text-gray-700">
+                        {imagePreview ? 'Clique para trocar a imagem' : 'Clique ou arraste para fazer upload'}
+                      </span>
+                      <span className="text-xs text-gray-500">
+                        PNG, JPG, GIF até 5MB
+                      </span>
+                    </div>
+                  )}
+                </label>
+              </div>
             </div>
           </div>
 
@@ -302,47 +489,7 @@ const PropertyForm = ({ property, onSubmit, onCancel, isLoading = false }: Prope
             />
           </div>
 
-          {/* Opções */}
-          <div className="space-y-4">
-            <Label className="text-base font-semibold">Opções de Financiamento</Label>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="fgts"
-                  checked={formData.fgts || false}
-                  onCheckedChange={(checked) => handleInputChange('fgts', checked)}
-                />
-                <Label htmlFor="fgts" className="text-sm">FGTS</Label>
-              </div>
-              
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="financiamento"
-                  checked={formData.financiamento || false}
-                  onCheckedChange={(checked) => handleInputChange('financiamento', checked)}
-                />
-                <Label htmlFor="financiamento" className="text-sm">Financiamento</Label>
-              </div>
-              
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="parcelamento"
-                  checked={formData.parcelamento || false}
-                  onCheckedChange={(checked) => handleInputChange('parcelamento', checked)}
-                />
-                <Label htmlFor="parcelamento" className="text-sm">Parcelamento</Label>
-              </div>
-              
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="consorcio"
-                  checked={formData.consorcio || false}
-                  onCheckedChange={(checked) => handleInputChange('consorcio', checked)}
-                />
-                <Label htmlFor="consorcio" className="text-sm">Consórcio</Label>
-              </div>
-            </div>
-          </div>
+
 
           {/* Botões */}
           <div className="flex justify-end space-x-4 pt-6 border-t">
@@ -355,9 +502,9 @@ const PropertyForm = ({ property, onSubmit, onCancel, isLoading = false }: Prope
               <X className="h-4 w-4 mr-2" />
               Cancelar
             </Button>
-            <Button type="submit" disabled={isLoading}>
+            <Button type="submit" disabled={isLoading || uploadingImage}>
               <Save className="h-4 w-4 mr-2" />
-              {isLoading ? 'Salvando...' : (isEditing ? 'Atualizar' : 'Criar')}
+              {uploadingImage ? 'Fazendo Upload...' : (isLoading ? 'Salvando...' : (isEditing ? 'Atualizar' : 'Criar'))}
             </Button>
           </div>
         </form>

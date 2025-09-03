@@ -15,7 +15,8 @@ import {
   Settings, 
   Users,
   ArrowLeft,
-  Save
+  Save,
+  Calendar
 } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -26,11 +27,9 @@ interface Lead {
   email: string | null;
   phone: string | null;
   message: string | null;
-  contact_method: string | null;
   utm_source: string | null;
   utm_medium: string | null;
   utm_campaign: string | null;
-  group_id: number | null;
   filter_config?: any;
 }
 
@@ -45,19 +44,15 @@ const AdminCreateLead = () => {
     email: '',
     phone: '',
     message: '',
-    contact_method: '',
     utm_source: '',
     utm_medium: '',
     utm_campaign: '',
-    group_id: '',
     filter_config: ''
   });
 
-  const [groups, setGroups] = useState<{id: number, name: string}[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    fetchGroups();
     if (editingLead) {
       console.log('🔍 Lead sendo editado:', editingLead);
       console.log('🔍 Filter config do lead:', editingLead.filter_config);
@@ -66,29 +61,15 @@ const AdminCreateLead = () => {
         email: editingLead.email || '',
         phone: editingLead.phone || '',
         message: editingLead.message || '',
-        contact_method: editingLead.contact_method || '',
         utm_source: editingLead.utm_source || '',
         utm_medium: editingLead.utm_medium || '',
         utm_campaign: editingLead.utm_campaign || '',
-        group_id: editingLead.group_id?.toString() || '',
         filter_config: editingLead.filter_config || ''
       });
     }
   }, [editingLead]);
 
-  const fetchGroups = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('lead_groups')
-        .select('id, name')
-        .eq('is_active', true);
 
-      if (error) throw error;
-      setGroups(data || []);
-    } catch (error) {
-      console.error('Erro ao buscar grupos:', error);
-    }
-  };
 
   const handleLogout = () => {
     logout();
@@ -98,9 +79,7 @@ const AdminCreateLead = () => {
     navigate('/admin/leads');
   };
 
-  const handleBackToMarketing = () => {
-    navigate('/admin/marketing');
-  };
+
 
   const handleBackToAdmin = () => {
     navigate('/admin');
@@ -121,11 +100,9 @@ const AdminCreateLead = () => {
         email: formData.email || null,
         phone: formData.phone || null,
         message: formData.message || null,
-        contact_method: formData.contact_method || null,
         utm_source: formData.utm_source || null,
         utm_medium: formData.utm_medium || null,
         utm_campaign: formData.utm_campaign || null,
-        group_id: formData.group_id ? parseInt(formData.group_id) : null,
         filter_config: formData.filter_config || null
       };
 
@@ -194,11 +171,11 @@ const AdminCreateLead = () => {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={handleBackToMarketing}
-                className="flex items-center gap-2 border-2 font-medium bg-purple-50 hover:bg-purple-100 text-purple-700 border-purple-300 hover:border-purple-400"
+                onClick={() => navigate('/admin/schedules')}
+                className="flex items-center gap-2 border-2 font-medium bg-orange-50 hover:bg-orange-100 text-orange-700 border-orange-300 hover:border-orange-400"
               >
-                <FileText className="h-4 w-4" />
-                <span className="hidden sm:inline">Marketing</span>
+                <Calendar className="h-4 w-4" />
+                <span className="hidden sm:inline">Agendamentos</span>
               </Button>
 
               <Button
@@ -247,81 +224,55 @@ const AdminCreateLead = () => {
             </CardHeader>
             <CardContent className="space-y-6">
               {/* Informações Básicas */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <Label htmlFor="name">Nome *</Label>
-                  <Input
-                    id="name"
-                    placeholder="Nome completo"
-                    value={formData.name}
-                    onChange={(e) => handleInputChange('name', e.target.value)}
-                  />
-                </div>
+              <div className="space-y-4">
+                <h3 className="text-lg font-medium text-gray-900">Informações Básicas</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div>
+                    <Label htmlFor="name">Nome *</Label>
+                    <Input
+                      id="name"
+                      placeholder="Nome completo"
+                      value={formData.name}
+                      onChange={(e) => handleInputChange('name', e.target.value)}
+                    />
+                  </div>
 
-                <div>
-                  <Label htmlFor="email">Email</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="email@exemplo.com"
-                    value={formData.email}
-                    onChange={(e) => handleInputChange('email', e.target.value)}
-                  />
-                </div>
+                  <div>
+                    <Label htmlFor="email">Email</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="email@exemplo.com"
+                      value={formData.email}
+                      onChange={(e) => handleInputChange('email', e.target.value)}
+                    />
+                  </div>
 
-                <div>
-                  <Label htmlFor="phone">Telefone</Label>
-                  <Input
-                    id="phone"
-                    placeholder="(11) 99999-9999"
-                    value={formData.phone}
-                    onChange={(e) => handleInputChange('phone', e.target.value)}
-                  />
+                  <div>
+                    <Label htmlFor="phone">Telefone</Label>
+                    <Input
+                      id="phone"
+                      placeholder="(11) 99999-9999"
+                      value={formData.phone}
+                      onChange={(e) => handleInputChange('phone', e.target.value)}
+                    />
+                  </div>
                 </div>
-
-                <div>
-                  <Label htmlFor="contact_method">Método de Contato</Label>
-                  <Select value={formData.contact_method} onValueChange={(value) => handleInputChange('contact_method', value)}>
-                    <SelectTrigger className="bg-white">
-                      <SelectValue placeholder="Selecione o método" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-white">
-                      <SelectItem value="email">Email</SelectItem>
-                      <SelectItem value="whatsapp">WhatsApp</SelectItem>
-                      <SelectItem value="telefone">Telefone</SelectItem>
-                      <SelectItem value="formulario">Formulário</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-
-              {/* Grupo */}
-              <div>
-                <Label htmlFor="group">Grupo</Label>
-                <Select value={formData.group_id} onValueChange={(value) => handleInputChange('group_id', value)}>
-                  <SelectTrigger className="bg-white">
-                    <SelectValue placeholder="Selecione um grupo (opcional)" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white">
-                    {groups.map((group) => (
-                      <SelectItem key={group.id} value={group.id.toString()}>
-                        {group.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
               </div>
 
               {/* Mensagem */}
-              <div>
-                <Label htmlFor="message">Mensagem</Label>
-                <Textarea
-                  id="message"
-                  placeholder="Mensagem ou observações sobre o lead..."
-                  value={formData.message}
-                  onChange={(e) => handleInputChange('message', e.target.value)}
-                  rows={4}
-                />
+              <div className="space-y-4">
+                <h3 className="text-lg font-medium text-gray-900">Observações</h3>
+                <div>
+                  <Label htmlFor="message">Mensagem</Label>
+                  <Textarea
+                    id="message"
+                    placeholder="Mensagem ou observações sobre o lead..."
+                    value={formData.message}
+                    onChange={(e) => handleInputChange('message', e.target.value)}
+                    rows={4}
+                  />
+                </div>
               </div>
 
               {/* UTM Parameters - OCULTO */}
@@ -362,7 +313,7 @@ const AdminCreateLead = () => {
 
               {/* Filtros Aplicados */}
               <div className="space-y-4">
-                <h3 className="text-lg font-medium">Filtros Aplicados</h3>
+                <h3 className="text-lg font-medium text-gray-900">Filtros Aplicados</h3>
                 <div className="space-y-4">
                   {/* Campo de entrada para URL do filtro */}
                   <div>
@@ -374,52 +325,57 @@ const AdminCreateLead = () => {
                       value={formData.filter_config}
                       onChange={(e) => handleInputChange('filter_config', e.target.value)}
                     />
-                    <p className="text-sm text-gray-600 mt-1">
+                    <p className="text-sm text-gray-600 mt-2">
                       Cole aqui a URL do filtro (ex: /catalogo/filters-1756754329532-0zleaq5hx). 
                       Esta URL será usada para enviar imóveis específicos em agendamentos de email/WhatsApp.
                     </p>
                   </div>
 
-                  {/* Exibição do filtro atual (se existir) */}
-                  {formData.filter_config && (
-                    <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
-                      <div className="flex flex-wrap gap-2">
-                        <Badge variant="outline" className="text-sm">
-                          <a 
-                            href={formData.filter_config} 
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                            className="text-blue-600 hover:text-blue-800 underline"
-                          >
-                            Ver Filtro
-                          </a>
-                        </Badge>
-                      </div>
-                      <p className="text-sm text-gray-600 mt-2">
-                        Este link será usado para enviar imóveis específicos em agendamentos de email/WhatsApp.
-                      </p>
-                    </div>
-                  )}
+                                     {/* Exibição do filtro atual (se existir) */}
+                   {formData.filter_config && (
+                     <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                       <div className="flex items-center gap-2 mb-3">
+                         <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                         <span className="text-sm font-medium text-blue-900">Filtro Configurado</span>
+                       </div>
+                       <div className="flex flex-wrap gap-2 mb-3">
+                         <Badge variant="outline" className="text-sm bg-white border-blue-300 text-blue-700">
+                           <a 
+                             href={formData.filter_config} 
+                             target="_blank" 
+                             rel="noopener noreferrer"
+                             className="text-blue-600 hover:text-blue-800 underline"
+                           >
+                             Ver Filtro
+                           </a>
+                         </Badge>
+                       </div>
+                       <p className="text-sm text-blue-700">
+                         Este link será usado para enviar imóveis específicos em agendamentos de email/WhatsApp.
+                       </p>
+                     </div>
+                   )}
                 </div>
               </div>
 
-              {/* Botões */}
-              <div className="flex justify-end space-x-4 pt-6">
-                <Button
-                  variant="outline"
-                  onClick={handleBackToLeads}
-                >
-                  Cancelar
-                </Button>
-                <Button
-                  onClick={handleSubmit}
-                  disabled={loading}
-                  className="bg-purple-600 hover:bg-purple-700"
-                >
-                  <Save className="h-4 w-4 mr-2" />
-                  {loading ? 'Salvando...' : (editingLead ? 'Atualizar Lead' : 'Criar Lead')}
-                </Button>
-              </div>
+                             {/* Botões */}
+               <div className="flex justify-end space-x-4 pt-8 border-t border-gray-200">
+                 <Button
+                   variant="outline"
+                   onClick={handleBackToLeads}
+                   className="px-6"
+                 >
+                   Cancelar
+                 </Button>
+                 <Button
+                   onClick={handleSubmit}
+                   disabled={loading}
+                   className="bg-purple-600 hover:bg-purple-700 px-6"
+                 >
+                   <Save className="h-4 w-4 mr-2" />
+                   {loading ? 'Salvando...' : (editingLead ? 'Atualizar Lead' : 'Criar Lead')}
+                 </Button>
+               </div>
             </CardContent>
           </Card>
         </div>

@@ -53,10 +53,8 @@ interface ImportedLead {
   name: string;
   email: string;
   phone: string;
-  group_name?: string;
-  utm_source?: string;
-  utm_medium?: string;
-  utm_campaign?: string;
+  url_filtro: string;
+  mensagem?: string;
 }
 
 const AdminLeads = () => {
@@ -185,10 +183,23 @@ const AdminLeads = () => {
         row.split(',').map(cell => cell.trim().replace(/^"|"$/g, ''))
       );
     } else {
-      // Para arquivos Excel, assumir que foram convertidos para texto
-      rows = text.split('\n').map(row => 
-        row.split('\t').map(cell => cell.trim())
-      );
+      // Processar arquivos Excel (.xlsx, .xls)
+      try {
+        const XLSX = await import('xlsx');
+        const arrayBuffer = await file.arrayBuffer();
+        const workbook = XLSX.read(arrayBuffer, { type: 'array' });
+        
+        // Pegar a primeira planilha
+        const firstSheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[firstSheetName];
+        
+        // Converter para array de arrays
+        rows = XLSX.utils.sheet_to_json(worksheet, { header: 1 }) as string[][];
+      } catch (error) {
+        console.error('Erro ao processar arquivo Excel:', error);
+        setImportError('Erro ao processar arquivo Excel. Verifique se o formato está correto.');
+        return;
+      }
     }
 
     // Remover linhas vazias e cabeçalho
@@ -203,44 +214,51 @@ const AdminLeads = () => {
     const headers = rows[0];
     const dataRows = rows.slice(1);
 
-    // Mapear colunas
-    const nameIndex = headers.findIndex(h => 
-      h.toLowerCase().includes('nome') || h.toLowerCase().includes('name')
-    );
-    const emailIndex = headers.findIndex(h => 
-      h.toLowerCase().includes('email') || h.toLowerCase().includes('e-mail')
-    );
-    const phoneIndex = headers.findIndex(h => 
-      h.toLowerCase().includes('telefone') || h.toLowerCase().includes('phone') || h.toLowerCase().includes('celular')
-    );
-    const groupIndex = headers.findIndex(h => 
-      h.toLowerCase().includes('grupo') || h.toLowerCase().includes('group')
-    );
-    const utmSourceIndex = headers.findIndex(h => 
-      h.toLowerCase().includes('utm_source') || h.toLowerCase().includes('fonte')
-    );
-    const utmMediumIndex = headers.findIndex(h => 
-      h.toLowerCase().includes('utm_medium') || h.toLowerCase().includes('meio')
-    );
-    const utmCampaignIndex = headers.findIndex(h => 
-      h.toLowerCase().includes('utm_campaign') || h.toLowerCase().includes('campanha')
-    );
+                 // Mapear colunas
+       const nameIndex = headers.findIndex(h => 
+         h && h.toString().toLowerCase().includes('nome') || h.toString().toLowerCase().includes('name')
+       );
+       const emailIndex = headers.findIndex(h => 
+         h && h.toString().toLowerCase().includes('email') || h.toString().toLowerCase().includes('e-mail')
+       );
+       const phoneIndex = headers.findIndex(h => 
+         h && h.toString().toLowerCase().includes('telefone') || h.toString().toLowerCase().includes('phone') || h.toString().toLowerCase().includes('celular')
+       );
+       const urlFiltroIndex = headers.findIndex(h => 
+         h && h.toString().toLowerCase().includes('url_filtro') || h.toString().toLowerCase().includes('url') || h.toString().toLowerCase().includes('filtro')
+       );
+       const mensagemIndex = headers.findIndex(h => 
+         h && h.toString().toLowerCase().includes('mensagem') || h.toString().toLowerCase().includes('message')
+       );
 
-    if (nameIndex === -1 || emailIndex === -1) {
-      setImportError('O arquivo deve conter pelo menos as colunas "Nome" e "Email".');
-      return;
-    }
+       console.log('📍 Índices encontrados:', {
+         nameIndex,
+         emailIndex,
+         phoneIndex,
+         urlFiltroIndex,
+         mensagemIndex
+       });
 
-    // Processar dados
-    const processedLeads: ImportedLead[] = dataRows.map(row => ({
-      name: row[nameIndex] || '',
-      email: row[emailIndex] || '',
-      phone: phoneIndex !== -1 ? row[phoneIndex] || '' : '',
-      group_name: groupIndex !== -1 ? row[groupIndex] || '' : '',
-      utm_source: utmSourceIndex !== -1 ? row[utmSourceIndex] || '' : '',
-      utm_medium: utmMediumIndex !== -1 ? row[utmMediumIndex] || '' : '',
-      utm_campaign: utmCampaignIndex !== -1 ? row[utmCampaignIndex] || '' : ''
-    })).filter(lead => lead.name.trim() && lead.email.trim()); // Filtrar leads válidos
+      if (nameIndex === -1 || emailIndex === -1 || urlFiltroIndex === -1) {
+        setImportError(`O arquivo deve conter pelo menos as colunas "Nome", "Email" e "URL do Filtro". 
+        
+Cabeçalhos encontrados: ${headers.join(', ')}
+        
+Colunas obrigatórias não encontradas:
+${nameIndex === -1 ? '❌ Nome' : '✅ Nome'}
+${emailIndex === -1 ? '❌ Email' : '✅ Email'}
+${urlFiltroIndex === -1 ? '❌ URL do Filtro' : '✅ URL do Filtro'}`);
+        return;
+      }
+
+         // Processar dados
+     const processedLeads: ImportedLead[] = dataRows.map(row => ({
+       name: row[nameIndex] || '',
+       email: row[emailIndex] || '',
+       phone: phoneIndex !== -1 ? row[phoneIndex] || '' : '',
+       url_filtro: (row[urlFiltroIndex] || '').toString().trim(),
+       mensagem: mensagemIndex !== -1 ? (row[mensagemIndex] || '').toString().trim() : ''
+     })).filter(lead => lead.name && lead.email && lead.url_filtro); // Filtrar leads válidos
 
     if (processedLeads.length === 0) {
       setImportError('Nenhum lead válido encontrado no arquivo.');
@@ -261,36 +279,20 @@ const AdminLeads = () => {
       let successCount = 0;
       let errorCount = 0;
 
-      for (const lead of importPreview) {
-        try {
-          // Buscar grupo se especificado
-          let groupId = null;
-          if (lead.group_name) {
-            const { data: groupData } = await supabase
-              .from('lead_groups')
-              .select('id')
-              .eq('name', lead.group_name)
-              .single();
-            
-            if (groupData) {
-              groupId = groupData.id;
-            }
-          }
-
-          // Inserir lead
-          const { error: insertError } = await supabase
-            .from('contact_leads')
-            .insert({
-              name: lead.name,
-              email: lead.email,
-              phone: lead.phone || null,
-              group_id: groupId,
-              utm_source: lead.utm_source || null,
-              utm_medium: lead.utm_medium || null,
-              utm_campaign: lead.utm_campaign || null,
-              contact_method: 'import',
-              created_at: new Date().toISOString()
-            });
+             for (const lead of importPreview) {
+         try {
+           // Inserir lead
+           const { error: insertError } = await supabase
+             .from('contact_leads')
+             .insert({
+               name: lead.name,
+               email: lead.email,
+               phone: lead.phone || null,
+               filter_config: lead.url_filtro || null,
+               message: lead.mensagem || null,
+               contact_method: 'import',
+               created_at: new Date().toISOString()
+             });
 
           if (insertError) {
             console.error('Erro ao inserir lead:', insertError);
@@ -327,17 +329,80 @@ const AdminLeads = () => {
   };
 
   const downloadTemplate = () => {
-    const csvContent = 'Nome,Email,Telefone,Grupo,UTM Source,UTM Medium,UTM Campaign\nJoão Silva,joao@email.com,11999999999,Compradores Premium,google,search,leiloes\nMaria Santos,maria@email.com,21988888888,Rio de Janeiro,facebook,ads,imoveis';
-    
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute('download', 'template_leads.csv');
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    // Importar XLSX dinamicamente para evitar problemas de SSR
+    import('xlsx').then((XLSX) => {
+             // Dados do template
+       const templateData = [
+         ['Nome', 'Email', 'Telefone', 'URL do Filtro', 'Mensagem'],
+         ['João Silva', 'joao@email.com', '11999999999', 'https://site.com/filtro?cidade=RJ', 'Interessado em imóveis'],
+         ['Maria Santos', 'maria@email.com', '21988888888', 'https://site.com/filtro?bairro=Botafogo', 'Quero mais informações'],
+         ['Carlos Oliveira', 'carlos@email.com', '31977777777', 'https://site.com/filtro?tipo=casa', 'Interessado em casas'],
+         ['', '', '', '', ''], // Linha em branco para exemplo
+         ['', '', '', '', ''], // Linha em branco para exemplo
+       ];
+
+      // Criar workbook e worksheet
+      const workbook = XLSX.utils.book_new();
+      const worksheet = XLSX.utils.aoa_to_sheet(templateData);
+
+             // Configurar largura das colunas
+       const columnWidths = [
+         { wch: 20 }, // Nome
+         { wch: 25 }, // Email
+         { wch: 15 }, // Telefone
+         { wch: 40 }, // URL do Filtro
+         { wch: 30 }, // Mensagem
+       ];
+      worksheet['!cols'] = columnWidths;
+
+      // Adicionar worksheet ao workbook
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Template_Leads');
+
+             // Criar planilha de instruções
+       const instructionsData = [
+         ['INSTRUÇÕES PARA IMPORTAÇÃO DE LEADS'],
+         [''],
+         ['CAMPOS OBRIGATÓRIOS:'],
+         ['• Nome: Nome completo do lead'],
+         ['• Email: Endereço de email válido'],
+         ['• URL do Filtro: URL da configuração de filtros aplicada'],
+         [''],
+         ['CAMPOS OPCIONAIS:'],
+         ['• Telefone: Número de telefone (com ou sem formatação)'],
+         ['• Mensagem: Mensagem ou observação sobre o lead'],
+         [''],
+         ['EXEMPLOS DE URL DO FILTRO:'],
+         ['• https://site.com/filtro?cidade=RJ'],
+         ['• https://site.com/filtro?bairro=Botafogo'],
+         ['• https://site.com/filtro?tipo=casa&valor_min=500000'],
+         [''],
+         ['IMPORTANTE:'],
+         ['• Não altere os cabeçalhos das colunas'],
+         ['• Preencha pelo menos Nome, Email e URL do Filtro'],
+         ['• Salve como .xlsx antes de importar'],
+       ];
+
+      const instructionsWorksheet = XLSX.utils.aoa_to_sheet(instructionsData);
+      instructionsWorksheet['!cols'] = [{ wch: 60 }];
+      XLSX.utils.book_append_sheet(workbook, instructionsWorksheet, 'Instruções');
+
+      // Gerar arquivo e fazer download
+      XLSX.writeFile(workbook, 'template_leads.xlsx');
+    }).catch((error) => {
+      console.error('Erro ao gerar template Excel:', error);
+             // Fallback para CSV se der erro
+       const csvContent = 'Nome,Email,Telefone,URL do Filtro,Mensagem\nJoão Silva,joao@email.com,11999999999,https://site.com/filtro?cidade=RJ,Interessado em imóveis\nMaria Santos,maria@email.com,21988888888,https://site.com/filtro?bairro=Botafogo,Quero mais informações';
+      
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', 'template_leads.csv');
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    });
   };
 
   const filteredLeads = leads.filter(lead =>
@@ -521,8 +586,7 @@ const AdminLeads = () => {
                         </th>
                         <th className="text-left p-3 font-medium">Nome</th>
                         <th className="text-left p-3 font-medium">Contato</th>
-                        <th className="text-left p-3 font-medium">Método</th>
-                        <th className="text-left p-3 font-medium">Grupos</th>
+
                         <th className="text-left p-3 font-medium">Filtros</th>
                         <th className="text-left p-3 font-medium">Data</th>
                         <th className="text-left p-3 font-medium">Ações</th>
@@ -547,23 +611,7 @@ const AdminLeads = () => {
                               {formatContact(lead)}
                             </div>
                           </td>
-                          <td className="p-3">
-                            <div className="text-sm text-gray-600">
-                              {lead.contact_method || '-'}
-                            </div>
-                          </td>
-                          <td className="p-3">
-                            <div className="flex gap-1">
-                              <Badge variant="secondary" className="text-xs">
-                                {lead.lead_groups?.name || 'Sem grupo'}
-                              </Badge>
-                              {lead.utm_campaign && (
-                                <Badge variant="outline" className="text-xs">
-                                  {lead.utm_campaign}
-                                </Badge>
-                              )}
-                            </div>
-                          </td>
+
                           <td className="p-3">
                             <div className="text-sm text-gray-600">
                               {lead.filter_config ? (
@@ -646,12 +694,12 @@ const AdminLeads = () => {
             {/* Instruções */}
             <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
               <h3 className="font-semibold text-blue-900 mb-2">Como usar:</h3>
-              <ul className="text-sm text-blue-800 space-y-1">
-                <li>• Prepare uma planilha com as colunas: Nome, Email, Telefone (opcional), Grupo (opcional)</li>
-                <li>• Salve como CSV ou Excel (.xlsx, .xls)</li>
-                <li>• A primeira linha deve conter os cabeçalhos das colunas</li>
-                <li>• Nome e Email são obrigatórios para cada lead</li>
-              </ul>
+                             <ul className="text-sm text-blue-800 space-y-1">
+                 <li>• Prepare uma planilha com as colunas: Nome, Email, Telefone (opcional), URL do Filtro (obrigatório), Mensagem (opcional)</li>
+                 <li>• Salve como CSV ou Excel (.xlsx, .xls)</li>
+                 <li>• A primeira linha deve conter os cabeçalhos das colunas</li>
+                 <li>• Nome, Email e URL do Filtro são obrigatórios para cada lead</li>
+               </ul>
             </div>
 
             {/* Download do Template */}
@@ -662,7 +710,7 @@ const AdminLeads = () => {
                 className="flex items-center gap-2"
               >
                 <Download className="h-4 w-4" />
-                Baixar Template CSV
+                                 Baixar Template Excel
               </Button>
             </div>
 
@@ -706,31 +754,31 @@ const AdminLeads = () => {
                 </h3>
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
-                    <thead>
-                      <tr className="border-b bg-gray-50">
-                        <th className="text-left p-2">Nome</th>
-                        <th className="text-left p-2">Email</th>
-                        <th className="text-left p-2">Telefone</th>
-                        <th className="text-left p-2">Grupo</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {importPreview.slice(0, 5).map((lead, index) => (
-                        <tr key={index} className="border-b">
-                          <td className="p-2">{lead.name}</td>
-                          <td className="p-2">{lead.email}</td>
-                          <td className="p-2">{lead.phone || '-'}</td>
-                          <td className="p-2">{lead.group_name || '-'}</td>
-                        </tr>
-                      ))}
-                      {importPreview.length > 5 && (
-                        <tr>
-                          <td colSpan={4} className="p-2 text-center text-gray-500">
-                            ... e mais {importPreview.length - 5} leads
-                          </td>
-                        </tr>
-                      )}
-                    </tbody>
+                                         <thead>
+                       <tr className="border-b bg-gray-50">
+                         <th className="text-left p-2">Nome</th>
+                         <th className="text-left p-2">Email</th>
+                         <th className="text-left p-2">Telefone</th>
+                         <th className="text-left p-2">URL do Filtro</th>
+                       </tr>
+                     </thead>
+                     <tbody>
+                       {importPreview.slice(0, 5).map((lead, index) => (
+                         <tr key={index} className="border-b">
+                           <td className="p-2">{lead.name}</td>
+                           <td className="p-2">{lead.email}</td>
+                           <td className="p-2">{lead.phone || '-'}</td>
+                           <td className="p-2">{lead.url_filtro || '-'}</td>
+                         </tr>
+                       ))}
+                       {importPreview.length > 5 && (
+                         <tr>
+                           <td colSpan={4} className="p-2 text-center text-gray-500">
+                             ... e mais {importPreview.length - 5} leads
+                           </td>
+                         </tr>
+                       )}
+                     </tbody>
                   </table>
                 </div>
               </div>

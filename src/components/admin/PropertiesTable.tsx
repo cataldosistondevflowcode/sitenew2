@@ -172,12 +172,26 @@ const PropertiesTable = () => {
     fetchMetadata();
   }, []);
 
+  // Debounce para o campo de busca
   useEffect(() => {
-    // Quando filtros mudam, voltar para primeira página e limpar seleção
+    const timer = setTimeout(() => {
+      if (searchTerm !== undefined) {
+        setCurrentPage(0);
+        setSelectedProperties(new Set());
+        fetchProperties(0);
+      }
+    }, 500); // Aguarda 500ms após parar de digitar
+
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  // Efeito separado para outros filtros
+  useEffect(() => {
+    // Quando outros filtros mudam, voltar para primeira página e limpar seleção
     setCurrentPage(0);
     setSelectedProperties(new Set());
     fetchProperties(0);
-  }, [searchTerm, cityFilter, stateFilter, typeFilter, auctionTypeFilter, showCurrentOnly]);
+  }, [cityFilter, stateFilter, typeFilter, auctionTypeFilter, showCurrentOnly]);
 
 
 

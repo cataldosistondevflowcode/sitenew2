@@ -57,10 +57,12 @@ const AdminCreateSchedule = () => {
     sendDate: '',
     sendTime: '10:00',
     recurring: true,
+    endDate: '', // NOVO: data limite para desativação automática
     whatsappMessage: '',
     emailMessage: '',
     emailSubject: '',
-    whatsappImage: null as File | null
+    whatsappPdf: null as File | null, // ALTERADO: de imagem para PDF
+    whatsappImage: null as File | null // NOVO: adicionar imagem também
   });
 
 
@@ -68,6 +70,8 @@ const AdminCreateSchedule = () => {
   const [allLeads, setAllLeads] = useState<Lead[]>([]);
   const [selectedIndividualLeads, setSelectedIndividualLeads] = useState<number[]>([]);
   const [loading, setLoading] = useState(false);
+  const [pdfError, setPdfError] = useState<string>(''); // NOVO: estado para erro de validação do PDF
+  const [imageError, setImageError] = useState<string>(''); // NOVO: estado para erro de validação da imagem
 
   useEffect(() => {
     fetchGroups();
@@ -125,6 +129,38 @@ const AdminCreateSchedule = () => {
     }));
   };
 
+  // NOVO: Função para validar arquivo PDF
+  const validatePdfFile = (file: File): string => {
+    const maxSize = 10 * 1024 * 1024; // 10MB
+    const allowedTypes = ['application/pdf'];
+    
+    if (!allowedTypes.includes(file.type)) {
+      return 'Apenas arquivos PDF são permitidos.';
+    }
+    
+    if (file.size > maxSize) {
+      return 'O arquivo deve ter no máximo 10MB.';
+    }
+    
+    return '';
+  };
+
+  // NOVO: Função para validar arquivo de imagem
+  const validateImageFile = (file: File): string => {
+    const maxSize = 5 * 1024 * 1024; // 5MB
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+    
+    if (!allowedTypes.includes(file.type)) {
+      return 'Apenas arquivos de imagem (JPG, PNG, WEBP) são permitidos.';
+    }
+    
+    if (file.size > maxSize) {
+      return 'A imagem deve ter no máximo 5MB.';
+    }
+    
+    return '';
+  };
+
 
 
   const handleLeadToggle = (leadId: number) => {
@@ -156,24 +192,72 @@ const AdminCreateSchedule = () => {
         return;
       }
       
-      // Upload da imagem se existir
-      let imageUrl = null;
-      if (formData.whatsappImage) {
-        const fileName = `whatsapp-images/${Date.now()}-${formData.whatsappImage.name}`;
-        const { data: uploadData, error: uploadError } = await supabase.storage
-          .from('images')
-          .upload(`backup/${fileName}`, formData.whatsappImage);
+      // Upload do arquivo (PDF ou imagem) se existir
+      let fileUrl = null;
+      const fileToUpload = formData.whatsappPdf || formData.whatsappImage;
+      
+      if (fileToUpload) {
+        try {
+          // Limpar nome do arquivo para evitar caracteres especiais
+          const cleanFileName = fileToUpload.name
+            .replace(/[^a-zA-Z0-9.-]/g, '_')
+            .replace(/\s+/g, '_');
+          
+          const fileName = `${Date.now()}-${cleanFileName}`;
+          
+          console.log('Tentando upload do arquivo:', {
+            originalName: fileToUpload.name,
+            cleanName: cleanFileName,
+            fileName: fileName,
+            fileSize: fileToUpload.size,
+            fileType: fileToUpload.type,
+            isPdf: !!formData.whatsappPdf,
+            isImage: !!formData.whatsappImage
+          });
 
-        if (uploadError) throw uploadError;
-        
-        const { data: urlData } = supabase.storage
-          .from('images')
-          .getPublicUrl(`backup/${fileName}`);
-        
-        imageUrl = urlData.publicUrl;
+          // Tentar upload simples no bucket images
+          const { data: uploadData, error: uploadError } = await supabase.storage
+            .from('images')
+            .upload(`backup/${fileName}`, fileToUpload);
+
+          if (uploadError) {
+            console.error('Erro no upload:', uploadError);
+            
+            // Se falhar, tentar sem a pasta backup
+            const { data: uploadData2, error: uploadError2 } = await supabase.storage
+              .from('images')
+              .upload(fileName, fileToUpload);
+
+            if (uploadError2) {
+              console.error('Erro no upload alternativo:', uploadError2);
+              throw new Error(`Erro no upload: ${uploadError2.message}`);
+            }
+            
+            // Usar o upload alternativo
+            const { data: urlData } = supabase.storage
+              .from('images')
+              .getPublicUrl(fileName);
+            
+            fileUrl = urlData.publicUrl;
+          } else {
+            // Usar o upload original
+            const { data: urlData } = supabase.storage
+              .from('images')
+              .getPublicUrl(`backup/${fileName}`);
+            
+            fileUrl = urlData.publicUrl;
+          }
+          
+          console.log('Arquivo enviado com sucesso:', fileUrl);
+        } catch (error) {
+          console.error('Erro no upload do arquivo:', error);
+          alert(`Erro ao fazer upload do arquivo: ${error instanceof Error ? error.message : 'Erro desconhecido'}`);
+          setLoading(false);
+          return;
+        }
       }
 
-      // Calcular próximo envio
+      // Calcular próximo envio para agendamentos recorrentes
       const calculateNextSend = () => {
         const now = new Date();
         const [hours, minutes] = formData.sendTime.split(':').map(Number);
@@ -182,7 +266,7 @@ const AdminCreateSchedule = () => {
         const nextSend = new Date();
         nextSend.setHours(hours, minutes, 0, 0);
         
-        console.log('Debug - Cálculo de horário:');
+        console.log('Debug - Cálculo de horário recorrente:');
         console.log('  Horário atual:', now.toLocaleString('pt-BR'));
         console.log('  Horário desejado:', nextSend.toLocaleString('pt-BR'));
         console.log('  Horário já passou?', nextSend <= now);
@@ -207,8 +291,42 @@ const AdminCreateSchedule = () => {
         
         const utcString = `${year}-${month}-${day}T${utcHourStr}:${minute}:${second}.000Z`;
         
-        console.log('Resultado final:');
+        console.log('Resultado final recorrente:');
         console.log('  Horário local:', nextSend.toLocaleString('pt-BR'));
+        console.log('  Horário UTC manual:', utcString);
+        
+        return utcString;
+      };
+
+      // Calcular envio para agendamentos pontuais
+      const calculateOneTimeSend = () => {
+        const [hours, minutes] = formData.sendTime.split(':').map(Number);
+        
+        // Criar data com a data e horário especificados
+        const sendDate = new Date(formData.sendDate);
+        sendDate.setHours(hours, minutes, 0, 0);
+        
+        console.log('Debug - Cálculo de horário pontual:');
+        console.log('  Data especificada:', formData.sendDate);
+        console.log('  Horário especificado:', formData.sendTime);
+        console.log('  Data/hora local:', sendDate.toLocaleString('pt-BR'));
+        
+        // Construir string UTC manualmente
+        const year = sendDate.getFullYear();
+        const month = String(sendDate.getMonth() + 1).padStart(2, '0');
+        const day = String(sendDate.getDate()).padStart(2, '0');
+        const hour = String(sendDate.getHours()).padStart(2, '0');
+        const minute = String(sendDate.getMinutes()).padStart(2, '0');
+        const second = String(sendDate.getSeconds()).padStart(2, '0');
+        
+        // Como o Brasil é UTC-3, precisamos adicionar 3 horas para converter para UTC
+        const utcHour = (sendDate.getHours() + 3) % 24;
+        const utcHourStr = String(utcHour).padStart(2, '0');
+        
+        const utcString = `${year}-${month}-${day}T${utcHourStr}:${minute}:${second}.000Z`;
+        
+        console.log('Resultado final pontual:');
+        console.log('  Horário local:', sendDate.toLocaleString('pt-BR'));
         console.log('  Horário UTC manual:', utcString);
         
         return utcString;
@@ -223,12 +341,13 @@ const AdminCreateSchedule = () => {
         send_time: formData.sendTime,
         send_date: formData.sendDate || null,
         is_recurring: formData.recurring,
+        end_date: formData.recurring && formData.endDate ? formData.endDate : null, // NOVO: data limite
         whatsapp_message: formData.whatsappMessage,
         email_message: formData.emailMessage,
         email_subject: formData.emailSubject,
-        whatsapp_image_url: imageUrl, // Adicionar URL da imagem
+        whatsapp_pdf_url: fileUrl, // PDF ou imagem - mesmo campo
         status: 'active',
-        next_send: formData.recurring ? calculateNextSend() : (formData.sendDate ? `${formData.sendDate}T${formData.sendTime}:00+03:00` : null),
+        next_send: formData.recurring ? calculateNextSend() : (formData.sendDate ? calculateOneTimeSend() : null),
         created_by: user?.email || 'admin'
       };
 
@@ -534,19 +653,36 @@ const AdminCreateSchedule = () => {
 
               {/* Frequência - Apenas para envio recorrente */}
               {formData.recurring && (
-                <div>
-                  <Label htmlFor="frequency">Frequência</Label>
-                  <Select value={formData.frequency} onValueChange={(value) => handleInputChange('frequency', value)}>
-                    <SelectTrigger className="bg-white">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent className="bg-white">
-                      <SelectItem value="diario">Diário</SelectItem>
-                      <SelectItem value="semanal">Semanal</SelectItem>
-                      <SelectItem value="quinzenal">Quinzenal</SelectItem>
-                      <SelectItem value="mensal">Mensal</SelectItem>
-                    </SelectContent>
-                  </Select>
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="frequency">Frequência</Label>
+                    <Select value={formData.frequency} onValueChange={(value) => handleInputChange('frequency', value)}>
+                      <SelectTrigger className="bg-white">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-white">
+                        <SelectItem value="diario">Diário</SelectItem>
+                        <SelectItem value="semanal">Semanal</SelectItem>
+                        <SelectItem value="quinzenal">Quinzenal</SelectItem>
+                        <SelectItem value="mensal">Mensal</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  {/* NOVO: Data limite para desativação automática */}
+                  <div>
+                    <Label htmlFor="endDate">Data Limite (opcional)</Label>
+                    <Input
+                      id="endDate"
+                      type="date"
+                      value={formData.endDate}
+                      onChange={(e) => handleInputChange('endDate', e.target.value)}
+                      placeholder="Selecione uma data para desativar automaticamente"
+                    />
+                    <p className="text-sm text-gray-500 mt-1">
+                      O agendamento será desativado automaticamente nesta data
+                    </p>
+                  </div>
                 </div>
               )}
 
@@ -631,6 +767,18 @@ const AdminCreateSchedule = () => {
                          onChange={(e) => {
                            const file = e.target.files?.[0];
                            if (file) {
+                             // Limpar arquivos anteriores
+                             handleInputChange('whatsappPdf', null);
+                             handleInputChange('whatsappImage', null);
+                             setPdfError('');
+                             setImageError('');
+                             
+                             // Validar apenas imagem
+                             const error = validateImageFile(file);
+                             if (error) {
+                               setImageError(error);
+                               return;
+                             }
                              handleInputChange('whatsappImage', file);
                            }
                          }}
@@ -652,6 +800,11 @@ const AdminCreateSchedule = () => {
                          </div>
                        )}
                      </div>
+                     {imageError && (
+                       <div className="text-sm text-red-600 bg-red-50 p-2 rounded border border-red-200">
+                         {imageError}
+                       </div>
+                     )}
                    </div>
                  </div>
                )}
@@ -717,8 +870,8 @@ const AdminCreateSchedule = () => {
                       </Button>
                       <Button
                         onClick={handleSubmit}
-                        disabled={loading || !hasSelectedLeads}
-                        className={`${hasSelectedLeads ? 'bg-orange-600 hover:bg-orange-700' : 'bg-gray-400 cursor-not-allowed'}`}
+                        disabled={loading || !hasSelectedLeads || pdfError !== '' || imageError !== ''}
+                        className={`${hasSelectedLeads && pdfError === '' && imageError === '' ? 'bg-orange-600 hover:bg-orange-700' : 'bg-gray-400 cursor-not-allowed'}`}
                       >
                         {loading ? 'Criando...' : 'Criar Agendamento'}
                       </Button>

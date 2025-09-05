@@ -52,26 +52,57 @@ const AdminSchedules = () => {
   const [loading, setLoading] = useState(true);
 
   // Função para formatar a data do próximo envio corretamente
-  const formatNextSendDate = (dateString: string) => {
+  const formatNextSendDate = (dateString: string, convertFromUTC: boolean = false) => {
     try {
-      const date = new Date(dateString);
+      console.log('=== DEBUG FORMAT ===');
+      console.log('Input:', dateString);
+      console.log('ConvertFromUTC:', convertFromUTC);
+      
+      let date: Date;
+      
+      // Se a string não tem timezone, adicionar UTC
+      if (dateString && !dateString.includes('+') && !dateString.includes('Z')) {
+        date = new Date(dateString + '+00:00');
+        console.log('Adicionou +00:00:', dateString + '+00:00');
+      } else {
+        date = new Date(dateString);
+        console.log('Usou string original:', dateString);
+      }
+      
+      console.log('Date object:', date);
+      console.log('Date ISO:', date.toISOString());
+      console.log('Date local:', date.toLocaleString());
       
       // Verificar se a data é válida
       if (isNaN(date.getTime())) {
+        console.error('Data inválida:', dateString);
         return 'Data inválida';
       }
       
-      // Formatar para o fuso horário local (Brasil) sem conversão automática
-      // O horário já está correto no banco, só precisamos exibir
-      return date.toLocaleString('pt-BR', {
+      // Formatar com ou sem conversão de timezone
+      const options: Intl.DateTimeFormatOptions = {
         day: '2-digit',
         month: '2-digit',
         year: 'numeric',
         hour: '2-digit',
         minute: '2-digit'
-      });
+      };
+      
+      // Se precisa converter de UTC para horário brasileiro
+      if (convertFromUTC) {
+        options.timeZone = 'America/Sao_Paulo';
+        console.log('Aplicando timezone America/Sao_Paulo');
+      } else {
+        console.log('Sem timezone - usando padrão do sistema');
+      }
+      
+      const result = date.toLocaleString('pt-BR', options);
+      console.log('Resultado final:', result);
+      console.log('=== FIM DEBUG ===');
+      
+      return result;
     } catch (error) {
-      console.error('Erro ao formatar data:', error);
+      console.error('Erro ao formatar data:', error, 'String:', dateString);
       return 'Erro na data';
     }
   };
@@ -469,10 +500,19 @@ const AdminSchedules = () => {
                              </div>
                            </td>
                           <td className="p-3">
-                            <div className="text-sm text-gray-600">{schedule.frequency}</div>
+                            <div className="text-sm text-gray-600">
+                              {schedule.is_recurring ? schedule.frequency : 'Pontual'}
+                            </div>
                           </td>
                           <td className="p-3">
-                            <div className="text-sm text-gray-600">{schedule.next_send}</div>
+                            <div className="text-sm text-gray-600">
+                              {schedule.next_send 
+                                ? formatNextSendDate(schedule.next_send, false) // false = sem conversão para next_send
+                                : (!schedule.is_recurring && schedule.send_date && schedule.send_time
+                                    ? formatNextSendDate(`${schedule.send_date}T${schedule.send_time}`, false) // false = sem conversão
+                                    : 'N/A')
+                              }
+                            </div>
                           </td>
                           <td className="p-3">
                             {getStatusBadge(schedule.status)}

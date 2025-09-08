@@ -106,7 +106,12 @@ const PropertiesTable = () => {
       // Filtro "Atual" - apenas leilões que ainda não passaram
       if (showCurrentOnly) {
         const currentDateForFilter = new Date();
-        query = query.or(`data_leilao_1.is.null,data_leilao_1.gte.${currentDateForFilter.toISOString()}`);
+        // Considerar tanto 1º quanto 2º leilão - incluir se qualquer um for futuro ou nulo
+        query = query.or(`
+          data_leilao_1.is.null,
+          data_leilao_1.gte.${currentDateForFilter.toISOString()},
+          data_leilao_2.gte.${currentDateForFilter.toISOString()}
+        `);
       }
 
       // Aplicar paginação

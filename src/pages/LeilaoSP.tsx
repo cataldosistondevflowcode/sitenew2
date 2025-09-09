@@ -66,6 +66,7 @@ interface Filters {
   cities?: string[]; // Para múltiplas cidades
   dataFimSegundoLeilao?: string; // Data final do filtro de data de encerramento do segundo leilão
   zone?: string; // Para zonas (ex: "CENTRAL", "LESTE", etc.)
+  zones?: string[]; // Para múltiplas zonas (ex: ["CENTRAL", "LESTE", "NORTE"])
 }
 
 // Interface para as faixas de preço
@@ -286,30 +287,66 @@ const LeilaoSP = () => {
         newFilters.zone = zoneName;
       }
     } else if (selectedNeighborhoods.length > 0) {
-      // Verificar se todos os bairros selecionados pertencem à mesma zona
-      let commonZone = null;
+      // Verificar se os bairros selecionados pertencem a zonas completas
+      const selectedZones: string[] = [];
+      const remainingBairros: string[] = [];
       
-      // Verificar zonas de SP
+      // Primeiro, verificar quais zonas de SP estão completas
       for (const [zoneName, zoneBairros] of Object.entries(bairrosPorZonaSP)) {
-        const allSelectedInZone = selectedNeighborhoods.every(bairro => zoneBairros.includes(bairro));
-        if (allSelectedInZone && selectedNeighborhoods.length === zoneBairros.length) {
-          commonZone = zoneName;
-          break;
+        const allZoneBairrosSelected = zoneBairros.every(zoneBairro => selectedNeighborhoods.includes(zoneBairro));
+        if (allZoneBairrosSelected && zoneBairros.length > 0) {
+          selectedZones.push(zoneName);
         }
       }
       
       // Verificar se são todos os bairros de SP
-      if (!commonZone) {
+      if (selectedZones.length === 0) {
         const todosBairrosSP = Object.values(bairrosPorZonaSP).flat();
         const allSelectedInSP = selectedNeighborhoods.every(bairro => todosBairrosSP.includes(bairro));
         if (allSelectedInSP && selectedNeighborhoods.length === todosBairrosSP.length) {
-          commonZone = "TODA_SP";
+          selectedZones.push("TODA_SP");
         }
       }
       
-      if (commonZone) {
-        // Se todos os bairros de uma zona estão selecionados, usar a zona
-        newFilters.zone = commonZone;
+      // Depois, identificar bairros que não pertencem a zonas completas
+      for (const bairro of selectedNeighborhoods) {
+        let belongsToCompleteZone = false;
+        
+        // Verificar zonas de SP
+        for (const [zoneName, zoneBairros] of Object.entries(bairrosPorZonaSP)) {
+          if (zoneBairros.includes(bairro) && selectedZones.includes(zoneName)) {
+            belongsToCompleteZone = true;
+            break;
+          }
+        }
+        
+        // Verificar se é toda SP
+        if (!belongsToCompleteZone && selectedZones.includes("TODA_SP")) {
+          const todosBairrosSP = Object.values(bairrosPorZonaSP).flat();
+          if (todosBairrosSP.includes(bairro)) {
+            belongsToCompleteZone = true;
+          }
+        }
+        
+        if (!belongsToCompleteZone) {
+          remainingBairros.push(bairro);
+        }
+      }
+      
+      if (selectedZones.length > 0) {
+        if (selectedZones.length === 1) {
+          // Se é apenas uma zona, usar o parâmetro zone
+          newFilters.zone = selectedZones[0];
+        } else {
+          // Se são múltiplas zonas, usar o parâmetro zones
+          newFilters.zones = selectedZones;
+        }
+        
+        // Se há bairros que não pertencem a zonas completas, adicionar como bairros individuais
+        if (remainingBairros.length > 0) {
+          newFilters.neighborhood = remainingBairros.join(',');
+          newFilters.neighborhoods = remainingBairros;
+        }
       } else {
         // Caso contrário, usar os bairros individuais
         newFilters.neighborhood = selectedNeighborhoods.join(',');
@@ -494,7 +531,25 @@ const LeilaoSP = () => {
         }
       }
       
-      if (urlFilters.zone) {
+      if (urlFilters.zones && urlFilters.zones.length > 0) {
+        // Se há múltiplas zonas na URL, carregar todos os bairros das zonas
+        let todosBairrosDasZonas: string[] = [];
+        for (const zona of urlFilters.zones) {
+          let bairrosDaZona: string[] = [];
+          
+          if (zona === "TODA_SP") {
+            // Se é toda São Paulo, usar todos os bairros de todas as zonas
+            bairrosDaZona = Object.values(bairrosPorZonaSP).flat();
+          } else if (bairrosPorZonaSP[zona]) {
+            // Se é uma zona específica
+            bairrosDaZona = bairrosPorZonaSP[zona];
+          }
+          
+          todosBairrosDasZonas = [...todosBairrosDasZonas, ...bairrosDaZona];
+        }
+        setSelectedNeighborhoods(todosBairrosDasZonas);
+        setSelectedNeighborhood(`${urlFilters.zones.length} zonas selecionadas`);
+      } else if (urlFilters.zone) {
         // Se há uma zona na URL, carregar todos os bairros da zona
         let bairrosDaZona: string[] = [];
         
@@ -814,7 +869,26 @@ const LeilaoSP = () => {
           }
         }
         
-        if (filters.zone) {
+        if (filters.zones && filters.zones.length > 0) {
+          // Se há múltiplas zonas selecionadas, expandir para todos os bairros das zonas
+          let todosBairrosDasZonas: string[] = [];
+          for (const zona of filters.zones) {
+            let bairrosDaZona: string[] = [];
+            
+            if (zona === "TODA_SP") {
+              // Se é toda São Paulo, usar todos os bairros de todas as zonas
+              bairrosDaZona = Object.values(bairrosPorZonaSP).flat();
+            } else if (bairrosPorZonaSP[zona]) {
+              // Se é uma zona específica
+              bairrosDaZona = bairrosPorZonaSP[zona];
+            }
+            
+            todosBairrosDasZonas = [...todosBairrosDasZonas, ...bairrosDaZona];
+          }
+          if (todosBairrosDasZonas.length > 0) {
+            query = query.in('bairro', todosBairrosDasZonas);
+          }
+        } else if (filters.zone) {
           // Se há uma zona selecionada, expandir para todos os bairros da zona
           let bairrosDaZona: string[] = [];
           

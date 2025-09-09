@@ -65,6 +65,7 @@ interface Filters {
   cities?: string[]; // Para múltiplas cidades
   dataFimSegundoLeilao?: string; // Data final do filtro de data de encerramento do segundo leilão
   zone?: string; // Para zonas (ex: "Zona Sul (Rio de Janeiro)")
+  zones?: string[]; // Para múltiplas zonas (ex: ["Zona Sul (Rio de Janeiro)", "Zona Norte (Rio de Janeiro)"])
 }
 
 // Interface para as faixas de preço
@@ -295,7 +296,26 @@ const LeilaoCaixaRJ = () => {
         setSelectedCities([urlFilters.city]);
       }
       
-      if (urlFilters.zone) {
+      if (urlFilters.zones && urlFilters.zones.length > 0) {
+        // Se há múltiplas zonas na URL, carregar todos os bairros das zonas
+        let todosBairrosDasZonas: string[] = [];
+        for (const zona of urlFilters.zones) {
+          let bairrosDaZona: string[] = [];
+          
+          // Verificar se é uma zona do RJ
+          if (bairrosPorZonaRJ[zona]) {
+            bairrosDaZona = bairrosPorZonaRJ[zona];
+          }
+          // Verificar se é uma região de Niterói
+          else if (bairrosPorRegiaoNiteroi[zona]) {
+            bairrosDaZona = bairrosPorRegiaoNiteroi[zona];
+          }
+          
+          todosBairrosDasZonas = [...todosBairrosDasZonas, ...bairrosDaZona];
+        }
+        setSelectedNeighborhoods(todosBairrosDasZonas);
+        setSelectedNeighborhood(`${urlFilters.zones.length} zonas selecionadas`);
+      } else if (urlFilters.zone) {
         // Se há uma zona na URL, carregar todos os bairros da zona
         let bairrosDaZona: string[] = [];
         
@@ -522,7 +542,27 @@ const LeilaoCaixaRJ = () => {
           query = query.eq('tipo_propriedade', filters.type);
         }
         
-        if (filters.zone) {
+        if (filters.zones && filters.zones.length > 0) {
+          // Se há múltiplas zonas selecionadas, expandir para todos os bairros das zonas
+          let todosBairrosDasZonas: string[] = [];
+          for (const zona of filters.zones) {
+            let bairrosDaZona: string[] = [];
+            
+            // Verificar se é uma zona do RJ
+            if (bairrosPorZonaRJ[zona]) {
+              bairrosDaZona = bairrosPorZonaRJ[zona];
+            }
+            // Verificar se é uma região de Niterói
+            else if (bairrosPorRegiaoNiteroi[zona]) {
+              bairrosDaZona = bairrosPorRegiaoNiteroi[zona];
+            }
+            
+            todosBairrosDasZonas = [...todosBairrosDasZonas, ...bairrosDaZona];
+          }
+          if (todosBairrosDasZonas.length > 0) {
+            query = query.in('bairro', todosBairrosDasZonas);
+          }
+        } else if (filters.zone) {
           // Se há uma zona selecionada, expandir para todos os bairros da zona
           let bairrosDaZona: string[] = [];
           
@@ -762,32 +802,67 @@ const LeilaoCaixaRJ = () => {
       const zoneName = selectedNeighborhood.replace(" (todos)", "");
       newFilters.zone = zoneName;
     } else if (selectedNeighborhoods.length > 0) {
-      // Verificar se todos os bairros selecionados pertencem à mesma zona
-      let commonZone = null;
+      // Verificar se os bairros selecionados pertencem a zonas completas
+      const selectedZones: string[] = [];
+      const remainingBairros: string[] = [];
       
-      // Verificar zonas do RJ
+      // Primeiro, verificar quais zonas do RJ estão completas
       for (const [zoneName, zoneBairros] of Object.entries(bairrosPorZonaRJ)) {
-        const allSelectedInZone = selectedNeighborhoods.every(bairro => zoneBairros.includes(bairro));
-        if (allSelectedInZone && selectedNeighborhoods.length === zoneBairros.length) {
-          commonZone = zoneName;
-          break;
+        const allZoneBairrosSelected = zoneBairros.every(zoneBairro => selectedNeighborhoods.includes(zoneBairro));
+        if (allZoneBairrosSelected && zoneBairros.length > 0) {
+          selectedZones.push(zoneName);
         }
       }
       
-      // Se não encontrou zona do RJ, verificar regiões de Niterói
-      if (!commonZone) {
-        for (const [regionName, regionBairros] of Object.entries(bairrosPorRegiaoNiteroi)) {
-          const allSelectedInRegion = selectedNeighborhoods.every(bairro => regionBairros.includes(bairro));
-          if (allSelectedInRegion && selectedNeighborhoods.length === regionBairros.length) {
-            commonZone = regionName;
+      // Verificar quais regiões de Niterói estão completas
+      for (const [regionName, regionBairros] of Object.entries(bairrosPorRegiaoNiteroi)) {
+        const allRegionBairrosSelected = regionBairros.every(regionBairro => selectedNeighborhoods.includes(regionBairro));
+        if (allRegionBairrosSelected && regionBairros.length > 0) {
+          selectedZones.push(regionName);
+        }
+      }
+      
+      // Depois, identificar bairros que não pertencem a zonas/regiões completas
+      for (const bairro of selectedNeighborhoods) {
+        let belongsToCompleteZone = false;
+        
+        // Verificar zonas do RJ
+        for (const [zoneName, zoneBairros] of Object.entries(bairrosPorZonaRJ)) {
+          if (zoneBairros.includes(bairro) && selectedZones.includes(zoneName)) {
+            belongsToCompleteZone = true;
             break;
           }
         }
+        
+        // Se não encontrou zona do RJ, verificar regiões de Niterói
+        if (!belongsToCompleteZone) {
+          for (const [regionName, regionBairros] of Object.entries(bairrosPorRegiaoNiteroi)) {
+            if (regionBairros.includes(bairro) && selectedZones.includes(regionName)) {
+              belongsToCompleteZone = true;
+              break;
+            }
+          }
+        }
+        
+        if (!belongsToCompleteZone) {
+          remainingBairros.push(bairro);
+        }
       }
       
-      if (commonZone) {
-        // Se todos os bairros de uma zona/região estão selecionados, usar a zona
-        newFilters.zone = commonZone;
+      if (selectedZones.length > 0) {
+        if (selectedZones.length === 1) {
+          // Se é apenas uma zona, usar o parâmetro zone
+          newFilters.zone = selectedZones[0];
+        } else {
+          // Se são múltiplas zonas, usar o parâmetro zones
+          newFilters.zones = selectedZones;
+        }
+        
+        // Se há bairros que não pertencem a zonas completas, adicionar como bairros individuais
+        if (remainingBairros.length > 0) {
+          newFilters.neighborhood = remainingBairros.join(',');
+          newFilters.neighborhoods = remainingBairros;
+        }
       } else {
         // Caso contrário, usar os bairros individuais
         newFilters.neighborhood = selectedNeighborhoods.join(',');

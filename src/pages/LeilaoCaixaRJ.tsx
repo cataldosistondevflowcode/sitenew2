@@ -64,6 +64,7 @@ interface Filters {
   neighborhoods?: string[]; // Para múltiplos bairros
   cities?: string[]; // Para múltiplas cidades
   dataFimSegundoLeilao?: string; // Data final do filtro de data de encerramento do segundo leilão
+  zone?: string; // Para zonas (ex: "Zona Sul (Rio de Janeiro)")
 }
 
 // Interface para as faixas de preço
@@ -294,7 +295,24 @@ const LeilaoCaixaRJ = () => {
         setSelectedCities([urlFilters.city]);
       }
       
-      if (urlFilters.neighborhoods && urlFilters.neighborhoods.length > 0) {
+      if (urlFilters.zone) {
+        // Se há uma zona na URL, carregar todos os bairros da zona
+        let bairrosDaZona: string[] = [];
+        
+        // Verificar se é uma zona do RJ
+        if (bairrosPorZonaRJ[urlFilters.zone]) {
+          bairrosDaZona = bairrosPorZonaRJ[urlFilters.zone];
+        }
+        // Verificar se é uma região de Niterói
+        else if (bairrosPorRegiaoNiteroi[urlFilters.zone]) {
+          bairrosDaZona = bairrosPorRegiaoNiteroi[urlFilters.zone];
+        }
+        
+        if (bairrosDaZona.length > 0) {
+          setSelectedNeighborhoods(bairrosDaZona);
+          setSelectedNeighborhood(`${urlFilters.zone} (todos)`);
+        }
+      } else if (urlFilters.neighborhoods && urlFilters.neighborhoods.length > 0) {
         setSelectedNeighborhoods(urlFilters.neighborhoods);
         if (urlFilters.neighborhoods.length === 1) {
           setSelectedNeighborhood(urlFilters.neighborhoods[0]);
@@ -504,7 +522,23 @@ const LeilaoCaixaRJ = () => {
           query = query.eq('tipo_propriedade', filters.type);
         }
         
-        if (filters.neighborhood) {
+        if (filters.zone) {
+          // Se há uma zona selecionada, expandir para todos os bairros da zona
+          let bairrosDaZona: string[] = [];
+          
+          // Verificar se é uma zona do RJ
+          if (bairrosPorZonaRJ[filters.zone]) {
+            bairrosDaZona = bairrosPorZonaRJ[filters.zone];
+          }
+          // Verificar se é uma região de Niterói
+          else if (bairrosPorRegiaoNiteroi[filters.zone]) {
+            bairrosDaZona = bairrosPorRegiaoNiteroi[filters.zone];
+          }
+          
+          if (bairrosDaZona.length > 0) {
+            query = query.in('bairro', bairrosDaZona);
+          }
+        } else if (filters.neighborhood) {
           // Se for múltiplos bairros (string separada por vírgula)
           const bairros = filters.neighborhood.split(',').map(b => b.trim()).filter(Boolean);
           if (bairros.length > 1) {
@@ -721,10 +755,44 @@ const LeilaoCaixaRJ = () => {
       newFilters.type = selectedType.originalValue || selectedType.label.split(" (")[0];
     }
     
-    // Verificar se há bairros selecionados (pode ser 1 ou vários)
-    if (selectedNeighborhoods.length > 0) {
-      newFilters.neighborhood = selectedNeighborhoods.join(','); // Passa como string separada por vírgula
-      newFilters.neighborhoods = selectedNeighborhoods; // Para URL params
+    // Verificar se há zona selecionada (prioridade sobre bairros individuais)
+    const isZoneSelected = selectedNeighborhood && selectedNeighborhood.includes(" (todos)");
+    if (isZoneSelected) {
+      // Extrair o nome da zona
+      const zoneName = selectedNeighborhood.replace(" (todos)", "");
+      newFilters.zone = zoneName;
+    } else if (selectedNeighborhoods.length > 0) {
+      // Verificar se todos os bairros selecionados pertencem à mesma zona
+      let commonZone = null;
+      
+      // Verificar zonas do RJ
+      for (const [zoneName, zoneBairros] of Object.entries(bairrosPorZonaRJ)) {
+        const allSelectedInZone = selectedNeighborhoods.every(bairro => zoneBairros.includes(bairro));
+        if (allSelectedInZone && selectedNeighborhoods.length === zoneBairros.length) {
+          commonZone = zoneName;
+          break;
+        }
+      }
+      
+      // Se não encontrou zona do RJ, verificar regiões de Niterói
+      if (!commonZone) {
+        for (const [regionName, regionBairros] of Object.entries(bairrosPorRegiaoNiteroi)) {
+          const allSelectedInRegion = selectedNeighborhoods.every(bairro => regionBairros.includes(bairro));
+          if (allSelectedInRegion && selectedNeighborhoods.length === regionBairros.length) {
+            commonZone = regionName;
+            break;
+          }
+        }
+      }
+      
+      if (commonZone) {
+        // Se todos os bairros de uma zona/região estão selecionados, usar a zona
+        newFilters.zone = commonZone;
+      } else {
+        // Caso contrário, usar os bairros individuais
+        newFilters.neighborhood = selectedNeighborhoods.join(',');
+        newFilters.neighborhoods = selectedNeighborhoods;
+      }
     } else if (selectedNeighborhood && selectedNeighborhood !== "Selecione o bairro") {
       // Compatibilidade: se só um bairro foi selecionado pelo modo antigo
       const neighborhoodName = selectedNeighborhood.split(" (")[0];
@@ -912,6 +980,57 @@ const LeilaoCaixaRJ = () => {
     setSelectedNeighborhood(`${zone} (todos)`);
     setSelectedNeighborhoods(bairros);
     setShowNeighborhoodMenu(false);
+    
+    // Aplicar filtros imediatamente com a zona
+    const newFilters: Filters = {
+      zone: zone
+    };
+    
+    // Manter outros filtros existentes
+    if (selectedCities.length > 0) {
+      newFilters.city = selectedCities.join(',');
+      newFilters.cities = selectedCities;
+    } else if (selectedCity && selectedCity !== "Selecione a cidade") {
+      const cityName = selectedCity.split(" (")[0];
+      newFilters.city = cityName;
+    }
+    
+    if (selectedType && selectedType.label !== "Todos os imóveis") {
+      newFilters.type = selectedType.originalValue || selectedType.label.split(" (")[0];
+    }
+    
+    if (locationInput) {
+      newFilters.location = locationInput;
+    }
+    
+    if (keywordInput) {
+      newFilters.keyword = keywordInput;
+    }
+    
+    if (filterSecondAuction) {
+      newFilters.hasSecondAuction = true;
+    }
+    
+    if (selectedPriceRange) {
+      newFilters.priceRange = {
+        min: selectedPriceRange.min,
+        max: selectedPriceRange.max
+      };
+    }
+    
+    if (filterFinanciamento) {
+      newFilters.financiamento = true;
+    }
+    
+    if (filterFGTS) {
+      newFilters.fgts = true;
+    }
+    
+    if (filterParcelamento) {
+      newFilters.parcelamento = true;
+    }
+    
+    updateURL(newFilters);
   };
 
   const selectRegionNiteroi = (region: string) => {
@@ -920,6 +1039,57 @@ const LeilaoCaixaRJ = () => {
     setSelectedNeighborhood(`${region} (todos)`);
     setSelectedNeighborhoods(bairros);
     setShowNeighborhoodMenu(false);
+    
+    // Aplicar filtros imediatamente com a zona
+    const newFilters: Filters = {
+      zone: region
+    };
+    
+    // Manter outros filtros existentes
+    if (selectedCities.length > 0) {
+      newFilters.city = selectedCities.join(',');
+      newFilters.cities = selectedCities;
+    } else if (selectedCity && selectedCity !== "Selecione a cidade") {
+      const cityName = selectedCity.split(" (")[0];
+      newFilters.city = cityName;
+    }
+    
+    if (selectedType && selectedType.label !== "Todos os imóveis") {
+      newFilters.type = selectedType.originalValue || selectedType.label.split(" (")[0];
+    }
+    
+    if (locationInput) {
+      newFilters.location = locationInput;
+    }
+    
+    if (keywordInput) {
+      newFilters.keyword = keywordInput;
+    }
+    
+    if (filterSecondAuction) {
+      newFilters.hasSecondAuction = true;
+    }
+    
+    if (selectedPriceRange) {
+      newFilters.priceRange = {
+        min: selectedPriceRange.min,
+        max: selectedPriceRange.max
+      };
+    }
+    
+    if (filterFinanciamento) {
+      newFilters.financiamento = true;
+    }
+    
+    if (filterFGTS) {
+      newFilters.fgts = true;
+    }
+    
+    if (filterParcelamento) {
+      newFilters.parcelamento = true;
+    }
+    
+    updateURL(newFilters);
   };
 
   // Nova função para múltipla seleção de cidades

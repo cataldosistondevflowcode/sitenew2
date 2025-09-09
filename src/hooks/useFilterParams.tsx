@@ -21,6 +21,7 @@ export interface FilterParams {
   neighborhoods?: string[]; // Para múltiplos bairros
   cities?: string[]; // Para múltiplas cidades
   dataFimSegundoLeilao?: string; // Data final do filtro de data de encerramento do segundo leilão
+  zone?: string; // Para zonas (ex: "Zona Sul (Rio de Janeiro)")
 }
 
 // Tipos para as faixas de preço
@@ -106,6 +107,12 @@ export const useFilterParams = () => {
       filters.cities = cities.split(',').map(c => c.trim()).filter(Boolean);
     }
 
+    // Parâmetro de zona
+    const zone = searchParams.get('zona');
+    if (zone) {
+      filters.zone = zone;
+    }
+
     return filters;
   }, [searchParams]);
 
@@ -145,6 +152,11 @@ export const useFilterParams = () => {
     }
     if (filters.cities && filters.cities.length > 0) {
       newParams.set('cidades', filters.cities.join(','));
+    }
+
+    // Adicionar parâmetro de zona
+    if (filters.zone) {
+      newParams.set('zona', filters.zone);
     }
 
     setSearchParams(newParams, { replace: true });
@@ -192,6 +204,11 @@ export const useFilterParams = () => {
     }
     if (filters.cities && filters.cities.length > 0) {
       newParams.set('cidades', filters.cities.join(','));
+    }
+
+    // Adicionar parâmetro de zona
+    if (filters.zone) {
+      newParams.set('zona', filters.zone);
     }
 
     const baseURL = window.location.origin + window.location.pathname;

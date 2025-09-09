@@ -65,6 +65,7 @@ interface Filters {
   neighborhoods?: string[]; // Para múltiplos bairros
   cities?: string[]; // Para múltiplas cidades
   dataFimSegundoLeilao?: string; // Data final do filtro de data de encerramento do segundo leilão
+  zone?: string; // Para zonas (ex: "CENTRAL", "LESTE", etc.)
 }
 
 // Interface para as faixas de preço
@@ -274,10 +275,46 @@ const LeilaoSP = () => {
       newFilters.type = selectedType.originalValue || selectedType.label.split(" (")[0];
     }
     
-    // Verificar se há bairros selecionados (pode ser 1 ou vários)
-    if (selectedNeighborhoods.length > 0) {
-      newFilters.neighborhood = selectedNeighborhoods.join(','); // Passa como string separada por vírgula
-      newFilters.neighborhoods = selectedNeighborhoods; // Para URL params
+    // Verificar se há zona selecionada (prioridade sobre bairros individuais)
+    const isZoneSelected = selectedNeighborhood && (selectedNeighborhood.includes(" (todos)") || selectedNeighborhood === "Toda São Paulo");
+    if (isZoneSelected) {
+      if (selectedNeighborhood === "Toda São Paulo") {
+        newFilters.zone = "TODA_SP";
+      } else {
+        // Extrair o nome da zona
+        const zoneName = selectedNeighborhood.replace(" (todos)", "");
+        newFilters.zone = zoneName;
+      }
+    } else if (selectedNeighborhoods.length > 0) {
+      // Verificar se todos os bairros selecionados pertencem à mesma zona
+      let commonZone = null;
+      
+      // Verificar zonas de SP
+      for (const [zoneName, zoneBairros] of Object.entries(bairrosPorZonaSP)) {
+        const allSelectedInZone = selectedNeighborhoods.every(bairro => zoneBairros.includes(bairro));
+        if (allSelectedInZone && selectedNeighborhoods.length === zoneBairros.length) {
+          commonZone = zoneName;
+          break;
+        }
+      }
+      
+      // Verificar se são todos os bairros de SP
+      if (!commonZone) {
+        const todosBairrosSP = Object.values(bairrosPorZonaSP).flat();
+        const allSelectedInSP = selectedNeighborhoods.every(bairro => todosBairrosSP.includes(bairro));
+        if (allSelectedInSP && selectedNeighborhoods.length === todosBairrosSP.length) {
+          commonZone = "TODA_SP";
+        }
+      }
+      
+      if (commonZone) {
+        // Se todos os bairros de uma zona estão selecionados, usar a zona
+        newFilters.zone = commonZone;
+      } else {
+        // Caso contrário, usar os bairros individuais
+        newFilters.neighborhood = selectedNeighborhoods.join(',');
+        newFilters.neighborhoods = selectedNeighborhoods;
+      }
     } else if (selectedNeighborhood && selectedNeighborhood !== "Selecione o bairro") {
       // Compatibilidade: se só um bairro foi selecionado pelo modo antigo
       const neighborhoodName = selectedNeighborhood.split(" (")[0];
@@ -457,7 +494,24 @@ const LeilaoSP = () => {
         }
       }
       
-      if (urlFilters.neighborhood) {
+      if (urlFilters.zone) {
+        // Se há uma zona na URL, carregar todos os bairros da zona
+        let bairrosDaZona: string[] = [];
+        
+        if (urlFilters.zone === "TODA_SP") {
+          // Se é toda São Paulo, usar todos os bairros de todas as zonas
+          bairrosDaZona = Object.values(bairrosPorZonaSP).flat();
+          setSelectedNeighborhood("Toda São Paulo");
+        } else if (bairrosPorZonaSP[urlFilters.zone]) {
+          // Se é uma zona específica
+          bairrosDaZona = bairrosPorZonaSP[urlFilters.zone];
+          setSelectedNeighborhood(`${urlFilters.zone} (todos)`);
+        }
+        
+        if (bairrosDaZona.length > 0) {
+          setSelectedNeighborhoods(bairrosDaZona);
+        }
+      } else if (urlFilters.neighborhood) {
         const neighborhoods = urlFilters.neighborhood.split(',');
         if (neighborhoods.length > 1) {
           setSelectedNeighborhoods(neighborhoods);
@@ -760,7 +814,22 @@ const LeilaoSP = () => {
           }
         }
         
-        if (filters.neighborhood) {
+        if (filters.zone) {
+          // Se há uma zona selecionada, expandir para todos os bairros da zona
+          let bairrosDaZona: string[] = [];
+          
+          if (filters.zone === "TODA_SP") {
+            // Se é toda São Paulo, usar todos os bairros de todas as zonas
+            bairrosDaZona = Object.values(bairrosPorZonaSP).flat();
+          } else if (bairrosPorZonaSP[filters.zone]) {
+            // Se é uma zona específica
+            bairrosDaZona = bairrosPorZonaSP[filters.zone];
+          }
+          
+          if (bairrosDaZona.length > 0) {
+            query = query.in('bairro', bairrosDaZona);
+          }
+        } else if (filters.neighborhood) {
           // Se for múltiplos bairros (string separada por vírgula)
           const bairros = filters.neighborhood.split(',').map(b => b.trim()).filter(Boolean);
           if (bairros.length > 1) {
@@ -1290,6 +1359,60 @@ const LeilaoSP = () => {
     setSelectedNeighborhood(`${zone} (todos)`);
     setSelectedNeighborhoods(bairros);
     setShowNeighborhoodMenu(false);
+    
+    // Aplicar filtros imediatamente com a zona
+    const newFilters: Filters = {
+      zone: zone
+    };
+    
+    // Manter outros filtros existentes
+    if (selectedCities.length > 0) {
+      newFilters.city = selectedCities.join(',');
+      newFilters.cities = selectedCities;
+    } else if (selectedCity && selectedCity !== "Selecione a cidade") {
+      const cityName = selectedCity.split(" (")[0];
+      newFilters.city = cityName;
+    }
+    
+    if (selectedTypes.length > 0) {
+      const typeValues = selectedTypes.map(type => type.originalValue || type.label.split(" (")[0]);
+      newFilters.type = typeValues.join(',');
+    } else if (selectedType && selectedType.label !== "Todos os imóveis" && !selectedType.label.includes("tipos selecionados")) {
+      newFilters.type = selectedType.originalValue || selectedType.label.split(" (")[0];
+    }
+    
+    if (locationInput) {
+      newFilters.location = locationInput;
+    }
+    
+    if (keywordInput) {
+      newFilters.keyword = keywordInput;
+    }
+    
+    if (filterSecondAuction) {
+      newFilters.hasSecondAuction = true;
+    }
+    
+    if (selectedPriceRange) {
+      newFilters.priceRange = {
+        min: selectedPriceRange.min,
+        max: selectedPriceRange.max
+      };
+    }
+    
+    if (filterFinanciamento) {
+      newFilters.financiamento = true;
+    }
+    
+    if (filterFGTS) {
+      newFilters.fgts = true;
+    }
+    
+    if (filterParcelamento) {
+      newFilters.parcelamento = true;
+    }
+    
+    updateURL(newFilters);
   };
 
   const selectAllSaoPaulo = () => {
@@ -1298,6 +1421,60 @@ const LeilaoSP = () => {
     setSelectedNeighborhood("Toda São Paulo");
     setSelectedNeighborhoods(todosBairros);
     setShowNeighborhoodMenu(false);
+    
+    // Aplicar filtros imediatamente com a zona especial "TODA_SP"
+    const newFilters: Filters = {
+      zone: "TODA_SP"
+    };
+    
+    // Manter outros filtros existentes
+    if (selectedCities.length > 0) {
+      newFilters.city = selectedCities.join(',');
+      newFilters.cities = selectedCities;
+    } else if (selectedCity && selectedCity !== "Selecione a cidade") {
+      const cityName = selectedCity.split(" (")[0];
+      newFilters.city = cityName;
+    }
+    
+    if (selectedTypes.length > 0) {
+      const typeValues = selectedTypes.map(type => type.originalValue || type.label.split(" (")[0]);
+      newFilters.type = typeValues.join(',');
+    } else if (selectedType && selectedType.label !== "Todos os imóveis" && !selectedType.label.includes("tipos selecionados")) {
+      newFilters.type = selectedType.originalValue || selectedType.label.split(" (")[0];
+    }
+    
+    if (locationInput) {
+      newFilters.location = locationInput;
+    }
+    
+    if (keywordInput) {
+      newFilters.keyword = keywordInput;
+    }
+    
+    if (filterSecondAuction) {
+      newFilters.hasSecondAuction = true;
+    }
+    
+    if (selectedPriceRange) {
+      newFilters.priceRange = {
+        min: selectedPriceRange.min,
+        max: selectedPriceRange.max
+      };
+    }
+    
+    if (filterFinanciamento) {
+      newFilters.financiamento = true;
+    }
+    
+    if (filterFGTS) {
+      newFilters.fgts = true;
+    }
+    
+    if (filterParcelamento) {
+      newFilters.parcelamento = true;
+    }
+    
+    updateURL(newFilters);
   };
   
   const selectPriceRange = (priceRange: PriceRange) => {

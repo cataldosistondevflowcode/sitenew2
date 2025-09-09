@@ -21,7 +21,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { flexibleSearch } from "@/utils/stringUtils";
-import { useFilterParams } from "@/hooks/useFilterParams";
+import { useFilterParams, FilterParams } from "@/hooks/useFilterParams";
 import { executeWhatsAppAction, initializeWhatsAppScript } from "@/utils/whatsappScript";
 // import { useAnalytics } from "@/hooks/useAnalytics";
 
@@ -65,6 +65,7 @@ interface Filters {
   fgts?: boolean; // Filtro para leilão que aceita FGTS
   parcelamento?: boolean; // Filtro para parcelamento
   dataFimSegundoLeilao?: string; // Data final do filtro de data de encerramento do segundo leilão
+  zone?: string; // Para zonas (ex: "Zona Sul (Rio de Janeiro)")
 }
 
 // Interface para as faixas de preço
@@ -565,7 +566,12 @@ const Index = () => {
         }
       }
       
-      if (urlFilters.neighborhood) {
+      if (urlFilters.zone) {
+        // Se há uma zona na URL, carregar todos os bairros da zona
+        const bairrosDaZona = bairrosPorZonaRJ[urlFilters.zone] || [];
+        setSelectedNeighborhoods(bairrosDaZona);
+        setSelectedNeighborhood(`${urlFilters.zone} (todos)`);
+      } else if (urlFilters.neighborhood) {
         const neighborhoods = urlFilters.neighborhood.split(',');
         if (neighborhoods.length > 1) {
           setSelectedNeighborhoods(neighborhoods);
@@ -701,7 +707,13 @@ const Index = () => {
           }
         }
         
-        if (filters.neighborhood) {
+        if (filters.zone) {
+          // Se há uma zona selecionada, expandir para todos os bairros da zona
+          const bairrosDaZona = bairrosPorZonaRJ[filters.zone] || [];
+          if (bairrosDaZona.length > 0) {
+            query = query.in('bairro', bairrosDaZona);
+          }
+        } else if (filters.neighborhood) {
           // Se for múltiplos bairros (string separada por vírgula)
           const bairros = filters.neighborhood.split(',').map(b => b.trim()).filter(Boolean);
           if (bairros.length > 1) {
@@ -949,9 +961,30 @@ const Index = () => {
       newFilters.type = selectedType.originalValue || selectedType.label.split(" (")[0];
     }
     
-    // Verificar se há bairros selecionados (pode ser 1 ou vários)
-    if (selectedNeighborhoods.length > 0) {
-      newFilters.neighborhood = selectedNeighborhoods.join(','); // Passa como string separada por vírgula
+    // Verificar se há zona selecionada (prioridade sobre bairros individuais)
+    const isZoneSelected = selectedNeighborhood && selectedNeighborhood.includes(" (todos)");
+    if (isZoneSelected) {
+      // Extrair o nome da zona
+      const zoneName = selectedNeighborhood.replace(" (todos)", "");
+      newFilters.zone = zoneName;
+    } else if (selectedNeighborhoods.length > 0) {
+      // Verificar se todos os bairros selecionados pertencem à mesma zona
+      let commonZone = null;
+      for (const [zoneName, zoneBairros] of Object.entries(bairrosPorZonaRJ)) {
+        const allSelectedInZone = selectedNeighborhoods.every(bairro => zoneBairros.includes(bairro));
+        if (allSelectedInZone && selectedNeighborhoods.length === zoneBairros.length) {
+          commonZone = zoneName;
+          break;
+        }
+      }
+      
+      if (commonZone) {
+        // Se todos os bairros de uma zona estão selecionados, usar a zona
+        newFilters.zone = commonZone;
+      } else {
+        // Caso contrário, usar os bairros individuais
+        newFilters.neighborhood = selectedNeighborhoods.join(',');
+      }
     } else if (selectedNeighborhood && selectedNeighborhood !== "Selecione o bairro") {
       // Compatibilidade: se só um bairro foi selecionado pelo modo antigo
       const neighborhoodName = selectedNeighborhood.split(" (")[0];
@@ -1585,6 +1618,59 @@ const Index = () => {
     setSelectedNeighborhood(`${zone} (todos)`);
     setSelectedNeighborhoods(bairros);
     setShowNeighborhoodMenu(false);
+    
+    // Aplicar filtros imediatamente com a zona
+    const newFilters: Filters = {
+      zone: zone
+    };
+    
+    // Manter outros filtros existentes
+    if (selectedCities.length > 0 && selectedCities[0] !== "TODO_RJ_STATE") {
+      newFilters.city = selectedCities.join(',');
+    } else if (selectedCity && selectedCity !== "Selecione a cidade" && selectedCity !== "Todas cidades do RJ") {
+      const cityName = selectedCity.split(" (")[0];
+      newFilters.city = cityName;
+    }
+    
+    if (selectedTypes.length > 0) {
+      const typeValues = selectedTypes.map(type => type.originalValue || type.label.split(" (")[0]);
+      newFilters.type = typeValues.join(',');
+    } else if (selectedType && selectedType.label !== "Todos os imóveis" && !selectedType.label.includes("tipos selecionados")) {
+      newFilters.type = selectedType.originalValue || selectedType.label.split(" (")[0];
+    }
+    
+    if (locationInput) {
+      newFilters.location = locationInput;
+    }
+    
+    if (keywordInput) {
+      newFilters.keyword = keywordInput;
+    }
+    
+    if (filterSecondAuction) {
+      newFilters.hasSecondAuction = true;
+    }
+    
+    if (selectedPriceRange) {
+      newFilters.priceRange = {
+        min: selectedPriceRange.min,
+        max: selectedPriceRange.max
+      };
+    }
+    
+    if (filterFinanciamento) {
+      newFilters.financiamento = true;
+    }
+    
+    if (filterFGTS) {
+      newFilters.fgts = true;
+    }
+    
+    if (filterParcelamento) {
+      newFilters.parcelamento = true;
+    }
+    
+    updateURL(newFilters);
   };
   
   const selectPriceRange = (priceRange: PriceRange) => {

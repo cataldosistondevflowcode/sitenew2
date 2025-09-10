@@ -721,7 +721,21 @@ const Index = () => {
           // Se há múltiplas zonas selecionadas, expandir para todos os bairros das zonas
           let todosBairrosDasZonas: string[] = [];
           for (const zona of filters.zones) {
-            const bairrosDaZona = bairrosPorZonaRJ[zona] || [];
+            let bairrosDaZona: string[] = [];
+            
+            // Verificar se é uma zona do RJ
+            if (bairrosPorZonaRJ[zona]) {
+              bairrosDaZona = bairrosPorZonaRJ[zona];
+            }
+            // Verificar se é uma região de Niterói
+            else if (bairrosPorRegiaoNiteroi[zona]) {
+              bairrosDaZona = bairrosPorRegiaoNiteroi[zona];
+            }
+            // Verificar se é uma área especial
+            else if (areasEspeciaisRJ[zona]) {
+              bairrosDaZona = areasEspeciaisRJ[zona];
+            }
+            
             todosBairrosDasZonas = [...todosBairrosDasZonas, ...bairrosDaZona];
           }
           if (todosBairrosDasZonas.length > 0) {
@@ -729,7 +743,21 @@ const Index = () => {
           }
         } else if (filters.zone) {
           // Se há uma zona selecionada, expandir para todos os bairros da zona
-          const bairrosDaZona = bairrosPorZonaRJ[filters.zone] || [];
+          let bairrosDaZona: string[] = [];
+          
+          // Verificar se é uma zona do RJ
+          if (bairrosPorZonaRJ[filters.zone]) {
+            bairrosDaZona = bairrosPorZonaRJ[filters.zone];
+          }
+          // Verificar se é uma região de Niterói
+          else if (bairrosPorRegiaoNiteroi[filters.zone]) {
+            bairrosDaZona = bairrosPorRegiaoNiteroi[filters.zone];
+          }
+          // Verificar se é uma área especial
+          else if (areasEspeciaisRJ[filters.zone]) {
+            bairrosDaZona = areasEspeciaisRJ[filters.zone];
+          }
+          
           if (bairrosDaZona.length > 0) {
             query = query.in('bairro', bairrosDaZona);
           }

@@ -565,6 +565,10 @@ const LeilaoCaixaRJ = () => {
             else if (bairrosPorRegiaoNiteroi[zona]) {
               bairrosDaZona = bairrosPorRegiaoNiteroi[zona];
             }
+            // Verificar se é uma área especial
+            else if (areasEspeciaisRJ[zona]) {
+              bairrosDaZona = areasEspeciaisRJ[zona];
+            }
             
             todosBairrosDasZonas = [...todosBairrosDasZonas, ...bairrosDaZona];
           }
@@ -582,6 +586,10 @@ const LeilaoCaixaRJ = () => {
           // Verificar se é uma região de Niterói
           else if (bairrosPorRegiaoNiteroi[filters.zone]) {
             bairrosDaZona = bairrosPorRegiaoNiteroi[filters.zone];
+          }
+          // Verificar se é uma área especial
+          else if (areasEspeciaisRJ[filters.zone]) {
+            bairrosDaZona = areasEspeciaisRJ[filters.zone];
           }
           
           if (bairrosDaZona.length > 0) {

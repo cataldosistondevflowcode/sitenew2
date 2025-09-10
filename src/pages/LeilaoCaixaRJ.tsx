@@ -111,6 +111,15 @@ const bairrosPorZonaRJ: Record<string, string[]> = {
 
 // Definição das áreas especiais e seus sub-bairros
 const areasEspeciaisRJ: Record<string, string[]> = {
+  'Grande Tijuca': [
+    'Tijuca', 'Vila Isabel', 'Maracanã', 'Andaraí', 'Grajaú', 'Alto da Boa Vista', 'São Francisco Xavier', 'Rio Comprido', 'Estácio', 'Praça da Bandeira', 'Usina'
+  ],
+  'Grande Méier': [
+    'Méier', 'Abolição', 'Água Santa', 'Encantado', 'Engenho de Dentro', 'Engenho Novo', 'Engenho da Rainha', 'Inhaúma', 'Pilares', 'Riachuelo', 'Piedade', 'Todos os Santos', 'Rocha', 'Maria da Graça', 'Lins de Vasconcelos', 'Cachambi', 'Higienópolis', 'Del Castilho'
+  ],
+  'Barra e Adjacências': [
+    'Barra da Tijuca', 'Recreio dos Bandeirantes', 'Barra Olímpica', 'Freguesia de Jacarepaguá', 'Joá', 'Itanhangá'
+  ],
   'Ilha do Governador': [
     'Ilha do Governador', 'Bancários', 'Cacuia', 'Cocotá', 'Freguesia', 'Galeão', 'Jardim Carioca', 'Jardim Guanabara', 'Moneró', 'Pitangueiras', 'Portuguesa', 'Praia da Bandeira', 'Ribeira', 'Tauá', 'Zumbi'
   ],
@@ -822,6 +831,14 @@ const LeilaoCaixaRJ = () => {
         }
       }
       
+      // Verificar também áreas especiais (Grande Méier, Grande Tijuca, etc.)
+      for (const [areaName, areaBairros] of Object.entries(areasEspeciaisRJ)) {
+        const allAreaBairrosSelected = areaBairros.every(areaBairro => selectedNeighborhoods.includes(areaBairro));
+        if (allAreaBairrosSelected && areaBairros.length > 0) {
+          selectedZones.push(areaName);
+        }
+      }
+      
       // Depois, identificar bairros que não pertencem a zonas/regiões completas
       for (const bairro of selectedNeighborhoods) {
         let belongsToCompleteZone = false;
@@ -838,6 +855,16 @@ const LeilaoCaixaRJ = () => {
         if (!belongsToCompleteZone) {
           for (const [regionName, regionBairros] of Object.entries(bairrosPorRegiaoNiteroi)) {
             if (regionBairros.includes(bairro) && selectedZones.includes(regionName)) {
+              belongsToCompleteZone = true;
+              break;
+            }
+          }
+        }
+        
+        // Se não encontrou zona/região, verificar áreas especiais
+        if (!belongsToCompleteZone) {
+          for (const [areaName, areaBairros] of Object.entries(areasEspeciaisRJ)) {
+            if (areaBairros.includes(bairro) && selectedZones.includes(areaName)) {
               belongsToCompleteZone = true;
               break;
             }

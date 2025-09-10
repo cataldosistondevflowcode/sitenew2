@@ -1000,14 +1000,33 @@ const Index = () => {
         }
       }
       
+      // Verificar também áreas especiais (Grande Méier, Grande Tijuca, etc.)
+      for (const [areaName, areaBairros] of Object.entries(areasEspeciaisRJ)) {
+        const allAreaBairrosSelected = areaBairros.every(areaBairro => selectedNeighborhoods.includes(areaBairro));
+        if (allAreaBairrosSelected && areaBairros.length > 0) {
+          selectedZones.push(areaName);
+        }
+      }
+      
       // Depois, identificar bairros que não pertencem a zonas completas
       for (const bairro of selectedNeighborhoods) {
         let belongsToCompleteZone = false;
         
+        // Verificar zonas do RJ
         for (const [zoneName, zoneBairros] of Object.entries(bairrosPorZonaRJ)) {
           if (zoneBairros.includes(bairro) && selectedZones.includes(zoneName)) {
             belongsToCompleteZone = true;
             break;
+          }
+        }
+        
+        // Verificar áreas especiais se não encontrou zona
+        if (!belongsToCompleteZone) {
+          for (const [areaName, areaBairros] of Object.entries(areasEspeciaisRJ)) {
+            if (areaBairros.includes(bairro) && selectedZones.includes(areaName)) {
+              belongsToCompleteZone = true;
+              break;
+            }
           }
         }
         

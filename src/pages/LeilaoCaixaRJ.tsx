@@ -1167,6 +1167,40 @@ const LeilaoCaixaRJ = () => {
     updateURL(newFilters);
   };
 
+  // Nova função para múltipla seleção de regiões de Niterói
+  const toggleRegionNiteroi = (region: string) => {
+    const bairros = bairrosPorRegiaoNiteroi[region] || [];
+    
+    // Verificar se todos os bairros da região já estão selecionados
+    const allRegionBairrosSelected = bairros.every(bairro => selectedNeighborhoods.includes(bairro));
+    
+    if (allRegionBairrosSelected) {
+      // Remover todos os bairros da região
+      const newNeighborhoods = selectedNeighborhoods.filter(n => !bairros.includes(n));
+      setSelectedNeighborhoods(newNeighborhoods);
+      
+      // Atualizar o display
+      if (newNeighborhoods.length === 0) {
+        setSelectedNeighborhood("Selecione o bairro");
+      } else if (newNeighborhoods.length === 1) {
+        setSelectedNeighborhood(newNeighborhoods[0]);
+      } else {
+        setSelectedNeighborhood(`${newNeighborhoods.length} bairros selecionados`);
+      }
+    } else {
+      // Adicionar todos os bairros da região (removendo duplicatas)
+      const newNeighborhoods = [...new Set([...selectedNeighborhoods, ...bairros])];
+      setSelectedNeighborhoods(newNeighborhoods);
+      
+      // Atualizar o display
+      if (newNeighborhoods.length === 1) {
+        setSelectedNeighborhood(newNeighborhoods[0]);
+      } else {
+        setSelectedNeighborhood(`${newNeighborhoods.length} bairros selecionados`);
+      }
+    }
+  };
+
   // Nova função para múltipla seleção de cidades
   const toggleCity = (city: string) => {
     // Se é "Todas as cidades", limpar todas as seleções
@@ -1689,7 +1723,7 @@ const LeilaoCaixaRJ = () => {
                             {(neighborhoodSearchTerm === '' || flexibleSearch(regiao, neighborhoodSearchTerm)) && (
                               <div
                                 className="py-2 px-4 font-bold text-primary bg-gray-100 border-b border-gray-200 cursor-pointer hover:bg-yellow-100"
-                                onClick={() => selectRegionNiteroi(regiao)}
+                                onClick={() => toggleRegionNiteroi(regiao)}
                               >
                                 {regiao} (todos)
                               </div>

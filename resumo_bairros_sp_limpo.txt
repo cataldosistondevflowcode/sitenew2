@@ -1,0 +1,369 @@
+RESUMO DOS BAIRROS PARA ADICIONAR EM SP:
+
+ZONA LESTE: 129 bairros
+  - ÁGUA MARINHA
+  - Água Rasa
+  - Anália Franco
+  - Aricanduva
+  - AUSTRAL
+  - Bairro dos Pereiras
+  - Belém
+  - Carrão
+  - Carrãozinho
+  - Castro Alves
+  - Catumbi
+  - CHACARA CALIFORNIA
+  - Corinthians-Itaquera
+  - Engenheiro Goulart
+  - FAZENDA ARICANDUVA
+  - Iguaçu
+  - Iguatemi
+  - JADIM HELIAN
+  - Jardim
+  - JARDIM ALTO ALEGRE
+  - JARDIM ALTO ALEGRE (SÃO RAFAEL)
+  - Jardim Anália Franco
+  - JARDIM ARICANDUVA
+  - JARDIM ARPOADOR
+  - JARDIM AURORA
+  - Jardim Cibele
+  - JARDIM CLAUDIA
+  - Jardim Colorado
+  - Jardim da Casa Pintada
+  - Jardim Danfer
+  - JARDIM DAS OLIVEIRAS
+  - JARDIM DO DIVINO
+  - Jardim Gianeti
+  - JARDIM INDEPENDÊNCIA
+  - Jardim Iva
+  - JARDIM JUAZEIRO
+  - JARDIM LAJEADO
+  - Jardim Marabá
+  - Jardim Melunas
+  - JARDIM NÉLIA
+  - JARDIM NOSSA SENHORA DO CARMO
+  - JARDIM NOVE DE JULHO
+  - Jardim Robru
+  - JARDIM ROMANO
+  - JARDIM SANTA TEREZINHA
+  - JARDIM SANTO ANTÔNIO
+  - Jardim Textil
+  - JARDIM TIETÊ
+  - JARDIM VERÔNIA
+  - José Bonifácio
+  - Lajeado
+  - Mooca Água Rasa
+  - Mooca Baixa
+  - PARADA XV DE NOVEMBRO
+  - Pari
+  - PARQUE BOTURUSSU
+  - Parque do Carmo
+  - PARQUE GUARANI
+  - PARQUE MOOCA
+  - Parque Moóca
+  - PARQUE PAULISTANO
+  - Parque São Jorge
+  - PARQUE SÃO LOURENÇO
+  - Parque São Lucas
+  - PARQUE SÃO RAFAEL
+  - PARQUE SAVOI CITY
+  - Passagem Funda
+  - PATRIARCA
+  - PENHA FRANÇA
+  - Ponte Rasa
+  - Quarta Parada
+  - São Lucas
+  - São Mateus
+  - SÃO MATHEUS
+  - São Rafael
+  - Sapopemba
+  - SÍTIO DA FIGUEIRA
+  - Usp Leste
+  - Vila Alpina
+  - VILA ALTO PEDROSO
+  - VILA ANTONIETA
+  - VILA ARAGUAIA
+  - Vila Aricanduva
+  - VILA BELA
+  - VILA CARMOSINA
+  - Vila Carolina
+  - Vila Celeste
+  - VILA CHABILÂNDIA
+  - Vila Conceição
+  - VILA COSMOPOLITA
+  - Vila Curuça
+  - VILA CURUÇA
+  - Vila Dalila
+  - VILA DO ENCONTRO
+  - VILA GUARANI
+  - VILA INDEPENDÊNCIA
+  - VILA ITAIM
+  - Vila Jacui
+  - VILA JACUÍ
+  - VILA JUREMA
+  - VILA LIBANESA
+  - VILA LOURDES
+  - Vila Mafra
+  - VILA MESQUITA
+  - VILA MONTE SANTO
+  - VILA NHOCUNÉ
+  - Vila Nhocunhé
+  - VILA NORMA
+  - VILA NOVA CURUÇA
+  - VILA NOVA MANCHESTER
+  - VILA NOVA SAVOIA
+  - Vila Paranaguá
+  - VILA PLANA
+  - VILA PROGRESSO
+  - Vila Ré
+  - VILA RÉ
+  - VILA REGENTE FEIJÓ
+  - VILA ROSARIA
+  - VILA SANTA CLARA
+  - VILA SANTA CRUZ
+  - Vila Santa Isabel
+  - VILA SANTANA
+  - VILA SÃO SILVESTRE
+  - Vila Silva Teles
+  - VILA SÍLVIA
+  - Vila Talarico
+  - VILA TOLSTÓI
+  - VILA ZÉFIRA
+  - VILA ZÉPHYR
+
+ZONA SUL: 91 bairros
+  - Alto da Boa Vista
+  - Barragem
+  - BELA MARAJOARA
+  - Brooklin Paulista
+  - Campo Grande
+  - Capela
+  - Centro Empresarial
+  - Chácara Flora
+  - CHACARA INGLESA
+  - CHACARA KLABIN
+  - CHACARA SANTA MARIA
+  - CHACARA SÃO JOÃO
+  - Embura
+  - Engenho Velho
+  - ESTÂNCIA MIRIM
+  - Grajaú
+  - Guarapiranga
+  - Hileópolis
+  - IBERAPUERA
+  - Interlagos
+  - Jardim Amália
+  - JARDIM ANA ROSA
+  - Jardim Ângela
+  - JARDIM CARAVELAS
+  - JARDIM CELESTE
+  - JARDIM DOS LAGOS
+  - Jardim Edda
+  - Jardim Edi
+  - Jardim Glória
+  - JARDIM HELGA
+  - JARDIM INGÁ
+  - JARDIM ITAPURA
+  - JARDIM LEME
+  - JARDIM LEONIDAS MOREIRA
+  - JARDIM MACEDÔNIA
+  - JARDIM MARIA DUARTE
+  - JARDIM MARIA ESTELA
+  - JARDIM MIRANTE
+  - JARDIM MONTE AZUL
+  - JARDIM PALMARES
+  - JARDIM PATENTE
+  - JARDIM ROSCHEL
+  - JARDIM SANTA CRUZ
+  - Jardim São Luis
+  - JARDIM SONIA INGÁ
+  - JARDIM THOMAS
+  - JARDIM UMARIZAL
+  - JARDIM VERGUEIRO
+  - Marsilac
+  - M'Boi Mirim
+  - Moema
+  - MOINHO VELHO
+  - NOVA ALEXANDRIA
+  - PARAÍSO
+  - PARQUE ARARIBA
+  - Parque Cocaia
+  - PARQUE ESMERALDA
+  - PARQUE FONGARO
+  - Parque Grajaú
+  - Parque Independência
+  - PARQUE REBOUÇAS
+  - Piraporinha
+  - Planalto Paulista
+  - Sacomã
+  - São Francisco
+  - São João
+  - São João Clímaco
+  - Socorro
+  - Valo Velho
+  - VARGEM GRANDE
+  - Veleiros
+  - Vila Carioca
+  - VILA DA SAÚDE
+  - Vila das Mercês
+  - VILA FIRMIANO PINTO
+  - Vila Guaraní
+  - VILA GUMERCINDO
+  - VILA ISA
+  - Vila Joaniza
+  - VILA LÚCIA
+  - Vila Mercês
+  - Vila Moinho Velho
+  - VILA MOINHO VELHO
+  - VILA MORUMBI
+  - VILA NATÁLIA
+  - VILA PREL
+  - VILA SANTA CATARINA
+  - VILA SÃO JOSÉ
+  - VILA SOFIA
+  - Vila Sta Catarina
+  - VILA VERA
+
+ZONA NORTE: 75 bairros
+  - Alto de Santana
+  - América
+  - Anhanguera
+  - Anhembi
+  - Barro Branco
+  - Cachoeirinha
+  - Cantareira
+  - Carandiru
+  - CHORA MENINO
+  - CITY AMÉRICA
+  - Corisco
+  - Furnas
+  - Guapira
+  - Horto Florestal
+  - Itaberaba
+  - Jardim Anhanguera
+  - JARDIM AURORA
+  - Jardim
+  - Jardim Dayse
+  - JARDIM FRANÇA
+  - JARDIM GUAPIRA
+  - JARDIM IRIS
+  - Jardim Japão
+  - JARDIM JARAGUÁ
+  - JARDIM KIOTO
+  - JARDIM PARAÍSO
+  - Jardim Peri Peri
+  - JARDIM RECANTO VERDE
+  - Jardim São Bento
+  - Jardim Tremembé
+  - Jardim Vista Alegre
+  - Lausane Paulista
+  - Lauzane
+  - LAUZANE PAULISTA
+  - LOTEAMENTO CITY JARAGUÁ
+  - LOTEAMENTO VISTA VERDE
+  - Morro Grande
+  - PARQUE ANHEMBI
+  - PARQUE MANDAQUI
+  - Parque Peruche
+  - Parque Vitória
+  - PEDRA BRANCA
+  - Perus
+  - Piqueri
+  - SANTA TEREZINHA
+  - São Domingos
+  - VILA ALBERTINA
+  - VILA AURORA
+  - Vila Cachoeira
+  - Vila Clarice
+  - VILA CONSTANÇA
+  - VILA DOM PEDRO II
+  - VILA EDE
+  - Vila Edi
+  - Vila Guilherme
+  - Vila Gustavo
+  - VILA JOÃO BATISTA
+  - Vila Mangalot
+  - Vila Maria
+  - Vila Maria Baixa
+  - VILA MAZZEI
+  - Vila Medeiros
+  - VILA NINA
+  - VILA NOVA PARADA
+  - VILA PENTEADO
+  - VILA PIRITUBA
+  - VILA PRIMAVERA
+  - Vila Rica
+  - Vila Sabrina
+  - VILA SANTA MARIA
+  - VILA SANTA TERESINHA
+  - VILA SANTOS
+  - VILA SIQUEIRA
+  - Vila Zatt
+  - Vista Alegre
+
+ZONA CENTRAL: 12 bairros
+  - Anhangabaú
+  - Glicério
+  - Jardim da Glória
+  - LARGO DA MISERICÓRDIA
+  - Luz
+  - Mercado
+  - Pacaembú
+  - Parque Dom Pedro I
+  - Ponte Pequena
+  - Sé Bela Vista
+  - VILA BELA VISTA
+  - VILA INGLESA
+
+ZONA OESTE: 50 bairros
+  - Caxingui
+  - Ceasa
+  - CHACARA MARIA TRINDADE
+  - Educandário
+  - FAZENDA MORUMBI
+  - Ferreira
+  - Jardim Bonfiglioli
+  - JARDIM COLOMBO
+  - Jardim D´Abril
+  - JARDIM DAS VERTENTES
+  - JARDIM ESMERALDA
+  - JARDIM ESTER YOLANDA
+  - JARDIM GILDA MARIA
+  - Jardim Leonor
+  - JARDIM LEOPOLDINA
+  - JARDIM LONDRINA
+  - JARDIM PARQUE MORUMBI
+  - JARDIM SANTO ELIAS
+  - JARDIM SARAH
+  - Jardim Vera Cruz
+  - JARDIM VITÓRIA RÉGIA
+  - Jardins
+  - Lapa de Baixo
+  - PACAEMBU
+  - PAINEIRAS DO MORUMBI
+  - PARQUE ANHANGUERA
+  - PARQUE CISPER
+  - Parque Continental
+  - PARQUE DA LAPA
+  - PARQUE DAS FLORES
+  - PARQUE NAÇÕES UNIDAS
+  - Paulista
+  - Perus
+  - Raposo Tavares
+  - Real Parque
+  - Sumaré
+  - Vila Anastácia
+  - VILA BRASILINA
+  - VILA BUENOS AIRES
+  - VILA GUEDES
+  - Vila Hamburguesa
+  - Vila Jaguara
+  - VILA LAJEADO
+  - VILA MORSE
+  - VILA PIAUÍ
+  - Vila Pirajussara
+  - Vila Pompeia
+  - Vila Remédios
+  - Vila Romana
+  - VILA SUZANA
+

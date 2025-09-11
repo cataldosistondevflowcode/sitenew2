@@ -38,21 +38,11 @@ export const NewsletterForm: React.FC = () => {
         return;
       }
 
-      // Envia dados diretamente para a API do RDStation
-      const formData = new FormData();
-      formData.append('name', name);
-      formData.append('email', email);
-      formData.append('personal_phone', phone);
-      formData.append('token_rdstation', 'de34ae318d19588a9ae8');
-      formData.append('identificador', 'newsletter-site-de34ae318d19588a9ae8');
-
-      const response = await fetch('https://api.rd.services/platform/conversions', {
-        method: 'POST',
-        body: formData,
-        mode: 'no-cors' // Necessário para CORS
-      });
-
-      // Como usamos no-cors, não podemos verificar a resposta, então assumimos sucesso
+      // NOTA: API direta removida para evitar duplicidade
+      // Este componente não deve enviar dados para RD Station diretamente
+      // O RD Station será gerenciado pelos componentes que usam shortcode3
+      
+      // Simula sucesso apenas para feedback visual
       setSubmitMessage("Obrigado! Sua inscrição foi realizada com sucesso!");
       
       // NOTA: Analytics tracking removido para evitar duplicidade com RD Station
@@ -82,25 +72,8 @@ export const NewsletterForm: React.FC = () => {
         const email = emailRef.current?.value || "";
         const phone = phoneRef.current?.value || "";
         
-        const inputs = [
-          { name: 'name', value: name },
-          { name: 'email', value: email },
-          { name: 'personal_phone', value: phone },
-          { name: 'token_rdstation', value: 'de34ae318d19588a9ae8' },
-          { name: 'identificador', value: 'newsletter-site-de34ae318d19588a9ae8' }
-        ];
-        
-        inputs.forEach(({ name, value }) => {
-          const input = document.createElement('input');
-          input.type = 'hidden';
-          input.name = name;
-          input.value = value;
-          form.appendChild(input);
-        });
-        
-        document.body.appendChild(form);
-        form.submit();
-        document.body.removeChild(form);
+        // Fallback removido - não deve enviar dados para RD Station
+        console.log('NewsletterForm: Fallback removido para evitar duplicidade');
         
         setSubmitMessage("Obrigado! Sua inscrição foi realizada com sucesso!");
         

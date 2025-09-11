@@ -70,6 +70,7 @@ const AdminCreateSchedule = () => {
   const [selectedIndividualLeads, setSelectedIndividualLeads] = useState<number[]>([]);
   const [loading, setLoading] = useState(false);
   const [pdfError, setPdfError] = useState<string>(''); // Estado para erro de validação do PDF
+  const [searchTerm, setSearchTerm] = useState<string>(''); // Estado para busca de leads
 
   useEffect(() => {
     fetchGroups();
@@ -155,11 +156,25 @@ const AdminCreateSchedule = () => {
   };
 
   const toggleAllLeads = () => {
-    if (selectedIndividualLeads.length === allLeads.length) {
+    const filteredLeads = getFilteredLeads();
+    if (selectedIndividualLeads.length === filteredLeads.length) {
       setSelectedIndividualLeads([]);
     } else {
-      setSelectedIndividualLeads(allLeads.map(lead => lead.id));
+      setSelectedIndividualLeads(filteredLeads.map(lead => lead.id));
     }
+  };
+
+  // Função para filtrar leads por nome ou email
+  const getFilteredLeads = () => {
+    if (!searchTerm.trim()) {
+      return allLeads;
+    }
+    
+    const term = searchTerm.toLowerCase();
+    return allLeads.filter(lead => 
+      (lead.name && lead.name.toLowerCase().includes(term)) ||
+      (lead.email && lead.email.toLowerCase().includes(term))
+    );
   };
 
   const handleSubmit = async () => {
@@ -547,32 +562,49 @@ const AdminCreateSchedule = () => {
                     onClick={toggleAllLeads}
                     className="text-xs"
                   >
-                    {selectedIndividualLeads.length === allLeads.length ? 'Deselecionar Todos' : 'Selecionar Todos'}
+                    {selectedIndividualLeads.length === getFilteredLeads().length ? 'Deselecionar Todos' : 'Selecionar Todos'}
                   </Button>
                 </div>
                 
+                {/* Campo de busca */}
+                <div className="mb-3">
+                  <Input
+                    type="text"
+                    placeholder="Buscar por nome ou email..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full"
+                  />
+                </div>
+                
                 <div className="max-h-60 overflow-y-auto border rounded-lg p-2 space-y-2">
-                  {allLeads.map((lead) => (
-                    <div key={lead.id} className="flex items-center space-x-2 p-2 hover:bg-gray-50 rounded">
-                      <Checkbox
-                        id={`lead-${lead.id}`}
-                        checked={selectedIndividualLeads.includes(lead.id)}
-                        onCheckedChange={() => handleLeadToggle(lead.id)}
-                      />
-                      <div className="flex-1">
-                        <div className="font-medium">{lead.name || 'Sem nome'}</div>
-                        <div className="text-sm text-gray-500">
-                          {lead.email && <span>{lead.email}</span>}
-                          {lead.phone && <span className="ml-2">{lead.phone}</span>}
-                        </div>
-                        {lead.filter_config && (
-                          <div className="text-xs text-blue-600 mt-1">
-                            Filtro: {lead.filter_config}
+                  {getFilteredLeads().length > 0 ? (
+                    getFilteredLeads().map((lead) => (
+                      <div key={lead.id} className="flex items-center space-x-2 p-2 hover:bg-gray-50 rounded">
+                        <Checkbox
+                          id={`lead-${lead.id}`}
+                          checked={selectedIndividualLeads.includes(lead.id)}
+                          onCheckedChange={() => handleLeadToggle(lead.id)}
+                        />
+                        <div className="flex-1">
+                          <div className="font-medium">{lead.name || 'Sem nome'}</div>
+                          <div className="text-sm text-gray-500">
+                            {lead.email && <span>{lead.email}</span>}
+                            {lead.phone && <span className="ml-2">{lead.phone}</span>}
                           </div>
-                        )}
+                          {lead.filter_config && (
+                            <div className="text-xs text-blue-600 mt-1">
+                              Filtro: {lead.filter_config}
+                            </div>
+                          )}
+                        </div>
                       </div>
+                    ))
+                  ) : (
+                    <div className="text-center py-4 text-gray-500">
+                      {searchTerm ? 'Nenhum lead encontrado com o termo de busca.' : 'Nenhum lead disponível.'}
                     </div>
-                  ))}
+                  )}
                 </div>
                 
                 {selectedIndividualLeads.length > 0 && (

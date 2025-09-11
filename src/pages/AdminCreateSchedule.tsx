@@ -61,8 +61,7 @@ const AdminCreateSchedule = () => {
     whatsappMessage: '',
     emailMessage: '',
     emailSubject: '',
-    whatsappPdf: null as File | null, // ALTERADO: de imagem para PDF
-    whatsappImage: null as File | null // NOVO: adicionar imagem também
+    whatsappPdf: null as File | null // Upload de PDF para WhatsApp
   });
 
 
@@ -70,8 +69,7 @@ const AdminCreateSchedule = () => {
   const [allLeads, setAllLeads] = useState<Lead[]>([]);
   const [selectedIndividualLeads, setSelectedIndividualLeads] = useState<number[]>([]);
   const [loading, setLoading] = useState(false);
-  const [pdfError, setPdfError] = useState<string>(''); // NOVO: estado para erro de validação do PDF
-  const [imageError, setImageError] = useState<string>(''); // NOVO: estado para erro de validação da imagem
+  const [pdfError, setPdfError] = useState<string>(''); // Estado para erro de validação do PDF
 
   useEffect(() => {
     fetchGroups();
@@ -145,21 +143,6 @@ const AdminCreateSchedule = () => {
     return '';
   };
 
-  // NOVO: Função para validar arquivo de imagem
-  const validateImageFile = (file: File): string => {
-    const maxSize = 5 * 1024 * 1024; // 5MB
-    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
-    
-    if (!allowedTypes.includes(file.type)) {
-      return 'Apenas arquivos de imagem (JPG, PNG, WEBP) são permitidos.';
-    }
-    
-    if (file.size > maxSize) {
-      return 'A imagem deve ter no máximo 5MB.';
-    }
-    
-    return '';
-  };
 
 
 
@@ -192,9 +175,9 @@ const AdminCreateSchedule = () => {
         return;
       }
       
-      // Upload do arquivo (PDF ou imagem) se existir
+      // Upload do arquivo PDF se existir
       let fileUrl = null;
-      const fileToUpload = formData.whatsappPdf || formData.whatsappImage;
+      const fileToUpload = formData.whatsappPdf;
       
       if (fileToUpload) {
         try {
@@ -211,8 +194,7 @@ const AdminCreateSchedule = () => {
             fileName: fileName,
             fileSize: fileToUpload.size,
             fileType: fileToUpload.type,
-            isPdf: !!formData.whatsappPdf,
-            isImage: !!formData.whatsappImage
+            isPdf: !!formData.whatsappPdf
           });
 
           // Tentar upload simples no bucket images
@@ -345,7 +327,7 @@ const AdminCreateSchedule = () => {
         whatsapp_message: formData.whatsappMessage,
         email_message: formData.emailMessage,
         email_subject: formData.emailSubject,
-        whatsapp_pdf_url: fileUrl, // PDF ou imagem - mesmo campo
+        whatsapp_pdf_url: fileUrl, // URL do PDF
         status: 'active',
         next_send: formData.recurring ? calculateNextSend() : (formData.sendDate ? calculateOneTimeSend() : null),
         created_by: user?.email || 'admin'
@@ -756,30 +738,28 @@ const AdminCreateSchedule = () => {
                      className="mb-3"
                    />
                    
-                   {/* Upload de Imagem para WhatsApp */}
+                   {/* Upload de PDF para WhatsApp */}
                    <div className="space-y-2">
-                     <Label htmlFor="whatsapp-image">Imagem (opcional)</Label>
+                     <Label htmlFor="whatsapp-pdf">PDF (opcional)</Label>
                      <div className="flex items-center gap-3">
                        <input
                          type="file"
-                         id="whatsapp-image"
-                         accept="image/*"
+                         id="whatsapp-pdf"
+                         accept=".pdf"
                          onChange={(e) => {
                            const file = e.target.files?.[0];
                            if (file) {
                              // Limpar arquivos anteriores
                              handleInputChange('whatsappPdf', null);
-                             handleInputChange('whatsappImage', null);
                              setPdfError('');
-                             setImageError('');
                              
-                             // Validar apenas imagem
-                             const error = validateImageFile(file);
+                             // Validar PDF
+                             const error = validatePdfFile(file);
                              if (error) {
-                               setImageError(error);
+                               setPdfError(error);
                                return;
                              }
-                             handleInputChange('whatsappImage', file);
+                             handleInputChange('whatsappPdf', file);
                            }
                          }}
                          className="hidden"
@@ -787,22 +767,22 @@ const AdminCreateSchedule = () => {
                        <Button
                          type="button"
                          variant="outline"
-                         onClick={() => document.getElementById('whatsapp-image')?.click()}
+                         onClick={() => document.getElementById('whatsapp-pdf')?.click()}
                          className="flex items-center gap-2"
                        >
                          <Upload className="h-4 w-4" />
-                         Selecionar Imagem
+                         Selecionar PDF
                        </Button>
-                       {formData.whatsappImage && (
+                       {formData.whatsappPdf && (
                          <div className="flex items-center gap-2 text-sm text-green-600">
-                           <Image className="h-4 w-4" />
-                           {formData.whatsappImage.name}
+                           <FileText className="h-4 w-4" />
+                           {formData.whatsappPdf.name}
                          </div>
                        )}
                      </div>
-                     {imageError && (
+                     {pdfError && (
                        <div className="text-sm text-red-600 bg-red-50 p-2 rounded border border-red-200">
-                         {imageError}
+                         {pdfError}
                        </div>
                      )}
                    </div>
@@ -870,8 +850,8 @@ const AdminCreateSchedule = () => {
                       </Button>
                       <Button
                         onClick={handleSubmit}
-                        disabled={loading || !hasSelectedLeads || pdfError !== '' || imageError !== ''}
-                        className={`${hasSelectedLeads && pdfError === '' && imageError === '' ? 'bg-orange-600 hover:bg-orange-700' : 'bg-gray-400 cursor-not-allowed'}`}
+                        disabled={loading || !hasSelectedLeads || pdfError !== ''}
+                        className={`${hasSelectedLeads && pdfError === '' ? 'bg-orange-600 hover:bg-orange-700' : 'bg-gray-400 cursor-not-allowed'}`}
                       >
                         {loading ? 'Criando...' : 'Criar Agendamento'}
                       </Button>

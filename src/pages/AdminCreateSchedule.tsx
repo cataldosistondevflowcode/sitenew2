@@ -58,7 +58,7 @@ const AdminCreateSchedule = () => {
     sendTime: '10:00',
     recurring: true,
     endDate: '', // NOVO: data limite para desativação automática
-    whatsappMessage: '',
+    whatsappMessage: 'Olá! Somos do escritório Cataldo Siston ,especializado em leilões e trouxemos as melhores oportunidades de imóveis em leilão para você.* Clique no botão abaixo e veja agora mesmo.',
     emailMessage: '',
     emailSubject: '',
     whatsappPdf: null as File | null // Upload de PDF para WhatsApp
@@ -733,33 +733,6 @@ const AdminCreateSchedule = () => {
                  <div>
                    <Label htmlFor="whatsapp-content">Mensagem WhatsApp</Label>
                    
-                   {/* Choice Tips para WhatsApp */}
-                   <div className="flex gap-2 mb-3">
-                     <Button
-                       type="button"
-                       variant="outline"
-                       size="sm"
-                       onClick={() => {
-                         const rjMessage = "Olá! Somos do escritório Cataldo Siston ,especializado em leilões e trouxemos as melhores oportunidades de imóveis em leilão para você.* Clique no botão abaixo e veja agora mesmo.";
-                         handleInputChange('whatsappMessage', rjMessage);
-                       }}
-                       className="text-xs bg-blue-50 hover:bg-blue-100 border-blue-300 text-blue-700"
-                     >
-                       RJ
-                     </Button>
-                     <Button
-                       type="button"
-                       variant="outline"
-                       size="sm"
-                       onClick={() => {
-                         const spMessage = "Olá! Somos do escritório Cataldo Siston ,especializado em leilões e trouxemos as melhores oportunidades de imóveis em leilão para você.* Clique no botão abaixo e veja agora mesmo.";
-                         handleInputChange('whatsappMessage', spMessage);
-                       }}
-                       className="text-xs bg-green-50 hover:bg-green-100 border-green-300 text-green-700"
-                     >
-                       SP
-                     </Button>
-                   </div>
                    
                    <Textarea
                      id="whatsapp-content"

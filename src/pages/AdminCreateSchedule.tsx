@@ -708,7 +708,7 @@ const AdminCreateSchedule = () => {
                        variant="outline"
                        size="sm"
                        onClick={() => {
-                         const rjMessage = "Olá, Aqui é da Cataldo Siston escritório especializado em Leilões, Trouxemos as melhores oportunidades de Imóveis em Leilão no Rio De Janeiro para você.* Clique no botão abaixo e veja agora mesmo.";
+                         const rjMessage = "Olá! Somos do escritório Cataldo Siston ,especializado em leilões e trouxemos as melhores oportunidades de imóveis em leilão para você.* Clique no botão abaixo e veja agora mesmo.";
                          handleInputChange('whatsappMessage', rjMessage);
                        }}
                        className="text-xs bg-blue-50 hover:bg-blue-100 border-blue-300 text-blue-700"
@@ -720,7 +720,7 @@ const AdminCreateSchedule = () => {
                        variant="outline"
                        size="sm"
                        onClick={() => {
-                         const spMessage = "Olá, Aqui é da Cataldo Siston escritório especializado em Leilões, Trouxemos as melhores oportunidades de Imóveis em Leilão de São Paulo para você.* Clique no botão abaixo e veja agora mesmo.";
+                         const spMessage = "Olá! Somos do escritório Cataldo Siston ,especializado em leilões e trouxemos as melhores oportunidades de imóveis em leilão para você.* Clique no botão abaixo e veja agora mesmo.";
                          handleInputChange('whatsappMessage', spMessage);
                        }}
                        className="text-xs bg-green-50 hover:bg-green-100 border-green-300 text-green-700"

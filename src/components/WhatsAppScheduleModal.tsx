@@ -131,17 +131,16 @@ const WhatsAppScheduleModal: React.FC<WhatsAppScheduleModalProps> = ({
       
       // Verifica se já existe um script do RDStation carregado
       const existingScript = document.querySelector('script[src*="rdstation-forms"]');
-      const uniqueId = 'whatsapp-modal-shortcode3';
-      const existingContainer = document.getElementById(uniqueId);
+      const existingContainer = document.getElementById('shortcode3-e67a38fad5973ddb16a8');
       
       // Remove elementos duplicados se existirem
-      if (existingContainer && existingContainer !== containerRef.current.querySelector(`#${uniqueId}`)) {
+      if (existingContainer && existingContainer !== containerRef.current.querySelector('#shortcode3-e67a38fad5973ddb16a8')) {
         existingContainer.remove();
       }
       
-      // Código HTML e JavaScript direto do RDStation com ID único
+      // Código HTML e JavaScript direto do RDStation (mesmo ID usado em todos os outros formulários)
       const formHTML = `
-        <div role="main" id="${uniqueId}" style="display: none;"></div>
+        <div role="main" id="shortcode3-e67a38fad5973ddb16a8" style="display: none;"></div>
       `;
       
       containerRef.current.innerHTML = formHTML;
@@ -170,7 +169,7 @@ const WhatsAppScheduleModal: React.FC<WhatsAppScheduleModalProps> = ({
     setTimeout(() => {
       try {
         if (window.RDStationForms) {
-          new window.RDStationForms(uniqueId, 'UA-150032078-1').createForm();
+          new window.RDStationForms('shortcode3-e67a38fad5973ddb16a8', 'UA-150032078-1').createForm();
           console.log('RDStation Form do WhatsApp modal criado com sucesso');
           setIsFormLoaded(true);
         } else {

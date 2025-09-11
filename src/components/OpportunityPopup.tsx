@@ -35,16 +35,17 @@ const OpportunityPopup: React.FC<OpportunityPopupProps> = ({ isOpen, onClose }) 
           
           // Verifica se já existe um script do RDStation carregado
           const existingScript = document.querySelector('script[src*="rdstation-forms"]');
-          const existingContainer = document.getElementById('shortcode3-e67a38fad5973ddb16a8');
+          const uniqueId = 'opportunity-popup-shortcode3';
+          const existingContainer = document.getElementById(uniqueId);
           
           // Remove elementos duplicados se existirem
-          if (existingContainer && existingContainer !== containerRef.current.querySelector('#shortcode3-e67a38fad5973ddb16a8')) {
+          if (existingContainer && existingContainer !== containerRef.current.querySelector(`#${uniqueId}`)) {
             existingContainer.remove();
           }
           
-          // Código HTML e JavaScript direto do RDStation (MESMO ID que funciona)
+          // Código HTML e JavaScript direto do RDStation com ID único
           const formHTML = `
-            <div role="main" id="shortcode3-e67a38fad5973ddb16a8" style="display: none;"></div>
+            <div role="main" id="${uniqueId}" style="display: none;"></div>
           `;
           
           containerRef.current.innerHTML = formHTML;
@@ -73,7 +74,7 @@ const OpportunityPopup: React.FC<OpportunityPopupProps> = ({ isOpen, onClose }) 
         setTimeout(() => {
           try {
             if (window.RDStationForms) {
-              new window.RDStationForms('shortcode3-e67a38fad5973ddb16a8', 'UA-150032078-1').createForm();
+              new window.RDStationForms(uniqueId, 'UA-150032078-1').createForm();
               console.log('RDStation Form do popup criado com sucesso');
               setIsFormLoaded(true);
             } else {
@@ -107,13 +108,14 @@ const OpportunityPopup: React.FC<OpportunityPopupProps> = ({ isOpen, onClose }) 
       }
 
       // Debug: vamos ver o que tem no container
-      const container = document.querySelector('#shortcode3-e67a38fad5973ddb16a8');
+      const uniqueId = 'opportunity-popup-shortcode3';
+      const container = document.querySelector(`#${uniqueId}`);
       console.log('Container do popup encontrado:', container);
       console.log('HTML do container do popup:', container?.innerHTML);
 
       // Procura o formulário RDStation de diferentes formas
       const rdForm = container?.querySelector('form') || 
-                     document.querySelector('#shortcode3-e67a38fad5973ddb16a8 form') ||
+                     document.querySelector(`#${uniqueId} form`) ||
                      document.querySelector('form[data-rd-form]');
       
       console.log('Formulário do popup encontrado:', rdForm);

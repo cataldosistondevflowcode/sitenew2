@@ -15,10 +15,7 @@ export const NewsletterForm: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [submitMessage, setSubmitMessage] = React.useState<string>("");
   
-  // Analytics tracking (temporariamente desabilitado)
-  const trackContact = (propertyId: any, name: any, email: any, phone: any, message: any, method: any) => {
-    console.log('Newsletter trackContact:', { propertyId, name, email, phone, message, method });
-  };
+  // Analytics tracking removido para evitar duplicidade com RD Station
 
   const handleSubmit = async (e: React.FormEvent, isMobile: boolean = false) => {
     e.preventDefault();
@@ -58,15 +55,8 @@ export const NewsletterForm: React.FC = () => {
       // Como usamos no-cors, não podemos verificar a resposta, então assumimos sucesso
       setSubmitMessage("Obrigado! Sua inscrição foi realizada com sucesso!");
       
-      // Registrar o lead no analytics
-      trackContact(
-        null, // property_id (null para newsletter geral)
-        name,
-        email,
-        phone,
-        'Inscrição na newsletter',
-        'email'
-      );
+      // NOTA: Analytics tracking removido para evitar duplicidade com RD Station
+      // O RD Station já registra a conversão automaticamente via API
       
       // Limpa os campos
       if (nameRef.current) nameRef.current.value = "";

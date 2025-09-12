@@ -17,7 +17,8 @@ import {
   MessageCircle,
   Trash2,
   Power,
-  PowerOff
+  PowerOff,
+  History
 } from 'lucide-react';
 import {
   Tooltip,
@@ -27,6 +28,7 @@ import {
 } from "@/components/ui/tooltip";
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
+import { ScheduleHistoryModal } from '@/components/admin/ScheduleHistoryModal';
 
 interface Schedule {
   id: number;
@@ -50,6 +52,9 @@ const AdminSchedules = () => {
   const navigate = useNavigate();
   const [schedules, setSchedules] = useState<Schedule[]>([]);
   const [loading, setLoading] = useState(true);
+  const [historyModalOpen, setHistoryModalOpen] = useState(false);
+  const [selectedScheduleId, setSelectedScheduleId] = useState<number | null>(null);
+  const [selectedScheduleName, setSelectedScheduleName] = useState<string>('');
 
   // Função para formatar a data do próximo envio corretamente
   const formatNextSendDate = (dateString: string) => {
@@ -199,6 +204,18 @@ const AdminSchedules = () => {
     navigate('/admin/schedules/create');
   };
 
+  const handleOpenHistory = (scheduleId: number, scheduleName: string) => {
+    setSelectedScheduleId(scheduleId);
+    setSelectedScheduleName(scheduleName);
+    setHistoryModalOpen(true);
+  };
+
+  const handleCloseHistory = () => {
+    setHistoryModalOpen(false);
+    setSelectedScheduleId(null);
+    setSelectedScheduleName('');
+  };
+
   const handleToggleStatus = async (scheduleId: number, currentStatus: string) => {
     try {
       const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
@@ -318,17 +335,16 @@ const AdminSchedules = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-4">
-              <div className="bg-orange-600 p-2 rounded-lg">
-                <Clock className="h-6 w-6 text-white" />
-              </div>
-              <div>
-                <h1 className="text-xl font-semibold text-gray-900">
-                  Agendamentos
-                </h1>
-                <p className="text-sm text-gray-500">
-                  Programe envios automáticos para seus grupos
-                </p>
-              </div>
+              <button 
+                onClick={() => navigate('/')}
+                className="hover:opacity-80 transition-opacity"
+              >
+                <img 
+                  src="https://imoveis.leilaodeimoveis-cataldosiston.com/logotipo_cataldo_siston.png" 
+                  alt="Cataldo Siston" 
+                  className="h-10 w-auto"
+                />
+              </button>
             </div>
             
             <div className="flex items-center space-x-3">
@@ -351,7 +367,7 @@ const AdminSchedules = () => {
                 variant="outline"
                 size="sm"
                 onClick={() => navigate('/admin/leads')}
-                className="flex items-center gap-2 border-2 font-medium bg-purple-50 hover:bg-purple-100 text-purple-700 border-purple-300 hover:border-purple-400"
+                className="flex items-center gap-2 text-gray-600 hover:text-gray-800 hover:bg-gray-50 border-gray-300"
               >
                 <Users className="h-4 w-4" />
                 <span className="hidden sm:inline">Leads</span>
@@ -363,7 +379,7 @@ const AdminSchedules = () => {
                 variant="outline"
                 size="sm"
                 onClick={handleBackToAdmin}
-                className="flex items-center gap-2 border-2 font-medium bg-green-50 hover:bg-green-100 text-green-700 border-green-300 hover:border-green-400"
+                className="flex items-center gap-2 text-gray-600 hover:text-gray-800 hover:bg-gray-50 border-gray-300"
               >
                 <Settings className="h-4 w-4" />
                 <span className="hidden sm:inline">Admin</span>
@@ -373,7 +389,7 @@ const AdminSchedules = () => {
                 variant="outline"
                 size="sm"
                 onClick={handleLogout}
-                className="flex items-center gap-2 text-red-600 hover:text-red-700 hover:bg-red-50 border-red-300"
+                className="flex items-center gap-2 text-gray-600 hover:text-gray-800 hover:bg-gray-50 border-gray-300"
               >
                 <LogOut className="h-4 w-4" />
                 <span className="hidden sm:inline">Sair</span>
@@ -408,7 +424,7 @@ const AdminSchedules = () => {
           {/* Card Principal */}
           <Card>
             <CardHeader>
-              <CardTitle>Agendamentos Ativos ({schedules.length})</CardTitle>
+              <CardTitle>Ativos ({schedules.length})</CardTitle>
             </CardHeader>
             <CardContent>
               {loading ? (
@@ -492,6 +508,25 @@ const AdminSchedules = () => {
                           </td>
                           <td className="p-3">
                             <div className="flex items-center gap-2">
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Button 
+                                      variant="ghost" 
+                                      size="sm"
+                                      onClick={() => handleOpenHistory(schedule.id, schedule.name)}
+                                      title="Histórico de Envios"
+                                      className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                                    >
+                                      <History className="h-4 w-4" />
+                                    </Button>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p>Ver histórico de envios</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+                              
                               <Button 
                                 variant="ghost" 
                                 size="sm"
@@ -539,6 +574,16 @@ const AdminSchedules = () => {
           </Card>
         </div>
       </main>
+
+      {/* Modal de Histórico */}
+      {selectedScheduleId && (
+        <ScheduleHistoryModal
+          isOpen={historyModalOpen}
+          onClose={handleCloseHistory}
+          scheduleId={selectedScheduleId}
+          scheduleName={selectedScheduleName}
+        />
+      )}
     </div>
   );
 };

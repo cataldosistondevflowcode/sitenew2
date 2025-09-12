@@ -196,15 +196,27 @@ async function processUnifiedSchedule(supabaseClient: any, schedule: any) {
 
     let emailsSent = 0
     let whatsappSent = 0
+    let emailErrors: string[] = []
+    let whatsappErrors: string[] = []
 
     // Processar emails se necessário
     if (schedule.method === 'email' || schedule.method === 'both') {
-      emailsSent = await processEmails(supabaseClient, schedule, leads)
+      try {
+        emailsSent = await processEmails(supabaseClient, schedule, leads)
+      } catch (error) {
+        emailErrors.push(`Erro no envio de emails: ${error.message}`)
+        console.error(`   ❌ Erro no processamento de emails:`, error)
+      }
     }
 
     // Processar WhatsApp se necessário
     if (schedule.method === 'whatsapp' || schedule.method === 'both') {
-      whatsappSent = await processWhatsApp(supabaseClient, schedule, leads)
+      try {
+        whatsappSent = await processWhatsApp(supabaseClient, schedule, leads)
+      } catch (error) {
+        whatsappErrors.push(`Erro no envio de WhatsApp: ${error.message}`)
+        console.error(`   ❌ Erro no processamento de WhatsApp:`, error)
+      }
     }
 
     // Calcular próximo envio se for recorrente
@@ -227,6 +239,55 @@ async function processUnifiedSchedule(supabaseClient: any, schedule: any) {
       console.error('Erro ao atualizar agendamento:', updateError)
     }
 
+    // Calcular estatísticas para o log
+    const totalRecipients = leads.length
+    const totalSuccessfulSends = emailsSent + whatsappSent
+    const totalFailedSends = totalRecipients - totalSuccessfulSends
+    const allErrors = [...emailErrors, ...whatsappErrors]
+
+    // Determinar status do log
+    let logStatus: 'success' | 'error' | 'partial'
+    if (allErrors.length === 0 && totalFailedSends === 0) {
+      logStatus = 'success'
+    } else if (totalSuccessfulSends === 0) {
+      logStatus = 'error'
+    } else {
+      logStatus = 'partial'
+    }
+
+    // Registrar log no banco de dados
+    try {
+      const { error: logError } = await supabaseClient
+        .from('schedule_logs')
+        .insert({
+          schedule_id: schedule.id,
+          status: logStatus,
+          total_recipients: totalRecipients,
+          successful_sends: totalSuccessfulSends,
+          failed_sends: totalFailedSends,
+          method: schedule.method,
+          error_message: allErrors.length > 0 ? allErrors.join('; ') : null,
+          execution_details: {
+            execution_time_ms: Date.now() - startTime,
+            schedule_name: schedule.name,
+            emails_sent: emailsSent,
+            whatsapp_sent: whatsappSent,
+            email_errors: emailErrors,
+            whatsapp_errors: whatsappErrors,
+            leads_processed: leads.length
+          },
+          execution_date: new Date().toISOString()
+        })
+
+      if (logError) {
+        console.error('❌ Erro ao registrar log:', logError)
+      } else {
+        console.log(`   📊 Log registrado: ${logStatus} - ${totalSuccessfulSends}/${totalRecipients} envios`)
+      }
+    } catch (logErr) {
+      console.error('❌ Erro inesperado ao registrar log:', logErr)
+    }
+
     const executionTime = Date.now() - startTime
 
     return {
@@ -242,6 +303,35 @@ async function processUnifiedSchedule(supabaseClient: any, schedule: any) {
   } catch (error) {
     const executionTime = Date.now() - startTime
     console.error(`❌ Erro ao processar agendamento ${schedule.name}:`, error)
+    
+    // Registrar log de erro
+    try {
+      const { error: logError } = await supabaseClient
+        .from('schedule_logs')
+        .insert({
+          schedule_id: schedule.id,
+          status: 'error',
+          total_recipients: 0,
+          successful_sends: 0,
+          failed_sends: 0,
+          method: schedule.method,
+          error_message: error.message,
+          execution_details: {
+            execution_time_ms: executionTime,
+            schedule_name: schedule.name,
+            error_type: 'general_error'
+          },
+          execution_date: new Date().toISOString()
+        })
+
+      if (logError) {
+        console.error('❌ Erro ao registrar log de erro:', logError)
+      } else {
+        console.log(`   📊 Log de erro registrado para ${schedule.name}`)
+      }
+    } catch (logErr) {
+      console.error('❌ Erro inesperado ao registrar log de erro:', logErr)
+    }
     
     return {
       schedule_id: schedule.id,

@@ -191,17 +191,16 @@ const AdminGroups = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-4">
-              <div className="bg-blue-600 p-2 rounded-lg">
-                <Users className="h-6 w-6 text-white" />
-              </div>
-              <div>
-                <h1 className="text-xl font-semibold text-gray-900">
-                  Gerenciar Grupos
-                </h1>
-                <p className="text-sm text-gray-500">
-                  Organize seus leads em grupos
-                </p>
-              </div>
+              <button 
+                onClick={() => navigate('/')}
+                className="hover:opacity-80 transition-opacity"
+              >
+                <img 
+                  src="https://imoveis.leilaodeimoveis-cataldosiston.com/logotipo_cataldo_siston.png" 
+                  alt="Cataldo Siston" 
+                  className="h-10 w-auto"
+                />
+              </button>
             </div>
             
             <div className="flex items-center space-x-3">
@@ -224,7 +223,7 @@ const AdminGroups = () => {
                 variant="outline"
                 size="sm"
                 onClick={() => navigate('/admin/leads')}
-                className="flex items-center gap-2 border-2 font-medium bg-purple-50 hover:bg-purple-100 text-purple-700 border-purple-300 hover:border-purple-400"
+                className="flex items-center gap-2 text-gray-600 hover:text-gray-800 hover:bg-gray-50 border-gray-300"
               >
                 <Users className="h-4 w-4" />
                 <span className="hidden sm:inline">Leads</span>
@@ -234,7 +233,7 @@ const AdminGroups = () => {
                 variant="outline"
                 size="sm"
                 onClick={() => navigate('/admin/schedules')}
-                className="flex items-center gap-2 border-2 font-medium bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-300 hover:border-blue-400"
+                className="flex items-center gap-2 text-gray-600 hover:text-gray-800 hover:bg-gray-50 border-gray-300"
               >
                 <Calendar className="h-4 w-4" />
                 <span className="hidden sm:inline">Agendamentos</span>
@@ -244,7 +243,7 @@ const AdminGroups = () => {
                 variant="outline"
                 size="sm"
                 onClick={() => navigate('/admin/marketing')}
-                className="flex items-center gap-2 border-2 font-medium bg-orange-50 hover:bg-orange-100 text-orange-700 border-orange-300 hover:border-orange-400"
+                className="flex items-center gap-2 text-gray-600 hover:text-gray-800 hover:bg-gray-50 border-gray-300"
               >
                 <FileText className="h-4 w-4" />
                 <span className="hidden sm:inline">Marketing</span>
@@ -254,7 +253,7 @@ const AdminGroups = () => {
                 variant="outline"
                 size="sm"
                 onClick={handleBackToAdmin}
-                className="flex items-center gap-2 border-2 font-medium bg-green-50 hover:bg-green-100 text-green-700 border-green-300 hover:border-green-400"
+                className="flex items-center gap-2 text-gray-600 hover:text-gray-800 hover:bg-gray-50 border-gray-300"
               >
                 <Settings className="h-4 w-4" />
                 <span className="hidden sm:inline">Admin</span>

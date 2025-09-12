@@ -28,17 +28,16 @@ const AdminEmailLists = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-4">
-              <div className="bg-blue-600 p-2 rounded-lg">
-                <Mail className="h-6 w-6 text-white" />
-              </div>
-              <div>
-                <h1 className="text-xl font-semibold text-gray-900">
-                  Listas de Emails
-                </h1>
-                <p className="text-sm text-gray-500">
-                  Leilão RJ Imóveis - Gestão de Listas de Marketing
-                </p>
-              </div>
+              <button 
+                onClick={() => navigate('/')}
+                className="hover:opacity-80 transition-opacity"
+              >
+                <img 
+                  src="https://imoveis.leilaodeimoveis-cataldosiston.com/logotipo_cataldo_siston.png" 
+                  alt="Cataldo Siston" 
+                  className="h-10 w-auto"
+                />
+              </button>
             </div>
             
             <div className="flex items-center space-x-3">
@@ -61,7 +60,7 @@ const AdminEmailLists = () => {
                 variant="outline"
                 size="sm"
                 onClick={handleBackToMarketing}
-                className="flex items-center gap-2 text-blue-600 hover:text-blue-700 hover:bg-blue-50 border-blue-300"
+                className="flex items-center gap-2 text-gray-600 hover:text-gray-800 hover:bg-gray-50 border-gray-300"
               >
                 <ArrowLeft className="h-4 w-4" />
                 <span className="hidden sm:inline">Marketing</span>
@@ -71,7 +70,7 @@ const AdminEmailLists = () => {
                 variant="outline"
                 size="sm"
                 onClick={handleBackToAdmin}
-                className="flex items-center gap-2 border-2 font-medium bg-green-50 hover:bg-green-100 text-green-700 border-green-300 hover:border-green-400"
+                className="flex items-center gap-2 text-gray-600 hover:text-gray-800 hover:bg-gray-50 border-gray-300"
               >
                 <Settings className="h-4 w-4" />
                 <span className="hidden sm:inline">Admin</span>
@@ -81,7 +80,7 @@ const AdminEmailLists = () => {
                 variant="outline"
                 size="sm"
                 onClick={handleLogout}
-                className="flex items-center gap-2 text-red-600 hover:text-red-700 hover:bg-red-50 border-red-300"
+                className="flex items-center gap-2 text-gray-600 hover:text-gray-800 hover:bg-gray-50 border-gray-300"
               >
                 <LogOut className="h-4 w-4" />
                 <span className="hidden sm:inline">Sair</span>

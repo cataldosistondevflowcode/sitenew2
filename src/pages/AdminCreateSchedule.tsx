@@ -456,17 +456,16 @@ const AdminCreateSchedule = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-4">
-              <div className="bg-orange-600 p-2 rounded-lg">
-                <Clock className="h-6 w-6 text-white" />
-              </div>
-              <div>
-                <h1 className="text-xl font-semibold text-gray-900">
-                  Criar Novo Agendamento
-                </h1>
-                <p className="text-sm text-gray-500">
-                  Configure um agendamento automático para enviar imóveis para um grupo específico.
-                </p>
-              </div>
+              <button 
+                onClick={() => navigate('/')}
+                className="hover:opacity-80 transition-opacity"
+              >
+                <img 
+                  src="https://imoveis.leilaodeimoveis-cataldosiston.com/logotipo_cataldo_siston.png" 
+                  alt="Cataldo Siston" 
+                  className="h-10 w-auto"
+                />
+              </button>
             </div>
             
             <div className="flex items-center space-x-3">
@@ -489,7 +488,7 @@ const AdminCreateSchedule = () => {
                 variant="outline"
                 size="sm"
                 onClick={() => navigate('/admin/leads')}
-                className="flex items-center gap-2 border-2 font-medium bg-purple-50 hover:bg-purple-100 text-purple-700 border-purple-300 hover:border-purple-400"
+                className="flex items-center gap-2 text-gray-600 hover:text-gray-800 hover:bg-gray-50 border-gray-300"
               >
                 <Users className="h-4 w-4" />
                 <span className="hidden sm:inline">Leads</span>
@@ -499,7 +498,7 @@ const AdminCreateSchedule = () => {
                 variant="outline"
                 size="sm"
                 onClick={handleBackToAdmin}
-                className="flex items-center gap-2 border-2 font-medium bg-green-50 hover:bg-green-100 text-green-700 border-green-300 hover:border-green-400"
+                className="flex items-center gap-2 text-gray-600 hover:text-gray-800 hover:bg-gray-50 border-gray-300"
               >
                 <Settings className="h-4 w-4" />
                 <span className="hidden sm:inline">Admin</span>
@@ -509,7 +508,7 @@ const AdminCreateSchedule = () => {
                 variant="outline"
                 size="sm"
                 onClick={handleLogout}
-                className="flex items-center gap-2 text-red-600 hover:text-red-700 hover:bg-red-50 border-red-300"
+                className="flex items-center gap-2 text-gray-600 hover:text-gray-800 hover:bg-gray-50 border-gray-300"
               >
                 <LogOut className="h-4 w-4" />
                 <span className="hidden sm:inline">Sair</span>
@@ -661,7 +660,6 @@ const AdminCreateSchedule = () => {
                        className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
                      />
                      <div className="flex items-center gap-2">
-                       <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
                        <span className="font-medium text-gray-900">Envio Recorrente</span>
                      </div>
                    </div>
@@ -676,7 +674,6 @@ const AdminCreateSchedule = () => {
                        className="w-4 h-4 text-orange-600 border-gray-300 focus:ring-orange-500"
                      />
                      <div className="flex items-center gap-2">
-                       <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
                        <span className="font-medium text-gray-900">Envio Pontual</span>
                      </div>
                    </div>

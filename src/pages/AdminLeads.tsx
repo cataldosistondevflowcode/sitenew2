@@ -430,17 +430,16 @@ ${urlFiltroIndex === -1 ? '❌ URL do Filtro' : '✅ URL do Filtro'}`);
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-4">
-              <div className="bg-purple-600 p-2 rounded-lg">
-                <Users className="h-6 w-6 text-white" />
-              </div>
-              <div>
-                <h1 className="text-xl font-semibold text-gray-900">
-                  Lista de Leads
-                </h1>
-                <p className="text-sm text-gray-500">
-                  Gerencie seus leads e contatos
-                </p>
-              </div>
+              <button 
+                onClick={() => navigate('/')}
+                className="hover:opacity-80 transition-opacity"
+              >
+                <img 
+                  src="https://imoveis.leilaodeimoveis-cataldosiston.com/logotipo_cataldo_siston.png" 
+                  alt="Cataldo Siston" 
+                  className="h-10 w-auto"
+                />
+              </button>
             </div>
             
             <div className="flex items-center space-x-3">
@@ -463,7 +462,7 @@ ${urlFiltroIndex === -1 ? '❌ URL do Filtro' : '✅ URL do Filtro'}`);
                 variant="outline"
                 size="sm"
                 onClick={() => navigate('/admin/schedules')}
-                className="flex items-center gap-2 border-2 font-medium bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-300 hover:border-blue-400"
+                className="flex items-center gap-2 text-gray-600 hover:text-gray-800 hover:bg-gray-50 border-gray-300"
               >
                 <Calendar className="h-4 w-4" />
                 <span className="hidden sm:inline">Agendamentos</span>
@@ -473,7 +472,7 @@ ${urlFiltroIndex === -1 ? '❌ URL do Filtro' : '✅ URL do Filtro'}`);
                 variant="outline"
                 size="sm"
                 onClick={handleBackToAdmin}
-                className="flex items-center gap-2 border-2 font-medium bg-green-50 hover:bg-green-100 text-green-700 border-green-300 hover:border-green-400"
+                className="flex items-center gap-2 text-gray-600 hover:text-gray-800 hover:bg-gray-50 border-gray-300"
               >
                 <Settings className="h-4 w-4" />
                 <span className="hidden sm:inline">Admin</span>
@@ -483,7 +482,7 @@ ${urlFiltroIndex === -1 ? '❌ URL do Filtro' : '✅ URL do Filtro'}`);
                 variant="outline"
                 size="sm"
                 onClick={handleLogout}
-                className="flex items-center gap-2 text-red-600 hover:text-red-700 hover:bg-red-50 border-red-300"
+                className="flex items-center gap-2 text-gray-600 hover:text-gray-800 hover:bg-gray-50 border-gray-300"
               >
                 <LogOut className="h-4 w-4" />
                 <span className="hidden sm:inline">Sair</span>
@@ -530,7 +529,7 @@ ${urlFiltroIndex === -1 ? '❌ URL do Filtro' : '✅ URL do Filtro'}`);
           <Card>
             <CardHeader>
               <div className="flex justify-between items-center">
-                <CardTitle>Lista de Leads</CardTitle>
+                <CardTitle></CardTitle>
                 <div className="flex items-center space-x-4">
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />

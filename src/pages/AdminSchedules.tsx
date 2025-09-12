@@ -61,7 +61,7 @@ const AdminSchedules = () => {
       // Verificar se a data é válida
       if (isNaN(date.getTime())) {
         console.error('Data inválida:', dateString);
-        return 'Data inválida';
+        return 'Envio realizado';
       }
       
       // Formatar sem conversão de timezone - usar a data como está
@@ -76,7 +76,7 @@ const AdminSchedules = () => {
       return date.toLocaleString('pt-BR', options);
     } catch (error) {
       console.error('Erro ao formatar data:', error, 'String:', dateString);
-      return 'Erro na data';
+      return 'Envio realizado';
     }
   };
 

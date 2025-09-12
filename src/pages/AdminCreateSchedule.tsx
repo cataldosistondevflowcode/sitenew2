@@ -61,7 +61,8 @@ const AdminCreateSchedule = () => {
     whatsappMessage: 'Olá! Somos do escritório Cataldo Siston ,especializado em leilões e trouxemos as melhores oportunidades de imóveis em leilão para você.* Clique no botão abaixo e veja agora mesmo.',
     emailMessage: '',
     emailSubject: '',
-    whatsappPdf: null as File | null // Upload de PDF para WhatsApp
+    whatsappPdf: null as File | null, // Upload de PDF para WhatsApp
+    uploadType: 'pdf' as 'pdf' | 'image' // NOVO: tipo de upload
   });
 
 
@@ -135,6 +136,22 @@ const AdminCreateSchedule = () => {
     
     if (!allowedTypes.includes(file.type)) {
       return 'Apenas arquivos PDF são permitidos.';
+    }
+    
+    if (file.size > maxSize) {
+      return 'O arquivo deve ter no máximo 10MB.';
+    }
+    
+    return '';
+  };
+
+  // NOVO: Função para validar arquivo de imagem
+  const validateImageFile = (file: File): string => {
+    const maxSize = 10 * 1024 * 1024; // 10MB
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+    
+    if (!allowedTypes.includes(file.type)) {
+      return 'Apenas arquivos de imagem (JPG, PNG, GIF, WEBP) são permitidos.';
     }
     
     if (file.size > maxSize) {
@@ -342,7 +359,8 @@ const AdminCreateSchedule = () => {
         whatsapp_message: formData.whatsappMessage,
         email_message: formData.emailMessage,
         email_subject: formData.emailSubject,
-        whatsapp_pdf_url: fileUrl, // URL do PDF
+        whatsapp_pdf_url: fileUrl, // URL do arquivo (PDF ou imagem)
+        whatsapp_file_type: formData.uploadType, // NOVO: tipo do arquivo (pdf ou image)
         status: 'active',
         next_send: formData.recurring ? calculateNextSend() : (formData.sendDate ? calculateOneTimeSend() : null),
         created_by: user?.email || 'admin'
@@ -743,14 +761,57 @@ const AdminCreateSchedule = () => {
                      className="mb-3"
                    />
                    
-                   {/* Upload de PDF para WhatsApp */}
-                   <div className="space-y-2">
-                     <Label htmlFor="whatsapp-pdf">PDF (opcional)</Label>
+                   {/* Upload de arquivo para WhatsApp */}
+                   <div className="space-y-4">
+                     <Label>Arquivo (opcional)</Label>
+                     
+                     {/* Checkbox para seleção do tipo de arquivo */}
+                     <div className="flex items-center space-x-6">
+                       <div className="flex items-center space-x-2">
+                         <input
+                           type="radio"
+                           id="upload-pdf"
+                           name="upload-type"
+                           checked={formData.uploadType === 'pdf'}
+                           onChange={() => {
+                             handleInputChange('uploadType', 'pdf');
+                             handleInputChange('whatsappPdf', null);
+                             setPdfError('');
+                           }}
+                           className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                         />
+                         <Label htmlFor="upload-pdf" className="flex items-center gap-2 cursor-pointer">
+                           <FileText className="h-4 w-4" />
+                           PDF
+                         </Label>
+                       </div>
+                       
+                       <div className="flex items-center space-x-2">
+                         <input
+                           type="radio"
+                           id="upload-image"
+                           name="upload-type"
+                           checked={formData.uploadType === 'image'}
+                           onChange={() => {
+                             handleInputChange('uploadType', 'image');
+                             handleInputChange('whatsappPdf', null);
+                             setPdfError('');
+                           }}
+                           className="w-4 h-4 text-green-600 border-gray-300 focus:ring-green-500"
+                         />
+                         <Label htmlFor="upload-image" className="flex items-center gap-2 cursor-pointer">
+                           <Image className="h-4 w-4" />
+                           Imagem
+                         </Label>
+                       </div>
+                     </div>
+                     
+                     {/* Upload do arquivo */}
                      <div className="flex items-center gap-3">
                        <input
                          type="file"
-                         id="whatsapp-pdf"
-                         accept=".pdf"
+                         id="whatsapp-file"
+                         accept={formData.uploadType === 'pdf' ? '.pdf' : '.jpg,.jpeg,.png,.gif,.webp'}
                          onChange={(e) => {
                            const file = e.target.files?.[0];
                            if (file) {
@@ -758,8 +819,11 @@ const AdminCreateSchedule = () => {
                              handleInputChange('whatsappPdf', null);
                              setPdfError('');
                              
-                             // Validar PDF
-                             const error = validatePdfFile(file);
+                             // Validar arquivo baseado no tipo selecionado
+                             const error = formData.uploadType === 'pdf' 
+                               ? validatePdfFile(file)
+                               : validateImageFile(file);
+                             
                              if (error) {
                                setPdfError(error);
                                return;
@@ -772,15 +836,19 @@ const AdminCreateSchedule = () => {
                        <Button
                          type="button"
                          variant="outline"
-                         onClick={() => document.getElementById('whatsapp-pdf')?.click()}
+                         onClick={() => document.getElementById('whatsapp-file')?.click()}
                          className="flex items-center gap-2"
                        >
                          <Upload className="h-4 w-4" />
-                         Selecionar PDF
+                         Selecionar {formData.uploadType === 'pdf' ? 'PDF' : 'Imagem'}
                        </Button>
                        {formData.whatsappPdf && (
                          <div className="flex items-center gap-2 text-sm text-green-600">
-                           <FileText className="h-4 w-4" />
+                           {formData.uploadType === 'pdf' ? (
+                             <FileText className="h-4 w-4" />
+                           ) : (
+                             <Image className="h-4 w-4" />
+                           )}
                            {formData.whatsappPdf.name}
                          </div>
                        )}

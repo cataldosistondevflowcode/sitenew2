@@ -52,26 +52,11 @@ const AdminSchedules = () => {
   const [loading, setLoading] = useState(true);
 
   // Função para formatar a data do próximo envio corretamente
-  const formatNextSendDate = (dateString: string, convertFromUTC: boolean = false) => {
+  const formatNextSendDate = (dateString: string) => {
     try {
-      console.log('=== DEBUG FORMAT ===');
-      console.log('Input:', dateString);
-      console.log('ConvertFromUTC:', convertFromUTC);
+      if (!dateString) return 'N/A';
       
-      let date: Date;
-      
-      // Se a string não tem timezone, adicionar UTC
-      if (dateString && !dateString.includes('+') && !dateString.includes('Z')) {
-        date = new Date(dateString + '+00:00');
-        console.log('Adicionou +00:00:', dateString + '+00:00');
-      } else {
-        date = new Date(dateString);
-        console.log('Usou string original:', dateString);
-      }
-      
-      console.log('Date object:', date);
-      console.log('Date ISO:', date.toISOString());
-      console.log('Date local:', date.toLocaleString());
+      const date = new Date(dateString);
       
       // Verificar se a data é válida
       if (isNaN(date.getTime())) {
@@ -79,7 +64,7 @@ const AdminSchedules = () => {
         return 'Data inválida';
       }
       
-      // Formatar com ou sem conversão de timezone
+      // Formatar sem conversão de timezone - usar a data como está
       const options: Intl.DateTimeFormatOptions = {
         day: '2-digit',
         month: '2-digit',
@@ -88,19 +73,7 @@ const AdminSchedules = () => {
         minute: '2-digit'
       };
       
-      // Se precisa converter de UTC para horário brasileiro
-      if (convertFromUTC) {
-        options.timeZone = 'America/Sao_Paulo';
-        console.log('Aplicando timezone America/Sao_Paulo');
-      } else {
-        console.log('Sem timezone - usando padrão do sistema');
-      }
-      
-      const result = date.toLocaleString('pt-BR', options);
-      console.log('Resultado final:', result);
-      console.log('=== FIM DEBUG ===');
-      
-      return result;
+      return date.toLocaleString('pt-BR', options);
     } catch (error) {
       console.error('Erro ao formatar data:', error, 'String:', dateString);
       return 'Erro na data';
@@ -193,7 +166,7 @@ const AdminSchedules = () => {
             properties: [], // TODO: Buscar propriedades relacionadas
             method: schedule.method,
             frequency: schedule.frequency,
-            next_send: schedule.next_send ? formatNextSendDate(schedule.next_send) : 'Não agendado',
+            next_send: schedule.next_send || 'Não agendado',
             status: schedule.status,
             leads: leads,
             leads_count: leadsCount
@@ -506,10 +479,10 @@ const AdminSchedules = () => {
                           </td>
                           <td className="p-3">
                             <div className="text-sm text-gray-600">
-                              {schedule.next_send 
-                                ? formatNextSendDate(schedule.next_send, false) // false = sem conversão para next_send
-                                : (!schedule.is_recurring && schedule.send_date && schedule.send_time
-                                    ? formatNextSendDate(`${schedule.send_date}T${schedule.send_time}`, false) // false = sem conversão
+                              {schedule.frequency === 'Pontual' 
+                                ? 'Não terá próximo'
+                                : (schedule.next_send 
+                                    ? formatNextSendDate(schedule.next_send)
                                     : 'N/A')
                               }
                             </div>

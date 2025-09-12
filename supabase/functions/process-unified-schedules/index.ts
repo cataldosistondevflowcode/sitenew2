@@ -417,11 +417,16 @@ async function processWhatsApp(supabaseClient: any, schedule: any, leads: any[])
     }
   }
 
-  // Adicionar URL da imagem se existir
-  let imageUrl = schedule.whatsapp_image_url || null
+  // Adicionar URL do arquivo (PDF ou imagem) se existir
+  let fileUrl = schedule.whatsapp_pdf_url || null
+  const fileType = schedule.whatsapp_file_type || 'pdf'
 
-  // Determinar webhook baseado no tipo (assumindo RJ como padrão)
-  const webhookUrl = 'https://n8n-production-49ae.up.railway.app/webhook/wpprj'
+  // Determinar webhook baseado no tipo de arquivo
+  const webhookUrl = fileType === 'image' 
+    ? 'https://n8n-production-49ae.up.railway.app/webhook/wppcomimagem'
+    : 'https://n8n-production-49ae.up.railway.app/webhook/wpprj'
+
+  console.log(`   🎯 Webhook selecionado: ${webhookUrl} (tipo: ${fileType})`)
 
   for (const lead of validPhones) {
     try {
@@ -460,7 +465,7 @@ async function processWhatsApp(supabaseClient: any, schedule: any, leads: any[])
         num: formattedNumber,
         url: pageUrl,
         message: whatsappMessage,
-        image: imageUrl // Adicionar URL da imagem ao payload
+        image: fileUrl // Adicionar URL do arquivo (PDF ou imagem) ao payload
       }
 
       console.log(`     📤 Payload do WhatsApp:`, payload)

@@ -294,14 +294,13 @@ const LeilaoSP = () => {
   // Faixas de preço disponíveis
   const priceRanges: PriceRange[] = [
     { label: "Todos os preços" },
-    { label: "Até R$ 100 mil", max: 100000 },
-    { label: "R$ 100 mil a R$ 300 mil", min: 100000, max: 300000 },
-    { label: "R$ 300 mil a R$ 500 mil", min: 300000, max: 500000 },
-    { label: "R$ 500 mil a R$ 1 milhão", min: 500000, max: 1000000 },
-    { label: "R$ 1 milhão a R$ 2 milhões", min: 1000000, max: 2000000 },
-    { label: "R$ 2 milhões a R$ 5 milhões", min: 2000000, max: 5000000 },
-    { label: "R$ 5 milhões a R$ 10 milhões", min: 5000000, max: 10000000 },
-    { label: "Acima de R$ 10 milhões", min: 10000000 }
+    { label: 'Até 300 mil', max: 300000 },
+    { label: 'De 301 a 500 mil', min: 301000, max: 500000 },
+    { label: 'De 501 a 700 mil', min: 501000, max: 700000 },
+    { label: 'De 700 a 1 milhão', min: 700000, max: 1000000 },
+    { label: 'De 1 a 1,5 milhão', min: 1000000, max: 1500000 },
+    { label: 'De 1,5 a 2 milhões', min: 1500000, max: 2000000 },
+    { label: 'Mais de 2 milhões', min: 2000001 }
   ];
 
   // Novo estado para controlar o menu de regiões de cidades
@@ -2125,15 +2124,7 @@ const LeilaoSP = () => {
                         Todos os preços
                       </div>
                       {/* Faixas de preço */}
-                      {[
-                        { label: 'Até 300 mil', max: 300000 },
-                        { label: 'De 301 a 500 mil', min: 301000, max: 500000 },
-                        { label: 'De 501 a 700 mil', min: 501000, max: 700000 },
-                        { label: 'De 700 a 1 milhão', min: 700000, max: 1000000 },
-                        { label: 'De 1 a 1,5 milhão', min: 1000000, max: 1500000 },
-                        { label: 'De 1,5 a 2 milhões', min: 1500000, max: 2000000 },
-                        { label: 'Mais de 2 milhões', min: 2000001 }
-                      ].map((range, index) => {
+                      {priceRanges.filter(r => r.label !== "Todos os preços").map((range, index) => {
                         const isSelected = selectedPriceRanges.some(r => r.label === range.label);
                         return (
                           <div 

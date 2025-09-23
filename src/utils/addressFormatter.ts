@@ -7,3 +7,4 @@ export const formatPropertyAddress = (
   const parts = [endereco, bairro, cidade, estado].filter(Boolean);
   return parts.join(', ');
 };
+

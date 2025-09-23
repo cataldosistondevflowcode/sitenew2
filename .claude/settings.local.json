@@ -6,7 +6,10 @@
       "Bash(grep:*)",
       "Bash(npm run dev:*)",
       "Bash(npx tsc:*)",
-      "Bash(node:*)"
+      "Bash(node:*)",
+      "Bash(npx supabase gen types typescript:*)",
+      "Bash(del debug-endereco.js test-endereco-pirajui.js)",
+      "Bash(del test-search.js)"
     ],
     "defaultMode": "acceptEdits"
   }

@@ -743,6 +743,7 @@ const LeilaoSP = () => {
         .from('leiloes_imoveis')
         .select('cidade')
         .eq('estado', 'SP')
+        .gte('leilao_1', 75000) // Filtro obrigatório: valor mínimo de R$ 75.000
         .not('cidade', 'is', null);
       
       if (error) throw error;
@@ -779,6 +780,7 @@ const LeilaoSP = () => {
         .from('leiloes_imoveis')
         .select('bairro')
         .eq('estado', 'SP')
+        .gte('leilao_1', 75000) // Filtro obrigatório: valor mínimo de R$ 75.000
         .eq('cidade', targetCity)
         .not('bairro', 'is', null);
       
@@ -869,6 +871,7 @@ const LeilaoSP = () => {
           .from('leiloes_imoveis')
           .select('tipo_propriedade')
           .eq('estado', 'SP')
+          .gte('leilao_1', 75000) // Filtro obrigatório: valor mínimo de R$ 75.000
           .not('tipo_propriedade', 'is', null);
           
         if (error) throw error;
@@ -914,7 +917,8 @@ const LeilaoSP = () => {
         let query = supabase
           .from('leiloes_imoveis')
           .select('*', { count: 'exact' })
-          .eq('estado', 'SP');
+          .eq('estado', 'SP')
+          .gte('leilao_1', 75000); // Filtro obrigatório: valor mínimo de R$ 75.000
           
         // Adicionar filtros se existirem
         if (filters.city && filters.city !== "TODO_SP_STATE") {

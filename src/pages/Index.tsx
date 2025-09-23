@@ -91,7 +91,7 @@ const bairrosPorZonaRJ: Record<string, string[]> = {
     'Benfica', 'Caju', 'Catumbi', 'Centro', 'Cidade Nova', 'Gamboa', 'Glória', 'Lapa', 'Paquetá', 'Santa Teresa', 'Santo Cristo', 'São Cristóvão', 'Saúde'
   ],
   'Zona Norte (Rio de Janeiro)': [
-    'Abolição', 'Água Santa', 'Anchieta', 'Barros Filho', 'Bento Ribeiro', 'Bonsucesso', 'Brás de Pina', 'Cachambi', 'Campinho', 'Cascadura', 'Cidade Universitária', 'Coelho Neto', 'Cordovil', 'Del Castilho', 'Encantado', 'Engenho da Rainha', 'Engenho de Dentro', 'Engenho Novo', 'Guadalupe', 'Higienópolis', 
+    'Abolição', 'Água Santa', 'Anchieta', 'Barros Filho', 'Bento Ribeiro', 'Bonsucesso', 'Brás de Pina', 'Cachambi', 'Campinho', 'Cascadura', 'Cidade Universitária', 'Coelho Neto', 'Cordovil', 'Del Castilho', 'Encantado', 'Engenho da Rainha', 'Engenho de Dentro', 'Engenho Novo', 'Guadalupe', 'Higienópolis',
     // Grande Tijuca (mantida na busca principal com sub-bairros)
     'Grande Tijuca', 'Tijuca', 'Vila Isabel', 'Maracanã', 'Andaraí', 'Grajaú', 'Alto da Boa Vista', 'São Francisco Xavier', 'Rio Comprido', 'Estácio', 'Praça da Bandeira', 'Usina',
     // Grande Méier (mantida na busca principal com sub-bairros)
@@ -454,6 +454,7 @@ const Index = () => {
             .from('leiloes_imoveis')
             .select('cidade', { count: 'exact' })
             .eq('estado', 'RJ')
+            .gte('leilao_1', 75000) // Filtro obrigatório: valor mínimo de R$ 75.000
             .order('cidade')
             .not('cidade', 'is', null)
             .range(from, to);
@@ -504,6 +505,7 @@ const Index = () => {
           .from('leiloes_imoveis')
           .select('tipo_propriedade')
           .eq('estado', 'RJ')
+          .gte('leilao_1', 75000) // Filtro obrigatório: valor mínimo de R$ 75.000
           .not('tipo_propriedade', 'is', null);
           
         if (error) throw error;
@@ -693,7 +695,8 @@ const Index = () => {
         let query = supabase
           .from('leiloes_imoveis')
           .select('*', { count: 'exact' })
-          .eq('estado', 'RJ');
+          .eq('estado', 'RJ')
+          .gte('leilao_1', 75000); // Filtro obrigatório: valor mínimo de R$ 75.000
           
         // Adicionar filtros se existirem
         if (filters.city) {
@@ -1862,6 +1865,7 @@ const Index = () => {
         .from('leiloes_imoveis')
         .select('bairro')
         .eq('estado', 'RJ')
+        .gte('leilao_1', 75000) // Filtro obrigatório: valor mínimo de R$ 75.000
         .eq('cidade', cityName)
         .order('bairro')
         .not('bairro', 'is', null);
@@ -1876,28 +1880,40 @@ const Index = () => {
       // Se for Rio de Janeiro, mostrar todos os bairros da lista fixa por zona
       if (cityName.toLowerCase() === 'rio de janeiro') {
         const bairrosAgrupados: Record<string, { neighborhood: string, count: number }[]> = {};
+        const bairrosJaAdicionados = new Set<string>(); // Para evitar duplicatas
+
         // Usar apenas as zonas do Rio de Janeiro
         const zonasRJ = ['Zona Central (Rio de Janeiro)', 'Zona Norte (Rio de Janeiro)', 'Zona Sul (Rio de Janeiro)', 'Zona Oeste (Rio de Janeiro)'];
         zonasRJ.forEach(zona => {
           if (bairrosPorZonaRJ[zona]) {
-            bairrosAgrupados[zona] = bairrosPorZonaRJ[zona].map(bairro => ({
-              neighborhood: bairro,
-              count: neighborhoodCount[bairro] || 0
-            }));
+            bairrosAgrupados[zona] = bairrosPorZonaRJ[zona]
+              .filter(bairro => !bairrosJaAdicionados.has(bairro)) // Filtrar duplicatas
+              .map(bairro => {
+                bairrosJaAdicionados.add(bairro); // Marcar como adicionado
+                return {
+                  neighborhood: bairro,
+                  count: neighborhoodCount[bairro] || 0
+                };
+              });
           }
         });
         // Adicionar bairros "Outros" que estão no banco mas não na lista fixa
         Object.keys(neighborhoodCount).forEach(bairro => {
+          // Verificar se já foi adicionado (evita duplicatas)
+          if (bairrosJaAdicionados.has(bairro)) {
+            return; // Pular se já foi adicionado
+          }
+
           let found = false;
-          
+
           // Normalizar o nome do bairro para comparação (tratar casos como Cajú -> Caju)
           const bairroNormalizado = bairro.toLowerCase()
             .normalize('NFD')
             .replace(/[\u0300-\u036f]/g, ''); // Remove acentos
-          
+
           for (const zona of zonasRJ) {
             if (bairrosPorZonaRJ[zona]) {
-              const bairrosNormalizados = bairrosPorZonaRJ[zona].map(b => 
+              const bairrosNormalizados = bairrosPorZonaRJ[zona].map(b =>
                 b.toLowerCase()
                   .normalize('NFD')
                   .replace(/[\u0300-\u036f]/g, '')
@@ -1908,15 +1924,16 @@ const Index = () => {
               }
             }
           }
-          
+
           // Pular especificamente o bairro "Cajú" que deve ser mapeado para "Caju"
           if (bairro.toLowerCase().includes('cajú') || bairro.toLowerCase().includes('caju')) {
             found = true; // Marcar como encontrado para não aparecer em "Outros"
           }
-          
+
           if (!found) {
             if (!bairrosAgrupados['Outros']) bairrosAgrupados['Outros'] = [];
             bairrosAgrupados['Outros'].push({ neighborhood: bairro, count: neighborhoodCount[bairro] });
+            bairrosJaAdicionados.add(bairro); // Marcar como adicionado
           }
         });
         setRjNeighborhoods(bairrosAgrupados as any);
@@ -2285,63 +2302,126 @@ const Index = () => {
                               Todo Rio de Janeiro
                             </div>
                           )}
-                          {Object.keys(rjNeighborhoods)
-                          .filter(zona => {
-                            if (neighborhoodSearchTerm === '') return true;
-                            return flexibleSearch(zona, neighborhoodSearchTerm) ||
-                              rjNeighborhoods[zona].some((neighborhoodData: any) => 
-                                flexibleSearch(neighborhoodData.neighborhood, neighborhoodSearchTerm)
-                              );
-                          })
-                          .map((zona) => (
-                          <div key={zona}>
-                            {(neighborhoodSearchTerm === '' || flexibleSearch(zona, neighborhoodSearchTerm)) && (
-                              <div
-                                className="py-2 px-4 font-bold text-primary bg-gray-100 border-b border-gray-200 cursor-pointer hover:bg-yellow-100"
-                                onClick={(e) => {
-                                e.stopPropagation();
-                                toggleZone(zona);
-                              }}
-                              >
-                                {zona} (todos)
-                              </div>
-                            )}
-                            {rjNeighborhoods[zona]
-                              .filter((neighborhoodData: any) => 
-                                neighborhoodSearchTerm === '' || 
-                                flexibleSearch(neighborhoodData.neighborhood, neighborhoodSearchTerm)
-                              )
-                              .map((neighborhoodData: any, index: number) => {
-                                const isSelected = selectedNeighborhoods.includes(neighborhoodData.neighborhood);
-                                return (
+                          {(() => {
+                            // Se não há busca, mostrar estrutura normal por zonas
+                            if (neighborhoodSearchTerm === '') {
+                              return Object.keys(rjNeighborhoods).map((zona) => (
+                                <div key={zona}>
                                   <div
-                                    key={neighborhoodData.neighborhood}
-                                    className={`py-2 px-4 flex items-center cursor-pointer ${
-                                      neighborhoodData.neighborhood === 'Grande Tijuca' || neighborhoodData.neighborhood === 'Grande Méier' || neighborhoodData.neighborhood === 'Barra e Adjacências'
-                                        ? 'font-bold text-primary bg-gray-100 border-b border-gray-200 hover:bg-yellow-100'
-                                        : isSelected 
-                                          ? 'bg-blue-100 text-blue-800' 
-                                          : 'hover:bg-gray-100'
-                                    }`}
+                                    className="py-2 px-4 font-bold text-primary bg-gray-100 border-b border-gray-200 cursor-pointer hover:bg-yellow-100"
                                     onClick={(e) => {
                                       e.stopPropagation();
-                                      toggleNeighborhood(neighborhoodData.neighborhood);
+                                      toggleZone(zona);
                                     }}
                                   >
-                                    {neighborhoodData.neighborhood !== 'Grande Tijuca' && neighborhoodData.neighborhood !== 'Grande Méier' && neighborhoodData.neighborhood !== 'Barra e Adjacências' && (
-                                      <input
-                                        type="checkbox"
-                                        checked={isSelected}
-                                        onChange={() => {}} // Controlled by parent onClick
-                                        className="mr-2 h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
-                                      />
-                                    )}
-                                    {neighborhoodData.neighborhood}
+                                    {zona} (todos)
                                   </div>
-                                );
-                              })}
-                          </div>
-                        ))}
+                                  {rjNeighborhoods[zona].map((neighborhoodData: any, index: number) => {
+                                    const isSelected = selectedNeighborhoods.includes(neighborhoodData.neighborhood);
+                                    return (
+                                      <div
+                                        key={neighborhoodData.neighborhood}
+                                        className={`py-2 px-4 flex items-center cursor-pointer ${
+                                          neighborhoodData.neighborhood === 'Grande Tijuca' || neighborhoodData.neighborhood === 'Grande Méier' || neighborhoodData.neighborhood === 'Barra e Adjacências'
+                                            ? 'font-bold text-primary bg-gray-100 border-b border-gray-200 hover:bg-yellow-100'
+                                            : isSelected
+                                              ? 'bg-blue-100 text-blue-800'
+                                              : 'hover:bg-gray-100'
+                                        }`}
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          toggleNeighborhood(neighborhoodData.neighborhood);
+                                        }}
+                                      >
+                                        {neighborhoodData.neighborhood !== 'Grande Tijuca' && neighborhoodData.neighborhood !== 'Grande Méier' && neighborhoodData.neighborhood !== 'Barra e Adjacências' && (
+                                          <input
+                                            type="checkbox"
+                                            checked={isSelected}
+                                            onChange={() => {}} // Controlled by parent onClick
+                                            className="mr-2 h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                                          />
+                                        )}
+                                        {neighborhoodData.neighborhood}
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              ));
+                            } else {
+                              // Se há busca, criar lista única de bairros encontrados (sem duplicatas)
+                              const bairrosEncontrados = new Set<string>();
+                              const bairrosData: any[] = [];
+
+                              // Coletar todos os bairros que correspondem à busca
+                              Object.keys(rjNeighborhoods).forEach(zona => {
+                                rjNeighborhoods[zona].forEach((neighborhoodData: any) => {
+                                  // Verificação mais robusta da busca
+                                  const bairroNome = neighborhoodData.neighborhood || '';
+                                  const termo = neighborhoodSearchTerm || '';
+
+                                  if (bairroNome && termo) {
+                                    const match = flexibleSearch(bairroNome, termo);
+                                    if (match && !bairrosEncontrados.has(bairroNome)) {
+                                      bairrosEncontrados.add(bairroNome);
+                                      bairrosData.push(neighborhoodData);
+                                    }
+                                  }
+                                });
+                              });
+
+                              // Mostrar zonas que correspondem à busca
+                              const zonasEncontradas = Object.keys(rjNeighborhoods).filter(zona =>
+                                flexibleSearch(zona, neighborhoodSearchTerm)
+                              );
+
+                              return (
+                                <>
+                                  {zonasEncontradas.map(zona => (
+                                    <div key={zona}>
+                                      <div
+                                        className="py-2 px-4 font-bold text-primary bg-gray-100 border-b border-gray-200 cursor-pointer hover:bg-yellow-100"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          toggleZone(zona);
+                                        }}
+                                      >
+                                        {zona} (todos)
+                                      </div>
+                                    </div>
+                                  ))}
+                                  {bairrosData.map((neighborhoodData: any) => {
+                                    const isSelected = selectedNeighborhoods.includes(neighborhoodData.neighborhood);
+                                    return (
+                                      <div
+                                        key={neighborhoodData.neighborhood}
+                                        className={`py-2 px-4 flex items-center cursor-pointer ${
+                                          neighborhoodData.neighborhood === 'Grande Tijuca' || neighborhoodData.neighborhood === 'Grande Méier' || neighborhoodData.neighborhood === 'Barra e Adjacências'
+                                            ? 'font-bold text-primary bg-gray-100 border-b border-gray-200 hover:bg-yellow-100'
+                                            : isSelected
+                                              ? 'bg-blue-100 text-blue-800'
+                                              : 'hover:bg-gray-100'
+                                        }`}
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          toggleNeighborhood(neighborhoodData.neighborhood);
+                                        }}
+                                      >
+                                        {neighborhoodData.neighborhood !== 'Grande Tijuca' && neighborhoodData.neighborhood !== 'Grande Méier' && neighborhoodData.neighborhood !== 'Barra e Adjacências' && (
+                                          <input
+                                            type="checkbox"
+                                            checked={isSelected}
+                                            onChange={() => {}} // Controlled by parent onClick
+                                            className="mr-2 h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                                          />
+                                        )}
+                                        {neighborhoodData.neighborhood}
+                                      </div>
+                                    );
+                                  })}
+                                </>
+                              );
+                            }
+                          })()}
                         </>
                       ) : selectedCityName.toLowerCase() === 'niterói' ? (
                         Object.keys(rjNeighborhoods)
@@ -2427,22 +2507,34 @@ const Index = () => {
                         )
                       )}
                       {neighborhoodSearchTerm !== '' && (
-                        (selectedCityName.toLowerCase() === 'rio de janeiro' ? 
-                          Object.keys(rjNeighborhoods).every(zona => 
-                            !zona.toLowerCase().includes(neighborhoodSearchTerm.toLowerCase()) &&
-                            !rjNeighborhoods[zona].some((neighborhoodData: any) => 
-                              neighborhoodData.neighborhood.toLowerCase().includes(neighborhoodSearchTerm.toLowerCase())
-                            )
-                          ) :
+                        (selectedCityName.toLowerCase() === 'rio de janeiro' ?
+                          (() => {
+                            // Verificar se há zonas ou bairros que correspondem à busca
+                            const zonasEncontradas = Object.keys(rjNeighborhoods).some(zona =>
+                              flexibleSearch(zona, neighborhoodSearchTerm)
+                            );
+                            const bairrosEncontrados = Object.keys(rjNeighborhoods).some(zona =>
+                              rjNeighborhoods[zona].some((neighborhoodData: any) =>
+                                flexibleSearch(neighborhoodData.neighborhood, neighborhoodSearchTerm)
+                              )
+                            );
+                            return !zonasEncontradas && !bairrosEncontrados;
+                          })() :
                           selectedCityName.toLowerCase() === 'niterói' ?
-                          Object.keys(rjNeighborhoods).every(regiao => 
-                            !regiao.toLowerCase().includes(neighborhoodSearchTerm.toLowerCase()) &&
-                            !rjNeighborhoods[regiao].some((neighborhoodData: any) => 
-                              neighborhoodData.neighborhood.toLowerCase().includes(neighborhoodSearchTerm.toLowerCase())
-                            )
-                          ) :
-                          !rjNeighborhoods.some((neighborhoodData: any) => 
-                            neighborhoodData.neighborhood.toLowerCase().includes(neighborhoodSearchTerm.toLowerCase())
+                          (() => {
+                            // Verificar se há regiões ou bairros que correspondem à busca
+                            const regioesEncontradas = Object.keys(rjNeighborhoods).some(regiao =>
+                              flexibleSearch(regiao, neighborhoodSearchTerm)
+                            );
+                            const bairrosEncontrados = Object.keys(rjNeighborhoods).some(regiao =>
+                              rjNeighborhoods[regiao].some((neighborhoodData: any) =>
+                                flexibleSearch(neighborhoodData.neighborhood, neighborhoodSearchTerm)
+                              )
+                            );
+                            return !regioesEncontradas && !bairrosEncontrados;
+                          })() :
+                          !rjNeighborhoods.some((neighborhoodData: any) =>
+                            flexibleSearch(neighborhoodData.neighborhood, neighborhoodSearchTerm)
                           )
                         ) && (
                           <div className="py-2 px-4 text-gray-500">Nenhum resultado encontrado</div>

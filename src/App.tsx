@@ -7,6 +7,7 @@ import { AuthProvider } from "@/hooks/useAuth";
 import AdminRoute from "@/components/AdminRoute";
 import Index from "./pages/Index";
 import LeilaoCaixaRJ from "./pages/LeilaoCaixaRJ";
+import LeilaoRJ from "./pages/LeilaoRJ";
 import LeilaoSP from "./pages/LeilaoSP";
 import NotFound from "./pages/NotFound";
 import PropertyDetail from "./pages/PropertyDetail";
@@ -43,6 +44,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/leilao-caixa-rj" element={<LeilaoCaixaRJ />} />
+            <Route path="/leilao-rj" element={<LeilaoRJ />} />
             <Route path="/leilao-sp" element={<LeilaoSP />} />
             <Route path="/imovel/:id" element={<PropertyDetail />} />
             <Route path="/imovel/:id/:slug" element={<PropertyDetail />} />

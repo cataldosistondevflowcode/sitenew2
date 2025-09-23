@@ -23,7 +23,7 @@ export const Header = ({ onContactClick }: HeaderProps) => {
   ];
 
   const dropdownItems = [
-    { label: "Imóveis em Leilão RJ", href: "/" },
+    { label: "Imóveis em Leilão RJ", href: "/leilao-rj" },
     { label: "Imóveis em Leilão SP", href: "/leilao-sp" },
   ];
 

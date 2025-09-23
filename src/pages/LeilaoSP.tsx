@@ -773,7 +773,12 @@ const LeilaoSP = () => {
 
   // Função para buscar bairros de uma cidade específica de SP
   const fetchNeighborhoodsByCity = async (cityName?: string) => {
-    const targetCity = cityName || selectedCityName || 'São Paulo';
+    const targetCity = cityName || selectedCityName;
+
+    if (!targetCity) {
+      setRjNeighborhoods([]);
+      return;
+    }
     
     try {
       const { data, error } = await supabase
@@ -857,12 +862,8 @@ const LeilaoSP = () => {
     }
   };
 
-  // Inicializar São Paulo e carregar dados
+  // Inicializar dados
   useEffect(() => {
-    // Definir São Paulo como cidade selecionada automaticamente
-    setSelectedCity("São Paulo");
-    setSelectedCityName("São Paulo");
-    setSelectedCities(["São Paulo"]);
     
     // Buscar tipos de propriedade
     const fetchPropertyTypes = async () => {
@@ -899,9 +900,8 @@ const LeilaoSP = () => {
       }
     };
 
-    // Carregar cidades de SP e bairros de São Paulo automaticamente
+    // Carregar cidades de SP e tipos de propriedade
     fetchSpCities();
-    fetchNeighborhoodsByCity('São Paulo');
     fetchPropertyTypes();
   }, []);
 

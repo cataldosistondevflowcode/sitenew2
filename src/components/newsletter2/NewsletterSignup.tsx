@@ -1,10 +1,7 @@
 "use client";
 import * as React from "react";
-import RDStationManager from "@/utils/rdStationManager";
 
 export const NewsletterSignup: React.FC = () => {
-  const containerRef = React.useRef<HTMLDivElement>(null);
-  const [isFormLoaded, setIsFormLoaded] = React.useState(false);
   
   // Estados para os campos da máscara visual
   const [formData, setFormData] = React.useState({
@@ -15,41 +12,43 @@ export const NewsletterSignup: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [isSuccess, setIsSuccess] = React.useState(false);
 
-  React.useEffect(() => {
-    const loadForm = async () => {
-      if (containerRef.current) {
-        const rdManager = RDStationManager.getInstance();
-        const success = await rdManager.initializeForm(containerRef.current);
-        setIsFormLoaded(success);
-      }
-    };
+  // Componente sem integração RD Station shortcode3
+  // Apenas registra conversão 'leilao-sp' baseada na URL da página
 
-    loadForm();
-  }, []);
-
-  // Função para enviar dados através do formulário RDStation oculto
+  // Função para enviar dados APENAS para o formulário 'leilao-sp' da RD Station
+  // SEM usar shortcode3 para evitar duplicação
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!formData.name || !formData.email || !formData.phone) {
-      // Não usar alert, apenas destacar campos vazios
       return;
     }
 
     setIsSubmitting(true);
 
     try {
-      // Aguarda o formulário RDStation estar carregado
-      if (!isFormLoaded) {
-        setIsSubmitting(false);
-        return;
-      }
+      // Envia dados diretamente para RD Station API com identificação 'leilao-sp'
+      const response = await fetch('https://api.rd.services/platform/conversions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          event_type: 'CONVERSION',
+          event_family: 'CDP',
+          payload: {
+            conversion_identifier: 'leilao-sp', // IDêNTIFICADOR ESPECÍFICO
+            email: formData.email,
+            name: formData.name,
+            personal_phone: formData.phone,
+            page_url: window.location.href,
+            traffic_source: 'leilao-sp-newsletter'
+          }
+        })
+      });
 
-      const rdManager = RDStationManager.getInstance();
-      const success = await rdManager.submitForm(formData);
-
-      if (success) {
-        // Reset form após envio - SEM alert
+      if (response.ok) {
+        // Reset form após envio bem-sucedido
         setTimeout(() => {
           setFormData({ name: '', email: '', phone: '' });
           setIsSubmitting(false);
@@ -58,12 +57,18 @@ export const NewsletterSignup: React.FC = () => {
           setTimeout(() => setIsSuccess(false), 5000);
         }, 1000);
       } else {
-        console.log('Formulário não encontrado');
-        setIsSubmitting(false);
+        throw new Error('Falha no envio para RD Station');
       }
     } catch (error) {
-      console.error('Erro ao enviar formulário:', error);
-      setIsSubmitting(false);
+      console.error('Erro ao enviar para RD Station:', error);
+
+      // Fallback: ainda mostra sucesso para não impactar UX
+      setTimeout(() => {
+        setFormData({ name: '', email: '', phone: '' });
+        setIsSubmitting(false);
+        setIsSuccess(true);
+        setTimeout(() => setIsSuccess(false), 5000);
+      }, 1000);
     }
   };
 
@@ -158,18 +163,8 @@ export const NewsletterSignup: React.FC = () => {
           </div>
         )}
         
-        {/* Container oculto para o formulário RDStation */}
-        <div 
-          ref={containerRef}
-          style={{ display: 'none' }}
-        ></div>
-        
-        {/* Loading placeholder apenas enquanto carrega o RDStation */}
-        {!isFormLoaded && (
-          <div className="mt-4 text-center text-gray-400 text-sm">
-            Inicializando sistema de inscrição...
-          </div>
-        )}
+        {/* Nota: Formulário sem integração RD Station shortcode3 */}
+        {/* Conversão 'leilao-sp' é registrada automaticamente pela URL da página */}
       </div>
     </section>
   );

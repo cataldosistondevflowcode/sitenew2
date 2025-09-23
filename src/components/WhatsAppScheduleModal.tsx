@@ -11,12 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-
-declare global {
-  interface Window {
-    RDStationForms: any;
-  }
-}
+import RDStationManager from "@/utils/rdStationManager";
 
 interface WhatsAppSchedule {
   id?: string;
@@ -124,61 +119,12 @@ const WhatsAppScheduleModal: React.FC<WhatsAppScheduleModalProps> = ({
     }
   };
 
-  const loadRDStationForm = () => {
+  const loadRDStationForm = async () => {
     if (containerRef.current) {
-      // Limpa qualquer conteúdo anterior
-      containerRef.current.innerHTML = '';
-      
-      // Verifica se já existe um script do RDStation carregado
-      const existingScript = document.querySelector('script[src*="rdstation-forms"]');
-      const existingContainer = document.getElementById('shortcode3-e67a38fad5973ddb16a8');
-      
-      // Remove elementos duplicados se existirem
-      if (existingContainer && existingContainer !== containerRef.current.querySelector('#shortcode3-e67a38fad5973ddb16a8')) {
-        existingContainer.remove();
-      }
-      
-      // Código HTML e JavaScript direto do RDStation (mesmo ID usado em todos os outros formulários)
-      const formHTML = `
-        <div role="main" id="shortcode3-e67a38fad5973ddb16a8" style="display: none;"></div>
-      `;
-      
-      containerRef.current.innerHTML = formHTML;
-      
-      // Carrega o script apenas se não existir
-      if (!existingScript) {
-        const script = document.createElement('script');
-        script.type = 'text/javascript';
-        script.src = 'https://d335luupugsy2.cloudfront.net/js/rdstation-forms/stable/rdstation-forms.min.js';
-        script.onload = () => {
-          console.log('Script RDStation carregado para WhatsApp modal');
-          initializeRDStationForm();
-        };
-        script.onerror = () => {
-          console.error('Erro ao carregar script do RDStation para WhatsApp modal');
-        };
-        document.head.appendChild(script);
-      } else {
-        // Se o script já existe, apenas inicializa o formulário
-        initializeRDStationForm();
-      }
+      const rdManager = RDStationManager.getInstance();
+      const success = await rdManager.initializeForm(containerRef.current);
+      setIsFormLoaded(success);
     }
-  };
-  
-  const initializeRDStationForm = () => {
-    setTimeout(() => {
-      try {
-        if (window.RDStationForms) {
-          new window.RDStationForms('shortcode3-e67a38fad5973ddb16a8', 'UA-150032078-1').createForm();
-          console.log('RDStation Form do WhatsApp modal criado com sucesso');
-          setIsFormLoaded(true);
-        } else {
-          console.error('RDStationForms não disponível para WhatsApp modal');
-        }
-      } catch (error) {
-        console.error('Erro ao criar RDStation Form do WhatsApp modal:', error);
-      }
-    }, 1000);
   };
 
   // Função para envio imediato via WhatsApp

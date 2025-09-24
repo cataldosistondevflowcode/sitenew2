@@ -1,11 +1,13 @@
 import { MapPin, Calendar, DollarSign, SquareStack, Car, Share2 } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { formatPropertyAddress } from "../utils/addressFormatter";
 import { createPropertyUrl } from "../utils/slugUtils";
 import { ShareModal } from "./ShareModal";
 import { supabase } from "@/integrations/supabase/client";
-import { generateStaticMapUrl } from "../utils/staticMapsUrl";
+import { loadGoogleMaps } from "../integrations/googlemaps/client";
+import { geocodeCache } from "../utils/geocodeCache";
+import { mapCache } from "../utils/mapCache";
 
 interface PropertyCardProps {
   id: number;
@@ -47,6 +49,7 @@ export const PropertyCard = ({
   onContactClick,
 }: PropertyCardProps) => {
   
+  const mapRef = useRef<HTMLDivElement>(null);
   const [isImageNotFound, setIsImageNotFound] = useState(
     image.includes('/not-found') ||
     !image ||
@@ -54,6 +57,7 @@ export const PropertyCard = ({
     image === 'https://kmiblhbe.manus.space/imovel_sao_goncalo.jpeg'
   );
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [mapLoaded, setMapLoaded] = useState(false);
 
   // Função para registrar clique no "Saiba Mais"
   const handleSaibaMaisClick = async (e: React.MouseEvent) => {
@@ -96,18 +100,78 @@ export const PropertyCard = ({
     );
   };
 
-  // Generate static map URL when image is not found
-  const getStaticMapUrl = () => {
-    const address = getFullAddress();
-    if (!address) return '';
+  // Initialize map when image is not found
+  const initializeMap = async () => {
+    if (!mapRef.current || !isImageNotFound || mapLoaded) return;
 
-    return generateStaticMapUrl({
-      address,
-      width: 400,
-      height: 200,
-      zoom: 15
-    });
+    try {
+      const address = getFullAddress();
+      if (!address) return;
+
+      // Verificar cache de mapas primeiro
+      const cachedMap = mapCache.get(address);
+      if (cachedMap && mapRef.current) {
+        // Reusar mapa do cache
+        mapRef.current.appendChild(cachedMap.map.getDiv());
+        setMapLoaded(true);
+        return;
+      }
+
+      const google = await loadGoogleMaps();
+
+      // Verificar cache de coordenadas
+      const cachedCoordinates = geocodeCache.get(address);
+
+      if (cachedCoordinates) {
+        // Usar coordenadas do cache
+        createMapWithCoordinates(google, cachedCoordinates, address);
+      } else {
+        // Fazer geocoding e salvar no cache
+        const geocoder = new google.maps.Geocoder();
+        geocoder.geocode({ address }, (results, status) => {
+          if (status === 'OK' && results && results[0] && mapRef.current) {
+            const coordinates = results[0].geometry.location;
+            geocodeCache.set(address, coordinates);
+            createMapWithCoordinates(google, coordinates, address);
+          }
+        });
+      }
+    } catch (error) {
+      console.error('Error loading map:', error);
+    }
   };
+
+  const createMapWithCoordinates = (google: typeof window.google, coordinates: google.maps.LatLng, address: string) => {
+    if (!mapRef.current) return;
+
+    const map = new google.maps.Map(mapRef.current, {
+      zoom: 15,
+      center: coordinates,
+      mapTypeId: google.maps.MapTypeId.ROADMAP,
+      disableDefaultUI: true,
+      gestureHandling: 'none', // Desabilita interação
+    });
+
+    const marker = new google.maps.Marker({
+      position: coordinates,
+      map: map,
+      title: title,
+    });
+
+    // Salvar no cache
+    mapCache.set(address, map, marker);
+    setMapLoaded(true);
+  };
+
+  // Carregar mapa quando necessário
+  useEffect(() => {
+    if (isImageNotFound && mapRef.current && rawPropertyData) {
+      const timer = setTimeout(() => {
+        initializeMap();
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [isImageNotFound, rawPropertyData]);
   
   // Função para formatar data no padrão brasileiro
   const formatDateToBrazilian = (dateString: string) => {
@@ -184,17 +248,10 @@ export const PropertyCard = ({
         {/* Imagem com altura fixa ou Mapa quando imagem não encontrada */}
         <div className="relative flex-shrink-0 property-card-header">
           {isImageNotFound ? (
-            getStaticMapUrl() ? (
-              <img
-                src={getStaticMapUrl()}
-                alt="Mapa da propriedade"
-                className="w-full h-40 sm:h-44 md:h-48 object-cover"
-              />
-            ) : (
-              <div className="w-full h-40 sm:h-44 md:h-48 bg-gray-200 flex items-center justify-center">
-                <span className="text-gray-500">Localização indisponível</span>
-              </div>
-            )
+            <div
+              ref={mapRef}
+              className="w-full h-40 sm:h-44 md:h-48 bg-gray-200"
+            />
           ) : (
             <img 
               src={image} 

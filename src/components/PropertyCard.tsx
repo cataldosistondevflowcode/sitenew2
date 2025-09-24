@@ -1,4 +1,4 @@
-import { MapPin, Calendar, DollarSign, SquareStack, Car, Share2 } from "lucide-react";
+import { MapPin, Calendar, DollarSign, SquareStack, Car, Share2, ImageOff, Loader2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
 import { formatPropertyAddress } from "../utils/addressFormatter";
@@ -58,6 +58,7 @@ export const PropertyCard = ({
   );
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [mapLoaded, setMapLoaded] = useState(false);
+  const [mapLoading, setMapLoading] = useState(false);
 
   // Função para registrar clique no "Saiba Mais"
   const handleSaibaMaisClick = async (e: React.MouseEvent) => {
@@ -102,11 +103,16 @@ export const PropertyCard = ({
 
   // Initialize map when image is not found
   const initializeMap = async () => {
-    if (!mapRef.current || !isImageNotFound || mapLoaded) return;
+    if (!mapRef.current || !isImageNotFound || mapLoaded || mapLoading) return;
+
+    setMapLoading(true);
 
     try {
       const address = getFullAddress();
-      if (!address) return;
+      if (!address) {
+        setMapLoading(false);
+        return;
+      }
 
       // Verificar cache de mapas primeiro
       const cachedMap = mapCache.get(address);
@@ -114,6 +120,7 @@ export const PropertyCard = ({
         // Reusar mapa do cache
         mapRef.current.appendChild(cachedMap.map.getDiv());
         setMapLoaded(true);
+        setMapLoading(false);
         return;
       }
 
@@ -133,11 +140,15 @@ export const PropertyCard = ({
             const coordinates = results[0].geometry.location;
             geocodeCache.set(address, coordinates);
             createMapWithCoordinates(google, coordinates, address);
+          } else {
+            setMapLoading(false);
+            console.error('Geocoding failed:', status);
           }
         });
       }
     } catch (error) {
       console.error('Error loading map:', error);
+      setMapLoading(false);
     }
   };
 
@@ -161,6 +172,7 @@ export const PropertyCard = ({
     // Salvar no cache
     mapCache.set(address, map, marker);
     setMapLoaded(true);
+    setMapLoading(false);
   };
 
   // Carregar mapa quando necessário
@@ -248,10 +260,32 @@ export const PropertyCard = ({
         {/* Imagem com altura fixa ou Mapa quando imagem não encontrada */}
         <div className="relative flex-shrink-0 property-card-header">
           {isImageNotFound ? (
-            <div
-              ref={mapRef}
-              className="w-full h-40 sm:h-44 md:h-48 bg-gray-200"
-            />
+            <div className="relative w-full h-40 sm:h-44 md:h-48 bg-gradient-to-br from-gray-100 to-gray-200">
+              {/* Estado de loading */}
+              {mapLoading && !mapLoaded && (
+                <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
+                  <Loader2 className="w-8 h-8 text-gray-400 animate-spin mb-2" />
+                  <span className="text-sm text-gray-500 font-medium">Carregando localização...</span>
+                </div>
+              )}
+
+              {/* Estado de erro/sem endereço */}
+              {!mapLoading && !mapLoaded && (
+                <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
+                  <ImageOff className="w-12 h-12 text-gray-300 mb-3" />
+                  <span className="text-sm text-gray-400 font-medium mb-1">Imagem não disponível</span>
+                  <span className="text-xs text-gray-400 text-center px-4">
+                    {getFullAddress() ? 'Carregando mapa...' : 'Endereço não informado'}
+                  </span>
+                </div>
+              )}
+
+              {/* Container do mapa */}
+              <div
+                ref={mapRef}
+                className={`w-full h-full transition-opacity duration-300 ${mapLoaded ? 'opacity-100' : 'opacity-0'}`}
+              />
+            </div>
           ) : (
             <img 
               src={image} 

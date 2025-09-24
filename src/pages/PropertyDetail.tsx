@@ -6,7 +6,7 @@ import { SocialBar } from "@/components/SocialBar";
 import { Header } from "@/components/Header";
 import { CookieBar } from "@/components/CookieBar";
 import { MainPropertyDetail } from "@/components/property-detail/MainPropertyDetail";
-import { Newsletter } from "@/components/Newsletter";
+import { NewsletterBottomSection } from "@/components/NewsletterBottomSection";
 import { TestimonialsSection } from "@/components/testimonials";
 import { Footer } from "@/components/Footer";
 import { WhatsAppButton } from "@/components/WhatsAppButton";
@@ -244,7 +244,7 @@ const PropertyDetail = () => {
         
         <TestimonialsSection />
       </div>
-      <Newsletter onWhatsAppClick={() => executeWhatsAppAction()} />
+      <NewsletterBottomSection onWhatsAppClick={() => executeWhatsAppAction()} />
       <Footer onWhatsAppClick={() => executeWhatsAppAction()} />
       
       <CookieBar />

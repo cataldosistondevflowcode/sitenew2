@@ -19,11 +19,6 @@ export const PropertyMap: React.FC<PropertyMapProps> = ({ property, rawPropertyD
                           property.image === 'https://kmiblhbe.manus.space/imovel_sao_goncalo.jpeg';
   const [activeTab, setActiveTab] = useState<'foto' | 'mapa' | 'street'>(isImageNotFound ? 'mapa' : 'foto');
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-
-  // Reset image index when images array changes
-  React.useEffect(() => {
-    setCurrentImageIndex(0);
-  }, [images]);
   const [mapLoaded, setMapLoaded] = useState(false);
   const [streetViewLoaded, setStreetViewLoaded] = useState(false);
   const [imageLoadError, setImageLoadError] = useState(false);
@@ -52,6 +47,11 @@ export const PropertyMap: React.FC<PropertyMapProps> = ({ property, rawPropertyD
 
     return uniqueImages;
   }, [property.image]);
+
+  // Reset image index when images array changes
+  React.useEffect(() => {
+    setCurrentImageIndex(0);
+  }, [images]);
 
   const nextImage = () => {
     setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);

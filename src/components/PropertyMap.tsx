@@ -19,6 +19,11 @@ export const PropertyMap: React.FC<PropertyMapProps> = ({ property, rawPropertyD
                           property.image === 'https://kmiblhbe.manus.space/imovel_sao_goncalo.jpeg';
   const [activeTab, setActiveTab] = useState<'foto' | 'mapa' | 'street'>(isImageNotFound ? 'mapa' : 'foto');
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  // Reset image index when images array changes
+  React.useEffect(() => {
+    setCurrentImageIndex(0);
+  }, [images]);
   const [mapLoaded, setMapLoaded] = useState(false);
   const [streetViewLoaded, setStreetViewLoaded] = useState(false);
   const [imageLoadError, setImageLoadError] = useState(false);
@@ -28,11 +33,25 @@ export const PropertyMap: React.FC<PropertyMapProps> = ({ property, rawPropertyD
   const mapInstanceRef = useRef<google.maps.Map | null>(null);
   const streetViewInstanceRef = useRef<google.maps.StreetViewPanorama | null>(null);
   
-  const images = [
-    property.image || "/assets/logos/cataldo-siston-logo.png",
-    "/assets/logos/cataldo-siston-logo.png",
-    property.image || "/assets/logos/cataldo-siston-logo.png"
-  ];
+  // Criar array apenas com imagens diferentes
+  const images = React.useMemo(() => {
+    const uniqueImages: string[] = [];
+
+    // Adicionar imagem da propriedade se existir e for válida
+    if (property.image &&
+        property.image !== "/assets/logos/cataldo-siston-logo.png" &&
+        !property.image.includes('/not-found') &&
+        property.image !== 'https://kmiblhbe.manus.space/imovel_sao_goncalo.jpeg') {
+      uniqueImages.push(property.image);
+    }
+
+    // Se não tem imagem válida, usar logo
+    if (uniqueImages.length === 0) {
+      uniqueImages.push("/assets/logos/cataldo-siston-logo.png");
+    }
+
+    return uniqueImages;
+  }, [property.image]);
 
   const nextImage = () => {
     setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);

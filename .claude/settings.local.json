@@ -9,7 +9,8 @@
       "Bash(node:*)",
       "Bash(npx supabase gen types typescript:*)",
       "Bash(del debug-endereco.js test-endereco-pirajui.js)",
-      "Bash(del test-search.js)"
+      "Bash(del test-search.js)",
+      "WebSearch"
     ],
     "defaultMode": "acceptEdits"
   }

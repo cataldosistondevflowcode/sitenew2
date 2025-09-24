@@ -88,88 +88,88 @@ const ITEMS_PER_PAGE = 40;
 // Definição dos bairros por zona de São Paulo (complementado)
 const bairrosPorZonaSP: Record<string, string[]> = {
   'CENTRAL': [
-    '12º Subd - Cambuci', 'Anhangabaú', 'Bela Vista', 'Bom Retiro', 'Cambuci',
-    'Conjunto Residencial José Bonifácio', 'Consolação', 'Glicério',
-    'Jardim Bela Vista', 'Jardim Bela Vista (Zona Norte)', 'Jardim Da Glória',
-    'José Bonifácio', 'Liberdade', 'Mercado', 'Pacaembú',
+    '12º Subd - Cambuci', 'Anhangabaú', 'Barra Funda', 'Bela Vista', 'Bom Retiro', 'Brás',
+    'Cambuci', 'Centro', 'Conjunto Residencial José Bonifácio', 'Consolação', 'Glicério',
+    'Higienópolis', 'Jardim Bela Vista', 'Jardim Bela Vista (Zona Norte)', 'Jardim Da Glória',
+    'José Bonifácio', 'Liberdade', 'Luz', 'Mercado', 'Pacaembú', 'Paraíso',
     'Parque Dom Pedro I', 'Ponte Pequena', 'República',
-    'Santa Cecília', 'Sé', 'Sé Bela Vista', 'Vila Bela Vista', 'Vila São José'
+    'Santa Cecília', 'Santa Ifigênia', 'Sé', 'Sé Bela Vista', 'Vila Bela Vista',
+    'Vila Buarque', 'Vila São José'
   ],
   'LESTE': [
     '3º Sub Penha Franca', 'Alto Da Mooca', 'Anália Franco', 'Aricanduva',
     'Austral', 'Bairro Dos Pereiras', 'Belém', 'Cangaiba',
     'Carrão', 'Carrãozinho', 'Castro Alves', 'Chacara California',
-    'Cidade Nova São Miguel', 'Cidade São Mateus',
+    'Cidade Nova São Miguel', 'Cidade São Mateus', 'Cidade Tiradentes',
     'Corinthians-Itaquera', 'Distrito De Itaquera',
     'Distrito São Miguel Paulista',
     'Engenheiro Goulart', 'Ermelino Matarazzo', 'Fazenda Aricanduva',
-    'Guaianases', 'Iguatemi', 'Iguaçu', 'Itaquera', 'Jadim Helian',
+    'Guaianases', 'Iguatemi', 'Iguaçu', 'Itaim Paulista', 'Itaquera', 'Jadim Helian',
     'Jardim', 'Jardim Alto Alegre', 'Jardim Alto Alegre (São Rafael)',
     'Jardim América Da Penha', 'Jardim Aricanduva', 'Jardim Cibele',
     'Jardim Claudia', 'Jardim Da Casa Pintada', 'Jardim Gianeti',
-    'Jardim Iva', 'Jardim Marabá', 'Jardim Melunas', 'Jardim Robru',
+    'Jardim Helena', 'Jardim Iva', 'Jardim Marabá', 'Jardim Melunas', 'Jardim Robru',
     'Jardim Textil', 'Jardim Verônia', 'Lajeado', 'Mooca',
     'Mooca Baixa', 'Mooca Água Rasa', 'Parque da Mooca',
-    'Parque São Jorge',
-    'Parque São Lucas', 'Passagem Funda', 'Penha', 'Penha de França',
-    'Ponte Rasa', 'Quarta Parada',
+    'Parque São Jorge', 'Parque São Lucas', 'Passagem Funda',
+    'Penha', 'Penha de França', 'Ponte Rasa', 'Quarta Parada',
     'Sapopemba', 'São Lucas', 'São Mateus',
     'São Miguel Paulista', 'São Rafael', 'Tatuapé',
     'Usp Leste', 'Vila Aricanduva', 'Vila Bela', 'Vila Carolina',
     'Vila Carrão', 'Vila Celeste', 'Vila Conceição', 'Vila Curuça',
-    'Vila Dalila', 'Vila Jacui', 'Vila Jurema', 'Vila Nhocunhé',
-    'Vila Nova Curuça', 'Vila Nova Savoia', 'Vila Paranaguá',
+    'Vila Dalila', 'Vila Formosa', 'Vila Jacui', 'Vila Jurema', 'Vila Matilde',
+    'Vila Nhocunhé', 'Vila Nova Curuça', 'Vila Nova Savoia', 'Vila Paranaguá',
     'Vila Prudente', 'Vila Ré', 'Vila Santa Isabel',
     'Vila Silva Teles', 'Vila Talarico', 'Vila Tolstói',
     'Vila Zéfira', 'Vila Zéphyr'
   ],
   'NORTE': [
-    '36ª Subd Vila Maria', 'Alto De Santana', 'América', 'Anhanguera',
+    '36ª Subd Vila Maria', 'Alto De Santana', 'Anhanguera',
     'Anhembi', 'Barro Branco', 'Brasilândia', 'Cachoeirinha',
-    'Cantareira', 'Casa Verde', 'Corisco', 'Furnas', 'Guapira',
+    'Cantareira', 'Casa Verde', 'Freguesia do Ó', 'Guapira',
     'Itaberaba', 'Jardim', 'Jardim Anhanguera', 'Jardim Britania',
-    'Jardim Dayse', 'Jardim Iris', 'Jardim Japão', 'Jardim Paraíso',
+    'Jardim Dayse', 'Jardim Japão', 'Jardim Paraíso',
     'Jardim Peri Peri', 'Jardim Tremembé', 'Jardim Vista Alegre',
     'Jaçanã', 'Lausane Paulista', 'Lauzane', 'Limão',
     'Loteamento Vista Verde', 'Mandaqui', 'Morro Grande',
     'Parque Mandaqui', 'Parque Peruche', 'Parque Vitória',
-    'Santana', 'São Domingos', 'Sítio Do Mandaqui',
+    'Pirituba', 'Santana', 'São Domingos', 'Sítio Do Mandaqui',
     'Sítio Mandaqui', 'Tucuruvi', 'Vila Cachoeira',
     'Vila Clarice', 'Vila Constança', 'Vila Edi',
     'Vila Guilherme', 'Vila Gustavo', 'Vila Maria',
-    'Vila Maria Alta', 'Vila Maria Baixa', 'Vila Mariana',
+    'Vila Maria Alta', 'Vila Maria Baixa',
     'Vila Nova Cachoeirinha', 'Vila Rica', 'Vila Sabrina',
     'Vila Santana', 'Vila Siqueira', 'Vila Zatt', 'Vista Alegre'
   ],
   'OESTE': [
     '13º Distrito Butantã', 'Alto De Pinheiros', 'Butantã',
     'Caxingui', 'Ceasa', 'Cerqueira Cesar', 'Chacara Maria Trindade',
-    'Educandário', 'Ferreira', 'Jardim Bonfiglioli',
-    'Jardim D´Abril', 'Jardim Leonor', 'Jardim Vera Cruz',
+    'Educandário', 'Ferreira', 'Itaim Bibi', 'Jardim Bonfiglioli',
+    'Jardim D´Abril', 'Jardim Iris', 'Jardim Leonor', 'Jardim Vera Cruz',
     'Lapa', 'Lapa De Baixo', 'Parque Cisper', 'Parque Continental',
     'Parque Da Lapa', 'Parque Das Flores', 'Paulista', 'Perdizes',
-    'Pinheiros', 'Raposo Tavares', 'Subdistrito Butantã',
+    'Pinheiros', 'Pompeia', 'Raposo Tavares', 'Subdistrito Butantã',
     'Vila Anastácia', 'Vila Hamburguesa', 'Vila Lajeado',
-    'Vila Leopoldina', 'Vila Pinheiros', 'Vila Pompeia',
+    'Vila Leopoldina', 'Vila Madalena', 'Vila Pinheiros', 'Vila Pompeia',
     'Vila Remédios'
   ],
   'SUL': [
-    'Alto Da Boa Vista', 'Barragem', 'Campo Grande', 'Campo Limpo',
+    'Aclimação', 'Alto Da Boa Vista', 'Barragem', 'Brooklin', 'Campo Grande', 'Campo Limpo',
     'Capela', 'Capela Do Socorro', 'Capão Redondo', 'Centro Empresarial',
     'Chacara Inglesa', 'Chacara Klabin', 'Chacara Santa Maria',
     'Chacara São João', 'Chácara Flora', 'Cidade Dutra',
     'Embura', 'Engenho Velho', 'Estância Mirim', 'Grajaú',
-    'Guarapiranga', 'Hileópolis', 'Iberapuera', 'Ipiranga',
+    'Guarapiranga', 'Hileópolis', 'Iberapuera', 'Ibirapuera', 'Ipiranga',
     'Jabaquara', 'Jardim Amália', 'Jardim Edda', 'Jardim Edi',
-    'Jardim Glória', 'Jardim Ingá', 'Jardim Monte Azul',
+    'Jardim Glória', 'Jardim Ingá', 'Jardim Monte Azul', 'Jardins',
     'Jardim Santo Amaro', 'Jardim Sonia Ingá', 'Jardim São Luis',
-    "M'Boi Mirim", 'Marsilac', 'Moema', 'Parelheiros',
+    "M'Boi Mirim", 'Marsilac', 'Moema', 'Morumbi', 'Parelheiros',
     'Parque Cocaia', 'Parque Grajaú', 'Parque Independência',
-    'Piraporinha', 'Planalto Paulista', 'Santo Amaro', 'Socorro',
+    'Piraporinha', 'Planalto Paulista', 'Saúde', 'Santo Amaro', 'Socorro',
     'São Francisco', 'São João', 'São João Clímaco',
     'Valo Velho', 'Veleiros', 'Vila Carioca', 'Vila Das Mercês',
-    'Vila Guaraní', 'Vila Joaniza', 'Vila Mercês',
-    'Vila Parque Jabaquara', 'Vila Sta Catarina'
+    'Vila Guaraní', 'Vila Joaniza', 'Vila Mariana', 'Vila Mercês',
+    'Vila Olímpia', 'Vila Parque Jabaquara', 'Vila Sta Catarina'
   ]
 };
 
@@ -815,9 +815,22 @@ const LeilaoSP = () => {
           });
         });
         
+        // Lista de comunidades excluídas que não devem aparecer nos filtros
+        const comunidadesExcluidas = [
+          'CONJUNTO HABITACIONAL SANTA ETELVINA II',
+          'JARDIM PEDRO JOSÉ NUNES',
+          'JARDIM SÃO REMO',
+          'PARAISÓPOLIS'
+        ];
+
         // Adicionar bairros "Outros" que estão no banco mas não na lista fixa de zonas
         const bairrosOutros: { neighborhood: string, count: number }[] = [];
         Object.keys(neighborhoodCount).forEach(bairro => {
+          // Verificar se o bairro está na lista de comunidades excluídas
+          if (comunidadesExcluidas.some(exc => exc.toLowerCase() === bairro.toLowerCase())) {
+            return; // Pular este bairro
+          }
+
           let found = false;
           for (const zona in bairrosPorZonaSP) {
             if (bairrosPorZonaSP[zona].some(b => b.toLowerCase() === bairro.toLowerCase())) {

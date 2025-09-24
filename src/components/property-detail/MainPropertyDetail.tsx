@@ -223,6 +223,11 @@ export const MainPropertyDetail: React.FC<MainPropertyDetailProps> = ({ property
                   tags={propertyTags}
                   descriptions={propertyDescriptions}
                 />
+
+                {/* PropertySpecs no mobile - logo após descrição */}
+                <div className="mt-6 lg:hidden">
+                  <PropertySpecs specs={propertySpecs} />
+                </div>
               </div>
             </main>
 
@@ -303,7 +308,8 @@ export const MainPropertyDetail: React.FC<MainPropertyDetailProps> = ({ property
           </div>
         </div>
 
-        <div className="mt-8 sm:mt-12">
+        {/* PropertySpecs no desktop - mantém posição original */}
+        <div className="mt-8 sm:mt-12 hidden lg:block">
           <PropertySpecs specs={propertySpecs} />
         </div>
 

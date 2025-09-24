@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
+import RDStationManager from "@/utils/rdStationManager";
 
 interface OpportunityPopupProps {
   isOpen: boolean;
@@ -7,6 +8,7 @@ interface OpportunityPopupProps {
 }
 
 const OpportunityPopup: React.FC<OpportunityPopupProps> = ({ isOpen, onClose }) => {
+  const containerRef = useRef<HTMLDivElement>(null);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -15,28 +17,66 @@ const OpportunityPopup: React.FC<OpportunityPopupProps> = ({ isOpen, onClose }) 
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [isFormLoaded, setIsFormLoaded] = useState(false);
 
-  // Função para enviar dados - simplificada para evitar conflitos com shortcode3
+  // Inicializar o formulário RD Station quando o popup abrir
+  useEffect(() => {
+    if (isOpen && containerRef.current && !isFormLoaded) {
+      const loadForm = async () => {
+        console.log('Inicializando formulário RD Station do popup...');
+        const rdManager = RDStationManager.getInstance();
+        const success = await rdManager.initializeForm(containerRef.current!);
+        console.log('Formulário RD Station do popup inicializado:', success);
+        setIsFormLoaded(success);
+      };
+      loadForm();
+    }
+  }, [isOpen, isFormLoaded]);
+
+  // Função para enviar dados através do formulário RDStation
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('Formulário do popup submetido, dados:', formData);
 
     if (!formData.name || !formData.email || !formData.phone) {
+      console.log('Campos obrigatórios não preenchidos no popup');
       return;
     }
 
     setIsSubmitting(true);
 
-    // Simula sucesso sem usar RDStationManager para evitar conflitos com shortcode3
-    setTimeout(() => {
-      setFormData({ name: '', email: '', phone: '' });
+    try {
+      if (!isFormLoaded) {
+        console.error('Formulário RD Station do popup não está carregado');
+        setIsSubmitting(false);
+        return;
+      }
+
+      console.log('Enviando dados do popup para RD Station...');
+      const rdManager = RDStationManager.getInstance();
+      const success = await rdManager.submitForm(formData);
+      console.log('Resultado do envio do popup:', success);
+
+      if (success) {
+        // Reset form após envio
+        setTimeout(() => {
+          setFormData({ name: '', email: '', phone: '' });
+          setIsSubmitting(false);
+          setIsSuccess(true);
+          // Fechar popup após sucesso
+          setTimeout(() => {
+            setIsSuccess(false);
+            onClose();
+          }, 2000);
+        }, 1000);
+      } else {
+        console.error('Container do formulário do popup não encontrado');
+        setIsSubmitting(false);
+      }
+    } catch (error) {
+      console.error('Erro ao enviar formulário do popup:', error);
       setIsSubmitting(false);
-      setIsSuccess(true);
-      // Fechar popup após sucesso
-      setTimeout(() => {
-        setIsSuccess(false);
-        onClose();
-      }, 2000);
-    }, 1000);
+    }
   };
 
   if (!isOpen) return null;
@@ -160,6 +200,12 @@ const OpportunityPopup: React.FC<OpportunityPopupProps> = ({ isOpen, onClose }) 
           </div>
         </div>
       </div>
+
+      {/* Container oculto para o formulário RDStation */}
+      <div
+        ref={containerRef}
+        style={{ display: 'none' }}
+      ></div>
     </div>
   );
 };

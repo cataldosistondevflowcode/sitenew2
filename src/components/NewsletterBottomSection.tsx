@@ -26,8 +26,10 @@ export const NewsletterBottomSection: React.FC<NewsletterBottomSectionProps> = (
   useEffect(() => {
     const loadForm = async () => {
       if (containerRef.current) {
+        console.log('Inicializando formulário RD Station...');
         const rdManager = RDStationManager.getInstance();
         const success = await rdManager.initializeForm(containerRef.current);
+        console.log('Formulário RD Station inicializado:', success);
         setIsFormLoaded(success);
       }
     };
@@ -38,9 +40,10 @@ export const NewsletterBottomSection: React.FC<NewsletterBottomSectionProps> = (
   // Função para enviar dados através do formulário RDStation oculto
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('Formulário submetido, dados:', formData);
 
     if (!formData.name || !formData.email || !formData.phone) {
-      // Não usar alert, apenas destacar campos vazios
+      console.log('Campos obrigatórios não preenchidos');
       return;
     }
 
@@ -49,12 +52,15 @@ export const NewsletterBottomSection: React.FC<NewsletterBottomSectionProps> = (
     try {
       // Aguarda o formulário RDStation estar carregado
       if (!isFormLoaded) {
+        console.error('Formulário RD Station não está carregado');
         setIsSubmitting(false);
         return;
       }
 
+      console.log('Enviando dados para RD Station...');
       const rdManager = RDStationManager.getInstance();
       const success = await rdManager.submitForm(formData);
+      console.log('Resultado do envio:', success);
 
       if (success) {
         // Reset form após envio - SEM alert
@@ -66,7 +72,7 @@ export const NewsletterBottomSection: React.FC<NewsletterBottomSectionProps> = (
           setTimeout(() => setIsSuccess(false), 5000);
         }, 1000);
       } else {
-        console.log('Formulário não encontrado');
+        console.error('Container do formulário não encontrado');
         setIsSubmitting(false);
       }
     } catch (error) {

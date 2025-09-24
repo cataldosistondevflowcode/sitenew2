@@ -12,10 +12,10 @@ declare global {
 
 class RDStationManager {
   private static instance: RDStationManager;
-  private currentFormContainer: HTMLElement | null = null;
-  private isFormLoaded = false;
+  private activeContainers: Map<HTMLElement, string> = new Map();
   private isScriptLoaded = false;
   private loadingPromise: Promise<void> | null = null;
+  private formCounter = 0;
 
   static getInstance(): RDStationManager {
     if (!RDStationManager.instance) {
@@ -73,41 +73,33 @@ class RDStationManager {
    */
   async initializeForm(containerElement: HTMLElement): Promise<boolean> {
     try {
-      // Se já existe um formulário ativo, remove ele primeiro
-      if (this.currentFormContainer && this.currentFormContainer !== containerElement) {
-        this.clearCurrentForm();
-      }
+      // Gerar ID único para este container
+      this.formCounter++;
+      const uniqueId = `shortcode3-container-${this.formCounter}`;
 
-      // Define o novo container como ativo
-      this.currentFormContainer = containerElement;
+      console.log(`Inicializando formulário com ID: ${uniqueId}`);
 
       // Carrega o script se necessário
       await this.loadScript();
 
-      // Limpa o container e cria o formulário
+      // Limpa o container
       containerElement.innerHTML = '';
 
-      // Remove qualquer container duplicado existente
-      const existingContainer = document.getElementById('shortcode3-e67a38fad5973ddb16a8');
-      if (existingContainer && existingContainer.parentElement !== containerElement) {
-        existingContainer.remove();
-      }
-
-      // Cria o HTML do formulário
+      // Cria o HTML do formulário com ID único
       const formHTML = `
-        <div role="main" id="shortcode3-e67a38fad5973ddb16a8" style="display: none;"></div>
+        <div role="main" id="${uniqueId}" style="display: none;"></div>
       `;
 
       containerElement.innerHTML = formHTML;
+      this.activeContainers.set(containerElement, uniqueId);
 
       // Aguarda um pouco para garantir que o DOM foi atualizado
       await new Promise(resolve => setTimeout(resolve, 500));
 
       // Inicializa o formulário RD Station
       if (window.RDStationForms) {
-        new window.RDStationForms('shortcode3-e67a38fad5973ddb16a8', 'UA-150032078-1').createForm();
-        console.log('RDStation Form criado com sucesso');
-        this.isFormLoaded = true;
+        new window.RDStationForms(uniqueId, 'UA-150032078-1').createForm();
+        console.log(`RDStation Form criado com sucesso para ID: ${uniqueId}`);
         return true;
       } else {
         console.error('RDStationForms não disponível');
@@ -120,37 +112,49 @@ class RDStationManager {
   }
 
   /**
-   * Remove o formulário atual
-   */
-  private clearCurrentForm(): void {
-    if (this.currentFormContainer) {
-      const existingContainer = this.currentFormContainer.querySelector('#shortcode3-e67a38fad5973ddb16a8');
-      if (existingContainer) {
-        existingContainer.remove();
-      }
-    }
-    this.isFormLoaded = false;
-  }
-
-  /**
    * Envia dados através do formulário RD Station ativo
    */
   async submitForm(formData: { name: string; email: string; phone: string }): Promise<boolean> {
     try {
-      if (!this.isFormLoaded) {
-        console.warn('Formulário RD Station não está carregado');
+      console.log('RDStationManager.submitForm chamado com:', formData);
+
+      if (this.activeContainers.size === 0) {
+        console.warn('Nenhum formulário RD Station está ativo');
         return false;
       }
 
-      const container = document.querySelector('#shortcode3-e67a38fad5973ddb16a8');
-      if (!container) {
-        console.warn('Container do formulário não encontrado');
-        return false;
+      // Procura pelo primeiro container ativo disponível
+      let containerFound = null;
+      let containerElement = null;
+
+      for (const [element, containerId] of this.activeContainers) {
+        const container = document.querySelector(`#${containerId}`);
+        console.log(`Procurando container ID: ${containerId}`, container);
+
+        if (container) {
+          containerFound = container;
+          containerElement = element;
+          break;
+        }
+      }
+
+      if (!containerFound) {
+        console.warn('Nenhum container do formulário foi encontrado no DOM');
+        // Tentar procurar qualquer container RD Station
+        const alternativeContainer = document.querySelector('[id*="shortcode"]') ||
+                                   document.querySelector('.rdstation-form') ||
+                                   document.querySelector('[data-rd-form]');
+        console.log('Container alternativo encontrado:', alternativeContainer);
+
+        if (alternativeContainer) {
+          containerFound = alternativeContainer;
+        } else {
+          return false;
+        }
       }
 
       // Procura o formulário RDStation
-      const rdForm = container.querySelector('form') ||
-                     document.querySelector('#shortcode3-e67a38fad5973ddb16a8 form') ||
+      const rdForm = containerFound.querySelector('form') ||
                      document.querySelector('form[data-rd-form]') ||
                      document.querySelector('.rdstation-form form');
 
@@ -214,7 +218,26 @@ class RDStationManager {
    * Verifica se o formulário está carregado e pronto
    */
   isReady(): boolean {
-    return this.isFormLoaded && !!document.querySelector('#shortcode3-e67a38fad5973ddb16a8');
+    for (const [element, containerId] of this.activeContainers) {
+      if (document.querySelector(`#${containerId}`)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Remove um container específico
+   */
+  removeContainer(containerElement: HTMLElement): void {
+    if (this.activeContainers.has(containerElement)) {
+      const containerId = this.activeContainers.get(containerElement);
+      const container = document.querySelector(`#${containerId}`);
+      if (container) {
+        container.remove();
+      }
+      this.activeContainers.delete(containerElement);
+    }
   }
 }
 

@@ -17,15 +17,7 @@ export const generateStaticMapUrl = (options: StaticMapOptions): string => {
     marker = true
   } = options;
 
-  const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
-
-  // Debug log para verificar se a API key está sendo carregada
-  console.log('API Key disponível:', apiKey ? 'Sim' : 'Não');
-
-  if (!apiKey) {
-    console.error('VITE_GOOGLE_MAPS_API_KEY não encontrada nas variáveis de ambiente');
-    return '';
-  }
+  const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || 'AIzaSyAhJ8Gwj8myDXFR7UaLADc7PJAWe7mLERU';
 
   const encodedAddress = encodeURIComponent(address);
 

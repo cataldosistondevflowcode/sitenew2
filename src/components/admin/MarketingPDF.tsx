@@ -1473,7 +1473,7 @@ const MarketingPDF = () => {
     if (!address) return null;
     
     const encodedAddress = encodeURIComponent(address);
-    const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY; // Chave da API do Google Maps do projeto
+    const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || 'AIzaSyAhJ8Gwj8myDXFR7UaLADc7PJAWe7mLERU'; // Chave da API do Google Maps do projeto
     
     return `https://maps.googleapis.com/maps/api/staticmap?center=${encodedAddress}&zoom=15&size=400x300&markers=color:red%7C${encodedAddress}&key=${apiKey}`;
   };

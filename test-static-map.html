@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Teste Static Maps</title>
+</head>
+<body>
+    <h1>Teste da Static Maps API</h1>
+
+    <!-- Teste direto com a API key -->
+    <p>Teste com endereço: "Rua das Flores, Centro, Rio de Janeiro, RJ"</p>
+    <img src="https://maps.googleapis.com/maps/api/staticmap?center=Rua%20das%20Flores%2C%20Centro%2C%20Rio%20de%20Janeiro%2C%20RJ&zoom=15&size=400x200&maptype=roadmap&key=AIzaSyAhJ8Gwj8myDXFR7UaLADc7PJAWe7mLERU&markers=color:red%7CRua%20das%20Flores%2C%20Centro%2C%20Rio%20de%20Janeiro%2C%20RJ" alt="Teste do mapa estático">
+
+    <script>
+        // Teste se a variável de ambiente está sendo carregada
+        console.log('Environment test - API Key available:', 'AIzaSyAhJ8Gwj8myDXFR7UaLADc7PJAWe7mLERU' ? 'Sim' : 'Não');
+    </script>
+</body>
+</html>

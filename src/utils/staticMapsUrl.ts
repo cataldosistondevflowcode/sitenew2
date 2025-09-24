@@ -18,6 +18,15 @@ export const generateStaticMapUrl = (options: StaticMapOptions): string => {
   } = options;
 
   const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+
+  // Debug log para verificar se a API key está sendo carregada
+  console.log('API Key disponível:', apiKey ? 'Sim' : 'Não');
+
+  if (!apiKey) {
+    console.error('VITE_GOOGLE_MAPS_API_KEY não encontrada nas variáveis de ambiente');
+    return '';
+  }
+
   const encodedAddress = encodeURIComponent(address);
 
   let url = `https://maps.googleapis.com/maps/api/staticmap?`;
@@ -31,5 +40,6 @@ export const generateStaticMapUrl = (options: StaticMapOptions): string => {
     url += `&markers=color:red%7C${encodedAddress}`;
   }
 
+  console.log('URL do mapa gerada:', url);
   return url;
 };

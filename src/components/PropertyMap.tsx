@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ImageOff, Loader2 } from 'lucide-react';
 import { loadGoogleMaps } from '../integrations/googlemaps/client';
 import { formatPropertyAddress } from '../utils/addressFormatter';
 import { geocodeCache } from '../utils/geocodeCache';
@@ -21,6 +21,8 @@ export const PropertyMap: React.FC<PropertyMapProps> = ({ property, rawPropertyD
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [mapLoaded, setMapLoaded] = useState(false);
   const [streetViewLoaded, setStreetViewLoaded] = useState(false);
+  const [imageLoadError, setImageLoadError] = useState(false);
+  const [imageLoading, setImageLoading] = useState(!isImageNotFound);
   const mapRef = useRef<HTMLDivElement>(null);
   const streetViewRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<google.maps.Map | null>(null);
@@ -34,10 +36,26 @@ export const PropertyMap: React.FC<PropertyMapProps> = ({ property, rawPropertyD
 
   const nextImage = () => {
     setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
+    setImageLoading(true);
+    setImageLoadError(false);
   };
 
   const prevImage = () => {
     setCurrentImageIndex((prevIndex) => (prevIndex - 1 + images.length) % images.length);
+    setImageLoading(true);
+    setImageLoadError(false);
+  };
+
+  // Handle image load events
+  const handleImageLoad = () => {
+    setImageLoading(false);
+    setImageLoadError(false);
+  };
+
+  const handleImageError = () => {
+    console.log('Erro ao carregar imagem da página do imóvel:', images[currentImageIndex]);
+    setImageLoading(false);
+    setImageLoadError(true);
   };
 
   const getFullAddress = () => {
@@ -264,11 +282,55 @@ export const PropertyMap: React.FC<PropertyMapProps> = ({ property, rawPropertyD
 
       <div className="relative rounded-lg overflow-hidden" style={{ height: '400px' }}>
         {activeTab === 'foto' && !isImageNotFound && (
-          <img 
-            src={images[currentImageIndex]} 
-            alt={property.title || 'Imagem da propriedade'} 
-            className="w-full h-full object-cover"
-          />
+          <div className="relative w-full h-full">
+            {/* Estado de loading */}
+            {imageLoading && (
+              <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
+                <Loader2 className="w-12 h-12 text-gray-400 animate-spin mb-3" />
+                <span className="text-lg text-gray-500 font-medium">Carregando imagem...</span>
+              </div>
+            )}
+
+            {/* Estado de erro */}
+            {imageLoadError && !imageLoading && (
+              <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
+                <ImageOff className="w-16 h-16 text-gray-300 mb-4" />
+                <span className="text-lg text-gray-400 font-medium mb-2">Falha ao carregar imagem</span>
+                <span className="text-sm text-gray-400 text-center px-6">
+                  Esta imagem não pôde ser exibida. Tente visualizar outras imagens ou use as abas Mapa/Visão da rua.
+                </span>
+              </div>
+            )}
+
+            {/* Imagem */}
+            <img
+              src={images[currentImageIndex]}
+              alt={property.title || 'Imagem da propriedade'}
+              className={`w-full h-full object-cover transition-opacity duration-300 ${
+                imageLoading || imageLoadError ? 'opacity-0' : 'opacity-100'
+              }`}
+              onLoad={handleImageLoad}
+              onError={handleImageError}
+            />
+
+            {/* Controles de navegação das imagens - só aparecem se não há erro */}
+            {!imageLoadError && images.length > 1 && !imageLoading && (
+              <>
+                <button
+                  onClick={prevImage}
+                  className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-70 transition-all"
+                >
+                  <ChevronLeft className="w-6 h-6" />
+                </button>
+                <button
+                  onClick={nextImage}
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-70 transition-all"
+                >
+                  <ChevronRight className="w-6 h-6" />
+                </button>
+              </>
+            )}
+          </div>
         )}
 
         {activeTab === 'mapa' && (

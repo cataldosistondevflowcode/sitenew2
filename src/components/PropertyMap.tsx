@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { loadGoogleMaps } from '../integrations/googlemaps/client';
 import { formatPropertyAddress } from '../utils/addressFormatter';
+import { geocodeCache } from '../utils/geocodeCache';
 
 interface PropertyMapProps {
   property: {
@@ -51,44 +52,72 @@ export const PropertyMap: React.FC<PropertyMapProps> = ({ property, rawPropertyD
 
   const initializeMap = async () => {
     if (!mapRef.current) return;
-    
+
     // Reset loading state if element is not ready
     if (mapLoaded && !mapInstanceRef.current) {
       setMapLoaded(false);
     }
-    
+
     if (mapLoaded && mapInstanceRef.current) return;
-    
+
     try {
       const google = await loadGoogleMaps();
-      const geocoder = new google.maps.Geocoder();
       const address = getFullAddress();
-      
+
       if (!address) {
         console.warn('No address available for mapping');
         return;
       }
 
-      geocoder.geocode({ address }, (results, status) => {
-        if (status === 'OK' && results && results[0] && mapRef.current) {
-          const map = new google.maps.Map(mapRef.current, {
-            zoom: 16,
-            center: results[0].geometry.location,
-            mapTypeId: google.maps.MapTypeId.ROADMAP,
-          });
+      // Verificar cache primeiro
+      const cachedCoordinates = geocodeCache.get(address);
 
-          new google.maps.Marker({
-            position: results[0].geometry.location,
-            map: map,
-            title: property.title || 'Propriedade',
-          });
+      if (cachedCoordinates) {
+        // Usar coordenadas do cache
+        const map = new google.maps.Map(mapRef.current, {
+          zoom: 16,
+          center: cachedCoordinates,
+          mapTypeId: google.maps.MapTypeId.ROADMAP,
+        });
 
-          mapInstanceRef.current = map;
-          setMapLoaded(true);
-        } else {
-          console.error('Geocoding failed:', status);
-        }
-      });
+        new google.maps.Marker({
+          position: cachedCoordinates,
+          map: map,
+          title: property.title || 'Propriedade',
+        });
+
+        mapInstanceRef.current = map;
+        setMapLoaded(true);
+      } else {
+        // Fazer geocoding e salvar no cache
+        const geocoder = new google.maps.Geocoder();
+
+        geocoder.geocode({ address }, (results, status) => {
+          if (status === 'OK' && results && results[0] && mapRef.current) {
+            const coordinates = results[0].geometry.location;
+
+            // Salvar no cache
+            geocodeCache.set(address, coordinates);
+
+            const map = new google.maps.Map(mapRef.current, {
+              zoom: 16,
+              center: coordinates,
+              mapTypeId: google.maps.MapTypeId.ROADMAP,
+            });
+
+            new google.maps.Marker({
+              position: coordinates,
+              map: map,
+              title: property.title || 'Propriedade',
+            });
+
+            mapInstanceRef.current = map;
+            setMapLoaded(true);
+          } else {
+            console.error('Geocoding failed:', status);
+          }
+        });
+      }
     } catch (error) {
       console.error('Error loading Google Maps:', error);
     }
@@ -96,38 +125,60 @@ export const PropertyMap: React.FC<PropertyMapProps> = ({ property, rawPropertyD
 
   const initializeStreetView = async () => {
     if (!streetViewRef.current) return;
-    
+
     // Reset loading state if element is not ready
     if (streetViewLoaded && !streetViewInstanceRef.current) {
       setStreetViewLoaded(false);
     }
-    
+
     if (streetViewLoaded && streetViewInstanceRef.current) return;
-    
+
     try {
       const google = await loadGoogleMaps();
-      const geocoder = new google.maps.Geocoder();
       const address = getFullAddress();
-      
+
       if (!address) {
         console.warn('No address available for Street View');
         return;
       }
 
-      geocoder.geocode({ address }, (results, status) => {
-        if (status === 'OK' && results && results[0] && streetViewRef.current) {
-          const panorama = new google.maps.StreetViewPanorama(streetViewRef.current, {
-            position: results[0].geometry.location,
-            pov: { heading: 34, pitch: 10 },
-            zoom: 1,
-          });
+      // Verificar cache primeiro
+      const cachedCoordinates = geocodeCache.get(address);
 
-          streetViewInstanceRef.current = panorama;
-          setStreetViewLoaded(true);
-        } else {
-          console.error('Geocoding failed for Street View:', status);
-        }
-      });
+      if (cachedCoordinates) {
+        // Usar coordenadas do cache
+        const panorama = new google.maps.StreetViewPanorama(streetViewRef.current, {
+          position: cachedCoordinates,
+          pov: { heading: 34, pitch: 10 },
+          zoom: 1,
+        });
+
+        streetViewInstanceRef.current = panorama;
+        setStreetViewLoaded(true);
+      } else {
+        // Fazer geocoding e salvar no cache
+        const geocoder = new google.maps.Geocoder();
+
+        geocoder.geocode({ address }, (results, status) => {
+          if (status === 'OK' && results && results[0] && streetViewRef.current) {
+            const coordinates = results[0].geometry.location;
+
+            // Salvar no cache
+            geocodeCache.set(address, coordinates);
+
+            const panorama = new google.maps.StreetViewPanorama(streetViewRef.current, {
+              position: coordinates,
+              pov: { heading: 34, pitch: 10 },
+              zoom: 1,
+            });
+
+            streetViewInstanceRef.current = panorama;
+            setStreetViewLoaded(true);
+          } else {
+            console.error('Geocoding failed for Street View:', status);
+          }
+        });
+      }
     } catch (error) {
       console.error('Error loading Street View:', error);
     }

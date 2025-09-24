@@ -1,11 +1,11 @@
 import { MapPin, Calendar, DollarSign, SquareStack, Car, Share2 } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useEffect, useRef, useState } from "react";
-import { loadGoogleMaps } from "../integrations/googlemaps/client";
+import { useState } from "react";
 import { formatPropertyAddress } from "../utils/addressFormatter";
 import { createPropertyUrl } from "../utils/slugUtils";
 import { ShareModal } from "./ShareModal";
 import { supabase } from "@/integrations/supabase/client";
+import { generateStaticMapUrl } from "../utils/staticMapsUrl";
 
 interface PropertyCardProps {
   id: number;
@@ -47,10 +47,9 @@ export const PropertyCard = ({
   onContactClick,
 }: PropertyCardProps) => {
   
-  const mapRef = useRef<HTMLDivElement>(null);
   const [isImageNotFound, setIsImageNotFound] = useState(
-    image.includes('/not-found') || 
-    !image || 
+    image.includes('/not-found') ||
+    !image ||
     image === '' ||
     image === 'https://kmiblhbe.manus.space/imovel_sao_goncalo.jpeg'
   );
@@ -59,10 +58,10 @@ export const PropertyCard = ({
   // Função para registrar clique no "Saiba Mais"
   const handleSaibaMaisClick = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    
+
     try {
       console.log('Registrando clique para propriedade ID:', id);
-      
+
       // Registrar o clique na nova tabela específica
       const { data, error } = await supabase.from('property_clicks').insert({
         property_id: id,
@@ -82,13 +81,6 @@ export const PropertyCard = ({
     }
   };
 
-  // Initialize map when image is not found
-  useEffect(() => {
-    if (isImageNotFound && mapRef.current && rawPropertyData) {
-      initializeMap();
-    }
-  }, [isImageNotFound, rawPropertyData]);
-
   // Handle image load error
   const handleImageError = () => {
     setIsImageNotFound(true);
@@ -104,34 +96,17 @@ export const PropertyCard = ({
     );
   };
 
-  const initializeMap = async () => {
-    if (!mapRef.current) return;
-    
-    try {
-      const google = await loadGoogleMaps();
-      const geocoder = new google.maps.Geocoder();
-      const address = getFullAddress();
+  // Generate static map URL when image is not found
+  const getStaticMapUrl = () => {
+    const address = getFullAddress();
+    if (!address) return '';
 
-      geocoder.geocode({ address }, (results, status) => {
-        if (status === 'OK' && results && results[0] && mapRef.current) {
-          const map = new google.maps.Map(mapRef.current, {
-            zoom: 15,
-            center: results[0].geometry.location,
-            mapTypeId: google.maps.MapTypeId.ROADMAP,
-            disableDefaultUI: true,
-            zoomControl: true,
-          });
-
-          new google.maps.Marker({
-            position: results[0].geometry.location,
-            map: map,
-            title: title,
-          });
-        }
-      });
-    } catch (error) {
-      console.error('Error loading Google Maps:', error);
-    }
+    return generateStaticMapUrl({
+      address,
+      width: 400,
+      height: 200,
+      zoom: 15
+    });
   };
   
   // Função para formatar data no padrão brasileiro
@@ -209,10 +184,17 @@ export const PropertyCard = ({
         {/* Imagem com altura fixa ou Mapa quando imagem não encontrada */}
         <div className="relative flex-shrink-0 property-card-header">
           {isImageNotFound ? (
-            <div 
-              ref={mapRef} 
-              className="w-full h-40 sm:h-44 md:h-48 bg-gray-200"
-            />
+            getStaticMapUrl() ? (
+              <img
+                src={getStaticMapUrl()}
+                alt="Mapa da propriedade"
+                className="w-full h-40 sm:h-44 md:h-48 object-cover"
+              />
+            ) : (
+              <div className="w-full h-40 sm:h-44 md:h-48 bg-gray-200 flex items-center justify-center">
+                <span className="text-gray-500">Localização indisponível</span>
+              </div>
+            )
           ) : (
             <img 
               src={image} 

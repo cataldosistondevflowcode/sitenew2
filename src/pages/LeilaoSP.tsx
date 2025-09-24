@@ -87,7 +87,7 @@ const ITEMS_PER_PAGE = 40;
 // Definição dos bairros por zona de São Paulo (complementado)
 const bairrosPorZonaSP: Record<string, string[]> = {
   'CENTRAL': [
-    '12º Subd - Cambuci', 'Anhangabaú', 'Barra Funda', 'Bela Vista', 'Bom Retiro', 'Brás',
+    '12º Subd - Cambuci', 'Aclimação', 'Anhangabaú', 'Barra Funda', 'Bela Vista', 'Bom Retiro', 'Brás',
     'Cambuci', 'Centro', 'Conjunto Residencial José Bonifácio', 'Consolação', 'Glicério',
     'Higienópolis', 'Jardim Bela Vista', 'Jardim Bela Vista (Zona Norte)', 'Jardim Da Glória',
     'José Bonifácio', 'Liberdade', 'Luz', 'Mercado', 'Pacaembú', 'Paraíso',
@@ -153,7 +153,7 @@ const bairrosPorZonaSP: Record<string, string[]> = {
     'Vila Remédios'
   ],
   'SUL': [
-    'Aclimação', 'Alto Da Boa Vista', 'Barragem', 'Brooklin', 'Campo Grande', 'Campo Limpo',
+    'Alto Da Boa Vista', 'Barragem', 'Brooklin', 'Campo Grande', 'Campo Limpo',
     'Capela', 'Capela Do Socorro', 'Capão Redondo', 'Centro Empresarial',
     'Chacara Inglesa', 'Chacara Klabin', 'Chacara Santa Maria',
     'Chacara São João', 'Chácara Flora', 'Cidade Dutra',

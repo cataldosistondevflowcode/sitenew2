@@ -314,9 +314,9 @@ export const PropertyMap: React.FC<PropertyMapProps> = ({ property, rawPropertyD
             {imageLoadError && !imageLoading && (
               <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
                 <ImageOff className="w-16 h-16 text-gray-300 mb-4" />
-                <span className="text-lg text-gray-400 font-medium mb-2">Falha ao carregar imagem</span>
+                <span className="text-lg text-gray-400 font-medium mb-2">Essa imagem não pode ser carregada</span>
                 <span className="text-sm text-gray-400 text-center px-6">
-                  Esta imagem não pôde ser exibida. Tente visualizar outras imagens ou use as abas Mapa/Visão da rua.
+                  Cheque o mapa e a visão da rua para mais informações sobre este imóvel.
                 </span>
               </div>
             )}

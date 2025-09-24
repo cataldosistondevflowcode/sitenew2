@@ -8,7 +8,6 @@ import { FeaturedVideos } from "@/components/FeaturedVideos";
 import { SuccessCases } from "@/components/SuccessCases";
 import { ArticlesSection } from "@/components/articles";
 import { VideoPlayerContainer } from "@/components/video";
-import { NewsletterSignup } from "@/components/newsletter2";
 import { TestimonialsSection } from "@/components/testimonials";
 import { NewsletterBottomSection } from "@/components/NewsletterBottomSection";
 import { Footer } from "@/components/Footer";
@@ -2879,7 +2878,6 @@ const LeilaoRJ = () => {
       <FeaturedVideos />
 
       {/* Newsletter Signup Section */}
-      <NewsletterSignup />
       
       {/* Success Cases Section */}
       <SuccessCases />

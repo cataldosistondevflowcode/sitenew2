@@ -59,6 +59,7 @@ export const PropertyCard = ({
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [mapLoaded, setMapLoaded] = useState(false);
   const [mapLoading, setMapLoading] = useState(false);
+  const [imageLoadError, setImageLoadError] = useState(false);
 
   // Função para registrar clique no "Saiba Mais"
   const handleSaibaMaisClick = async (e: React.MouseEvent) => {
@@ -88,6 +89,8 @@ export const PropertyCard = ({
 
   // Handle image load error
   const handleImageError = () => {
+    console.log('Erro ao carregar imagem:', image);
+    setImageLoadError(true);
     setIsImageNotFound(true);
   };
 
@@ -101,9 +104,9 @@ export const PropertyCard = ({
     );
   };
 
-  // Initialize map when image is not found
+  // Initialize map when image is not found or failed to load
   const initializeMap = async () => {
-    if (!mapRef.current || !isImageNotFound || mapLoaded || mapLoading) return;
+    if (!mapRef.current || (!isImageNotFound && !imageLoadError) || mapLoaded || mapLoading) return;
 
     setMapLoading(true);
 
@@ -177,13 +180,13 @@ export const PropertyCard = ({
 
   // Carregar mapa quando necessário
   useEffect(() => {
-    if (isImageNotFound && mapRef.current && rawPropertyData) {
+    if ((isImageNotFound || imageLoadError) && mapRef.current && rawPropertyData) {
       const timer = setTimeout(() => {
         initializeMap();
-      }, 100);
+      }, imageLoadError ? 500 : 100); // Delay extra se a imagem falhou
       return () => clearTimeout(timer);
     }
-  }, [isImageNotFound, rawPropertyData]);
+  }, [isImageNotFound, imageLoadError, rawPropertyData]);
   
   // Função para formatar data no padrão brasileiro
   const formatDateToBrazilian = (dateString: string) => {
@@ -257,9 +260,9 @@ export const PropertyCard = ({
                   rawPropertyData?.estado
                 )} target="_blank" rel="noopener noreferrer" className="block cursor-pointer h-full property-card-container">
       <div className="bg-[#191919] rounded-lg shadow-lg overflow-hidden text-white hover:shadow-xl transition-shadow duration-300 property-card-layout">
-        {/* Imagem com altura fixa ou Mapa quando imagem não encontrada */}
+        {/* Imagem com altura fixa ou Estados quando imagem não encontrada/inválida */}
         <div className="relative flex-shrink-0 property-card-header">
-          {isImageNotFound ? (
+          {isImageNotFound || imageLoadError ? (
             <div className="relative w-full h-40 sm:h-44 md:h-48 bg-gradient-to-br from-gray-100 to-gray-200">
               {/* Estado de loading */}
               {mapLoading && !mapLoaded && (
@@ -273,9 +276,14 @@ export const PropertyCard = ({
               {!mapLoading && !mapLoaded && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
                   <ImageOff className="w-12 h-12 text-gray-300 mb-3" />
-                  <span className="text-sm text-gray-400 font-medium mb-1">Imagem não disponível</span>
+                  <span className="text-sm text-gray-400 font-medium mb-1">
+                    {imageLoadError ? 'Falha ao carregar imagem' : 'Imagem não disponível'}
+                  </span>
                   <span className="text-xs text-gray-400 text-center px-4">
-                    {getFullAddress() ? 'Carregando mapa...' : 'Endereço não informado'}
+                    {getFullAddress()
+                      ? (imageLoadError ? 'Carregando localização alternativa...' : 'Carregando mapa...')
+                      : 'Endereço não informado'
+                    }
                   </span>
                 </div>
               )}

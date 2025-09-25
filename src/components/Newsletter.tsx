@@ -11,11 +11,13 @@ export const Newsletter = ({ onWhatsAppClick }: NewsletterProps) => {
   
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [submitMessage, setSubmitMessage] = React.useState<string>("");
+  const [isSuccess, setIsSuccess] = React.useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     setSubmitMessage("");
+    setIsSuccess(false);
 
     try {
       const name = nameRef.current?.value || "";
@@ -43,12 +45,19 @@ export const Newsletter = ({ onWhatsAppClick }: NewsletterProps) => {
       });
 
       // Como usamos no-cors, não podemos verificar a resposta, então assumimos sucesso
-      setSubmitMessage("Obrigado! Sua inscrição foi realizada com sucesso!");
-      
+      setIsSuccess(true);
+      setSubmitMessage("✅ Inscrição realizada com sucesso! Você receberá as oportunidades de leilões em breve.");
+
       // Limpa os campos
       if (nameRef.current) nameRef.current.value = "";
       if (emailRef.current) emailRef.current.value = "";
       if (phoneRef.current) phoneRef.current.value = "";
+
+      // Remove mensagem de sucesso após 5 segundos
+      setTimeout(() => {
+        setIsSuccess(false);
+        setSubmitMessage("");
+      }, 5000);
       
     } catch (error) {
       console.error('Erro ao enviar formulário:', error);
@@ -85,12 +94,19 @@ export const Newsletter = ({ onWhatsAppClick }: NewsletterProps) => {
         form.submit();
         document.body.removeChild(form);
         
-        setSubmitMessage("Obrigado! Sua inscrição foi realizada com sucesso!");
-        
+        setIsSuccess(true);
+        setSubmitMessage("✅ Inscrição realizada com sucesso! Você receberá as oportunidades de leilões em breve.");
+
         // Limpa os campos
         if (nameRef.current) nameRef.current.value = "";
         if (emailRef.current) emailRef.current.value = "";
         if (phoneRef.current) phoneRef.current.value = "";
+
+        // Remove mensagem de sucesso após 5 segundos
+        setTimeout(() => {
+          setIsSuccess(false);
+          setSubmitMessage("");
+        }, 5000);
         
       } catch (fallbackError) {
         console.error('Erro no fallback:', fallbackError);
@@ -113,12 +129,18 @@ export const Newsletter = ({ onWhatsAppClick }: NewsletterProps) => {
               <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-6 text-center lg:text-left">Receba nossa newsletter</h2>
               <p className="text-base sm:text-lg mb-6 sm:mb-8 text-center lg:text-left">Oportunidades de negócios, dicas sobre leilões, artigos e casos etc</p>
               
-              {submitMessage && (
-                <div className={`mb-4 p-3 rounded-md text-center ${
-                  submitMessage.includes("sucesso") 
-                    ? "bg-green-600/20 text-green-200 border border-green-600" 
-                    : "bg-red-600/20 text-red-200 border border-red-600"
-                }`}>
+              {/* Mensagem de Sucesso */}
+              {isSuccess && (
+                <div className="mb-4 p-4 bg-green-600 bg-opacity-20 border border-green-500 rounded-md">
+                  <p className="text-white text-center font-medium">
+                    {submitMessage}
+                  </p>
+                </div>
+              )}
+
+              {/* Mensagens de Erro */}
+              {submitMessage && !isSuccess && (
+                <div className="mb-4 p-3 rounded-md text-center bg-red-600/20 text-red-200 border border-red-600">
                   {submitMessage}
                 </div>
               )}

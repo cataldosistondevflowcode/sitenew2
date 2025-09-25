@@ -1,20 +1,15 @@
 "use client";
-import React, { useRef, useState, useEffect } from 'react';
-import RDStationManager from "@/utils/rdStationManager";
+import React, { useState } from 'react';
 
 interface NewsletterBottomSectionProps {
   onWhatsAppClick?: () => void;
   onOpportunityClick?: () => void;
 }
 
-export const NewsletterBottomSection: React.FC<NewsletterBottomSectionProps> = ({ 
-  onWhatsAppClick, 
-  onOpportunityClick 
+export const NewsletterBottomSection: React.FC<NewsletterBottomSectionProps> = ({
+  onWhatsAppClick,
+  onOpportunityClick
 }) => {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [isFormLoaded, setIsFormLoaded] = useState(false);
-  
-  // Estados para os campos da máscara visual
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -22,61 +17,96 @@ export const NewsletterBottomSection: React.FC<NewsletterBottomSectionProps> = (
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [submitMessage, setSubmitMessage] = useState<string>("");
 
-  useEffect(() => {
-    const loadForm = async () => {
-      if (containerRef.current) {
-        console.log('Inicializando formulário RD Station...');
-        const rdManager = RDStationManager.getInstance();
-        const success = await rdManager.initializeForm(containerRef.current);
-        console.log('Formulário RD Station inicializado:', success);
-        setIsFormLoaded(success);
-      }
-    };
-
-    loadForm();
-  }, []);
-
-  // Função para enviar dados através do formulário RDStation oculto
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Formulário submetido, dados:', formData);
 
     if (!formData.name || !formData.email || !formData.phone) {
-      console.log('Campos obrigatórios não preenchidos');
+      setSubmitMessage("Por favor, preencha todos os campos obrigatórios.");
       return;
     }
 
     setIsSubmitting(true);
+    setSubmitMessage("");
+    setIsSuccess(false);
 
     try {
-      // Aguarda o formulário RDStation estar carregado
-      if (!isFormLoaded) {
-        console.error('Formulário RD Station não está carregado');
-        setIsSubmitting(false);
-        return;
-      }
+      // Envia dados diretamente para a API do RDStation
+      const formDataRD = new FormData();
+      formDataRD.append('name', formData.name);
+      formDataRD.append('email', formData.email);
+      formDataRD.append('personal_phone', formData.phone);
+      formDataRD.append('token_rdstation', 'de34ae318d19588a9ae8');
+      formDataRD.append('identificador', 'newsletter-site-de34ae318d19588a9ae8');
 
-      console.log('Enviando dados para RD Station...');
-      const rdManager = RDStationManager.getInstance();
-      const success = await rdManager.submitForm(formData);
-      console.log('Resultado do envio:', success);
+      const response = await fetch('https://api.rd.services/platform/conversions', {
+        method: 'POST',
+        body: formDataRD,
+        mode: 'no-cors' // Necessário para CORS
+      });
 
-      if (success) {
-        // Reset form após envio - SEM alert
-        setTimeout(() => {
-          setFormData({ name: '', email: '', phone: '' });
-          setIsSubmitting(false);
-          setIsSuccess(true);
-          // Remove mensagem de sucesso após 5 segundos
-          setTimeout(() => setIsSuccess(false), 5000);
-        }, 1000);
-      } else {
-        console.error('Container do formulário não encontrado');
-        setIsSubmitting(false);
-      }
+      // Como usamos no-cors, assumimos sucesso
+      setIsSuccess(true);
+      setSubmitMessage("✅ Inscrição realizada com sucesso! Você receberá as oportunidades de leilões em breve.");
+
+      // Limpa os campos
+      setFormData({ name: '', email: '', phone: '' });
+
+      // Remove mensagem de sucesso após 5 segundos
+      setTimeout(() => {
+        setIsSuccess(false);
+        setSubmitMessage("");
+      }, 5000);
+
     } catch (error) {
       console.error('Erro ao enviar formulário:', error);
+
+      // Fallback: tenta via formulário oculto
+      try {
+        const form = document.createElement('form');
+        form.style.display = 'none';
+        form.method = 'POST';
+        form.action = 'https://api.rd.services/platform/conversions';
+        form.target = '_blank';
+
+        const inputs = [
+          { name: 'name', value: formData.name },
+          { name: 'email', value: formData.email },
+          { name: 'personal_phone', value: formData.phone },
+          { name: 'token_rdstation', value: 'de34ae318d19588a9ae8' },
+          { name: 'identificador', value: 'newsletter-site-de34ae318d19588a9ae8' }
+        ];
+
+        inputs.forEach(({ name, value }) => {
+          const input = document.createElement('input');
+          input.type = 'hidden';
+          input.name = name;
+          input.value = value;
+          form.appendChild(input);
+        });
+
+        document.body.appendChild(form);
+        form.submit();
+        document.body.removeChild(form);
+
+        setIsSuccess(true);
+        setSubmitMessage("✅ Inscrição realizada com sucesso! Você receberá as oportunidades de leilões em breve.");
+
+        // Limpa os campos
+        setFormData({ name: '', email: '', phone: '' });
+
+        // Remove mensagem de sucesso após 5 segundos
+        setTimeout(() => {
+          setIsSuccess(false);
+          setSubmitMessage("");
+        }, 5000);
+
+      } catch (fallbackError) {
+        console.error('Erro no fallback:', fallbackError);
+        setSubmitMessage("Ops! Houve um erro. Tente novamente em instantes.");
+      }
+    } finally {
       setIsSubmitting(false);
     }
   };
@@ -89,13 +119,20 @@ export const NewsletterBottomSection: React.FC<NewsletterBottomSectionProps> = (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 items-center">
             <div className="text-white">
               <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-6 text-center lg:text-left">Receba nossa newsletter</h2>
-              
+
               {/* Mensagem de Sucesso */}
               {isSuccess && (
                 <div className="mb-4 p-4 bg-green-600 bg-opacity-20 border border-green-500 rounded-md">
                   <p className="text-white text-center font-medium">
-                    ✅ Inscrição realizada com sucesso! Você receberá as oportunidades de leilões em breve.
+                    {submitMessage}
                   </p>
+                </div>
+              )}
+
+              {/* Mensagens de Erro */}
+              {submitMessage && !isSuccess && (
+                <div className="mb-4 p-3 rounded-md text-center bg-red-600/20 text-red-200 border border-red-600">
+                  {submitMessage}
                 </div>
               )}
               
@@ -176,12 +213,6 @@ export const NewsletterBottomSection: React.FC<NewsletterBottomSectionProps> = (
           </div>
         </div>
       </div>
-      
-      {/* Container oculto para o formulário RDStation */}
-      <div 
-        ref={containerRef}
-        style={{ display: 'none' }}
-      ></div>
     </section>
   );
 };  

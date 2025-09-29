@@ -5,9 +5,9 @@ import { formatPropertyAddress } from "../utils/addressFormatter";
 import { createPropertyUrl } from "../utils/slugUtils";
 import { ShareModal } from "./ShareModal";
 import { supabase } from "@/integrations/supabase/client";
-import { loadGoogleMaps } from "../integrations/googlemaps/client";
-import { geocodeCache } from "../utils/geocodeCache";
-import { mapCache } from "../utils/mapCache";
+import { loadMapbox, geocodeAddress, createMapboxMap, MapboxCoordinates } from "../integrations/mapbox/client";
+import { mapboxGeocodeCache } from "../utils/mapboxCache";
+import { mapboxMapCache } from "../utils/mapboxCache";
 
 interface PropertyCardProps {
   id: number;
@@ -118,36 +118,35 @@ export const PropertyCard = ({
       }
 
       // Verificar cache de mapas primeiro
-      const cachedMap = mapCache.get(address);
+      const cachedMap = mapboxMapCache.get(address);
       if (cachedMap && mapRef.current) {
-        // Reusar mapa do cache
-        mapRef.current.appendChild(cachedMap.map.getDiv());
+        // Reusar mapa do cache - clonar o container do mapa
+        const mapContainer = cachedMap.map.getContainer();
+        const clonedContainer = mapContainer.cloneNode(true) as HTMLElement;
+        mapRef.current.appendChild(clonedContainer);
         setMapLoaded(true);
         setMapLoading(false);
         return;
       }
 
-      const google = await loadGoogleMaps();
+      await loadMapbox();
 
       // Verificar cache de coordenadas
-      const cachedCoordinates = geocodeCache.get(address);
+      const cachedCoordinates = mapboxGeocodeCache.get(address);
 
       if (cachedCoordinates) {
         // Usar coordenadas do cache
-        createMapWithCoordinates(google, cachedCoordinates, address);
+        createMapWithCoordinates(cachedCoordinates, address);
       } else {
         // Fazer geocoding e salvar no cache
-        const geocoder = new google.maps.Geocoder();
-        geocoder.geocode({ address }, (results, status) => {
-          if (status === 'OK' && results && results[0] && mapRef.current) {
-            const coordinates = results[0].geometry.location;
-            geocodeCache.set(address, coordinates);
-            createMapWithCoordinates(google, coordinates, address);
-          } else {
-            setMapLoading(false);
-            console.error('Geocoding failed:', status);
-          }
-        });
+        const coordinates = await geocodeAddress(address);
+        if (coordinates && mapRef.current) {
+          mapboxGeocodeCache.set(address, coordinates);
+          createMapWithCoordinates(coordinates, address);
+        } else {
+          setMapLoading(false);
+          console.error('Geocoding failed for address:', address);
+        }
       }
     } catch (error) {
       console.error('Error loading map:', error);
@@ -155,25 +154,17 @@ export const PropertyCard = ({
     }
   };
 
-  const createMapWithCoordinates = (google: typeof window.google, coordinates: google.maps.LatLng, address: string) => {
+  const createMapWithCoordinates = (coordinates: MapboxCoordinates, address: string) => {
     if (!mapRef.current) return;
 
-    const map = new google.maps.Map(mapRef.current, {
+    const mapInstance = createMapboxMap(mapRef.current, coordinates, {
       zoom: 15,
-      center: coordinates,
-      mapTypeId: google.maps.MapTypeId.ROADMAP,
-      disableDefaultUI: true,
-      gestureHandling: 'none', // Desabilita interação
-    });
-
-    const marker = new google.maps.Marker({
-      position: coordinates,
-      map: map,
+      interactive: false, // Desabilita interação
       title: title,
     });
 
     // Salvar no cache
-    mapCache.set(address, map, marker);
+    mapboxMapCache.set(address, mapInstance);
     setMapLoaded(true);
     setMapLoading(false);
   };

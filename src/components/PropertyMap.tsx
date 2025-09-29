@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ChevronLeft, ChevronRight, ImageOff, Loader2 } from 'lucide-react';
-import { loadGoogleMaps } from '../integrations/googlemaps/client';
+import { loadMapbox, geocodeAddress, createMapboxMap, MapboxCoordinates } from '../integrations/mapbox/client';
 import { formatPropertyAddress } from '../utils/addressFormatter';
-import { geocodeCache } from '../utils/geocodeCache';
+import { mapboxGeocodeCache } from '../utils/mapboxCache';
 
 interface PropertyMapProps {
   property: {
@@ -25,8 +25,8 @@ export const PropertyMap: React.FC<PropertyMapProps> = ({ property, rawPropertyD
   const [imageLoading, setImageLoading] = useState(!isImageNotFound);
   const mapRef = useRef<HTMLDivElement>(null);
   const streetViewRef = useRef<HTMLDivElement>(null);
-  const mapInstanceRef = useRef<google.maps.Map | null>(null);
-  const streetViewInstanceRef = useRef<google.maps.StreetViewPanorama | null>(null);
+  const mapInstanceRef = useRef<any | null>(null);
+  const streetViewInstanceRef = useRef<any | null>(null);
   
   // Criar array apenas com imagens diferentes
   const images = React.useMemo(() => {
@@ -98,7 +98,7 @@ export const PropertyMap: React.FC<PropertyMapProps> = ({ property, rawPropertyD
     if (mapLoaded && mapInstanceRef.current) return;
 
     try {
-      const google = await loadGoogleMaps();
+      await loadMapbox();
       const address = getFullAddress();
 
       if (!address) {
@@ -107,56 +107,39 @@ export const PropertyMap: React.FC<PropertyMapProps> = ({ property, rawPropertyD
       }
 
       // Verificar cache primeiro
-      const cachedCoordinates = geocodeCache.get(address);
+      const cachedCoordinates = mapboxGeocodeCache.get(address);
 
       if (cachedCoordinates) {
         // Usar coordenadas do cache
-        const map = new google.maps.Map(mapRef.current, {
+        const mapInstance = createMapboxMap(mapRef.current, cachedCoordinates, {
           zoom: 16,
-          center: cachedCoordinates,
-          mapTypeId: google.maps.MapTypeId.ROADMAP,
-        });
-
-        new google.maps.Marker({
-          position: cachedCoordinates,
-          map: map,
+          interactive: true,
           title: property.title || 'Propriedade',
         });
 
-        mapInstanceRef.current = map;
+        mapInstanceRef.current = mapInstance.map;
         setMapLoaded(true);
       } else {
         // Fazer geocoding e salvar no cache
-        const geocoder = new google.maps.Geocoder();
+        const coordinates = await geocodeAddress(address);
+        
+        if (coordinates && mapRef.current) {
+          mapboxGeocodeCache.set(address, coordinates);
 
-        geocoder.geocode({ address }, (results, status) => {
-          if (status === 'OK' && results && results[0] && mapRef.current) {
-            const coordinates = results[0].geometry.location;
+          const mapInstance = createMapboxMap(mapRef.current, coordinates, {
+            zoom: 16,
+            interactive: true,
+            title: property.title || 'Propriedade',
+          });
 
-            // Salvar no cache
-            geocodeCache.set(address, coordinates);
-
-            const map = new google.maps.Map(mapRef.current, {
-              zoom: 16,
-              center: coordinates,
-              mapTypeId: google.maps.MapTypeId.ROADMAP,
-            });
-
-            new google.maps.Marker({
-              position: coordinates,
-              map: map,
-              title: property.title || 'Propriedade',
-            });
-
-            mapInstanceRef.current = map;
-            setMapLoaded(true);
-          } else {
-            console.error('Geocoding failed:', status);
-          }
-        });
+          mapInstanceRef.current = mapInstance.map;
+          setMapLoaded(true);
+        } else {
+          console.error('Geocoding failed for address:', address);
+        }
       }
     } catch (error) {
-      console.error('Error loading Google Maps:', error);
+      console.error('Error loading Mapbox:', error);
     }
   };
 

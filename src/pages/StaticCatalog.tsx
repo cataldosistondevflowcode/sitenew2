@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { formatCurrency } from '@/utils/stringUtils';
 import { ExternalLink, MapPin, Calendar, ArrowLeft, Eye, Share2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { loadGoogleMaps } from '@/integrations/googlemaps/client';
+import { loadMapbox, geocodeAddress, createMapboxMap } from '@/integrations/mapbox/client';
 import { formatPropertyAddress } from '@/utils/addressFormatter';
 
 interface Property {
@@ -63,31 +63,22 @@ const PropertyMap = ({ property }: { property: Property }) => {
     if (!mapRef.current || mapLoaded) return;
     
     try {
-      const google = await loadGoogleMaps();
-      const geocoder = new google.maps.Geocoder();
+      await loadMapbox();
       const address = getFullAddress();
 
-      geocoder.geocode({ address }, (results, status) => {
-        if (status === 'OK' && results && results[0] && mapRef.current) {
-          const map = new google.maps.Map(mapRef.current, {
-            zoom: 15,
-            center: results[0].geometry.location,
-            mapTypeId: google.maps.MapTypeId.ROADMAP,
-            disableDefaultUI: true,
-            zoomControl: true,
-          });
+      const coordinates = await geocodeAddress(address);
+      
+      if (coordinates && mapRef.current) {
+        const mapInstance = createMapboxMap(mapRef.current, coordinates, {
+          zoom: 15,
+          interactive: true,
+          title: property.titulo_propriedade,
+        });
 
-          new google.maps.Marker({
-            position: results[0].geometry.location,
-            map: map,
-            title: property.titulo_propriedade,
-          });
-
-          setMapLoaded(true);
-        }
-      });
+        setMapLoaded(true);
+      }
     } catch (error) {
-      console.error('Error loading Google Maps:', error);
+      console.error('Error loading Mapbox:', error);
     }
   };
 

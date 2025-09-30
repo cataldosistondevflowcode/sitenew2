@@ -3,6 +3,7 @@ import { ChevronLeft, ChevronRight, ImageOff, Loader2 } from 'lucide-react';
 import { loadMapbox, geocodeAddress, createMapboxMap, MapboxCoordinates } from '../integrations/mapbox/client';
 import { formatPropertyAddress } from '../utils/addressFormatter';
 import { mapboxGeocodeCache } from '../utils/mapboxCache';
+import { StreetViewEmbed } from './StreetViewEmbed';
 
 interface PropertyMapProps {
   property: {
@@ -20,13 +21,10 @@ export const PropertyMap: React.FC<PropertyMapProps> = ({ property, rawPropertyD
   const [activeTab, setActiveTab] = useState<'foto' | 'mapa' | 'street'>(isImageNotFound ? 'mapa' : 'foto');
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [mapLoaded, setMapLoaded] = useState(false);
-  const [streetViewLoaded, setStreetViewLoaded] = useState(false);
   const [imageLoadError, setImageLoadError] = useState(false);
   const [imageLoading, setImageLoading] = useState(!isImageNotFound);
   const mapRef = useRef<HTMLDivElement>(null);
-  const streetViewRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<any | null>(null);
-  const streetViewInstanceRef = useRef<any | null>(null);
   
   // Criar array apenas com imagens diferentes
   const images = React.useMemo(() => {
@@ -143,67 +141,6 @@ export const PropertyMap: React.FC<PropertyMapProps> = ({ property, rawPropertyD
     }
   };
 
-  const initializeStreetView = async () => {
-    if (!streetViewRef.current) return;
-
-    // Reset loading state if element is not ready
-    if (streetViewLoaded && !streetViewInstanceRef.current) {
-      setStreetViewLoaded(false);
-    }
-
-    if (streetViewLoaded && streetViewInstanceRef.current) return;
-
-    try {
-      const google = await loadGoogleMaps();
-      const address = getFullAddress();
-
-      if (!address) {
-        console.warn('No address available for Street View');
-        return;
-      }
-
-      // Verificar cache primeiro
-      const cachedCoordinates = geocodeCache.get(address);
-
-      if (cachedCoordinates) {
-        // Usar coordenadas do cache
-        const panorama = new google.maps.StreetViewPanorama(streetViewRef.current, {
-          position: cachedCoordinates,
-          pov: { heading: 34, pitch: 10 },
-          zoom: 1,
-        });
-
-        streetViewInstanceRef.current = panorama;
-        setStreetViewLoaded(true);
-      } else {
-        // Fazer geocoding e salvar no cache
-        const geocoder = new google.maps.Geocoder();
-
-        geocoder.geocode({ address }, (results, status) => {
-          if (status === 'OK' && results && results[0] && streetViewRef.current) {
-            const coordinates = results[0].geometry.location;
-
-            // Salvar no cache
-            geocodeCache.set(address, coordinates);
-
-            const panorama = new google.maps.StreetViewPanorama(streetViewRef.current, {
-              position: coordinates,
-              pov: { heading: 34, pitch: 10 },
-              zoom: 1,
-            });
-
-            streetViewInstanceRef.current = panorama;
-            setStreetViewLoaded(true);
-          } else {
-            console.error('Geocoding failed for Street View:', status);
-          }
-        });
-      }
-    } catch (error) {
-      console.error('Error loading Street View:', error);
-    }
-  };
-
   // Effect to handle tab changes and cleanup
   useEffect(() => {
     // Reset states when tab changes
@@ -211,39 +148,15 @@ export const PropertyMap: React.FC<PropertyMapProps> = ({ property, rawPropertyD
       mapInstanceRef.current = null;
       setMapLoaded(false);
     }
-    
-    if (activeTab !== 'street') {
-      streetViewInstanceRef.current = null;
-      setStreetViewLoaded(false);
-    }
 
-    // Initialize based on active tab
+    // Initialize map when tab is active
     if (activeTab === 'mapa') {
-      // Small delay to ensure DOM is ready
       const timer = setTimeout(() => {
         initializeMap();
       }, 100);
       return () => clearTimeout(timer);
-    } else if (activeTab === 'street') {
-      // Small delay to ensure DOM is ready
-      const timer = setTimeout(() => {
-        initializeStreetView();
-      }, 100);
-      return () => clearTimeout(timer);
     }
   }, [activeTab]);
-
-  // Effect to trigger resize event when map becomes visible
-  useEffect(() => {
-    if (activeTab === 'mapa' && mapInstanceRef.current) {
-      // Trigger resize to fix display issues
-      setTimeout(() => {
-        if (mapInstanceRef.current) {
-          google.maps.event.trigger(mapInstanceRef.current, 'resize');
-        }
-      }, 200);
-    }
-  }, [activeTab, mapLoaded]);
 
   return (
     <div className="w-full">
@@ -344,11 +257,16 @@ export const PropertyMap: React.FC<PropertyMapProps> = ({ property, rawPropertyD
         )}
 
         {activeTab === 'street' && (
-          <div 
-            ref={streetViewRef} 
-            className="w-full h-full"
-            style={{ minHeight: '400px' }}
-          />
+          <div className="w-full h-full" style={{ minHeight: '400px' }}>
+            {/* Street View usando Mapbox geocoding + Google Embed (GRATUITO) */}
+            <StreetViewEmbed 
+              address={getFullAddress()}
+              height="400px"
+              heading={34}
+              pitch={10}
+              fov={90}
+            />
+          </div>
         )}
       </div>
     </div>

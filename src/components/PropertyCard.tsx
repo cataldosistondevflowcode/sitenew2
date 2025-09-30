@@ -279,7 +279,7 @@ export const PropertyCard = ({
                 </div>
               )}
 
-              {/* Container do mapa */}
+              {/* Container do mapa Mapbox */}
               <div
                 ref={mapRef}
                 className={`w-full h-full transition-opacity duration-300 ${mapLoaded ? 'opacity-100' : 'opacity-0'}`}

@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ChevronLeft, ChevronRight, ImageOff, Loader2 } from 'lucide-react';
-import { loadMapbox, geocodeAddress, createMapboxMap, MapboxCoordinates } from '../integrations/mapbox/client';
 import { formatPropertyAddress } from '../utils/addressFormatter';
-import { mapboxGeocodeCache } from '../utils/mapboxCache';
 import { StreetViewEmbed } from './StreetViewEmbed';
+import { MapEmbed } from './MapEmbed';
 
 interface PropertyMapProps {
   property: {
@@ -20,11 +19,8 @@ export const PropertyMap: React.FC<PropertyMapProps> = ({ property, rawPropertyD
                           property.image === 'https://kmiblhbe.manus.space/imovel_sao_goncalo.jpeg';
   const [activeTab, setActiveTab] = useState<'foto' | 'mapa' | 'street'>(isImageNotFound ? 'mapa' : 'foto');
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [mapLoaded, setMapLoaded] = useState(false);
   const [imageLoadError, setImageLoadError] = useState(false);
   const [imageLoading, setImageLoading] = useState(!isImageNotFound);
-  const mapRef = useRef<HTMLDivElement>(null);
-  const mapInstanceRef = useRef<any | null>(null);
   
   // Criar array apenas com imagens diferentes
   const images = React.useMemo(() => {
@@ -85,78 +81,6 @@ export const PropertyMap: React.FC<PropertyMapProps> = ({ property, rawPropertyD
     );
   };
 
-  const initializeMap = async () => {
-    if (!mapRef.current) return;
-
-    // Reset loading state if element is not ready
-    if (mapLoaded && !mapInstanceRef.current) {
-      setMapLoaded(false);
-    }
-
-    if (mapLoaded && mapInstanceRef.current) return;
-
-    try {
-      await loadMapbox();
-      const address = getFullAddress();
-
-      if (!address) {
-        console.warn('No address available for mapping');
-        return;
-      }
-
-      // Verificar cache primeiro
-      const cachedCoordinates = mapboxGeocodeCache.get(address);
-
-      if (cachedCoordinates) {
-        // Usar coordenadas do cache
-        const mapInstance = createMapboxMap(mapRef.current, cachedCoordinates, {
-          zoom: 16,
-          interactive: true,
-          title: property.title || 'Propriedade',
-        });
-
-        mapInstanceRef.current = mapInstance.map;
-        setMapLoaded(true);
-      } else {
-        // Fazer geocoding e salvar no cache
-        const coordinates = await geocodeAddress(address);
-        
-        if (coordinates && mapRef.current) {
-          mapboxGeocodeCache.set(address, coordinates);
-
-          const mapInstance = createMapboxMap(mapRef.current, coordinates, {
-            zoom: 16,
-            interactive: true,
-            title: property.title || 'Propriedade',
-          });
-
-          mapInstanceRef.current = mapInstance.map;
-          setMapLoaded(true);
-        } else {
-          console.error('Geocoding failed for address:', address);
-        }
-      }
-    } catch (error) {
-      console.error('Error loading Mapbox:', error);
-    }
-  };
-
-  // Effect to handle tab changes and cleanup
-  useEffect(() => {
-    // Reset states when tab changes
-    if (activeTab !== 'mapa') {
-      mapInstanceRef.current = null;
-      setMapLoaded(false);
-    }
-
-    // Initialize map when tab is active
-    if (activeTab === 'mapa') {
-      const timer = setTimeout(() => {
-        initializeMap();
-      }, 100);
-      return () => clearTimeout(timer);
-    }
-  }, [activeTab]);
 
   return (
     <div className="w-full">
@@ -249,11 +173,15 @@ export const PropertyMap: React.FC<PropertyMapProps> = ({ property, rawPropertyD
         )}
 
         {activeTab === 'mapa' && (
-          <div 
-            ref={mapRef} 
-            className="w-full h-full"
-            style={{ minHeight: '400px' }}
-          />
+          <div className="w-full h-full" style={{ minHeight: '400px' }}>
+            {/* Mapa usando Mapbox geocoding + Google Maps Embed (GRATUITO) */}
+            <MapEmbed 
+              address={getFullAddress()}
+              height="400px"
+              zoom={16}
+              mapType="roadmap"
+            />
+          </div>
         )}
 
         {activeTab === 'street' && (

@@ -326,7 +326,7 @@ const LeilaoRJ = () => {
 
   // Estados para armazenar as seleções
   const [selectedType, setSelectedType] = useState<SelectedType>({ label: "Todos os imóveis", icon: <Globe className="h-4 w-4" /> });
-  const [selectedCity, setSelectedCity] = useState("Selecione a cidade");
+  const [selectedCity, setSelectedCity] = useState("Rio de Janeiro");
   const [selectedNeighborhood, setSelectedNeighborhood] = useState("Selecione o bairro");
   const [selectedPriceRange, setSelectedPriceRange] = useState<PriceRange>({ label: "Todos os preços" });
   const [selectedAuctionType, setSelectedAuctionType] = useState("Todos os tipos de leilão");
@@ -344,7 +344,7 @@ const LeilaoRJ = () => {
   const [rjNeighborhoods, setRjNeighborhoods] = useState<{neighborhood: string, count: number}[]>([]);
   
   // Estado para armazenar a cidade selecionada sem a contagem entre parênteses
-  const [selectedCityName, setSelectedCityName] = useState<string>("");
+  const [selectedCityName, setSelectedCityName] = useState<string>("Rio de Janeiro");
   
   // Estado para armazenar os tipos de propriedade
   const [propertyTypes, setPropertyTypes] = useState<{type: string, count: number}[]>([]);
@@ -381,7 +381,7 @@ const LeilaoRJ = () => {
   const [selectedRegion, setSelectedRegion] = useState<string | null>(null);
 
   // Novo estado para armazenar cidades selecionadas (pode ser uma ou todas de uma região)
-  const [selectedCities, setSelectedCities] = useState<string[]>([]);
+  const [selectedCities, setSelectedCities] = useState<string[]>(["Rio de Janeiro"]);
 
   // Estados para busca nos dropdowns
   const [citySearchTerm, setCitySearchTerm] = useState("");

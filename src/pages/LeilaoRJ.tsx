@@ -964,11 +964,13 @@ const LeilaoRJ = () => {
     if (!dateString) return '';
     
     try {
-      const date = new Date(dateString);
-      if (isNaN(date.getTime())) {
-        console.error('Data inválida recebida:', dateString);
-        return '';
-      }
+      // Extrair apenas a parte da data (YYYY-MM-DD) antes do "T" para evitar problemas de timezone
+      const datePart = dateString.split('T')[0];
+      const [year, month, day] = datePart.split('-');
+      
+      // Criar data local sem conversão de timezone
+      const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+      
       return date.toLocaleDateString('pt-BR');
     } catch (e) {
       console.error('Erro ao formatar data:', e, 'Data recebida:', dateString);

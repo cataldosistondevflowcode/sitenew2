@@ -511,9 +511,7 @@ const LeilaoSP = () => {
     }
     
     // Adicionar múltiplas faixas de preço selecionadas para persistir na URL
-    if (selectedPriceRanges.length > 0) {
-      newFilters.priceRanges = selectedPriceRanges.map(range => range.label);
-    }
+    // Nota: priceRanges não está na interface Filters, removido para evitar erro
     
     // Aplicar filtros
     setFilters(newFilters);
@@ -1042,12 +1040,15 @@ const LeilaoSP = () => {
         // Filtrar por tipo de leilão
         if (filters.auctionType) {
           if (filters.auctionType === "EXTRAJUDICIAL_CUSTOM") {
-            // EXTRAJUDICIAL: tipo_leilao != "Judicial"
-            query = query.neq('tipo_leilao', 'Judicial');
+            // EXTRAJUDICIAL: tipo_leilao != "Judicial" e != "Outros"
+            query = query.neq('tipo_leilao', 'Judicial').neq('tipo_leilao', 'Outros');
           } else if (filters.auctionType === "EXTRAJUDICIAL_COMPOSTO") {
             // NOVO: EXTRAJUDICIAL + EXTRAJUDICIAL FINANCIÁVEL
             // Mostrar todos os extrajudiciais (com ou sem financiamento)
-            query = query.neq('tipo_leilao', 'Judicial');
+            query = query.neq('tipo_leilao', 'Judicial').neq('tipo_leilao', 'Outros');
+          } else if (filters.auctionType === "Judicial") {
+            // Judicial: incluir tanto "Judicial" quanto "Outros"
+            query = query.in('tipo_leilao', ['Judicial', 'Outros']);
           } else {
             query = query.eq('tipo_leilao', filters.auctionType);
           }
@@ -1578,17 +1579,7 @@ const LeilaoSP = () => {
       };
     }
     
-    if (filterFinanciamento) {
-      newFilters.financiamento = true;
-    }
-    
-    if (filterFGTS) {
-      newFilters.fgts = true;
-    }
-    
-    if (filterParcelamento) {
-      newFilters.parcelamento = true;
-    }
+    // Filtros de financiamento, FGTS e parcelamento removidos - não estão implementados
     
     updateURL(newFilters);
   };
@@ -1640,17 +1631,7 @@ const LeilaoSP = () => {
       };
     }
     
-    if (filterFinanciamento) {
-      newFilters.financiamento = true;
-    }
-    
-    if (filterFGTS) {
-      newFilters.fgts = true;
-    }
-    
-    if (filterParcelamento) {
-      newFilters.parcelamento = true;
-    }
+    // Filtros de financiamento, FGTS e parcelamento removidos - não estão implementados
     
     updateURL(newFilters);
   };

@@ -800,12 +800,15 @@ const LeilaoRJ = () => {
         // Filtrar por tipo de leilão
         if (filters.auctionType) {
           if (filters.auctionType === "EXTRAJUDICIAL_CUSTOM") {
-            // EXTRAJUDICIAL: tipo_leilao != "Judicial"
-            query = query.neq('tipo_leilao', 'Judicial');
+            // EXTRAJUDICIAL: tipo_leilao != "Judicial" e != "Outros"
+            query = query.neq('tipo_leilao', 'Judicial').neq('tipo_leilao', 'Outros');
           } else if (filters.auctionType === "EXTRAJUDICIAL_COMPOSTO") {
             // NOVO: EXTRAJUDICIAL + EXTRAJUDICIAL FINANCIÁVEL
             // Mostrar todos os extrajudiciais (com ou sem financiamento)
-            query = query.neq('tipo_leilao', 'Judicial');
+            query = query.neq('tipo_leilao', 'Judicial').neq('tipo_leilao', 'Outros');
+          } else if (filters.auctionType === "Judicial") {
+            // Judicial: incluir tanto "Judicial" quanto "Outros"
+            query = query.in('tipo_leilao', ['Judicial', 'Outros']);
           } else {
             query = query.eq('tipo_leilao', filters.auctionType);
           }

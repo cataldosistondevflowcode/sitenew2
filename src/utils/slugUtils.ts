@@ -40,4 +40,19 @@ export const extractPropertyIdFromUrl = (urlPath: string): string | null => {
   // Formato antigo: /imovel/{id} ou /imovel/{id}/slug
   const match = urlPath.match(/\/imovel\/(\d+)(?:\/.*)?/);
   return match ? match[1] : null;
+};
+
+/**
+ * Normaliza o tipo de leilão para exibição
+ * "Outros" é tratado como "Judicial"
+ */
+export const normalizeAuctionType = (tipoLeilao?: string): string => {
+  if (!tipoLeilao) return "Extrajudicial";
+  
+  // Tratar "Outros" como "Judicial"
+  if (tipoLeilao === "Outros") {
+    return "Judicial";
+  }
+  
+  return tipoLeilao;
 }; 

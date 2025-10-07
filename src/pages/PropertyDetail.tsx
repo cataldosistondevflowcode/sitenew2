@@ -211,7 +211,7 @@ const PropertyDetail = () => {
     secondAuctionDate: formatDateToBrazilian(property.data_leilao_2 || property.data_leilao_1),
     // Se não houver valor do segundo leilão, usar o valor do primeiro leilão
     secondAuctionValue: property.leilao_2 || property.leilao_1,
-    auctionType: property.tipo_leilao || "Extrajudicial",
+    auctionType: property.tipo_leilao === "Outros" ? "Judicial" : (property.tipo_leilao || "Extrajudicial"),
     fgts: property.fgts || false,
     financiamento: property.financiamento || false,
     propertyType: property.tipo_propriedade || "Imóvel",

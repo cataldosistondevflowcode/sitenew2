@@ -213,8 +213,11 @@ export const PropertyCard = ({
   const getBadges = () => {
     const badges = [];
     
-    // 1. Judicial: tipo_leilao = "Judicial"
-    if (tipoLeilao === "Judicial") {
+    // Normalizar o tipo de leilão (tratar "Outros" como "Judicial")
+    const normalizedTipoLeilao = tipoLeilao === "Outros" ? "Judicial" : tipoLeilao;
+    
+    // 1. Judicial: tipo_leilao = "Judicial" (incluindo "Outros")
+    if (normalizedTipoLeilao === "Judicial") {
       badges.push({
         text: "JUDICIAL",
         color: "bg-red-700"
@@ -222,7 +225,7 @@ export const PropertyCard = ({
     }
     
     // 2. Extrajudicial Financiável: tipo_leilao != "Judicial" && financiamento = true
-    else if (tipoLeilao !== "Judicial" && financiamento === true) {
+    else if (normalizedTipoLeilao !== "Judicial" && financiamento === true) {
       badges.push({
         text: "EXTRAJUDICIAL FINANCIÁVEL",
         color: "bg-purple-600"
@@ -230,7 +233,7 @@ export const PropertyCard = ({
     }
     
     // 3. Extrajudicial: tipo_leilao != "Judicial" (e não é financiável)
-    else if (tipoLeilao !== "Judicial") {
+    else if (normalizedTipoLeilao !== "Judicial") {
       badges.push({
         text: "EXTRAJUDICIAL",
         color: "bg-orange-600"

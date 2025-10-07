@@ -179,9 +179,6 @@ const areasEspeciaisRJ: Record<string, string[]> = {
   'Ilha do Governador': [
     'Ilha do Governador', 'Bancários', 'Cacuia', 'Cocotá', 'Freguesia', 'Galeão', 'Jardim Carioca', 'Jardim Guanabara', 'Moneró', 'Pitangueiras', 'Portuguesa', 'Praia da Bandeira', 'Ribeira', 'Tauá', 'Zumbi'
   ],
-  'Barra Olímpica': [
-    'Barra Olímpica', 'Barra da Tijuca', 'Camorim', 'Jacarepaguá'
-  ],
   'Jacarepaguá': [
     'Jacarepaguá', 'Anil', 'Curicica', 'Pechincha', 'Praça Seca', 'Tanque', 'Taquara', 'Vila Valqueire'
   ]

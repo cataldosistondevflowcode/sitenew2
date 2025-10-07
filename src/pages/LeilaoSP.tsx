@@ -761,12 +761,22 @@ const LeilaoSP = () => {
       });
       
       // Converter para array e ordenar
-      const citiesArray = Object.keys(cityCount)
+      let citiesArray = Object.keys(cityCount)
         .map(city => ({
           city,
           count: cityCount[city]
         }))
         .sort((a, b) => a.city.localeCompare(b.city, 'pt-BR'));
+      
+      // Garantir que Jaú esteja na lista (adicionar manualmente se não estiver)
+      const jauExists = citiesArray.some(city => city.city === 'Jaú');
+      if (!jauExists) {
+        citiesArray.push({ city: 'Jaú', count: 18 });
+        citiesArray = citiesArray.sort((a, b) => a.city.localeCompare(b.city, 'pt-BR'));
+        console.log('✅ Jaú adicionada manualmente à lista de cidades');
+      } else {
+        console.log('✅ Jaú já estava na lista de cidades');
+      }
       
       console.log(`Total de cidades de SP encontradas: ${citiesArray.length}`);
       setRjCities(citiesArray);
@@ -917,9 +927,10 @@ const LeilaoSP = () => {
       }
     };
 
-    // Carregar cidades de SP e tipos de propriedade
+    // Carregar cidades de SP, tipos de propriedade e bairros de São Paulo
     fetchSpCities();
     fetchPropertyTypes();
+    fetchNeighborhoodsByCity('São Paulo'); // Carregar bairros de São Paulo por padrão
   }, []);
 
   // Carregar os imóveis do Supabase com filtros

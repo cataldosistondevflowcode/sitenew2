@@ -535,6 +535,7 @@ const LeilaoRJ = () => {
 
     fetchRjCities();
     fetchPropertyTypes();
+    fetchNeighborhoodsByCity('Rio de Janeiro'); // Carregar bairros do Rio de Janeiro por padrão
   }, []);
 
   // Carregar filtros da URL quando a página carrega

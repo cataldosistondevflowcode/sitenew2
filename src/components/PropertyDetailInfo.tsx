@@ -23,7 +23,6 @@ interface PropertyDetailInfoProps {
 
 export const PropertyDetailInfo = ({ property, rawPropertyData }: PropertyDetailInfoProps) => {
   const [searchParams] = useSearchParams();
-  const showDebug = searchParams.get('debug') === 'true';
   
   const urlSplitRegex = /(https?:\/\/[^\s]+)/g;
   const urlExactRegex = /^https?:\/\/[^\s]+$/;
@@ -190,51 +189,6 @@ export const PropertyDetailInfo = ({ property, rawPropertyData }: PropertyDetail
               </div>
             </div>
           
-            {showDebug && (
-              <div className="mt-8 p-4 bg-gray-800 rounded-lg border border-gray-600">
-                <h3 className="text-lg font-bold mb-4 text-yellow-400">🐛 DEBUG - Dados do Imóvel</h3>
-                
-                {rawPropertyData && (
-                  <div className="mb-6">
-                    <h4 className="text-md font-semibold mb-3 text-green-400">📁 Dados Originais da Api:</h4>
-                    <div className="space-y-2 text-sm bg-gray-900 p-3 rounded">
-                      {Object.entries(rawPropertyData).map(([key, value]) => (
-                        <div key={key} className="flex flex-col sm:flex-row border-b border-gray-700 pb-1">
-                          <span className="font-semibold text-[#d68e08] min-w-[180px]">{key}:</span>
-                          <span className="text-gray-100 break-all">
-                            {value === null ? (
-                              <span className="text-red-400">null</span>
-                            ) : value === undefined ? (
-                              <span className="text-red-400">undefined</span>
-                            ) : typeof value === 'object' ? (
-                              <pre className="whitespace-pre-wrap text-xs">{JSON.stringify(value, null, 2)}</pre>
-                            ) : typeof value === 'boolean' ? (
-                              <span className={value ? "text-green-400" : "text-red-400"}>{String(value)}</span>
-                            ) : (
-                              renderTextOrLink(String(value))
-                            )}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-                
-                <div>
-                  <h4 className="text-md font-semibold mb-3 text-orange-400">🔄 Dados Formatados para Exibição:</h4>
-                  <div className="space-y-2 text-sm bg-gray-900 p-3 rounded">
-                    {Object.entries(property).map(([key, value]) => (
-                      <div key={key} className="flex flex-col sm:flex-row border-b border-gray-700 pb-1">
-                        <span className="font-semibold text-yellow-300 min-w-[180px]">{key}:</span>
-                        <span className="text-gray-100 break-all">
-                          {typeof value === 'object' ? JSON.stringify(value, null, 2) : renderTextOrLink(String(value))}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
           </div>
         </div>
       </div>

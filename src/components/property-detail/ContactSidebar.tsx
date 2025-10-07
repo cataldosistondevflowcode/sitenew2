@@ -11,68 +11,17 @@ interface ContactInfo {
 
 interface ContactSidebarProps {
   contactInfo: ContactInfo;
-  onTripleClick?: () => void;
   onContactClick?: () => void;
 }
 
-export const ContactSidebar: React.FC<ContactSidebarProps> = ({ contactInfo, onTripleClick, onContactClick }) => {
+export const ContactSidebar: React.FC<ContactSidebarProps> = ({ contactInfo, onContactClick }) => {
   const whatsAppUrl = "https://wa.me/5521977294848?text=Gostaria+de+saber+mais+sobre+o+im%C3%B3vel+em+leil%C3%A3o";
 
-  // Triple click functionality
-  const clickCountRef = useRef(0);
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const [isAnimating, setIsAnimating] = React.useState(false);
-
-  const handleImageClick = () => {
-    clickCountRef.current++;
-    console.log(`Click ${clickCountRef.current}/3 no círculo do Cataldo Siston`);
-    
-    if (clickCountRef.current === 3) {
-      console.log('🎯 TRIPLE CLICK DETECTADO! Ativando debug...');
-      
-      // Animação visual
-      setIsAnimating(true);
-      setTimeout(() => setIsAnimating(false), 1000);
-      
-      if (onTripleClick) {
-        onTripleClick();
-      }
-      clickCountRef.current = 0;
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-        timeoutRef.current = null;
-      }
-      return;
-    }
-    
-    // Reset click count after 500ms if not triple clicked
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-    }
-    
-    timeoutRef.current = setTimeout(() => {
-      clickCountRef.current = 0;
-      timeoutRef.current = null;
-    }, 500);
-  };
-
-  // Cleanup timeout on unmount
-  useEffect(() => {
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-    };
-  }, []);
 
   return (
     <aside className="flex overflow-hidden flex-col items-center self-stretch pt-12 pb-7 m-auto w-full bg-white rounded-2xl shadow-sm max-md:mt-10">
       <div 
-        className={`flex items-center justify-center bg-white border-2 border-gray-200 aspect-square rounded-[200px] w-[200px] h-[200px] overflow-hidden cursor-pointer hover:border-gray-300 transition-all duration-300 ${
-          isAnimating ? 'border-green-500 shadow-lg shadow-green-200 scale-105' : ''
-        }`}
-        onClick={handleImageClick}
-        title="Clique 3x para ativar debug da página (?debug=true)"
+        className="flex items-center justify-center bg-white border-2 border-gray-200 aspect-square rounded-[200px] w-[200px] h-[200px] overflow-hidden cursor-pointer hover:border-gray-300 transition-all duration-300"
       >
         <img
           src="/imagem-padrao.webp"

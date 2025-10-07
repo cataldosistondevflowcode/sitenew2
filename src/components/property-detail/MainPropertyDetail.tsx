@@ -42,7 +42,6 @@ interface MainPropertyDetailProps {
 
 export const MainPropertyDetail: React.FC<MainPropertyDetailProps> = ({ property, rawPropertyData, onContactClick }) => {
   const [searchParams] = useSearchParams();
-  const showDebug = searchParams.get('debug') === 'true';
   
   const urlSplitRegex = /(https?:\/\/[^\s]+)/g;
   const urlExactRegex = /^https?:\/\/[^\s]+$/;
@@ -78,18 +77,6 @@ export const MainPropertyDetail: React.FC<MainPropertyDetailProps> = ({ property
     return value;
   };
 
-  const handleTripleClick = () => {
-    // Criar nova URL com debug=true
-    const currentUrl = new URL(window.location.href);
-    currentUrl.searchParams.set('debug', 'true');
-    
-    console.log('🎯 TRIPLE CLICK DETECTADO! Redirecionando para URL com debug...');
-    console.log('URL atual:', window.location.href);
-    console.log('Nova URL:', currentUrl.toString());
-    
-    // Navegar para a nova URL
-    window.location.href = currentUrl.toString();
-  };
 
   const breadcrumbItems = [
     { label: "Home", isActive: true },
@@ -235,74 +222,9 @@ export const MainPropertyDetail: React.FC<MainPropertyDetailProps> = ({ property
               <div className="lg:sticky lg:top-4">
                 <ContactSidebar 
                   contactInfo={contactInfo} 
-                  onTripleClick={handleTripleClick}
                   onContactClick={onContactClick}
                 />
                 
-                {/* Debug Section */}
-                {showDebug && (
-                  <div className="mt-6 p-4 bg-gray-800 rounded-lg border border-gray-600">
-                    <h3 className="text-lg font-bold mb-4 text-yellow-400">🐛 DEBUG - Dados do Imóvel</h3>
-                    
-                    {rawPropertyData && (
-                      <div className="mb-6">
-                        <h4 className="text-md font-semibold mb-3 text-green-400">📁 Dados Originais da API:</h4>
-                        <div className="space-y-2 text-sm bg-gray-900 p-3 rounded max-h-96 overflow-y-auto">
-                          {Object.entries(rawPropertyData).map(([key, value]) => (
-                            <div key={key} className="flex flex-col sm:flex-row border-b border-gray-700 pb-1">
-                              <span className="font-semibold text-[#d68e08] min-w-[180px]">{key}:</span>
-                              <span className="text-gray-100 break-all">
-                                {value === null ? (
-                                  <span className="text-red-400">null</span>
-                                ) : value === undefined ? (
-                                  <span className="text-red-400">undefined</span>
-                                ) : typeof value === 'object' ? (
-                                  <pre className="whitespace-pre-wrap text-xs">{JSON.stringify(value, null, 2)}</pre>
-                                ) : typeof value === 'boolean' ? (
-                                  <span className={value ? "text-green-400" : "text-red-400"}>{String(value)}</span>
-                                ) : (
-                                  renderTextOrLink(String(value))
-                                )}
-                              </span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                    
-                    <div>
-                      <h4 className="text-md font-semibold mb-3 text-orange-400">🔄 Dados Formatados para Exibição:</h4>
-                      <div className="space-y-2 text-sm bg-gray-900 p-3 rounded max-h-96 overflow-y-auto">
-                        {Object.entries(property).map(([key, value]) => (
-                          <div key={key} className="flex flex-col sm:flex-row border-b border-gray-700 pb-1">
-                            <span className="font-semibold text-yellow-300 min-w-[180px]">{key}:</span>
-                            <span className="text-gray-100 break-all">
-                              {typeof value === 'object' ? JSON.stringify(value, null, 2) : renderTextOrLink(String(value))}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                    
-                    <div className="mt-4 p-3 bg-blue-900 rounded">
-                      <h4 className="text-md font-semibold mb-2 text-blue-300">ℹ️ URL Info:</h4>
-                      <p className="text-xs text-gray-300">
-                        <strong>URL atual:</strong> {(
-                          <a
-                            href={window.location.href}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="underline text-blue-300 hover:text-blue-200 break-words"
-                          >
-                            {window.location.href}
-                          </a>
-                        )}<br/>
-                        <strong>Parâmetros:</strong> {searchParams.toString() || 'Nenhum'}<br/>
-                        <strong>Debug ativado:</strong> <span className={showDebug ? "text-green-400" : "text-red-400"}>{showDebug ? 'SIM' : 'NÃO'}</span>
-                      </p>
-                    </div>
-                  </div>
-                )}
               </div>
             </aside>
           </div>

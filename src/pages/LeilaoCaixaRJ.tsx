@@ -22,6 +22,7 @@ import { toast } from "sonner";
 import { useFilterParams } from "@/hooks/useFilterParams";
 import { flexibleSearch } from "@/utils/stringUtils";
 import { executeWhatsAppAction, initializeWhatsAppScript } from "@/utils/whatsappScript";
+import { SEO } from "@/components/SEO";
 
 // Interface para os dados dos imóveis
 interface Property {
@@ -1510,6 +1511,12 @@ const LeilaoCaixaRJ = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO 
+        title="Leilão Caixa RJ | Cataldo Siston - Imóveis da Caixa Econômica em Leilão no Rio de Janeiro"
+        description="Os melhores leilões de imóveis da Caixa Econômica Federal no Rio de Janeiro. Apartamentos, casas e terrenos em leilão da Caixa com grandes oportunidades. Cataldo Siston Advogados - Especialistas em leilões da Caixa no RJ."
+        keywords="leilão caixa RJ, leilão caixa Rio de Janeiro, imóveis caixa leilão, caixa econômica leilão RJ, leilão de imóveis da caixa, Cataldo Siston leilão caixa, imóveis Caixa RJ"
+        canonicalUrl="https://imoveis.leilaodeimoveis-cataldosiston.com/leilao-caixa-rj"
+      />
       <CookieBar />
       <SocialBar onWhatsAppClick={() => executeWhatsAppAction()} />
               <Header onContactClick={() => executeWhatsAppAction()} />

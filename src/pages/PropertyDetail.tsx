@@ -17,6 +17,7 @@ import { useAnalytics } from "@/hooks/useAnalytics";
 import { Mail } from "lucide-react";
 import { WhatsAppIcon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
+import { SEO } from "@/components/SEO";
 
 interface Property {
   id: number;
@@ -218,8 +219,50 @@ const PropertyDetail = () => {
     parcelamento: property.parcelamento || false
   };
 
+  // Construir meta tags dinâmicas para SEO
+  const propertyTitle = `${property.titulo_propriedade} - Leilão em ${property.cidade}/${property.estado}`;
+  const propertyDescription = `${property.tipo_propriedade || 'Imóvel'} em leilão ${property.tipo_leilao?.toLowerCase() || 'judicial'} em ${property.bairro}, ${property.cidade}/${property.estado}. ${property.area_displayable ? `Área: ${property.area_displayable}. ` : ''}Primeiro leilão: R$ ${property.leilao_1?.toLocaleString('pt-BR')}. ${property.descricao ? property.descricao.substring(0, 120) + '...' : 'Entre em contato com Cataldo Siston Advogados.'}`;
+  const propertyKeywords = `leilão ${property.cidade}, imóveis em leilão ${property.bairro}, ${property.tipo_propriedade}, leilão ${property.tipo_leilao}, ${property.estado}, Cataldo Siston`;
+  
+  // Structured data para o imóvel
+  const propertyStructuredData = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": property.titulo_propriedade,
+    "description": property.descricao || propertyDescription,
+    "image": property.imagem,
+    "brand": {
+      "@type": "Organization",
+      "name": "Cataldo Siston Advogados"
+    },
+    "offers": {
+      "@type": "Offer",
+      "url": `https://imoveis.leilaodeimoveis-cataldosiston.com/imovel/${property.id}`,
+      "priceCurrency": "BRL",
+      "price": property.leilao_1,
+      "availability": "https://schema.org/InStock",
+      "priceValidUntil": property.data_leilao_1
+    },
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": property.endereco,
+      "addressLocality": property.cidade,
+      "addressRegion": property.estado,
+      "addressCountry": "BR"
+    }
+  };
+
   return (
     <div className="min-h-screen bg-white">
+      <SEO 
+        title={propertyTitle}
+        description={propertyDescription}
+        keywords={propertyKeywords}
+        image={property.imagem}
+        type="product"
+        canonicalUrl={`https://imoveis.leilaodeimoveis-cataldosiston.com/imovel/${property.id}`}
+        structuredData={propertyStructuredData}
+      />
       <SocialBar onWhatsAppClick={() => executeWhatsAppAction()} />
       <Header onContactClick={() => executeWhatsAppAction()} />
       

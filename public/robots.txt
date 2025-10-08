@@ -1,7 +1,25 @@
+# Robots.txt - Cataldo Siston Leilão de Imóveis
+# https://imoveis.leilaodeimoveis-cataldosiston.com
+
+# Permitir todos os bots principais
 User-agent: Googlebot
 Allow: /
+Crawl-delay: 0
 
 User-agent: Bingbot
+Allow: /
+Crawl-delay: 0
+
+User-agent: Slurp
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+User-agent: Baiduspider
+Allow: /
+
+User-agent: YandexBot
 Allow: /
 
 User-agent: Twitterbot
@@ -10,5 +28,31 @@ Allow: /
 User-agent: facebookexternalhit
 Allow: /
 
+User-agent: LinkedInBot
+Allow: /
+
+User-agent: Pinterestbot
+Allow: /
+
+User-agent: WhatsApp
+Allow: /
+
+# Regras gerais
 User-agent: *
 Allow: /
+
+# Bloquear páginas administrativas
+Disallow: /admin/
+Disallow: /test
+Disallow: /test-*
+
+# Bloquear páginas de teste
+Disallow: /*test*
+
+# Arquivos de sistema
+Disallow: /*.sql$
+Disallow: /*.json$
+Disallow: /*.config$
+
+# Sitemap
+Sitemap: https://imoveis.leilaodeimoveis-cataldosiston.com/sitemap.xml

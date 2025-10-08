@@ -22,6 +22,7 @@ import { toast } from "sonner";
 import { flexibleSearch } from "@/utils/stringUtils";
 import { useFilterParams, FilterParams } from "@/hooks/useFilterParams";
 import { executeWhatsAppAction, initializeWhatsAppScript } from "@/utils/whatsappScript";
+import { SEO } from "@/components/SEO";
 // import { useAnalytics } from "@/hooks/useAnalytics";
 
 // Interface para os dados dos imóveis
@@ -2058,6 +2059,12 @@ const LeilaoRJ = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO 
+        title="Leilão de Imóveis RJ | Cataldo Siston - Leilões Judiciais e Extrajudiciais no Rio de Janeiro"
+        description="Os melhores leilões de imóveis no Rio de Janeiro. Apartamentos, casas, terrenos e imóveis comerciais em leilão judicial e extrajudicial. Cataldo Siston Advogados - Especialistas em leilões no RJ."
+        keywords="leilão RJ, leilão de imóveis Rio de Janeiro, imóveis em leilão RJ, leilão judicial RJ, leilão extrajudicial RJ, leilão caixa Rio de Janeiro, Cataldo Siston RJ, leilão zona sul, leilão zona norte"
+        canonicalUrl="https://imoveis.leilaodeimoveis-cataldosiston.com/leilao-rj"
+      />
       <CookieBar />
       <SocialBar onWhatsAppClick={() => executeWhatsAppAction()} />
       <Header onContactClick={() => executeWhatsAppAction()} />

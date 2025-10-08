@@ -22,6 +22,7 @@ import { toast } from "sonner";
 import { flexibleSearch } from "@/utils/stringUtils";
 import { useFilterParams, FilterParams } from "@/hooks/useFilterParams";
 import { executeWhatsAppAction, initializeWhatsAppScript } from "@/utils/whatsappScript";
+import { SEO } from "@/components/SEO";
 // import { useAnalytics } from "@/hooks/useAnalytics";
 
 // Interface para os dados dos imóveis
@@ -2060,6 +2061,12 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO 
+        title="Imóveis em Leilão RJ e SP | Cataldo Siston - Leilões Judiciais e Extrajudiciais"
+        description="Encontre os melhores imóveis em leilão no Rio de Janeiro e São Paulo. Leilão Caixa, leilões judiciais e extrajudiciais. Cataldo Siston Advogados - Especialistas em Advocacia Imobiliária com mais de 20 anos de experiência."
+        keywords="leilão de imóveis, leilão caixa, imóveis em leilão RJ, leilão RJ, leilão SP, leilão judicial, leilão extrajudicial, advocacia imobiliária, Cataldo Siston, arrematação de imóveis, leilão online"
+        canonicalUrl="https://imoveis.leilaodeimoveis-cataldosiston.com/"
+      />
       <CookieBar />
       <SocialBar onWhatsAppClick={() => executeWhatsAppAction()} />
       <Header onContactClick={() => executeWhatsAppAction()} />

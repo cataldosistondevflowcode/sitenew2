@@ -22,6 +22,7 @@ import { toast } from "sonner";
 import { useFilterParams } from "@/hooks/useFilterParams";
 import { flexibleSearch } from "@/utils/stringUtils";
 import { executeWhatsAppAction, initializeWhatsAppScript } from "@/utils/whatsappScript";
+import { SEO } from "@/components/SEO";
 
 // Interface para os dados dos imóveis
 interface Property {
@@ -1771,6 +1772,12 @@ const LeilaoSP = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO 
+        title="Leilão de Imóveis SP | Cataldo Siston - Leilões Judiciais e Extrajudiciais em São Paulo"
+        description="Os melhores leilões de imóveis em São Paulo. Apartamentos, casas, terrenos e imóveis comerciais em leilão judicial e extrajudicial. Cataldo Siston Advogados - Especialistas em leilões em SP."
+        keywords="leilão SP, leilão de imóveis São Paulo, imóveis em leilão SP, leilão judicial SP, leilão extrajudicial SP, leilão caixa São Paulo, Cataldo Siston SP, leilão zona sul SP, leilão zona oeste SP"
+        canonicalUrl="https://imoveis.leilaodeimoveis-cataldosiston.com/leilao-sp"
+      />
       <CookieBar />
       <SocialBar onWhatsAppClick={() => executeWhatsAppAction()} />
               <Header onContactClick={() => executeWhatsAppAction()} />

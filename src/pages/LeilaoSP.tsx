@@ -20,7 +20,7 @@ import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useFilterParams } from "@/hooks/useFilterParams";
-import { flexibleSearch } from "@/utils/stringUtils";
+import { flexibleSearch, escapeSqlLike, sanitizeSearchInput } from "@/utils/stringUtils";
 import { executeWhatsAppAction, initializeWhatsAppScript } from "@/utils/whatsappScript";
 import { SEO } from "@/components/SEO";
 
@@ -938,6 +938,7 @@ const LeilaoSP = () => {
     
     const fetchProperties = async () => {
       setLoading(true);
+      setError(null); // Limpar erro anterior
       
       try {
         // Começar a consulta do Supabase
@@ -1016,11 +1017,19 @@ const LeilaoSP = () => {
         }
         
         if (filters.location) {
-          query = query.or(`endereco.ilike.%${filters.location}%,bairro.ilike.%${filters.location}%,cidade.ilike.%${filters.location}%`);
+          const sanitizedLocation = sanitizeSearchInput(filters.location);
+          if (sanitizedLocation) {
+            const escapedLocation = escapeSqlLike(sanitizedLocation);
+            query = query.or(`endereco.ilike.%${escapedLocation}%,bairro.ilike.%${escapedLocation}%,cidade.ilike.%${escapedLocation}%`);
+          }
         }
         
         if (filters.keyword) {
-          query = query.or(`titulo_propriedade.ilike.%${filters.keyword}%,descricao.ilike.%${filters.keyword}%`);
+          const sanitizedKeyword = sanitizeSearchInput(filters.keyword);
+          if (sanitizedKeyword) {
+            const escapedKeyword = escapeSqlLike(sanitizedKeyword);
+            query = query.or(`titulo_propriedade.ilike.%${escapedKeyword}%,descricao.ilike.%${escapedKeyword}%`);
+          }
         }
         
         // Filtrar por imóveis que têm segundo leilão
@@ -1748,6 +1757,7 @@ const LeilaoSP = () => {
     // Limpar os filtros e atualizar a exibição
     setFilters({});
     setCurrentPage(1);
+    setError(null); // Limpar qualquer erro anterior
     
     // Limpar filtros da URL
     clearFiltersFromURL();

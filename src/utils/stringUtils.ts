@@ -35,4 +35,26 @@ export const formatCurrency = (value: number): string => {
     style: 'currency',
     currency: 'BRL'
   }).format(value);
+};
+
+// Função para escapar caracteres especiais em consultas SQL ilike
+export const escapeSqlLike = (str: string): string => {
+  if (!str) return '';
+  
+  // Escapar caracteres especiais do SQL LIKE
+  return str
+    .replace(/\\/g, '\\\\')  // Escapar barras invertidas primeiro
+    .replace(/%/g, '\\%')    // Escapar percentuais
+    .replace(/_/g, '\\_')    // Escapar underscores
+    .replace(/'/g, "''");    // Escapar aspas simples (duplicar)
+};
+
+// Função para sanitizar entrada de busca, removendo caracteres problemáticos
+export const sanitizeSearchInput = (str: string): string => {
+  if (!str) return '';
+  
+  // Remover caracteres que podem causar problemas em consultas SQL
+  return str
+    .replace(/[,;]/g, '')  // Remover vírgulas e ponto e vírgula
+    .trim();               // Remover espaços extras
 }; 

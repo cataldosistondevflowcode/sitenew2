@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Tables } from '@/integrations/supabase/types';
+import { escapeSqlLike } from '@/utils/stringUtils';
 import {
   Table,
   TableBody,
@@ -84,7 +85,8 @@ const PropertiesTable = () => {
 
       // Aplicar filtros
       if (searchTerm) {
-        query = query.or(`titulo_propriedade.ilike.%${searchTerm}%,endereco.ilike.%${searchTerm}%,bairro.ilike.%${searchTerm}%,numero_processo.ilike.%${searchTerm}%,descricao.ilike.%${searchTerm}%,leiloeiro_nome.ilike.%${searchTerm}%`);
+        const escapedSearchTerm = escapeSqlLike(searchTerm);
+        query = query.or(`titulo_propriedade.ilike.%${escapedSearchTerm}%,endereco.ilike.%${escapedSearchTerm}%,bairro.ilike.%${escapedSearchTerm}%,numero_processo.ilike.%${escapedSearchTerm}%,descricao.ilike.%${escapedSearchTerm}%,leiloeiro_nome.ilike.%${escapedSearchTerm}%`);
       }
 
       if (cityFilter && cityFilter !== 'all') {

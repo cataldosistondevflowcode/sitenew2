@@ -413,25 +413,25 @@ const Index = () => {
     initializeWhatsAppScript();
   }, []);
 
-  // Mostrar popup de oportunidades quando a página carregar
-  useEffect(() => {
-    // Verificar se o popup já foi exibido na sessão atual com timestamp
-    const popupData = sessionStorage.getItem('opportunity-popup-shown');
-    const currentTime = Date.now();
-    
-    // Se não existe ou expirou (opcional: adicionar expiração de sessão)
-    if (!popupData) {
-      const timer = setTimeout(() => {
-        setShowOpportunityPopup(true);
-        sessionStorage.setItem('opportunity-popup-shown', JSON.stringify({
-          shown: true,
-          timestamp: currentTime
-        }));
-      }, 3000); // Mostrar após 3 segundos
+  // Popup de oportunidades desabilitado temporariamente
+  // useEffect(() => {
+  //   // Verificar se o popup já foi exibido na sessão atual com timestamp
+  //   const popupData = sessionStorage.getItem('opportunity-popup-shown');
+  //   const currentTime = Date.now();
+  //   
+  //   // Se não existe ou expirou (opcional: adicionar expiração de sessão)
+  //   if (!popupData) {
+  //     const timer = setTimeout(() => {
+  //       setShowOpportunityPopup(true);
+  //       sessionStorage.setItem('opportunity-popup-shown', JSON.stringify({
+  //         shown: true,
+  //         timestamp: currentTime
+  //       }));
+  //     }, 3000); // Mostrar após 3 segundos
 
-      return () => clearTimeout(timer);
-    }
-  }, []);
+  //     return () => clearTimeout(timer);
+  //   }
+  // }, []);
 
   // Carregar as cidades do estado RJ
   useEffect(() => {

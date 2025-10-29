@@ -1098,6 +1098,7 @@ const LeilaoRJ = () => {
       // Compatibilidade: se só um bairro foi selecionado pelo modo antigo
       const neighborhoodName = selectedNeighborhood.split(" (")[0];
       newFilters.neighborhood = neighborhoodName;
+      newFilters.neighborhoods = [neighborhoodName];
     }
     
     // Verificar se há valor no input de localização

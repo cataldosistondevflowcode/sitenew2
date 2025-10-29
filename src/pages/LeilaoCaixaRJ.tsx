@@ -418,7 +418,7 @@ const LeilaoCaixaRJ = () => {
         applyFilters();
       }, 100);
     }
-  }, [parseFiltersFromURL, propertyTypes, applyFilters]); // Dependência nos propertyTypes para garantir que estejam carregados
+  }, [parseFiltersFromURL, propertyTypes]); // Dependência nos propertyTypes para garantir que estejam carregados
 
   // Carregar as cidades do estado RJ
   useEffect(() => {
@@ -918,6 +918,7 @@ const LeilaoCaixaRJ = () => {
       // Compatibilidade: se só um bairro foi selecionado pelo modo antigo
       const neighborhoodName = selectedNeighborhood.split(" (")[0];
       newFilters.neighborhood = neighborhoodName;
+      newFilters.neighborhoods = [neighborhoodName];
     }
     
     // Verificar se há valor no input de localização

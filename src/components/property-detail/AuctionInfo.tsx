@@ -24,25 +24,47 @@ export const AuctionInfo: React.FC<AuctionInfoProps> = ({ dates, prices }) => {
     <section className="w-full mt-7">
       {/* Layout para mobile - stack vertical */}
       <div className="flex flex-col gap-6 sm:hidden">
-        {dates.map((dateInfo, index) => (
-          <div key={index} className="bg-gray-50 p-4 rounded-lg">
-            <div className="flex items-center gap-3 mb-2">
-              <img
-                src={dateInfo.icon}
-                alt=""
-                className="object-contain shrink-0 w-6 h-6"
-              />
-              <div className="text-sm font-medium text-gray-600">
-                {dateInfo.label}
+        {dates.map((dateInfo, index) => {
+          const priceInfo = prices[index];
+          return (
+            <div key={index} className="bg-gray-50 p-4 rounded-lg">
+              <div className="flex items-center gap-3 mb-2">
+                <img
+                  src={dateInfo.icon}
+                  alt=""
+                  className="object-contain shrink-0 w-6 h-6"
+                />
+                <div className="text-sm font-medium text-gray-600">
+                  {dateInfo.label}
+                </div>
               </div>
+              <div className={`text-lg font-bold mb-2 ${
+                dateInfo.isHighlighted ? 'text-yellow-600' : 'text-neutral-700'
+              }`}>
+                {dateInfo.date}
+              </div>
+              {priceInfo && (
+                <div className="mt-3 pt-3 border-t border-gray-200">
+                  <div className="flex items-center gap-2 mb-1">
+                    <img
+                      src={priceInfo.icon}
+                      alt=""
+                      className="object-contain shrink-0 w-5 h-5"
+                    />
+                    <div className="text-xs font-medium text-gray-600">
+                      {priceInfo.label}
+                    </div>
+                  </div>
+                  <div className={`text-xl font-bold ${
+                    priceInfo.isHighlighted ? 'text-yellow-600' : 'text-neutral-700'
+                  }`}>
+                    {priceInfo.amount}
+                  </div>
+                </div>
+              )}
             </div>
-            <div className={`text-lg font-bold ${
-              dateInfo.isHighlighted ? 'text-yellow-600' : 'text-neutral-700'
-            }`}>
-              {dateInfo.date}
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* Layout para desktop - horizontal */}

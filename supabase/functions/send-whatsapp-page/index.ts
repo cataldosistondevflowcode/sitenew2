@@ -57,8 +57,8 @@ Deno.serve(async (req: Request) => {
 
     // Determinar webhook baseado no tipo da página
     const webhookUrl = pageType === 'RJ' 
-      ? 'https://n8n-production-49ae.up.railway.app/webhook/wpprj'
-      : 'https://n8n-production-49ae.up.railway.app/webhook/wppsp';
+      ? 'https://n8n-production-5c7a.up.railway.app/webhook/wpprj'
+      : 'https://n8n-production-5c7a.up.railway.app/webhook/wppsp';
 
     // Preparar payload para o webhook
     const webhookPayload = {

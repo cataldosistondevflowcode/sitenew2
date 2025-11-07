@@ -174,8 +174,8 @@ const WhatsAppScheduleModal: React.FC<WhatsAppScheduleModalProps> = ({
       // Determinar webhook baseado na URL (se contém /leilao-sp/ use SP, senão RJ)
       const isSpPage = pageUrl.includes('/leilao-sp/') || pageUrl.includes('SP');
       const webhookUrl = isSpPage 
-        ? 'https://n8n-production-49ae.up.railway.app/webhook/wppsp'
-        : 'https://n8n-production-49ae.up.railway.app/webhook/wpprj';
+        ? 'https://n8n-production-5c7a.up.railway.app/webhook/wppsp'
+        : 'https://n8n-production-5c7a.up.railway.app/webhook/wpprj';
 
       // Preparar telefone (adicionar +55 se não tiver)
       let phoneNumber = formData.phone.replace(/\D/g, ''); // Remove tudo que não é número

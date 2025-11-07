@@ -174,8 +174,8 @@ async function processWhatsAppSchedule(supabaseClient: any, schedule: any) {
 
     // Definir webhook baseado no tipo de página
     const webhookUrl = schedule.page_type === 'RJ' 
-      ? 'https://n8n-production-49ae.up.railway.app/webhook/wpprj'
-      : 'https://n8n-production-49ae.up.railway.app/webhook/wppsp'
+      ? 'https://n8n-production-5c7a.up.railway.app/webhook/wpprj'
+      : 'https://n8n-production-5c7a.up.railway.app/webhook/wppsp'
 
     console.log(`   🎯 Webhook: ${webhookUrl}`)
 

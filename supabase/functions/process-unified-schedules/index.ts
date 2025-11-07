@@ -513,8 +513,8 @@ async function processWhatsApp(supabaseClient: any, schedule: any, leads: any[])
 
   // Determinar webhook baseado no tipo de arquivo
   const webhookUrl = fileType === 'image' 
-    ? 'https://n8n-production-49ae.up.railway.app/webhook/wppcomimagem'
-    : 'https://n8n-production-49ae.up.railway.app/webhook/wpprj'
+    ? 'https://n8n-production-5c7a.up.railway.app/webhook/wppcomimagem'
+    : 'https://n8n-production-5c7a.up.railway.app/webhook/wpprj'
 
   console.log(`   🎯 Webhook selecionado: ${webhookUrl} (tipo: ${fileType})`)
 

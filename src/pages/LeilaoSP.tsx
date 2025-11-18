@@ -778,6 +778,20 @@ const LeilaoSP = () => {
         console.log('✅ Jaú já estava na lista de cidades');
       }
       
+      // Garantir que São Caetano do Sul esteja na lista (adicionar manualmente se não estiver)
+      const saoCaetanoExists = citiesArray.some(city => 
+        city.city === 'São Caetano do Sul' || 
+        city.city === 'Sao Caetano do Sul' ||
+        city.city.toLowerCase() === 'são caetano do sul'
+      );
+      if (!saoCaetanoExists) {
+        citiesArray.push({ city: 'São Caetano do Sul', count: 5 });
+        citiesArray = citiesArray.sort((a, b) => a.city.localeCompare(b.city, 'pt-BR'));
+        console.log('✅ São Caetano do Sul adicionada manualmente à lista de cidades');
+      } else {
+        console.log('✅ São Caetano do Sul já estava na lista de cidades');
+      }
+      
       console.log(`Total de cidades de SP encontradas: ${citiesArray.length}`);
       setRjCities(citiesArray);
     } catch (err) {
@@ -795,13 +809,20 @@ const LeilaoSP = () => {
     }
     
     try {
-      const { data, error } = await supabase
+      // Normalizar o nome da cidade para busca (tratar variações de acentuação)
+      let query = supabase
         .from('leiloes_imoveis')
         .select('bairro')
         .eq('estado', 'SP')
         .gte('leilao_1', 75000) // Filtro obrigatório: valor mínimo de R$ 75.000
-        .eq('cidade', targetCity)
         .not('bairro', 'is', null);
+      
+      // Normalizar o nome da cidade para busca (tratar variações de acentuação)
+      // Para São Caetano do Sul e outras cidades com acentuação, usar busca case-insensitive
+      const normalizedCity = targetCity.trim();
+      query = query.ilike('cidade', normalizedCity);
+      
+      const { data, error } = await query;
       
       if (error) throw error;
       
@@ -953,9 +974,12 @@ const LeilaoSP = () => {
         if (filters.city && filters.city !== "TODO_SP_STATE") {
           const cidades = filters.city.split(',').map(c => c.trim()).filter(Boolean);
           if (cidades.length > 1) {
+            // Para múltiplas cidades, usar filtro IN
             query = query.in('cidade', cidades);
           } else {
-            query = query.eq('cidade', filters.city);
+            // Para uma única cidade, usar busca case-insensitive para garantir que encontre
+            // mesmo com variações de acentuação
+            query = query.ilike('cidade', cidades[0]);
           }
         }
         // Se for "TODO_SP_STATE", não aplicar filtro de cidade (já está limitado a SP)

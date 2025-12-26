@@ -303,6 +303,8 @@ const LeilaoCaixaRJ = () => {
         setSelectedCity(urlFilters.city);
         setSelectedCityName(urlFilters.city);
         setSelectedCities([urlFilters.city]);
+        // Carregar bairros automaticamente quando cidade é carregada da URL
+        fetchNeighborhoodsByCity(urlFilters.city);
       }
       
       if (urlFilters.zones && urlFilters.zones.length > 0) {
@@ -437,7 +439,7 @@ const LeilaoCaixaRJ = () => {
           const to = from + pageSize - 1;
           
           const { data, error, count } = await supabase
-            .from('leiloes_imoveis')
+            .from('leiloes_imoveis_com_zona')
             .select('cidade', { count: 'exact' })
             .eq('estado', 'RJ')
             .order('cidade')
@@ -487,7 +489,7 @@ const LeilaoCaixaRJ = () => {
     const fetchPropertyTypes = async () => {
       try {
         const { data, error } = await supabase
-          .from('leiloes_imoveis')
+          .from('leiloes_imoveis_com_zona')
           .select('tipo_propriedade')
           .eq('estado', 'RJ')
           .not('tipo_propriedade', 'is', null);
@@ -532,7 +534,7 @@ const LeilaoCaixaRJ = () => {
       try {
         // Começar a consulta do Supabase
         let query = supabase
-          .from('leiloes_imoveis')
+          .from('leiloes_imoveis_com_zona')
           .select('*', { count: 'exact' })
           .eq('estado', 'RJ')
           .eq('leiloeiro_nome', 'Caixa Economica Federal');
@@ -1358,7 +1360,7 @@ const LeilaoCaixaRJ = () => {
     if (!cityName) return;
     try {
       const { data, error } = await supabase
-        .from('leiloes_imoveis')
+        .from('leiloes_imoveis_com_zona')
         .select('bairro')
         .eq('estado', 'RJ')
         .eq('cidade', cityName)
@@ -1629,7 +1631,10 @@ const LeilaoCaixaRJ = () => {
                     className="flex items-center justify-between w-full p-3 bg-[#fafafa] border border-gray-200 rounded-md cursor-pointer text-sm"
                     onClick={() => setShowRegionMenu(!showRegionMenu)}
                   >
-                    <span>{selectedCity}</span>
+                    <div className="flex items-center">
+                      <MapPin className="h-4 w-4 mr-2 text-gray-500" />
+                      <span>{selectedCity}</span>
+                    </div>
                     <ChevronDown className="h-4 w-4 text-gray-500" />
                   </div>
                   {showRegionMenu && (

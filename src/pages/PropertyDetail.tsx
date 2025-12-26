@@ -137,7 +137,7 @@ const PropertyDetail = () => {
       
       try {
         const { data, error } = await supabase
-          .from('leiloes_imoveis')
+          .from('leiloes_imoveis_com_zona')
           .select('*')
           .eq('id', Number(propertyId))
           .single();

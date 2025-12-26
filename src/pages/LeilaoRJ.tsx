@@ -447,7 +447,7 @@ const LeilaoRJ = () => {
           const to = from + pageSize - 1;
           
           const { data, error, count } = await supabase
-            .from('leiloes_imoveis')
+            .from('leiloes_imoveis_com_zona')
             .select('cidade', { count: 'exact' })
             .eq('estado', 'RJ')
             .gte('leilao_1', 75000) // Filtro obrigatório: valor mínimo de R$ 75.000
@@ -498,7 +498,7 @@ const LeilaoRJ = () => {
     const fetchPropertyTypes = async () => {
       try {
         const { data, error } = await supabase
-          .from('leiloes_imoveis')
+          .from('leiloes_imoveis_com_zona')
           .select('tipo_propriedade')
           .eq('estado', 'RJ')
           .gte('leilao_1', 75000) // Filtro obrigatório: valor mínimo de R$ 75.000
@@ -546,8 +546,16 @@ const LeilaoRJ = () => {
         if (cities.length > 1) {
           setSelectedCities(cities);
           setSelectedCity(`${cities.length} cidades selecionadas`);
+          // Carregar bairros da primeira cidade selecionada
+          if (cities[0]) {
+            setSelectedCityName(cities[0]);
+            fetchNeighborhoodsByCity(cities[0]);
+          }
         } else {
           setSelectedCity(cities[0]);
+          // Carregar bairros automaticamente quando cidade é carregada da URL
+          setSelectedCityName(cities[0]);
+          fetchNeighborhoodsByCity(cities[0]);
         }
       }
       
@@ -691,7 +699,7 @@ const LeilaoRJ = () => {
       try {
         // Começar a consulta do Supabase
         let query = supabase
-          .from('leiloes_imoveis')
+          .from('leiloes_imoveis_com_zona')
           .select('*', { count: 'exact' })
           .eq('estado', 'RJ')
           .gte('leilao_1', 75000); // Filtro obrigatório: valor mínimo de R$ 75.000
@@ -785,7 +793,7 @@ const LeilaoRJ = () => {
           const sanitizedKeyword = sanitizeSearchInput(filters.keyword);
           if (sanitizedKeyword) {
             const escapedKeyword = escapeSqlLike(sanitizedKeyword);
-            query = query.or(`titulo_propriedade.ilike.%${escapedKeyword}%,descricao.ilike.%${escapedKeyword}%`);
+            query = query.or(`titulo_propriedade.ilike.%${escapedKeyword}%,descricao.ilike.%${escapedKeyword}%,endereco.ilike.%${escapedKeyword}%,bairro.ilike.%${escapedKeyword}%`);
           }
         }
         
@@ -1874,7 +1882,7 @@ const LeilaoRJ = () => {
     if (!cityName) return;
     try {
       const { data, error } = await supabase
-        .from('leiloes_imoveis')
+        .from('leiloes_imoveis_com_zona')
         .select('bairro')
         .eq('estado', 'RJ')
         .gte('leilao_1', 75000) // Filtro obrigatório: valor mínimo de R$ 75.000
@@ -2197,7 +2205,10 @@ const LeilaoRJ = () => {
                     className="flex items-center justify-between w-full p-3 bg-[#fafafa] border border-gray-200 rounded-md cursor-pointer text-sm"
                     onClick={() => setShowRegionMenu(!showRegionMenu)}
                   >
-                    <span>{selectedCity}</span>
+                    <div className="flex items-center">
+                      <MapPin className="h-4 w-4 mr-2 text-gray-500" />
+                      <span>{selectedCity}</span>
+                    </div>
                     <ChevronDown className="h-4 w-4 text-gray-500" />
                   </div>
                   {showRegionMenu && (

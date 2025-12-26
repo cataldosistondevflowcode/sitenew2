@@ -854,7 +854,33 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      leiloes_imoveis_com_zona: {
+        Row: {
+          bairro: string | null
+          cidade: string
+          consorcio: boolean | null
+          data_leilao_1: string | null
+          data_leilao_2: string | null
+          descricao: string | null
+          endereco: string | null
+          estado: string
+          fgts: boolean | null
+          financiamento: boolean | null
+          id: number
+          imagem: string | null
+          leilao_1: number | null
+          leilao_2: number | null
+          leiloeiro_nome: string | null
+          numero_processo: string | null
+          parcelamento: boolean | null
+          tipo_leilao: string | null
+          tipo_propriedade: string | null
+          titulo_propriedade: string | null
+          url: string | null
+          zona: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       calculate_next_send_time: {

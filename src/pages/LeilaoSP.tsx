@@ -744,7 +744,7 @@ const LeilaoSP = () => {
   const fetchSpCities = async () => {
     try {
       const { data, error } = await supabase
-        .from('leiloes_imoveis')
+        .from('leiloes_imoveis_com_zona')
         .select('cidade')
         .eq('estado', 'SP')
         .gte('leilao_1', 75000) // Filtro obrigatório: valor mínimo de R$ 75.000
@@ -811,7 +811,7 @@ const LeilaoSP = () => {
     try {
       // Normalizar o nome da cidade para busca (tratar variações de acentuação)
       let query = supabase
-        .from('leiloes_imoveis')
+        .from('leiloes_imoveis_com_zona')
         .select('bairro')
         .eq('estado', 'SP')
         .gte('leilao_1', 75000) // Filtro obrigatório: valor mínimo de R$ 75.000
@@ -917,7 +917,7 @@ const LeilaoSP = () => {
     const fetchPropertyTypes = async () => {
       try {
         const { data, error } = await supabase
-          .from('leiloes_imoveis')
+          .from('leiloes_imoveis_com_zona')
           .select('tipo_propriedade')
           .eq('estado', 'SP')
           .gte('leilao_1', 75000) // Filtro obrigatório: valor mínimo de R$ 75.000
@@ -965,7 +965,7 @@ const LeilaoSP = () => {
       try {
         // Começar a consulta do Supabase
         let query = supabase
-          .from('leiloes_imoveis')
+          .from('leiloes_imoveis_com_zona')
           .select('*', { count: 'exact' })
           .eq('estado', 'SP')
           .gte('leilao_1', 75000); // Filtro obrigatório: valor mínimo de R$ 75.000

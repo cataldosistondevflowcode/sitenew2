@@ -167,7 +167,7 @@ export default function StaticCatalog() {
       
       if (!properties.length && page.property_ids.length > 0) {
         const { data: propertiesData, error: propertiesError } = await supabase
-          .from('leiloes_imoveis')
+          .from('leiloes_imoveis_com_zona')
           .select('*')
           .in('id', page.property_ids);
 

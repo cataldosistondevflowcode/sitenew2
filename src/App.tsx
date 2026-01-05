@@ -45,6 +45,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/leilao-caixa-rj" element={<LeilaoCaixaRJ />} />
             <Route path="/leilao-rj" element={<LeilaoRJ />} />
+            <Route path="/imovel-rj" element={<LeilaoRJ />} />
             <Route path="/leilao-sp" element={<LeilaoSP />} />
             <Route path="/imovel/:id" element={<PropertyDetail />} />
             <Route path="/imovel/:id/:slug" element={<PropertyDetail />} />

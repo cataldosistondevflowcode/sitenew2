@@ -5,7 +5,7 @@ declare global {
   }
 }
 
-const MAPBOX_ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN || 'pk.eyJ1IjoiY2F0YWxkb3Npc3RvbiIsImEiOiJjbWc1cXU0ajcwN3gyMmpxNHNiOTlpbmJ5In0.bfiSJwTEHmO_lXKYIFAxag';
+const MAPBOX_ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN || 'pk.eyJ1IjoiY2F0YWxkb3Npc3RvbjIiLCJhIjoiY21qMDlsaWxjMDZ1NzNkcHpqcTU3dWUzZSJ9.nRQLqX_y-RjVMUSNaNLVTw';
 
 export interface MapboxCoordinates {
   lng: number;

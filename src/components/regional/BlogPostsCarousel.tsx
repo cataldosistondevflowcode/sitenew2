@@ -96,14 +96,14 @@ export function BlogPostsCarousel({ limit = 4 }: BlogPostsCarouselProps) {
   const visiblePosts = posts.slice(currentIndex, currentIndex + itemsPerPage);
 
   return (
-    <section className="bg-gray-50 py-12 md:py-16">
+    <section className="bg-[#265c54] py-14 md:py-20">
       <div className="max-w-7xl mx-auto px-4">
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center justify-between mb-10">
           <div>
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
+            <h2 className="font-display text-2xl md:text-3xl lg:text-[36px] font-medium text-white">
               Blog & Dicas
             </h2>
-            <p className="text-gray-600 mt-2">
+            <p className="font-body text-white/80 mt-2">
               Conteúdos para ajudar você a investir com segurança
             </p>
           </div>
@@ -114,7 +114,7 @@ export function BlogPostsCarousel({ limit = 4 }: BlogPostsCarouselProps) {
                 variant="outline"
                 size="icon"
                 onClick={prevSlide}
-                className="rounded-full"
+                className="rounded-full border-white/30 text-white hover:bg-white/10"
               >
                 <ChevronLeft className="h-5 w-5" />
               </Button>
@@ -122,7 +122,7 @@ export function BlogPostsCarousel({ limit = 4 }: BlogPostsCarouselProps) {
                 variant="outline"
                 size="icon"
                 onClick={nextSlide}
-                className="rounded-full"
+                className="rounded-full border-white/30 text-white hover:bg-white/10"
               >
                 <ChevronRight className="h-5 w-5" />
               </Button>
@@ -134,7 +134,7 @@ export function BlogPostsCarousel({ limit = 4 }: BlogPostsCarouselProps) {
           {visiblePosts.map((post) => (
             <article
               key={post.id}
-              className="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow group"
+              className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow group"
             >
               {/* Image */}
               <div className="aspect-video bg-gray-200 relative overflow-hidden">
@@ -148,12 +148,12 @@ export function BlogPostsCarousel({ limit = 4 }: BlogPostsCarouselProps) {
                     }}
                   />
                 ) : (
-                  <div className="w-full h-full bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
+                  <div className="w-full h-full bg-[#ebe5de] flex items-center justify-center">
                     <span className="text-4xl">📰</span>
                   </div>
                 )}
                 {post.category && (
-                  <Badge className="absolute top-2 left-2 bg-blue-600 text-white text-xs">
+                  <Badge className="absolute top-2 left-2 bg-[#d68e08] text-white text-xs font-body">
                     {post.category}
                   </Badge>
                 )}
@@ -161,24 +161,24 @@ export function BlogPostsCarousel({ limit = 4 }: BlogPostsCarouselProps) {
 
               {/* Content */}
               <div className="p-4">
-                <div className="flex items-center gap-2 text-gray-500 text-xs mb-2">
-                  <Calendar className="h-3 w-3" />
+                <div className="flex items-center gap-2 text-[#333333] text-xs mb-2 font-body">
+                  <Calendar className="h-3 w-3 text-[#d68e08]" />
                   {formatDate(post.published_at)}
                 </div>
                 
-                <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
+                <h3 className="font-display text-base font-medium text-[#191919] mb-2 line-clamp-2 group-hover:text-[#d68e08] transition-colors">
                   {post.title}
                 </h3>
                 
                 {post.excerpt && (
-                  <p className="text-gray-600 text-sm line-clamp-2 mb-4">
+                  <p className="font-body text-[#333333] text-sm line-clamp-2 mb-4">
                     {post.excerpt}
                   </p>
                 )}
 
                 <a 
                   href={`/blog/${post.slug}`}
-                  className="text-blue-600 text-sm font-medium flex items-center gap-1 hover:gap-2 transition-all"
+                  className="text-[#d68e08] text-sm font-body font-semibold flex items-center gap-1 hover:gap-2 transition-all"
                 >
                   Ler mais
                   <ArrowRight className="h-4 w-4" />
@@ -190,15 +190,15 @@ export function BlogPostsCarousel({ limit = 4 }: BlogPostsCarouselProps) {
 
         {/* Pagination dots */}
         {posts.length > itemsPerPage && (
-          <div className="flex justify-center gap-2 mt-6">
+          <div className="flex justify-center gap-2 mt-8">
             {Array.from({ length: Math.ceil(posts.length / itemsPerPage) }).map((_, i) => (
               <button
                 key={i}
                 onClick={() => setCurrentIndex(i * itemsPerPage)}
-                className={`w-2 h-2 rounded-full transition-colors ${
+                className={`w-2.5 h-2.5 rounded-full transition-colors ${
                   Math.floor(currentIndex / itemsPerPage) === i 
-                    ? 'bg-blue-600' 
-                    : 'bg-gray-300 hover:bg-gray-400'
+                    ? 'bg-[#d68e08]' 
+                    : 'bg-white/30 hover:bg-white/50'
                 }`}
               />
             ))}

@@ -12,17 +12,17 @@ export function RegionDescriptionSection({
   if (!description) return null;
   
   return (
-    <section className="bg-white py-10 border-b">
+    <section className="bg-[#ebe5de] py-12 md:py-16">
       <div className="max-w-7xl mx-auto px-4">
-        <div className="flex items-start gap-4">
-          <div className="flex-shrink-0 w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-            <Info className="h-6 w-6 text-blue-600" />
+        <div className="flex flex-col md:flex-row items-start gap-6">
+          <div className="flex-shrink-0 w-14 h-14 bg-[#265c54] rounded-full flex items-center justify-center">
+            <Info className="h-7 w-7 text-white" />
           </div>
           <div>
-            <h2 className="text-xl font-semibold text-gray-900 mb-3">
+            <h2 className="font-display text-2xl md:text-3xl font-medium text-[#191919] mb-4">
               Sobre {regionName}
             </h2>
-            <p className="text-gray-600 leading-relaxed max-w-4xl">
+            <p className="font-body text-[#333333] leading-relaxed max-w-4xl text-base md:text-lg">
               {description}
             </p>
           </div>

@@ -19,10 +19,18 @@ export default {
       },
     },
     extend: {
+      fontFamily: {
+        'display': ['Playfair Display', 'Georgia', 'Times New Roman', 'serif'],
+        'body': ['Quicksand', 'Arial', 'Verdana', 'sans-serif'],
+      },
       colors: {
-        primary: "#d68e08",
-        secondary: "#333333",
-        background: "#f5f5f5",
+        // Cores do Design System Cataldo Siston
+        primary: "#d68e08",           // Dourado - CTAs e destaques
+        secondary: "#333333",          // Cinza escuro - texto secundário
+        background: "#f5f5f5",         // Fundo suave
+        'dark-green': "#265c54",       // Verde escuro - headers/seções
+        'cream': "#ebe5de",            // Bege claro - seções alternadas
+        'dark-gray': "#191919",        // Texto principal
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

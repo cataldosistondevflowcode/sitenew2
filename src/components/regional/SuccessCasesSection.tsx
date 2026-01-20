@@ -76,13 +76,13 @@ export function SuccessCasesSection({ region, limit = 3 }: SuccessCasesSectionPr
   if (cases.length === 0) return null;
 
   return (
-    <section className="bg-white py-12 md:py-16">
+    <section className="bg-white py-14 md:py-20 border-t border-gray-100">
       <div className="max-w-7xl mx-auto px-4">
         <div className="text-center mb-12">
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
+          <h2 className="font-display text-2xl md:text-3xl lg:text-[36px] font-medium text-[#191919] mb-4">
             Casos de Sucesso
           </h2>
-          <p className="text-gray-600 max-w-2xl mx-auto">
+          <p className="font-body text-[#333333] max-w-2xl mx-auto">
             Conheça histórias de clientes que realizaram o sonho do imóvel próprio através de leilões
           </p>
         </div>
@@ -91,17 +91,17 @@ export function SuccessCasesSection({ region, limit = 3 }: SuccessCasesSectionPr
           {cases.map((successCase) => (
             <div
               key={successCase.id}
-              className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-6 md:p-8 relative"
+              className="bg-[#f5f5f5] rounded-lg p-6 md:p-8 relative border border-gray-100 hover:shadow-md transition-shadow"
             >
               {/* Quote icon */}
-              <div className="absolute top-4 right-4 text-amber-200">
+              <div className="absolute top-4 right-4 text-[#d68e08]/20">
                 <Quote className="h-12 w-12" />
               </div>
 
               {/* Featured badge */}
               {successCase.is_featured && (
                 <div className="absolute top-4 left-4">
-                  <div className="flex items-center gap-1 bg-amber-100 text-amber-700 px-2 py-1 rounded-full text-xs font-medium">
+                  <div className="flex items-center gap-1 bg-[#d68e08]/10 text-[#d68e08] px-3 py-1 rounded-full text-xs font-body font-semibold">
                     <Star className="h-3 w-3 fill-current" />
                     Destaque
                   </div>
@@ -110,30 +110,30 @@ export function SuccessCasesSection({ region, limit = 3 }: SuccessCasesSectionPr
 
               {/* Content */}
               <div className="mt-8">
-                <h3 className="font-bold text-lg text-gray-900 mb-2">
+                <h3 className="font-display text-lg font-medium text-[#191919] mb-2">
                   {successCase.title}
                 </h3>
                 
-                <p className="text-gray-600 text-sm mb-4">
+                <p className="font-body text-[#333333] text-sm mb-4">
                   {successCase.description}
                 </p>
 
                 {successCase.testimonial && (
-                  <blockquote className="text-gray-700 italic mb-6 border-l-4 border-amber-400 pl-4">
+                  <blockquote className="font-body text-[#333333] italic mb-6 border-l-4 border-[#d68e08] pl-4">
                     "{successCase.testimonial}"
                   </blockquote>
                 )}
 
                 {/* Client info */}
                 <div className="flex items-center gap-3 pt-4 border-t border-gray-200">
-                  <div className="w-12 h-12 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full flex items-center justify-center text-white font-bold">
+                  <div className="w-12 h-12 bg-[#265c54] rounded-full flex items-center justify-center text-white font-display font-medium">
                     {successCase.client_name?.charAt(0) || 'C'}
                   </div>
                   <div>
-                    <div className="font-medium text-gray-900">
+                    <div className="font-body font-semibold text-[#191919]">
                       {successCase.client_name}
                     </div>
-                    <div className="text-sm text-gray-500">
+                    <div className="font-body text-sm text-[#333333]">
                       {successCase.property_type} • {successCase.region}
                     </div>
                   </div>

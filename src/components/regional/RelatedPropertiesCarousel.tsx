@@ -126,14 +126,14 @@ export function RelatedPropertiesCarousel({
   const visibleProperties = properties.slice(currentIndex, currentIndex + itemsPerPage);
 
   return (
-    <section className="bg-gray-100 py-12 md:py-16">
+    <section className="bg-[#ebe5de] py-14 md:py-20">
       <div className="max-w-7xl mx-auto px-4">
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center justify-between mb-10">
           <div>
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
+            <h2 className="font-display text-2xl md:text-3xl lg:text-[36px] font-medium text-[#191919]">
               Outros Imóveis de Interesse
             </h2>
-            <p className="text-gray-600 mt-2">
+            <p className="font-body text-[#333333] mt-2">
               Confira mais oportunidades em {estado === 'RJ' ? 'Rio de Janeiro' : 'São Paulo'}
             </p>
           </div>
@@ -144,7 +144,7 @@ export function RelatedPropertiesCarousel({
                 variant="outline"
                 size="icon"
                 onClick={prevSlide}
-                className="rounded-full"
+                className="rounded-full border-[#265c54] text-[#265c54] hover:bg-[#265c54] hover:text-white"
               >
                 <ChevronLeft className="h-5 w-5" />
               </Button>
@@ -152,7 +152,7 @@ export function RelatedPropertiesCarousel({
                 variant="outline"
                 size="icon"
                 onClick={nextSlide}
-                className="rounded-full"
+                className="rounded-full border-[#265c54] text-[#265c54] hover:bg-[#265c54] hover:text-white"
               >
                 <ChevronRight className="h-5 w-5" />
               </Button>
@@ -165,7 +165,7 @@ export function RelatedPropertiesCarousel({
             <a
               key={property.id}
               href={createPropertyUrl(property)}
-              className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-all hover:-translate-y-1 group"
+              className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-all hover:-translate-y-1 group border border-gray-100"
             >
               {/* Image */}
               <div className="aspect-video bg-gray-200 relative overflow-hidden">
@@ -179,12 +179,12 @@ export function RelatedPropertiesCarousel({
                     }}
                   />
                 ) : (
-                  <div className="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
+                  <div className="w-full h-full bg-[#f5f5f5] flex items-center justify-center">
                     <MapPin className="h-12 w-12 text-gray-400" />
                   </div>
                 )}
                 {property.tipo_propriedade && (
-                  <Badge className="absolute top-2 left-2 bg-white/90 text-gray-700 text-xs">
+                  <Badge className="absolute top-2 left-2 bg-[#d68e08] text-white text-xs font-body">
                     {property.tipo_propriedade}
                   </Badge>
                 )}
@@ -192,22 +192,22 @@ export function RelatedPropertiesCarousel({
 
               {/* Content */}
               <div className="p-4">
-                <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
+                <h3 className="font-display text-base font-medium text-[#191919] mb-2 line-clamp-2 group-hover:text-[#d68e08] transition-colors">
                   {property.titulo_propriedade || 'Imóvel em Leilão'}
                 </h3>
                 
-                <p className="text-gray-500 text-sm mb-3 flex items-center gap-1">
-                  <MapPin className="h-4 w-4 flex-shrink-0" />
+                <p className="font-body text-[#333333] text-sm mb-3 flex items-center gap-1">
+                  <MapPin className="h-4 w-4 flex-shrink-0 text-[#d68e08]" />
                   <span className="truncate">{property.bairro}, {property.cidade}</span>
                 </p>
 
                 <div className="flex items-center justify-between">
-                  <div className="text-lg font-bold text-blue-600">
+                  <div className="font-body text-lg font-bold text-[#265c54]">
                     {property.leilao_1 ? formatCurrency(property.leilao_1) : 'Consulte'}
                   </div>
                   {property.data_leilao_1 && (
-                    <div className="text-xs text-gray-500 flex items-center gap-1">
-                      <Calendar className="h-3 w-3" />
+                    <div className="font-body text-xs text-[#333333] flex items-center gap-1">
+                      <Calendar className="h-3 w-3 text-[#d68e08]" />
                       {new Date(property.data_leilao_1).toLocaleDateString('pt-BR')}
                     </div>
                   )}
@@ -219,15 +219,15 @@ export function RelatedPropertiesCarousel({
 
         {/* Pagination dots */}
         {properties.length > itemsPerPage && (
-          <div className="flex justify-center gap-2 mt-6">
+          <div className="flex justify-center gap-2 mt-8">
             {Array.from({ length: Math.ceil(properties.length / itemsPerPage) }).map((_, i) => (
               <button
                 key={i}
                 onClick={() => setCurrentIndex(i * itemsPerPage)}
-                className={`w-2 h-2 rounded-full transition-colors ${
+                className={`w-2.5 h-2.5 rounded-full transition-colors ${
                   Math.floor(currentIndex / itemsPerPage) === i 
-                    ? 'bg-blue-600' 
-                    : 'bg-gray-300 hover:bg-gray-400'
+                    ? 'bg-[#d68e08]' 
+                    : 'bg-[#265c54]/30 hover:bg-[#265c54]/50'
                 }`}
               />
             ))}

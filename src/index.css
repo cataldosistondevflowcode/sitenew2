@@ -97,6 +97,26 @@
 
   body {
     @apply bg-background text-foreground;
+    font-family: 'Quicksand', Arial, Verdana, sans-serif;
+  }
+
+  /* Design System - Tipografia */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  }
+
+  h1 {
+    @apply text-3xl md:text-4xl lg:text-[44px] font-medium;
+    line-height: 1.2;
+  }
+
+  h2 {
+    @apply text-2xl md:text-3xl lg:text-[40px] font-medium;
+    line-height: 1.2;
+  }
+
+  h3 {
+    @apply text-xl md:text-2xl font-medium;
   }
 }
 

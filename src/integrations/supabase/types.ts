@@ -14,11 +14,67 @@ export type Database = {
   }
   public: {
     Tables: {
+      blog_posts: {
+        Row: {
+          author_name: string | null
+          category: string | null
+          content: string | null
+          created_at: string | null
+          excerpt: string | null
+          featured_image_url: string | null
+          id: number
+          is_active: boolean | null
+          is_featured: boolean | null
+          published_at: string | null
+          slug: string
+          tags: string[] | null
+          title: string
+          updated_at: string | null
+          view_count: number | null
+        }
+        Insert: {
+          author_name?: string | null
+          category?: string | null
+          content?: string | null
+          created_at?: string | null
+          excerpt?: string | null
+          featured_image_url?: string | null
+          id?: number
+          is_active?: boolean | null
+          is_featured?: boolean | null
+          published_at?: string | null
+          slug: string
+          tags?: string[] | null
+          title: string
+          updated_at?: string | null
+          view_count?: number | null
+        }
+        Update: {
+          author_name?: string | null
+          category?: string | null
+          content?: string | null
+          created_at?: string | null
+          excerpt?: string | null
+          featured_image_url?: string | null
+          id?: number
+          is_active?: boolean | null
+          is_featured?: boolean | null
+          published_at?: string | null
+          slug?: string
+          tags?: string[] | null
+          title?: string
+          updated_at?: string | null
+          view_count?: number | null
+        }
+        Relationships: []
+      }
       contact_leads: {
         Row: {
           contact_method: string | null
           created_at: string | null
           email: string | null
+          filter_config: string | null
+          group_id: number | null
           id: number
           message: string | null
           name: string | null
@@ -32,6 +88,8 @@ export type Database = {
           contact_method?: string | null
           created_at?: string | null
           email?: string | null
+          filter_config?: string | null
+          group_id?: number | null
           id?: number
           message?: string | null
           name?: string | null
@@ -45,6 +103,8 @@ export type Database = {
           contact_method?: string | null
           created_at?: string | null
           email?: string | null
+          filter_config?: string | null
+          group_id?: number | null
           id?: number
           message?: string | null
           name?: string | null
@@ -56,43 +116,27 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "contact_leads_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "lead_groups"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "contact_leads_property_id_fkey"
             columns: ["property_id"]
             isOneToOne: false
             referencedRelation: "leiloes_imoveis"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "contact_leads_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "leiloes_imoveis_com_zona"
+            referencedColumns: ["id"]
+          },
         ]
-      }
-      daily_visits: {
-        Row: {
-          created_at: string | null
-          date: string
-          id: number
-          page_views: number | null
-          unique_visitors: number | null
-          updated_at: string | null
-          visits_count: number | null
-        }
-        Insert: {
-          created_at?: string | null
-          date?: string
-          id?: number
-          page_views?: number | null
-          unique_visitors?: number | null
-          updated_at?: string | null
-          visits_count?: number | null
-        }
-        Update: {
-          created_at?: string | null
-          date?: string
-          id?: number
-          page_views?: number | null
-          unique_visitors?: number | null
-          updated_at?: string | null
-          visits_count?: number | null
-        }
-        Relationships: []
       }
       email_lists: {
         Row: {
@@ -288,6 +332,355 @@ export type Database = {
           },
         ]
       }
+      filter_cities: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          display_order: number | null
+          id: number
+          is_active: boolean | null
+          name: string
+          region_id: number | null
+          state: string
+          updated_at: string | null
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          display_order?: number | null
+          id?: number
+          is_active?: boolean | null
+          name: string
+          region_id?: number | null
+          state?: string
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          display_order?: number | null
+          id?: number
+          is_active?: boolean | null
+          name?: string
+          region_id?: number | null
+          state?: string
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "filter_cities_region_id_fkey"
+            columns: ["region_id"]
+            isOneToOne: false
+            referencedRelation: "filter_regions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      filter_neighborhoods: {
+        Row: {
+          city_id: number
+          created_at: string | null
+          created_by: string | null
+          display_order: number | null
+          id: number
+          is_active: boolean | null
+          name: string
+          updated_at: string | null
+          updated_by: string | null
+          zone_id: number | null
+        }
+        Insert: {
+          city_id: number
+          created_at?: string | null
+          created_by?: string | null
+          display_order?: number | null
+          id?: number
+          is_active?: boolean | null
+          name: string
+          updated_at?: string | null
+          updated_by?: string | null
+          zone_id?: number | null
+        }
+        Update: {
+          city_id?: number
+          created_at?: string | null
+          created_by?: string | null
+          display_order?: number | null
+          id?: number
+          is_active?: boolean | null
+          name?: string
+          updated_at?: string | null
+          updated_by?: string | null
+          zone_id?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "filter_neighborhoods_city_id_fkey"
+            columns: ["city_id"]
+            isOneToOne: false
+            referencedRelation: "filter_cities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "filter_neighborhoods_zone_id_fkey"
+            columns: ["zone_id"]
+            isOneToOne: false
+            referencedRelation: "filter_zones"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      filter_regions: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          display_order: number | null
+          id: number
+          is_active: boolean | null
+          name: string
+          state: string
+          updated_at: string | null
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          display_order?: number | null
+          id?: number
+          is_active?: boolean | null
+          name: string
+          state?: string
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          display_order?: number | null
+          id?: number
+          is_active?: boolean | null
+          name?: string
+          state?: string
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
+      filter_zones: {
+        Row: {
+          city_id: number
+          created_at: string | null
+          created_by: string | null
+          display_order: number | null
+          id: number
+          is_active: boolean | null
+          name: string
+          updated_at: string | null
+          updated_by: string | null
+          zone_type: string | null
+        }
+        Insert: {
+          city_id: number
+          created_at?: string | null
+          created_by?: string | null
+          display_order?: number | null
+          id?: number
+          is_active?: boolean | null
+          name: string
+          updated_at?: string | null
+          updated_by?: string | null
+          zone_type?: string | null
+        }
+        Update: {
+          city_id?: number
+          created_at?: string | null
+          created_by?: string | null
+          display_order?: number | null
+          id?: number
+          is_active?: boolean | null
+          name?: string
+          updated_at?: string | null
+          updated_by?: string | null
+          zone_type?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "filter_zones_city_id_fkey"
+            columns: ["city_id"]
+            isOneToOne: false
+            referencedRelation: "filter_cities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      imoveis: {
+        Row: {
+          area_privativa: number | null
+          area_total: number | null
+          bairro: string | null
+          cidade: string | null
+          consorcio: boolean | null
+          data_leilao_1: string | null
+          data_leilao_2: string | null
+          desconto: number | null
+          descricao: string | null
+          endereco: string | null
+          estado: string | null
+          fgts: boolean | null
+          financiamento: boolean | null
+          id: number
+          imagem: string | null
+          leilao_1: number | null
+          leilao_2: number | null
+          leiloeiro_nome: string | null
+          numero_garagens: number | null
+          numero_processo: string | null
+          numero_quartos: number | null
+          parcelamento: boolean | null
+          tipo_leilao: string | null
+          tipo_propriedade: string | null
+          titulo_propriedade: string | null
+          url: string | null
+          url_edital: string | null
+          url_matricula: string | null
+          valor_avaliacao: number | null
+        }
+        Insert: {
+          area_privativa?: number | null
+          area_total?: number | null
+          bairro?: string | null
+          cidade?: string | null
+          consorcio?: boolean | null
+          data_leilao_1?: string | null
+          data_leilao_2?: string | null
+          desconto?: number | null
+          descricao?: string | null
+          endereco?: string | null
+          estado?: string | null
+          fgts?: boolean | null
+          financiamento?: boolean | null
+          id: number
+          imagem?: string | null
+          leilao_1?: number | null
+          leilao_2?: number | null
+          leiloeiro_nome?: string | null
+          numero_garagens?: number | null
+          numero_processo?: string | null
+          numero_quartos?: number | null
+          parcelamento?: boolean | null
+          tipo_leilao?: string | null
+          tipo_propriedade?: string | null
+          titulo_propriedade?: string | null
+          url?: string | null
+          url_edital?: string | null
+          url_matricula?: string | null
+          valor_avaliacao?: number | null
+        }
+        Update: {
+          area_privativa?: number | null
+          area_total?: number | null
+          bairro?: string | null
+          cidade?: string | null
+          consorcio?: boolean | null
+          data_leilao_1?: string | null
+          data_leilao_2?: string | null
+          desconto?: number | null
+          descricao?: string | null
+          endereco?: string | null
+          estado?: string | null
+          fgts?: boolean | null
+          financiamento?: boolean | null
+          id?: number
+          imagem?: string | null
+          leilao_1?: number | null
+          leilao_2?: number | null
+          leiloeiro_nome?: string | null
+          numero_garagens?: number | null
+          numero_processo?: string | null
+          numero_quartos?: number | null
+          parcelamento?: boolean | null
+          tipo_leilao?: string | null
+          tipo_propriedade?: string | null
+          titulo_propriedade?: string | null
+          url?: string | null
+          url_edital?: string | null
+          url_matricula?: string | null
+          valor_avaliacao?: number | null
+        }
+        Relationships: []
+      }
+      latitude_longitude_armazenamento: {
+        Row: {
+          bairro: string | null
+          cidade: string | null
+          endereco: string | null
+          estado: string | null
+          id: number
+          latitude: string | null
+          longitude: string | null
+          maps_url: string | null
+          streetview_url: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          bairro?: string | null
+          cidade?: string | null
+          endereco?: string | null
+          estado?: string | null
+          id?: number
+          latitude?: string | null
+          longitude?: string | null
+          maps_url?: string | null
+          streetview_url?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          bairro?: string | null
+          cidade?: string | null
+          endereco?: string | null
+          estado?: string | null
+          id?: number
+          latitude?: string | null
+          longitude?: string | null
+          maps_url?: string | null
+          streetview_url?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      lead_groups: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          id: number
+          is_active: boolean | null
+          name: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: number
+          is_active?: boolean | null
+          name: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: number
+          is_active?: boolean | null
+          name?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       leiloes_imoveis: {
         Row: {
           bairro: string | null
@@ -306,6 +699,8 @@ export type Database = {
           leilao_2: number | null
           leiloeiro_nome: string | null
           numero_processo: string | null
+          numeroGaragens: string | null
+          numeroQuartos: string | null
           parcelamento: boolean | null
           tipo_leilao: string | null
           tipo_propriedade: string | null
@@ -329,6 +724,8 @@ export type Database = {
           leilao_2?: number | null
           leiloeiro_nome?: string | null
           numero_processo?: string | null
+          numeroGaragens?: string | null
+          numeroQuartos?: string | null
           parcelamento?: boolean | null
           tipo_leilao?: string | null
           tipo_propriedade?: string | null
@@ -352,6 +749,8 @@ export type Database = {
           leilao_2?: number | null
           leiloeiro_nome?: string | null
           numero_processo?: string | null
+          numeroGaragens?: string | null
+          numeroQuartos?: string | null
           parcelamento?: boolean | null
           tipo_leilao?: string | null
           tipo_propriedade?: string | null
@@ -360,243 +759,324 @@ export type Database = {
         }
         Relationships: []
       }
-      property_clicks: {
+      schedule_leads: {
         Row: {
-          click_type: string
-          clicked_at: string | null
-          id: number
-          property_id: number | null
-          session_id: string | null
-          user_agent: string | null
-          visitor_ip: string | null
-        }
-        Insert: {
-          click_type: string
-          clicked_at?: string | null
-          id?: number
-          property_id?: number | null
-          session_id?: string | null
-          user_agent?: string | null
-          visitor_ip?: string | null
-        }
-        Update: {
-          click_type?: string
-          clicked_at?: string | null
-          id?: number
-          property_id?: number | null
-          session_id?: string | null
-          user_agent?: string | null
-          visitor_ip?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "property_clicks_property_id_fkey"
-            columns: ["property_id"]
-            isOneToOne: false
-            referencedRelation: "leiloes_imoveis"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      property_views: {
-        Row: {
-          id: number
-          property_id: number | null
-          referrer: string | null
-          session_id: string | null
-          time_spent_seconds: number | null
-          user_agent: string | null
-          viewed_at: string | null
-          visitor_ip: string | null
-        }
-        Insert: {
-          id?: number
-          property_id?: number | null
-          referrer?: string | null
-          session_id?: string | null
-          time_spent_seconds?: number | null
-          user_agent?: string | null
-          viewed_at?: string | null
-          visitor_ip?: string | null
-        }
-        Update: {
-          id?: number
-          property_id?: number | null
-          referrer?: string | null
-          session_id?: string | null
-          time_spent_seconds?: number | null
-          user_agent?: string | null
-          viewed_at?: string | null
-          visitor_ip?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "property_views_property_id_fkey"
-            columns: ["property_id"]
-            isOneToOne: false
-            referencedRelation: "leiloes_imoveis"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      search_analytics: {
-        Row: {
-          clicked_property_id: number | null
-          filters_used: Json | null
-          id: number
-          results_count: number | null
-          search_query: string | null
-          searched_at: string | null
-          session_id: string | null
-          visitor_ip: string | null
-        }
-        Insert: {
-          clicked_property_id?: number | null
-          filters_used?: Json | null
-          id?: number
-          results_count?: number | null
-          search_query?: string | null
-          searched_at?: string | null
-          session_id?: string | null
-          visitor_ip?: string | null
-        }
-        Update: {
-          clicked_property_id?: number | null
-          filters_used?: Json | null
-          id?: number
-          results_count?: number | null
-          search_query?: string | null
-          searched_at?: string | null
-          session_id?: string | null
-          visitor_ip?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "search_analytics_clicked_property_id_fkey"
-            columns: ["clicked_property_id"]
-            isOneToOne: false
-            referencedRelation: "leiloes_imoveis"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      sp_bairros_cd2022: {
-        Row: {
-          cd_bairro: string | null
-          cd_concurb: string | null
-          cd_dist: string | null
-          cd_mun: string | null
-          cd_regiao: string | null
-          cd_rgi: string | null
-          cd_rgint: string | null
-          cd_subdist: string | null
-          cd_uf: string | null
-          nm_bairro: string | null
-          nm_concurb: string | null
-          nm_dist: string | null
-          nm_mun: string | null
-          nm_regiao: string | null
-          nm_rgi: string | null
-          nm_rgint: string | null
-          nm_subdist: string | null
-          nm_uf: string | null
-        }
-        Insert: {
-          cd_bairro?: string | null
-          cd_concurb?: string | null
-          cd_dist?: string | null
-          cd_mun?: string | null
-          cd_regiao?: string | null
-          cd_rgi?: string | null
-          cd_rgint?: string | null
-          cd_subdist?: string | null
-          cd_uf?: string | null
-          nm_bairro?: string | null
-          nm_concurb?: string | null
-          nm_dist?: string | null
-          nm_mun?: string | null
-          nm_regiao?: string | null
-          nm_rgi?: string | null
-          nm_rgint?: string | null
-          nm_subdist?: string | null
-          nm_uf?: string | null
-        }
-        Update: {
-          cd_bairro?: string | null
-          cd_concurb?: string | null
-          cd_dist?: string | null
-          cd_mun?: string | null
-          cd_regiao?: string | null
-          cd_rgi?: string | null
-          cd_rgint?: string | null
-          cd_subdist?: string | null
-          cd_uf?: string | null
-          nm_bairro?: string | null
-          nm_concurb?: string | null
-          nm_dist?: string | null
-          nm_mun?: string | null
-          nm_regiao?: string | null
-          nm_rgi?: string | null
-          nm_rgint?: string | null
-          nm_subdist?: string | null
-          nm_uf?: string | null
-        }
-        Relationships: []
-      }
-      static_pages: {
-        Row: {
-          applied_filters: Json | null
           created_at: string | null
-          created_by: string | null
-          description: string | null
-          expires_at: string | null
-          filter_config: Json | null
-          id: string
+          id: number
+          lead_id: number
+          schedule_id: number
+        }
+        Insert: {
+          created_at?: string | null
+          id?: number
+          lead_id: number
+          schedule_id: number
+        }
+        Update: {
+          created_at?: string | null
+          id?: number
+          lead_id?: number
+          schedule_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "schedule_leads_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "contact_leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "schedule_leads_schedule_id_fkey"
+            columns: ["schedule_id"]
+            isOneToOne: false
+            referencedRelation: "unified_schedules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      schedule_logs: {
+        Row: {
+          created_at: string
+          error_message: string | null
+          execution_date: string
+          execution_details: Json | null
+          failed_sends: number
+          id: number
+          method: string
+          schedule_id: number
+          status: string
+          successful_sends: number
+          total_recipients: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          error_message?: string | null
+          execution_date?: string
+          execution_details?: Json | null
+          failed_sends?: number
+          id?: number
+          method: string
+          schedule_id: number
+          status: string
+          successful_sends?: number
+          total_recipients?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          error_message?: string | null
+          execution_date?: string
+          execution_details?: Json | null
+          failed_sends?: number
+          id?: number
+          method?: string
+          schedule_id?: number
+          status?: string
+          successful_sends?: number
+          total_recipients?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "schedule_logs_schedule_id_fkey"
+            columns: ["schedule_id"]
+            isOneToOne: false
+            referencedRelation: "unified_schedules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      schedule_properties: {
+        Row: {
+          created_at: string | null
+          id: number
+          property_id: number
+          schedule_id: number
+        }
+        Insert: {
+          created_at?: string | null
+          id?: number
+          property_id: number
+          schedule_id: number
+        }
+        Update: {
+          created_at?: string | null
+          id?: number
+          property_id?: number
+          schedule_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "schedule_properties_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "leiloes_imoveis"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "schedule_properties_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "leiloes_imoveis_com_zona"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "schedule_properties_schedule_id_fkey"
+            columns: ["schedule_id"]
+            isOneToOne: false
+            referencedRelation: "unified_schedules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      seo_pages: {
+        Row: {
+          created_at: string | null
+          estado: string
+          filter_type: string | null
+          filter_value: string
+          h1_title: string | null
+          id: number
+          intro_text: string | null
           is_active: boolean | null
+          keyword: string
           last_viewed_at: string | null
+          meta_description: string
+          meta_keywords: string | null
+          meta_title: string
           page_id: string
-          page_type: string
-          properties_data: Json | null
-          property_ids: number[]
-          title: string
-          total_properties: number
+          regiao: string
+          region_content: Json | null
+          region_description: string | null
+          updated_at: string | null
+          url_slug: string
           view_count: number | null
         }
         Insert: {
-          applied_filters?: Json | null
           created_at?: string | null
-          created_by?: string | null
-          description?: string | null
-          expires_at?: string | null
-          filter_config?: Json | null
-          id?: string
+          estado: string
+          filter_type?: string | null
+          filter_value: string
+          h1_title?: string | null
+          id?: number
+          intro_text?: string | null
           is_active?: boolean | null
+          keyword: string
           last_viewed_at?: string | null
+          meta_description: string
+          meta_keywords?: string | null
+          meta_title: string
           page_id: string
-          page_type?: string
-          properties_data?: Json | null
-          property_ids?: number[]
-          title: string
-          total_properties?: number
+          regiao: string
+          region_content?: Json | null
+          region_description?: string | null
+          updated_at?: string | null
+          url_slug: string
           view_count?: number | null
         }
         Update: {
-          applied_filters?: Json | null
+          created_at?: string | null
+          estado?: string
+          filter_type?: string | null
+          filter_value?: string
+          h1_title?: string | null
+          id?: number
+          intro_text?: string | null
+          is_active?: boolean | null
+          keyword?: string
+          last_viewed_at?: string | null
+          meta_description?: string
+          meta_keywords?: string | null
+          meta_title?: string
+          page_id?: string
+          regiao?: string
+          region_content?: Json | null
+          region_description?: string | null
+          updated_at?: string | null
+          url_slug?: string
+          view_count?: number | null
+        }
+        Relationships: []
+      }
+      success_cases: {
+        Row: {
+          client_image_url: string | null
+          client_name: string | null
+          created_at: string | null
+          description: string | null
+          display_order: number | null
+          id: number
+          is_active: boolean | null
+          is_featured: boolean | null
+          property_type: string | null
+          region: string | null
+          testimonial: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          client_image_url?: string | null
+          client_name?: string | null
+          created_at?: string | null
+          description?: string | null
+          display_order?: number | null
+          id?: number
+          is_active?: boolean | null
+          is_featured?: boolean | null
+          property_type?: string | null
+          region?: string | null
+          testimonial?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          client_image_url?: string | null
+          client_name?: string | null
+          created_at?: string | null
+          description?: string | null
+          display_order?: number | null
+          id?: number
+          is_active?: boolean | null
+          is_featured?: boolean | null
+          property_type?: string | null
+          region?: string | null
+          testimonial?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      unified_schedules: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          email_message: string | null
+          email_subject: string | null
+          end_date: string | null
+          frequency: string
+          group_id: number | null
+          id: number
+          is_recurring: boolean | null
+          last_sent: string | null
+          method: string
+          name: string
+          next_send: string | null
+          send_date: string | null
+          send_time: string
+          status: string | null
+          updated_at: string | null
+          whatsapp_file_type: string | null
+          whatsapp_image_url: string | null
+          whatsapp_message: string | null
+          whatsapp_pdf_url: string | null
+        }
+        Insert: {
           created_at?: string | null
           created_by?: string | null
-          description?: string | null
-          expires_at?: string | null
-          filter_config?: Json | null
-          id?: string
-          is_active?: boolean | null
-          last_viewed_at?: string | null
-          page_id?: string
-          page_type?: string
-          properties_data?: Json | null
-          property_ids?: number[]
-          title?: string
-          total_properties?: number
-          view_count?: number | null
+          email_message?: string | null
+          email_subject?: string | null
+          end_date?: string | null
+          frequency: string
+          group_id?: number | null
+          id?: number
+          is_recurring?: boolean | null
+          last_sent?: string | null
+          method: string
+          name: string
+          next_send?: string | null
+          send_date?: string | null
+          send_time: string
+          status?: string | null
+          updated_at?: string | null
+          whatsapp_file_type?: string | null
+          whatsapp_image_url?: string | null
+          whatsapp_message?: string | null
+          whatsapp_pdf_url?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          email_message?: string | null
+          email_subject?: string | null
+          end_date?: string | null
+          frequency?: string
+          group_id?: number | null
+          id?: number
+          is_recurring?: boolean | null
+          last_sent?: string | null
+          method?: string
+          name?: string
+          next_send?: string | null
+          send_date?: string | null
+          send_time?: string
+          status?: string | null
+          updated_at?: string | null
+          whatsapp_file_type?: string | null
+          whatsapp_image_url?: string | null
+          whatsapp_message?: string | null
+          whatsapp_pdf_url?: string | null
         }
         Relationships: []
       }
@@ -852,138 +1332,216 @@ export type Database = {
           },
         ]
       }
+      zonasrio: {
+        Row: {
+          created_at: string | null
+          id: number
+          meta_area: string | null
+          meta_area_slug: string | null
+          name: string
+          slug: string
+          updated_at: string | null
+          zone: string
+          zone_slug: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: number
+          meta_area?: string | null
+          meta_area_slug?: string | null
+          name: string
+          slug: string
+          updated_at?: string | null
+          zone: string
+          zone_slug: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: number
+          meta_area?: string | null
+          meta_area_slug?: string | null
+          name?: string
+          slug?: string
+          updated_at?: string | null
+          zone?: string
+          zone_slug?: string
+        }
+        Relationships: []
+      }
+      zonassaopaulo: {
+        Row: {
+          created_at: string | null
+          id: number
+          meta_area: string | null
+          meta_area_slug: string | null
+          name: string
+          slug: string
+          updated_at: string | null
+          zone: string
+          zone_slug: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: number
+          meta_area?: string | null
+          meta_area_slug?: string | null
+          name: string
+          slug: string
+          updated_at?: string | null
+          zone: string
+          zone_slug: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: number
+          meta_area?: string | null
+          meta_area_slug?: string | null
+          name?: string
+          slug?: string
+          updated_at?: string | null
+          zone?: string
+          zone_slug?: string
+        }
+        Relationships: []
+      }
+      sp_bairros_cd2022: {
+        Row: {
+          cd_bairro: string | null
+          cd_concurb: string | null
+          cd_dist: string | null
+          cd_mun: string | null
+          cd_regiao: string | null
+          cd_rgi: string | null
+          cd_rgint: string | null
+          cd_subdist: string | null
+          cd_uf: string | null
+          nm_bairro: string | null
+          nm_concurb: string | null
+          nm_dist: string | null
+          nm_mun: string | null
+          nm_regiao: string | null
+          nm_rgi: string | null
+          nm_rgint: string | null
+          nm_subdist: string | null
+          nm_uf: string | null
+        }
+        Insert: {
+          cd_bairro?: string | null
+          cd_concurb?: string | null
+          cd_dist?: string | null
+          cd_mun?: string | null
+          cd_regiao?: string | null
+          cd_rgi?: string | null
+          cd_rgint?: string | null
+          cd_subdist?: string | null
+          cd_uf?: string | null
+          nm_bairro?: string | null
+          nm_concurb?: string | null
+          nm_dist?: string | null
+          nm_mun?: string | null
+          nm_regiao?: string | null
+          nm_rgi?: string | null
+          nm_rgint?: string | null
+          nm_subdist?: string | null
+          nm_uf?: string | null
+        }
+        Update: {
+          cd_bairro?: string | null
+          cd_concurb?: string | null
+          cd_dist?: string | null
+          cd_mun?: string | null
+          cd_regiao?: string | null
+          cd_rgi?: string | null
+          cd_rgint?: string | null
+          cd_subdist?: string | null
+          cd_uf?: string | null
+          nm_bairro?: string | null
+          nm_concurb?: string | null
+          nm_dist?: string | null
+          nm_mun?: string | null
+          nm_regiao?: string | null
+          nm_rgi?: string | null
+          nm_rgint?: string | null
+          nm_subdist?: string | null
+          nm_uf?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
-      leiloes_imoveis_com_zona: {
+      imoveis_zonas_2: {
         Row: {
+          area_privativa: number | null
+          area_total: number | null
           bairro: string | null
-          cidade: string
+          cidade: string | null
           consorcio: boolean | null
           data_leilao_1: string | null
           data_leilao_2: string | null
+          desconto: number | null
           descricao: string | null
           endereco: string | null
-          estado: string
+          estado: string | null
           fgts: boolean | null
           financiamento: boolean | null
-          id: number
+          id: number | null
           imagem: string | null
           leilao_1: number | null
           leilao_2: number | null
           leiloeiro_nome: string | null
+          meta_area: string | null
+          meta_area_slug: string | null
+          numero_garagens: number | null
           numero_processo: string | null
+          numero_quartos: number | null
           parcelamento: boolean | null
           tipo_leilao: string | null
           tipo_propriedade: string | null
           titulo_propriedade: string | null
           url: string | null
-          zona: string | null
+          url_edital: string | null
+          url_matricula: string | null
+          valor_avaliacao: number | null
+          zone: string | null
+          zone_slug: string | null
+        }
+        Relationships: []
+      }
+      leiloes_imoveis_com_zona: {
+        Row: {
+          bairro: string | null
+          cidade: string | null
+          consorcio: boolean | null
+          data_leilao_1: string | null
+          data_leilao_2: string | null
+          descricao: string | null
+          endereco: string | null
+          estado: string | null
+          fgts: boolean | null
+          financiamento: boolean | null
+          id: number | null
+          imagem: string | null
+          leilao_1: number | null
+          leilao_2: number | null
+          leiloeiro_nome: string | null
+          meta_area: string | null
+          meta_area_slug: string | null
+          numero_processo: string | null
+          numeroGaragens: string | null
+          numeroQuartos: string | null
+          parcelamento: boolean | null
+          tipo_leilao: string | null
+          tipo_propriedade: string | null
+          titulo_propriedade: string | null
+          url: string | null
+          zone: string | null
+          zone_slug: string | null
         }
         Relationships: []
       }
     }
     Functions: {
-      calculate_next_send_time: {
-        Args: {
-          p_from_date?: string
-          p_recurrence_interval: number
-          p_recurrence_type: string
-          p_send_day_of_month: number
-          p_send_time: string
-          p_send_weekdays: number[]
-          p_timezone: string
-        }
-        Returns: string
-      }
-      calculate_next_whatsapp_send_time: {
-        Args: {
-          p_from_date?: string
-          p_recurrence_interval: number
-          p_recurrence_type: string
-          p_send_day_of_month?: number
-          p_send_time: string
-          p_send_weekdays?: number[]
-          p_timezone?: string
-        }
-        Returns: string
-      }
-      check_whatsapp_message_sent: {
-        Args: { phone: string; url: string }
-        Returns: boolean
-      }
-      generate_whatsapp_message_hash: {
-        Args: { phone: string; url: string }
-        Returns: string
-      }
-      get_analytics_summary: {
-        Args: { days_back?: number }
-        Returns: {
-          avg_time_on_properties: number
-          total_daily_visits: number
-          total_leads: number
-          total_property_views: number
-          total_searches: number
-          total_unique_visitors: number
-        }[]
-      }
-      get_most_clicked_properties_v2: {
-        Args: { days_back?: number; limit_count?: number }
-        Returns: {
-          cidade: string
-          click_count: number
-          estado: string
-          last_clicked: string
-          property_id: number
-          titulo_propriedade: string
-        }[]
-      }
-      get_most_viewed_properties: {
-        Args: { days_back?: number; limit_count?: number }
-        Returns: {
-          avg_time_spent: number
-          cidade: string
-          estado: string
-          property_id: number
-          titulo_propriedade: string
-          unique_viewers: number
-          view_count: number
-        }[]
-      }
-      get_popular_filters: {
-        Args: { limit_count?: number }
-        Returns: {
-          filter_count: number
-          filter_name: string
-        }[]
-      }
-      get_popular_searches: {
-        Args: { limit_count?: number }
-        Returns: {
-          search_count: number
-          search_query: string
-        }[]
-      }
-      get_whatsapp_lists: {
-        Args: Record<PropertyKey, never>
-        Returns: {
-          id: string
-          name: string
-          phone_numbers: string[]
-        }[]
-      }
-      increment_daily_visit: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
-      register_whatsapp_message_sent: {
-        Args: {
-          phone: string
-          schedule_id_param?: string
-          url: string
-          webhook_response_param?: Json
-        }
-        Returns: string
-      }
+      [_ in never]: never
     }
     Enums: {
       [_ in never]: never
@@ -994,25 +1552,23 @@ export type Database = {
   }
 }
 
-type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
-
-type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
+type DefaultSchema = Database[Extract<keyof Database, "public">]
 
 export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
-    | { schema: keyof DatabaseWithoutInternals },
+    | { schema: keyof Database },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
+    schema: keyof Database
   }
-    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+    ? keyof (Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        Database[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
+  schema: keyof Database
 }
-  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+  ? (Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      Database[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
       Row: infer R
     }
     ? R
@@ -1030,16 +1586,16 @@ export type Tables<
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
-    | { schema: keyof DatabaseWithoutInternals },
+    | { schema: keyof Database },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
+    schema: keyof Database
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    ? keyof Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
+  schema: keyof Database
 }
-  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+  ? Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Insert: infer I
     }
     ? I
@@ -1055,16 +1611,16 @@ export type TablesInsert<
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
-    | { schema: keyof DatabaseWithoutInternals },
+    | { schema: keyof Database },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
+    schema: keyof Database
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    ? keyof Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
+  schema: keyof Database
 }
-  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+  ? Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Update: infer U
     }
     ? U
@@ -1080,39 +1636,16 @@ export type TablesUpdate<
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
     | keyof DefaultSchema["Enums"]
-    | { schema: keyof DatabaseWithoutInternals },
+    | { schema: keyof Database },
   EnumName extends DefaultSchemaEnumNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
+    schema: keyof Database
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    ? keyof Database[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
     : never = never,
 > = DefaultSchemaEnumNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
+  schema: keyof Database
 }
-  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  ? Database[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
   : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
     ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
     : never
-
-export type CompositeTypes<
-  PublicCompositeTypeNameOrOptions extends
-    | keyof DefaultSchema["CompositeTypes"]
-    | { schema: keyof DatabaseWithoutInternals },
-  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
-  }
-    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
-    : never = never,
-> = PublicCompositeTypeNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
-}
-  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
-  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
-    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
-    : never
-
-export const Constants = {
-  public: {
-    Enums: {},
-  },
-} as const

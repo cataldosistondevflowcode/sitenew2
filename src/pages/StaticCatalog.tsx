@@ -10,6 +10,21 @@ import { loadMapbox, geocodeAddress, createMapboxMap } from '@/integrations/mapb
 import { formatPropertyAddress } from '@/utils/addressFormatter';
 import { SEO } from '@/components/SEO';
 import { useFilterParams } from '@/hooks/useFilterParams';
+import { Header } from '@/components/Header';
+import { Footer } from '@/components/Footer';
+
+// Sprint 6 - Regional page components
+import {
+  RegionIntroSection,
+  RegionDescriptionSection,
+  RegionContentSection,
+  RelatedPropertiesCarousel,
+  SupportCTA,
+  AboutCompanySection,
+  SuccessCasesSection,
+  BlogPostsCarousel,
+  FinalCTA
+} from '@/components/regional';
 
 interface Property {
   id: number;
@@ -30,6 +45,13 @@ interface Property {
   parcelamento?: boolean;
 }
 
+interface RegionContent {
+  neighborhoods?: string[];
+  attractions?: string[];
+  infrastructure?: string[];
+  highlights?: string[];
+}
+
 interface SEOPage {
   id: number;
   page_id: string;
@@ -47,6 +69,11 @@ interface SEOPage {
   last_viewed_at: string | null;
   created_at: string;
   updated_at: string;
+  // Sprint 6 - New fields
+  intro_text?: string | null;
+  region_description?: string | null;
+  region_content?: RegionContent | null;
+  h1_title?: string | null;
 }
 
 // Componente para o mapa de uma propriedade
@@ -271,7 +298,7 @@ export default function StaticCatalog() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-600 mx-auto mb-4"></div>
           <p className="text-gray-600">Carregando catálogo...</p>
         </div>
       </div>
@@ -293,6 +320,13 @@ export default function StaticCatalog() {
     );
   }
 
+  // Parse region_content if it's a string
+  const regionContent: RegionContent | null = seoPage.region_content 
+    ? (typeof seoPage.region_content === 'string' 
+        ? JSON.parse(seoPage.region_content) 
+        : seoPage.region_content)
+    : null;
+
   return (
     <>
       <SEO 
@@ -301,29 +335,42 @@ export default function StaticCatalog() {
         keywords={seoPage.meta_keywords || ''}
         canonicalUrl={getCanonicalUrl()}
       />
-      <div className="min-h-screen bg-gray-50">
-        {/* Header */}
-        <div className="bg-white border-b shadow-sm">
-          <div className="max-w-7xl mx-auto px-4 py-6">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <Button
-                  variant="outline"
-                  onClick={() => navigate('/')}
-                  className="flex items-center gap-2"
-                >
-                  <ArrowLeft className="h-4 w-4" />
-                  Voltar
-                </Button>
-                
-                <div>
-                  <h1 className="text-2xl font-bold text-gray-900">{seoPage.regiao} - Imóveis em Leilão</h1>
-                  {seoPage.meta_description && (
-                    <p className="text-gray-600 mt-1">{seoPage.meta_description}</p>
-                  )}
-                </div>
-              </div>
+      
+      <Header />
+      
+      <main className="min-h-screen">
+        {/* Sprint 6: Region Intro Section (H1 + Intro Text) */}
+        <RegionIntroSection
+          regionName={seoPage.regiao}
+          introText={seoPage.intro_text}
+          h1Title={seoPage.h1_title}
+          estado={seoPage.estado}
+          filterType={seoPage.filter_type}
+          filterValue={seoPage.filter_value}
+        />
 
+        {/* Sprint 6: Region Description */}
+        <RegionDescriptionSection
+          regionName={seoPage.regiao}
+          description={seoPage.region_description}
+        />
+
+        {/* Properties Stats Bar */}
+        <div className="bg-white border-b">
+          <div className="max-w-7xl mx-auto px-4 py-4">
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <div className="flex items-center gap-4">
+                <Badge variant={seoPage.estado === 'RJ' ? 'default' : 'secondary'} className="bg-amber-500">
+                  {seoPage.estado === 'RJ' ? 'Rio de Janeiro' : 'São Paulo'}
+                </Badge>
+                <Badge variant="outline">
+                  {seoPage.filter_type === 'bairro' ? 'Bairro' : seoPage.filter_type === 'zona' ? 'Zona' : 'Cidade'}: {seoPage.filter_value}
+                </Badge>
+                <span className="text-sm font-medium text-gray-700">
+                  {properties.length} imóveis encontrados
+                </span>
+              </div>
+              
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-2 text-sm text-gray-500">
                   <Eye className="h-4 w-4" />
@@ -331,6 +378,7 @@ export default function StaticCatalog() {
                 </div>
                 <Button
                   variant="outline"
+                  size="sm"
                   onClick={shareUrl}
                   className="flex items-center gap-2"
                 >
@@ -339,118 +387,145 @@ export default function StaticCatalog() {
                 </Button>
               </div>
             </div>
-
-            <div className="flex items-center gap-4 mt-4">
-              <Badge variant={seoPage.estado === 'RJ' ? 'default' : 'secondary'}>
-                {seoPage.estado === 'RJ' ? 'Rio de Janeiro' : 'São Paulo'}
-              </Badge>
-              <Badge variant="outline">
-                {seoPage.filter_type === 'bairro' ? 'Bairro' : seoPage.filter_type === 'zona' ? 'Zona' : 'Cidade'}: {seoPage.filter_value}
-              </Badge>
-              <span className="text-sm text-gray-500">
-                {properties.length} imóveis encontrados
-              </span>
-            </div>
           </div>
         </div>
 
         {/* Properties Grid */}
-        <div className="max-w-7xl mx-auto px-4 py-8">
-          {properties.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-gray-500">Nenhum imóvel encontrado para {seoPage.regiao}.</p>
-              <Button 
-                onClick={() => navigate(`/leilao-${seoPage.estado.toLowerCase()}`)} 
-                className="mt-4"
-              >
-                Ver todos os imóveis em {seoPage.estado}
-              </Button>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {properties.map((property) => {
-                const address = [property.endereco, property.bairro, property.cidade, property.estado]
-                  .filter(Boolean)
-                  .join(', ');
-                const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
-                const propertyUrl = createPropertyUrl(property);
+        <section className="bg-gray-50 py-8 md:py-12">
+          <div className="max-w-7xl mx-auto px-4">
+            <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-6">
+              Imóveis Disponíveis em {seoPage.regiao}
+            </h2>
+            
+            {properties.length === 0 ? (
+              <div className="text-center py-12 bg-white rounded-xl">
+                <p className="text-gray-500 mb-4">Nenhum imóvel encontrado para {seoPage.regiao} no momento.</p>
+                <p className="text-gray-400 text-sm mb-6">Novos imóveis são adicionados frequentemente. Volte em breve!</p>
+                <Button 
+                  onClick={() => navigate(`/leilao-${seoPage.estado.toLowerCase()}`)} 
+                  className="bg-amber-500 hover:bg-amber-600"
+                >
+                  Ver todos os imóveis em {seoPage.estado}
+                </Button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {properties.map((property) => {
+                  const address = [property.endereco, property.bairro, property.cidade, property.estado]
+                    .filter(Boolean)
+                    .join(', ');
+                  const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
+                  const propertyUrl = createPropertyUrl(property);
 
-                return (
-                  <div key={property.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-                    {/* Image or Map */}
-                    <div className="aspect-video bg-gray-200 relative">
-                      <PropertyImageOrMap property={property} />
-                    </div>
+                  return (
+                    <div key={property.id} className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-all hover:-translate-y-1 group">
+                      {/* Image or Map */}
+                      <div className="aspect-video bg-gray-200 relative overflow-hidden">
+                        <PropertyImageOrMap property={property} />
+                      </div>
 
-                    {/* Content */}
-                    <div className="p-4">
-                      <h3 className="font-semibold text-lg mb-2 line-clamp-2">
-                        {property.titulo_propriedade || 'Título não informado'}
-                      </h3>
+                      {/* Content */}
+                      <div className="p-4">
+                        <h3 className="font-semibold text-lg mb-2 line-clamp-2 group-hover:text-amber-600 transition-colors">
+                          {property.titulo_propriedade || 'Título não informado'}
+                        </h3>
 
-                      <p className="text-gray-600 text-sm mb-3 flex items-start gap-1">
-                        <MapPin className="h-4 w-4 text-gray-400 mt-0.5 flex-shrink-0" />
-                        {address}
-                      </p>
+                        <p className="text-gray-600 text-sm mb-3 flex items-start gap-1">
+                          <MapPin className="h-4 w-4 text-gray-400 mt-0.5 flex-shrink-0" />
+                          <span className="line-clamp-2">{address}</span>
+                        </p>
 
-                      {/* Price */}
-                      <div className="mb-3">
-                        <div className="text-xl font-bold text-blue-600">
-                          {property.leilao_1 ? formatCurrency(property.leilao_1) : 'Valor não informado'}
+                        {/* Price */}
+                        <div className="mb-3">
+                          <div className="text-xl font-bold text-amber-600">
+                            {property.leilao_1 ? formatCurrency(property.leilao_1) : 'Valor não informado'}
+                          </div>
+                          {property.data_leilao_1 && (
+                            <div className="text-sm text-gray-500 flex items-center gap-1 mt-1">
+                              <Calendar className="h-4 w-4" />
+                              {new Date(property.data_leilao_1).toLocaleDateString('pt-BR')}
+                            </div>
+                          )}
                         </div>
-                        {property.data_leilao_1 && (
-                          <div className="text-sm text-gray-500 flex items-center gap-1 mt-1">
-                            <Calendar className="h-4 w-4" />
-                            {new Date(property.data_leilao_1).toLocaleDateString('pt-BR')}
+
+                        {/* Features */}
+                        {(property.fgts || property.financiamento || property.parcelamento) && (
+                          <div className="flex flex-wrap gap-1 mb-3">
+                            {property.fgts && (
+                              <Badge variant="secondary" className="text-xs bg-green-100 text-green-700">FGTS</Badge>
+                            )}
+                            {property.financiamento && (
+                              <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-700">Financiamento</Badge>
+                            )}
+                            {property.parcelamento && (
+                              <Badge variant="secondary" className="text-xs bg-purple-100 text-purple-700">Parcelamento</Badge>
+                            )}
                           </div>
                         )}
-                      </div>
 
-                      {/* Features */}
-                      {(property.fgts || property.financiamento || property.parcelamento) && (
-                        <div className="flex flex-wrap gap-1 mb-3">
-                          {property.fgts && (
-                            <Badge variant="secondary" className="text-xs">FGTS</Badge>
-                          )}
-                          {property.financiamento && (
-                            <Badge variant="secondary" className="text-xs">Financiamento</Badge>
-                          )}
-                          {property.parcelamento && (
-                            <Badge variant="secondary" className="text-xs">Parcelamento</Badge>
-                          )}
+                        {/* Actions */}
+                        <div className="flex gap-2">
+                          <Button
+                            asChild
+                            size="sm"
+                            className="flex-1 bg-amber-500 hover:bg-amber-600"
+                          >
+                            <a href={propertyUrl}>
+                              <ExternalLink className="h-4 w-4 mr-1" />
+                              Ver Detalhes
+                            </a>
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            asChild
+                          >
+                            <a href={mapsUrl} target="_blank" rel="noopener noreferrer">
+                              <MapPin className="h-4 w-4" />
+                            </a>
+                          </Button>
                         </div>
-                      )}
-
-                      {/* Actions */}
-                      <div className="flex gap-2">
-                        <Button
-                          asChild
-                          size="sm"
-                          className="flex-1"
-                        >
-                          <a href={propertyUrl} target="_blank" rel="noopener noreferrer">
-                            <ExternalLink className="h-4 w-4 mr-1" />
-                            Ver Detalhes
-                          </a>
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          asChild
-                        >
-                          <a href={mapsUrl} target="_blank" rel="noopener noreferrer">
-                            <MapPin className="h-4 w-4" />
-                          </a>
-                        </Button>
                       </div>
                     </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-      </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </section>
+
+        {/* Sprint 6: Support CTA */}
+        <SupportCTA estado={seoPage.estado} />
+
+        {/* Sprint 6: Region Content (Neighborhoods, Attractions, Infrastructure, Highlights) */}
+        <RegionContentSection
+          regionName={seoPage.regiao}
+          content={regionContent}
+        />
+
+        {/* Sprint 6: Related Properties Carousel */}
+        <RelatedPropertiesCarousel
+          currentRegion={seoPage.regiao}
+          estado={seoPage.estado}
+          filterType={seoPage.filter_type}
+          filterValue={seoPage.filter_value}
+          excludeIds={properties.map(p => p.id)}
+        />
+
+        {/* Sprint 6: Success Cases */}
+        <SuccessCasesSection region={seoPage.regiao} />
+
+        {/* Sprint 6: Blog Posts Carousel */}
+        <BlogPostsCarousel />
+
+        {/* Sprint 6: About Company Section */}
+        <AboutCompanySection />
+
+        {/* Sprint 6: Final CTA */}
+        <FinalCTA regionName={seoPage.regiao} />
+      </main>
+      
+      <Footer />
     </>
   );
 }

@@ -30,6 +30,7 @@ import AdminSchedules from "./pages/AdminSchedules";
 import AdminCreateSchedule from "./pages/AdminCreateSchedule";
 import AdminCreateLead from "./pages/AdminCreateLead";
 import AdminGroups from "./pages/AdminGroups";
+import AdminFilters from "./pages/AdminFilters";
 import TestUnifiedScheduleProcessor from "./pages/TestUnifiedScheduleProcessor";
 
 const queryClient = new QueryClient();
@@ -117,6 +118,11 @@ const App = () => (
             <Route path="/admin/schedules/create" element={
               <AdminRoute>
                 <AdminCreateSchedule />
+              </AdminRoute>
+            } />
+            <Route path="/admin/filters" element={
+              <AdminRoute>
+                <AdminFilters />
               </AdminRoute>
             } />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

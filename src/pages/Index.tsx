@@ -22,7 +22,11 @@ import { toast } from "sonner";
 import { flexibleSearch, escapeSqlLike, sanitizeSearchInput } from "@/utils/stringUtils";
 import { useFilterParams, FilterParams } from "@/hooks/useFilterParams";
 import { executeWhatsAppAction, initializeWhatsAppScript } from "@/utils/whatsappScript";
+import { useRDStationTracking, useRDStationFilterTracking } from "@/hooks/useRDStationTracking";
 import { SEO } from "@/components/SEO";
+import { useSEORedirect } from "@/hooks/useSEORedirect";
+import { useLocation } from "react-router-dom";
+import { useFilterCities, useFilterNeighborhoods } from "@/hooks/useFilterData";
 // import { useAnalytics } from "@/hooks/useAnalytics";
 
 // Interface para os dados dos imóveis
@@ -344,6 +348,15 @@ const Index = () => {
   // Estado para armazenar a lista de bairros do RJ
   const [rjNeighborhoods, setRjNeighborhoods] = useState<{neighborhood: string, count: number}[]>([]);
   
+  // Usar hooks do Supabase para buscar filtros
+  const { cities: filterCities, loading: citiesLoading } = useFilterCities('RJ');
+  
+  // Estado para armazenar o city_id da cidade selecionada
+  const [selectedCityId, setSelectedCityId] = useState<number | null>(null);
+  
+  // Buscar bairros do Supabase quando uma cidade é selecionada
+  const { neighborhoods: filterNeighborhoods, loading: neighborhoodsLoading } = useFilterNeighborhoods(selectedCityId);
+  
   // Estado para armazenar a cidade selecionada sem a contagem entre parênteses
   const [selectedCityName, setSelectedCityName] = useState<string>("");
   
@@ -407,6 +420,12 @@ const Index = () => {
 
   // Hook para gerenciar sincronização com URL
   const { parseFiltersFromURL, updateURL, clearFiltersFromURL } = useFilterParams();
+  const location = useLocation();
+  
+  // Hook para redirecionar para páginas SEO fixas quando região mapeada é selecionada
+  // Desabilitar se já estiver em uma página de catálogo para evitar loops
+  const isCatalogPage = location.pathname.startsWith('/catalogo/');
+  useSEORedirect(filters, 'RJ', !isCatalogPage);
 
   // Carregar script do WhatsApp automaticamente
   useEffect(() => {
@@ -433,12 +452,18 @@ const Index = () => {
   //   }
   // }, []);
 
-  // Carregar as cidades do estado RJ
+  // Carregar as cidades do estado RJ usando filtros do Supabase + contagens dos imóveis
   useEffect(() => {
     const fetchRjCities = async () => {
       try {
-        // Iniciar um objeto para contagem de cidades
+        // Se ainda não carregou as cidades do Supabase, aguardar
+        if (citiesLoading || !filterCities.length) return;
+        
+        // Iniciar um objeto para contagem de cidades dos imóveis
         const cityCount: Record<string, number> = {};
+        
+        // Buscar contagens dos imóveis para cada cidade do Supabase
+        const cityNames = filterCities.map(c => c.name);
         
         // Buscar todos os registros com paginação
         let page = 0;
@@ -449,12 +474,12 @@ const Index = () => {
           const from = page * pageSize;
           const to = from + pageSize - 1;
           
-          const { data, error, count } = await supabase
+          const { data, error } = await supabase
             .from('leiloes_imoveis_com_zona')
-            .select('cidade', { count: 'exact' })
+            .select('cidade')
             .eq('estado', 'RJ')
             .gte('leilao_1', 75000) // Filtro obrigatório: valor mínimo de R$ 75.000
-            .order('cidade')
+            .in('cidade', cityNames)
             .not('cidade', 'is', null)
             .range(from, to);
           
@@ -475,11 +500,13 @@ const Index = () => {
           if (page > 50) break;
         }
         
-        // Converter para array para usar no dropdown
-        const citiesArray = Object.keys(cityCount)
+        // Combinar: cidades do Supabase com contagens dos imóveis
+        // Mostrar apenas cidades que têm imóveis
+        const citiesArray = filterCities
+          .filter(city => cityCount[city.name] > 0) // Apenas cidades com imóveis
           .map(city => ({
-            city,
-            count: cityCount[city]
+            city: city.name,
+            count: cityCount[city.name] || 0
           }))
           .sort((a, b) => {
             // Primeiro ordenar por contagem decrescente
@@ -490,7 +517,7 @@ const Index = () => {
             return a.city.localeCompare(b.city, 'pt-BR');
           });
         
-        console.log(`Total de cidades encontradas: ${citiesArray.length}`);
+        console.log(`Total de cidades encontradas (Supabase + contagens): ${citiesArray.length}`);
         setRjCities(citiesArray);
       } catch (err) {
         console.error('Erro ao buscar cidades do RJ:', err);
@@ -536,7 +563,7 @@ const Index = () => {
 
     fetchRjCities();
     fetchPropertyTypes();
-  }, []);
+  }, [filterCities, citiesLoading]);
 
   // Carregar filtros da URL quando a página carrega
   useEffect(() => {
@@ -1206,6 +1233,13 @@ const Index = () => {
     
     // Notificação de filtro aplicado
     toast.success('Filtros aplicados com sucesso!');
+    
+    // Rastrear aplicação de filtros no RD Station
+    import('@/utils/rdStation').then(({ trackCTAClick }) => {
+      trackCTAClick('Buscar Imóveis', 'Filter Button', {
+        filters_applied: newFilters,
+      });
+    });
     
     // Se estiver no mobile, fechar o painel de filtros
     if (isMobile) {
@@ -1879,156 +1913,183 @@ const Index = () => {
     setShowAuctionTypeMenu(false);
   };
 
-  // Função para buscar bairros por cidade
+  // Função para buscar bairros por cidade usando Supabase
   const fetchNeighborhoodsByCity = async (cityName: string) => {
-    if (!cityName) return;
+    if (!cityName) {
+      setSelectedCityId(null);
+      return;
+    }
+    
     try {
-      const { data, error } = await supabase
-        .from('leiloes_imoveis_com_zona')
-        .select('bairro')
-        .eq('estado', 'RJ')
-        .gte('leilao_1', 75000) // Filtro obrigatório: valor mínimo de R$ 75.000
-        .eq('cidade', cityName)
-        .order('bairro')
-        .not('bairro', 'is', null);
-      if (error) throw error;
-      const neighborhoodCount: Record<string, number> = {};
-      data.forEach(item => {
-        if (item.bairro && item.bairro.trim() !== '') {
-          neighborhoodCount[item.bairro] = (neighborhoodCount[item.bairro] || 0) + 1;
-        }
-      });
+      // Buscar city_id da cidade no Supabase
+      const city = filterCities.find(c => c.name.toLowerCase() === cityName.toLowerCase());
+      if (!city) {
+        console.warn(`Cidade "${cityName}" não encontrada no Supabase`);
+        setSelectedCityId(null);
+        return;
+      }
       
-      // Se for Rio de Janeiro, mostrar todos os bairros da lista fixa por zona
-      if (cityName.toLowerCase() === 'rio de janeiro') {
-        const bairrosAgrupados: Record<string, { neighborhood: string, count: number }[]> = {};
-        const bairrosJaAdicionados = new Set<string>(); // Para evitar duplicatas
-
-        // Usar apenas as zonas do Rio de Janeiro
-        const zonasRJ = ['Zona Central (Rio de Janeiro)', 'Zona Norte (Rio de Janeiro)', 'Zona Sul (Rio de Janeiro)', 'Zona Oeste (Rio de Janeiro)'];
-        zonasRJ.forEach(zona => {
-          if (bairrosPorZonaRJ[zona]) {
-            bairrosAgrupados[zona] = bairrosPorZonaRJ[zona]
-              .filter(bairro => !bairrosJaAdicionados.has(bairro)) // Filtrar duplicatas
-              .map(bairro => {
-                bairrosJaAdicionados.add(bairro); // Marcar como adicionado
-                return {
-                  neighborhood: bairro,
-                  count: neighborhoodCount[bairro] || 0
-                };
-              });
+      // Definir city_id para que o hook useFilterNeighborhoods busque os bairros
+      setSelectedCityId(city.id);
+      
+      // O processamento dos bairros será feito pelo useEffect abaixo
+      // que monitora selectedCityId e filterNeighborhoods
+    } catch (err) {
+      console.error(`Erro ao buscar cidade no Supabase: ${cityName}`, err);
+    }
+  };
+  
+  // Processar bairros do Supabase quando carregados
+  useEffect(() => {
+    if (!selectedCityId || neighborhoodsLoading || !filterNeighborhoods.length) return;
+    
+    const processNeighborhoods = async () => {
+      try {
+        const cityName = filterCities.find(c => c.id === selectedCityId)?.name;
+        if (!cityName) return;
+        
+        // Buscar contagens dos imóveis para os bairros
+        const { data, error } = await supabase
+          .from('leiloes_imoveis_com_zona')
+          .select('bairro')
+          .eq('estado', 'RJ')
+          .gte('leilao_1', 75000)
+          .eq('cidade', cityName)
+          .not('bairro', 'is', null);
+        
+        if (error) throw error;
+        
+        const neighborhoodCount: Record<string, number> = {};
+        data.forEach(item => {
+          if (item.bairro && item.bairro.trim() !== '') {
+            neighborhoodCount[item.bairro] = (neighborhoodCount[item.bairro] || 0) + 1;
           }
         });
-        // Adicionar bairros "Outros" que estão no banco mas não na lista fixa
-        Object.keys(neighborhoodCount).forEach(bairro => {
-          // Verificar se já foi adicionado (evita duplicatas)
-          if (bairrosJaAdicionados.has(bairro)) {
-            return; // Pular se já foi adicionado
-          }
-
-          let found = false;
-
-          // Normalizar o nome do bairro para comparação (tratar casos como Cajú -> Caju)
-          const bairroNormalizado = bairro.toLowerCase()
-            .normalize('NFD')
-            .replace(/[\u0300-\u036f]/g, ''); // Remove acentos
-
-          for (const zona of zonasRJ) {
+        
+        // Se for Rio de Janeiro, mostrar todos os bairros da lista fixa por zona
+        if (cityName.toLowerCase() === 'rio de janeiro') {
+          const bairrosAgrupados: Record<string, { neighborhood: string, count: number }[]> = {};
+          const bairrosJaAdicionados = new Set<string>();
+          
+          // Usar apenas as zonas do Rio de Janeiro
+          const zonasRJ = ['Zona Central (Rio de Janeiro)', 'Zona Norte (Rio de Janeiro)', 'Zona Sul (Rio de Janeiro)', 'Zona Oeste (Rio de Janeiro)'];
+          
+          // Primeiro, adicionar bairros do Supabase que estão nas zonas
+          zonasRJ.forEach(zona => {
             if (bairrosPorZonaRJ[zona]) {
-              const bairrosNormalizados = bairrosPorZonaRJ[zona].map(b =>
-                b.toLowerCase()
-                  .normalize('NFD')
-                  .replace(/[\u0300-\u036f]/g, '')
-              );
-              if (bairrosNormalizados.includes(bairroNormalizado)) {
+              bairrosAgrupados[zona] = bairrosPorZonaRJ[zona]
+                .filter(bairro => {
+                  // Verificar se o bairro existe no Supabase
+                  const existsInSupabase = filterNeighborhoods.some(n => 
+                    n.name.toLowerCase() === bairro.toLowerCase()
+                  );
+                  return existsInSupabase && !bairrosJaAdicionados.has(bairro);
+                })
+                .map(bairro => {
+                  bairrosJaAdicionados.add(bairro);
+                  return {
+                    neighborhood: bairro,
+                    count: neighborhoodCount[bairro] || 0
+                  };
+                });
+            }
+          });
+          
+          // Adicionar bairros "Outros" que estão no Supabase mas não na lista fixa
+          filterNeighborhoods.forEach(neighborhood => {
+            const bairro = neighborhood.name;
+            if (bairrosJaAdicionados.has(bairro)) return;
+            
+            let found = false;
+            const bairroNormalizado = bairro.toLowerCase()
+              .normalize('NFD')
+              .replace(/[\u0300-\u036f]/g, '');
+            
+            for (const zona of zonasRJ) {
+              if (bairrosPorZonaRJ[zona]) {
+                const bairrosNormalizados = bairrosPorZonaRJ[zona].map(b =>
+                  b.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+                );
+                if (bairrosNormalizados.includes(bairroNormalizado)) {
+                  found = true;
+                  break;
+                }
+              }
+            }
+            
+            if (bairro.toLowerCase().includes('cajú') || bairro.toLowerCase().includes('caju')) {
+              found = true;
+            }
+            
+            if (!found) {
+              if (!bairrosAgrupados['Outros']) bairrosAgrupados['Outros'] = [];
+              bairrosAgrupados['Outros'].push({ 
+                neighborhood: bairro, 
+                count: neighborhoodCount[bairro] || 0 
+              });
+              bairrosJaAdicionados.add(bairro);
+            }
+          });
+          
+          setRjNeighborhoods(bairrosAgrupados as any);
+        } 
+        // Se for Niterói, mostrar todos os bairros da lista fixa por região
+        else if (cityName.toLowerCase() === 'niterói') {
+          const bairrosAgrupados: Record<string, { neighborhood: string, count: number }[]> = {};
+          Object.keys(bairrosPorRegiaoNiteroi).forEach(regiao => {
+            bairrosAgrupados[regiao] = bairrosPorRegiaoNiteroi[regiao]
+              .filter(bairro => filterNeighborhoods.some(n => n.name.toLowerCase() === bairro.toLowerCase()))
+              .map(bairro => ({
+                neighborhood: bairro,
+                count: neighborhoodCount[bairro] || 0
+              }));
+          });
+          
+          // Adicionar bairros "Outros" do Supabase que não estão na lista fixa
+          filterNeighborhoods.forEach(neighborhood => {
+            const bairro = neighborhood.name;
+            let found = false;
+            for (const regiao in bairrosPorRegiaoNiteroi) {
+              if (bairrosPorRegiaoNiteroi[regiao].map(b => b.toLowerCase()).includes(bairro.toLowerCase())) {
                 found = true;
                 break;
               }
             }
-          }
-
-          // Pular especificamente o bairro "Cajú" que deve ser mapeado para "Caju"
-          if (bairro.toLowerCase().includes('cajú') || bairro.toLowerCase().includes('caju')) {
-            found = true; // Marcar como encontrado para não aparecer em "Outros"
-          }
-
-          if (!found) {
-            if (!bairrosAgrupados['Outros']) bairrosAgrupados['Outros'] = [];
-            bairrosAgrupados['Outros'].push({ neighborhood: bairro, count: neighborhoodCount[bairro] });
-            bairrosJaAdicionados.add(bairro); // Marcar como adicionado
-          }
-        });
-        setRjNeighborhoods(bairrosAgrupados as any);
-      } 
-      // Se for Niterói, mostrar todos os bairros da lista fixa por região
-      else if (cityName.toLowerCase() === 'niterói') {
-        const bairrosAgrupados: Record<string, { neighborhood: string, count: number }[]> = {};
-        Object.keys(bairrosPorRegiaoNiteroi).forEach(regiao => {
-          bairrosAgrupados[regiao] = bairrosPorRegiaoNiteroi[regiao].map(bairro => ({
-            neighborhood: bairro,
-            count: neighborhoodCount[bairro] || 0
-          }));
-        });
-        // Adicionar bairros "Outros" se houver
-        Object.keys(neighborhoodCount).forEach(bairro => {
-          let found = false;
-          for (const regiao in bairrosPorRegiaoNiteroi) {
-            if (bairrosPorRegiaoNiteroi[regiao].map(b => b.toLowerCase()).includes(bairro.toLowerCase())) {
-              found = true;
-              break;
+            if (!found) {
+              if (!bairrosAgrupados['Outros']) bairrosAgrupados['Outros'] = [];
+              bairrosAgrupados['Outros'].push({ 
+                neighborhood: bairro, 
+                count: neighborhoodCount[bairro] || 0 
+              });
             }
-          }
-          if (!found) {
-            if (!bairrosAgrupados['Outros']) bairrosAgrupados['Outros'] = [];
-            bairrosAgrupados['Outros'].push({ neighborhood: bairro, count: neighborhoodCount[bairro] });
-          }
-        });
-        setRjNeighborhoods(bairrosAgrupados as any);
-      }
-      // Se for uma das principais cidades com bairros pré-definidos
-      else if (bairrosPorZonaRJ[cityName]) {
-        const bairrosArray = bairrosPorZonaRJ[cityName].map(bairro => ({
-          neighborhood: bairro,
-          count: neighborhoodCount[bairro] || 0
-        }));
-        
-        // Adicionar bairros do banco que não estão na lista fixa
-        Object.keys(neighborhoodCount).forEach(bairro => {
-          if (!bairrosPorZonaRJ[cityName].map(b => b.toLowerCase()).includes(bairro.toLowerCase())) {
-            bairrosArray.push({ neighborhood: bairro, count: neighborhoodCount[bairro] });
-          }
-        });
-        
-        // Ordenar por contagem decrescente
-        bairrosArray.sort((a, b) => {
-          if (b.count !== a.count) {
-            return b.count - a.count;
-          }
-          return a.neighborhood.localeCompare(b.neighborhood, 'pt-BR');
-        });
-        
-        setRjNeighborhoods(bairrosArray);
-      }
-      // Para outras cidades, usar lista simples do banco de dados
-      else {
-        const neighborhoodsArray = Object.keys(neighborhoodCount)
-          .filter(neighborhood => neighborhood.trim() !== '')
-          .map(neighborhood => ({
-            neighborhood,
-            count: neighborhoodCount[neighborhood]
-          }))
-          .sort((a, b) => {
-            if (b.count !== a.count) {
-              return b.count - a.count;
-            }
-            return a.neighborhood.localeCompare(b.neighborhood, 'pt-BR');
           });
-        setRjNeighborhoods(neighborhoodsArray);
+          
+          setRjNeighborhoods(bairrosAgrupados as any);
+        }
+        // Para outras cidades, usar lista do Supabase com contagens
+        else {
+          const neighborhoodsArray = filterNeighborhoods
+            .filter(neighborhood => neighborhoodCount[neighborhood.name] > 0) // Apenas bairros com imóveis
+            .map(neighborhood => ({
+              neighborhood: neighborhood.name,
+              count: neighborhoodCount[neighborhood.name] || 0
+            }))
+            .sort((a, b) => {
+              if (b.count !== a.count) {
+                return b.count - a.count;
+              }
+              return a.neighborhood.localeCompare(b.neighborhood, 'pt-BR');
+            });
+          
+          setRjNeighborhoods(neighborhoodsArray);
+        }
+      } catch (err) {
+        console.error('Erro ao processar bairros:', err);
       }
-    } catch (err) {
-      console.error(`Erro ao buscar bairros de ${cityName}:`, err);
-    }
-  };
+    };
+    
+    processNeighborhoods();
+  }, [selectedCityId, filterNeighborhoods, neighborhoodsLoading, filterCities]);
 
   // Função para limpar todos os filtros
   const clearAllFilters = () => {
@@ -2069,6 +2130,21 @@ const Index = () => {
   // Adicionar função para o modal de interesse
   const handleInterestSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Rastrear submissão de formulário no RD Station
+    import('@/utils/rdStation').then(({ trackFormSubmit }) => {
+      trackFormSubmit('Interesse em Imóvel', {
+        name: interestName,
+        phone: interestPhone,
+        email: interestEmail,
+        filters_applied: {
+          city: selectedCityName,
+          neighborhood: selectedNeighborhood,
+          property_type: selectedTypes.map(t => t.label).join(', '),
+        },
+      });
+    });
+    
     setShowInterestModal(false);
     setInterestName("");
     setInterestPhone("");
@@ -2087,9 +2163,24 @@ const Index = () => {
         canonicalUrl="https://imoveis.leilaodeimoveis-cataldosiston.com/"
       />
       <CookieBar />
-      <SocialBar onWhatsAppClick={() => executeWhatsAppAction()} />
-      <Header onContactClick={() => executeWhatsAppAction()} />
-      <HeroSection onOpportunityClick={() => window.open('https://leilaodeimoveis-cataldosiston.com/contato-advogados-imobiliarios/', '_blank')} />
+      <SocialBar onWhatsAppClick={() => {
+        import('@/utils/rdStation').then(({ trackWhatsAppClick }) => {
+          trackWhatsAppClick('Social Bar');
+        });
+        executeWhatsAppAction();
+      }} />
+      <Header onContactClick={() => {
+        import('@/utils/rdStation').then(({ trackContactClick }) => {
+          trackContactClick('WhatsApp', 'Header');
+        });
+        executeWhatsAppAction();
+      }} />
+      <HeroSection onOpportunityClick={() => {
+        import('@/utils/rdStation').then(({ trackCTAClick }) => {
+          trackCTAClick('Oportunidades', 'Hero Section');
+        });
+        window.open('https://leilaodeimoveis-cataldosiston.com/contato-advogados-imobiliarios/', '_blank');
+      }} />
       
       {/* Properties Section - Movida para cima */}
       <section className="py-16 bg-background opportunities">
@@ -2100,7 +2191,14 @@ const Index = () => {
             <div className="block md:hidden mb-4">
               <Button 
                 className="w-full flex items-center justify-center bg-teal-900 hover:bg-teal-800 text-white py-3 text-base font-medium"
-                onClick={() => setIsFilterOpen(!isFilterOpen)}
+                onClick={() => {
+                  setIsFilterOpen(!isFilterOpen);
+                  if (!isFilterOpen) {
+                    import('@/utils/rdStation').then(({ trackCTAClick }) => {
+                      trackCTAClick('Filtrar Imóveis', 'Mobile Filter Button');
+                    });
+                  }
+                }}
               >
                 {isFilterOpen ? (
                   <>

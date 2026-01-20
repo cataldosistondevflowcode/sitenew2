@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { loadMapbox, geocodeAddress, createMapboxMap, MapboxCoordinates } from "../integrations/mapbox/client";
 import { mapboxGeocodeCache } from "../utils/mapboxCache";
 import { mapboxMapCache } from "../utils/mapboxCache";
+import { trackPropertyClick } from "@/utils/rdStation";
 
 interface PropertyCardProps {
   id: number;
@@ -67,6 +68,14 @@ export const PropertyCard = ({
 
     try {
       console.log('Registrando clique para propriedade ID:', id);
+
+      // Rastrear evento RD Station
+      trackPropertyClick(id, {
+        property_title: title,
+        property_location: location,
+        click_type: 'saiba_mais',
+        property_value: firstAuctionValue,
+      });
 
       // Registrar o clique na nova tabela específica
       const { data, error } = await supabase.from('property_clicks').insert({

@@ -9,7 +9,13 @@ interface SEOProps {
   type?: string;
   canonicalUrl?: string;
   structuredData?: object;
+  robots?: string; // Permite sobrescrever robots (padrão: controlado por variável de ambiente)
 }
+
+// Verifica se está em modo migração (noindex, follow)
+// Durante migração: VITE_SEO_MIGRATION_MODE=true
+// Em produção: VITE_SEO_MIGRATION_MODE=false ou não definido
+const isMigrationMode = import.meta.env.VITE_SEO_MIGRATION_MODE === 'true';
 
 export const SEO = ({
   title = 'Imóveis em Leilão RJ | Cataldo Siston - Leilões Judiciais e Extrajudiciais',
@@ -18,12 +24,20 @@ export const SEO = ({
   image = 'https://imoveis.leilaodeimoveis-cataldosiston.com/assets/banner-site-cataldo-2023.jpg',
   type = 'website',
   canonicalUrl,
-  structuredData
+  structuredData,
+  robots // Permite sobrescrever (útil para páginas específicas)
 }: SEOProps) => {
   const location = useLocation();
   const baseUrl = 'https://imoveis.leilaodeimoveis-cataldosiston.com';
-  const currentUrl = canonicalUrl || `${baseUrl}${location.pathname}${location.search}`;
+  
+  // Para páginas com filtros, usar apenas a URL base (sem query params) na canônica
+  // Isso evita canônicas inconsistentes conforme RF-01
+  const cleanPath = location.pathname;
+  const finalCanonicalUrl = canonicalUrl || `${baseUrl}${cleanPath}`;
   const absoluteImage = image.startsWith('http') ? image : `${baseUrl}${image}`;
+  
+  // Robots: usar prop se fornecida, senão usar modo migração, senão index, follow
+  const robotsContent = robots || (isMigrationMode ? 'noindex, follow' : 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1');
 
   useEffect(() => {
     // Update document title
@@ -48,15 +62,26 @@ export const SEO = ({
     // Update basic meta tags
     updateMetaTag('meta[name="description"]', description);
     updateMetaTag('meta[name="keywords"]', keywords);
+    
+    // Update robots meta tag (CRÍTICO para migração)
+    updateMetaTag('meta[name="robots"]', robotsContent);
 
-    // Update canonical URL
+    // Update canonical URL - garantir apenas 1 canônica (RF-01)
+    // Remove canônicas duplicadas antes de adicionar
+    const existingCanonicals = document.querySelectorAll('link[rel="canonical"]');
+    existingCanonicals.forEach((canonical, index) => {
+      if (index > 0) {
+        canonical.remove(); // Remove duplicatas
+      }
+    });
+    
     let canonical = document.querySelector('link[rel="canonical"]') as HTMLLinkElement;
     if (canonical) {
-      canonical.href = currentUrl;
+      canonical.href = finalCanonicalUrl;
     } else {
       canonical = document.createElement('link');
       canonical.rel = 'canonical';
-      canonical.href = currentUrl;
+      canonical.href = finalCanonicalUrl;
       document.head.appendChild(canonical);
     }
 
@@ -64,14 +89,14 @@ export const SEO = ({
     updateMetaTag('meta[property="og:title"]', title);
     updateMetaTag('meta[property="og:description"]', description);
     updateMetaTag('meta[property="og:image"]', absoluteImage);
-    updateMetaTag('meta[property="og:url"]', currentUrl);
+    updateMetaTag('meta[property="og:url"]', finalCanonicalUrl);
     updateMetaTag('meta[property="og:type"]', type);
 
     // Update Twitter Card tags
     updateMetaTag('meta[name="twitter:title"]', title);
     updateMetaTag('meta[name="twitter:description"]', description);
     updateMetaTag('meta[name="twitter:image"]', absoluteImage);
-    updateMetaTag('meta[name="twitter:url"]', currentUrl);
+    updateMetaTag('meta[name="twitter:url"]', finalCanonicalUrl);
 
     // Add structured data if provided
     if (structuredData) {
@@ -88,7 +113,7 @@ export const SEO = ({
         document.head.appendChild(script);
       }
     }
-  }, [title, description, keywords, image, type, currentUrl, absoluteImage, structuredData]);
+  }, [title, description, keywords, image, type, finalCanonicalUrl, absoluteImage, structuredData, robotsContent]);
 
   return null;
 };

@@ -1,0 +1,75 @@
+{
+  "pages": [
+    {
+      "id": "copacabana-rj",
+      "estado": "RJ",
+      "regiao": "Copacabana",
+      "keyword": "comprar apartamento copacabana",
+      "urlSlug": "comprar-apartamento-copacabana",
+      "metaTitle": "Comprar Apartamento Copacabana: Leilão de Imóveis | Cataldo Siston",
+      "metaDescription": "Procura comprar apartamento em Copacabana? Encontre imóveis de leilão em Copacabana, Rio de Janeiro. Leilões judiciais e extrajudiciais com grandes oportunidades. Cataldo Siston Advogados.",
+      "metaKeywords": "comprar apartamento copacabana, leilão de imóveis copacabana, leilão RJ, apartamento copacabana leilão, imóveis copacabana",
+      "filterType": "bairro",
+      "filterValue": "Copacabana",
+      "active": true
+    },
+    {
+      "id": "ipanema-rj",
+      "estado": "RJ",
+      "regiao": "Ipanema",
+      "keyword": "comprar apartamento ipanema",
+      "urlSlug": "comprar-apartamento-ipanema",
+      "metaTitle": "Comprar Apartamento Ipanema: Leilão de Imóveis | Cataldo Siston",
+      "metaDescription": "Encontre apartamentos em leilão em Ipanema, Rio de Janeiro. Leilões judiciais e extrajudiciais com excelentes oportunidades. Cataldo Siston Advogados - Especialistas em leilões.",
+      "metaKeywords": "comprar apartamento ipanema, leilão de imóveis ipanema, leilão RJ, apartamento ipanema leilão",
+      "filterType": "bairro",
+      "filterValue": "Ipanema",
+      "active": true
+    },
+    {
+      "id": "leblon-rj",
+      "estado": "RJ",
+      "regiao": "Leblon",
+      "keyword": "comprar apartamento leblon",
+      "urlSlug": "comprar-apartamento-leblon",
+      "metaTitle": "Comprar Apartamento Leblon: Leilão de Imóveis | Cataldo Siston",
+      "metaDescription": "Apartamentos em leilão no Leblon, Rio de Janeiro. Leilões judiciais e extrajudiciais com grandes oportunidades. Cataldo Siston Advogados.",
+      "metaKeywords": "comprar apartamento leblon, leilão de imóveis leblon, leilão RJ, apartamento leblon leilão",
+      "filterType": "bairro",
+      "filterValue": "Leblon",
+      "active": true
+    },
+    {
+      "id": "barra-tijuca-rj",
+      "estado": "RJ",
+      "regiao": "Barra da Tijuca",
+      "keyword": "comprar apartamento barra tijuca",
+      "urlSlug": "comprar-apartamento-barra-tijuca",
+      "metaTitle": "Comprar Apartamento Barra da Tijuca: Leilão de Imóveis | Cataldo Siston",
+      "metaDescription": "Encontre apartamentos em leilão na Barra da Tijuca, Rio de Janeiro. Leilões judiciais e extrajudiciais. Cataldo Siston Advogados.",
+      "metaKeywords": "comprar apartamento barra tijuca, leilão de imóveis barra tijuca, leilão RJ",
+      "filterType": "bairro",
+      "filterValue": "Barra da Tijuca",
+      "active": true
+    },
+    {
+      "id": "zona-sul-rj",
+      "estado": "RJ",
+      "regiao": "Zona Sul",
+      "keyword": "imóveis leilão zona sul rio de janeiro",
+      "urlSlug": "imoveis-leilao-zona-sul-rio-de-janeiro",
+      "metaTitle": "Imóveis em Leilão na Zona Sul do Rio de Janeiro | Cataldo Siston",
+      "metaDescription": "Encontre imóveis em leilão na Zona Sul do Rio de Janeiro. Copacabana, Ipanema, Leblon e outros bairros. Leilões judiciais e extrajudiciais. Cataldo Siston Advogados.",
+      "metaKeywords": "leilão zona sul RJ, imóveis zona sul leilão, leilão copacabana ipanema leblon",
+      "filterType": "zona",
+      "filterValue": "Zona Sul (Rio de Janeiro)",
+      "active": true
+    }
+  ],
+  "settings": {
+    "outputDir": "html-static",
+    "baseUrl": "https://imoveis.leilaodeimoveis-cataldosiston.com",
+    "autoGenerateSlug": true,
+    "defaultState": "RJ"
+  }
+}

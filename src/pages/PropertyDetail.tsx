@@ -18,6 +18,8 @@ import { Mail } from "lucide-react";
 import { WhatsAppIcon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { SEO } from "@/components/SEO";
+import { useRDStationTracking } from "@/hooks/useRDStationTracking";
+import { trackPropertyView, trackWhatsAppClick, trackContactClick } from "@/utils/rdStation";
 
 interface Property {
   id: number;
@@ -56,6 +58,14 @@ const PropertyDetail = () => {
   // Inicializar analytics com tracking automático
   const propertyIdForAnalytics = property?.id || (propertyId ? Number(propertyId) : null);
   const { trackContact } = useAnalytics(propertyIdForAnalytics);
+  
+  // Rastreamento RD Station
+  useRDStationTracking({
+    pageName: property ? `Imóvel: ${property.titulo_propriedade}` : 'Detalhe do Imóvel',
+    additionalData: {
+      property_id: propertyId,
+    },
+  });
   
   // Estados para controlar os modais
   const [showOpportunityPopup, setShowOpportunityPopup] = useState(false);
@@ -263,15 +273,24 @@ const PropertyDetail = () => {
         canonicalUrl={`https://imoveis.leilaodeimoveis-cataldosiston.com/imovel/${property.id}`}
         structuredData={propertyStructuredData}
       />
-      <SocialBar onWhatsAppClick={() => executeWhatsAppAction()} />
-      <Header onContactClick={() => executeWhatsAppAction()} />
+      <SocialBar onWhatsAppClick={() => {
+        trackWhatsAppClick('Social Bar');
+        executeWhatsAppAction();
+      }} />
+      <Header onContactClick={() => {
+        trackContactClick('WhatsApp', 'Header');
+        executeWhatsAppAction();
+      }} />
       
       <div className="w-full">
         <main className="container mx-auto px-4 py-8 pb-0 mb-0">
           <MainPropertyDetail 
             property={formattedProperty} 
             rawPropertyData={property}
-            onContactClick={() => executeWhatsAppAction()}
+            onContactClick={() => {
+              trackContactClick('WhatsApp', 'Property Detail');
+              executeWhatsAppAction();
+            }}
           />
         </main>
         
@@ -305,7 +324,10 @@ const PropertyDetail = () => {
         
         <Button 
           className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-white hover:bg-gray-100 border border-gray-200 hidden"
-          onClick={() => executeWhatsAppAction()}
+          onClick={() => {
+            trackWhatsAppClick('Floating Button');
+            executeWhatsAppAction();
+          }}
         >
           <WhatsAppIcon />
         </Button>

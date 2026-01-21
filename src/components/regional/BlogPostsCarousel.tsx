@@ -3,41 +3,42 @@ import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react';
 
 // Posts do blog institucional Cataldo Siston com imagens locais do /public
+// URLs corrigidas conforme site institucional (verificadas em 21/01/2026)
 const blogPosts = [
   {
     id: 1,
     title: 'Imóveis em leilão costumam estar em péssimo estado de conservação?',
     excerpt: 'Muitos investidores e compradores em potencial se preocupam com o estado de conservação dos imóveis em leilão. A ideia de que essas propriedades estão completamente deterioradas, exigindo reformas onerosas,...',
     image: '/imoveis-em-leilao-costumam-estar-em-pessimo-estado-de-conservacao-blog-cataldo-siston-advogados.jpg',
-    url: 'https://leilaodeimoveis-cataldosiston.com/imoveis-em-leilao-estado-de-conservacao/',
+    url: 'https://leilaodeimoveis-cataldosiston.com/imoveis-em-leilao-costumam-estar-em-pessimo-estado-de-conservacao/',
   },
   {
     id: 2,
     title: 'O que você deve pagar, após arrematar um imóvel em leilão?',
     excerpt: 'Quando você decide adquirir um imóvel em leilão, seja judicial ou extrajudicial, a arrematação é apenas o primeiro passo para garantir a sua propriedade. O valor do lance é...',
     image: '/custos-apos-a-arrematacao-blog-cataldo-siston-advogados.jpg',
-    url: 'https://leilaodeimoveis-cataldosiston.com/custos-apos-arrematar-imovel-leilao/',
+    url: 'https://leilaodeimoveis-cataldosiston.com/o-que-voce-deve-pagar-apos-arrematar-um-imovel-em-leilao/',
   },
   {
     id: 3,
     title: 'Saiba como ocorre a imissão na posse em leilões de imóveis',
     excerpt: 'A imissão na posse em leilões de imóveis, seja extrajudiciais ou judiciais, é algo que suscita muitos questionamentos por parte dos licitantes ou interessados em participar desta modalidade de...',
     image: '/como-ocorre-a-imissao-na-posse-leiloes-de-imoveis-blog-escritorio-cataldo-siston.webp',
-    url: 'https://leilaodeimoveis-cataldosiston.com/imissao-na-posse-em-leiloes-judiciais-e-extrajudiciais/',
+    url: 'https://leilaodeimoveis-cataldosiston.com/como-ocorre-a-imissao-na-posse-em-leiloes-de-imoveis/',
   },
   {
     id: 4,
     title: 'Impugnação à arrematação do imóvel: quando pode ocorrer?',
     excerpt: 'Um dos maiores receios de quem participa de leilões de imóveis, ou daqueles que têm interesse em participar, é chegar ao final de todo o processo e ocorrer algo...',
     image: '/impugnacao-a-arrematacao-quando-pode-ocorrer-blog-escritorio-cataldo-siston.webp',
-    url: 'https://leilaodeimoveis-cataldosiston.com/impugnacao-a-arrematacao-do-imovel/',
+    url: 'https://leilaodeimoveis-cataldosiston.com/impugnacao-a-arrematacao-em-leiloes-de-imoveis/',
   },
   {
     id: 5,
     title: 'Leilão de imóveis: como funciona e dicas para participar',
     excerpt: 'O Raphael Siston, sócio do escritório Cataldo Siston, deu uma entrevista para a Casa & Jardim falando como funcionam os leilões de imóveis e de que forma é possível...',
     image: '/entrevista-casa-jardim-como-funcionam-leiloes-de-imoveis.png',
-    url: 'https://leilaodeimoveis-cataldosiston.com/leilao-de-imoveis-como-funciona/',
+    url: 'https://leilaodeimoveis-cataldosiston.com/leilao-de-imoveis-como-funciona-e-dicas-para-participar/',
   },
 ];
 

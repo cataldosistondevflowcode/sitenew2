@@ -1,29 +1,25 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { formatCurrency } from '@/utils/stringUtils';
-import { ExternalLink, MapPin, Calendar, ArrowLeft, Eye, Share2, Filter, Grid, List } from 'lucide-react';
+import { ArrowLeft, ChevronRight } from 'lucide-react';
 import { toast } from 'sonner';
-import { loadMapbox, geocodeAddress, createMapboxMap } from '@/integrations/mapbox/client';
-import { formatPropertyAddress } from '@/utils/addressFormatter';
 import { SEO } from '@/components/SEO';
 import { useFilterParams } from '@/hooks/useFilterParams';
+
+// Componentes iguais à página /leilao-rj
+import { SocialBar } from '@/components/SocialBar';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
+import { PropertyCard } from '@/components/PropertyCard';
+import { TestimonialsSection } from '@/components/testimonials';
+import { NewsletterBottomSection } from '@/components/NewsletterBottomSection';
 
-// Sprint 6 - Regional page components
+// Sprint 6 - Regional page components (apenas os que não existem na página principal)
 import {
-  RegionIntroSection,
-  RegionDescriptionSection,
   RegionContentSection,
-  RelatedPropertiesCarousel,
   SupportCTA,
-  AboutCompanySection,
-  SuccessCasesSection,
-  BlogPostsCarousel,
-  FinalCTA
 } from '@/components/regional';
 
 interface Property {
@@ -70,84 +66,19 @@ interface SEOPage {
   last_viewed_at: string | null;
   created_at: string;
   updated_at: string;
-  // Sprint 6 - New fields
   intro_text?: string | null;
   region_description?: string | null;
   region_content?: RegionContent | null;
   h1_title?: string | null;
 }
 
-// Componente para o mapa de uma propriedade
-const PropertyMap = ({ property }: { property: Property }) => {
-  const mapRef = useRef<HTMLDivElement>(null);
-  const [mapLoaded, setMapLoaded] = useState(false);
-
-  useEffect(() => {
-    initializeMap();
-  }, []);
-
-  const getFullAddress = () => {
-    return formatPropertyAddress(
-      property.endereco || '',
-      property.bairro || '',
-      property.cidade || '',
-      property.estado || ''
-    );
+// Imagens de fundo por região/estado
+const getBackgroundImage = (estado: string): string => {
+  const images: Record<string, string> = {
+    'RJ': '/visao-panoramica-rio-janeiro.jpg',
+    'SP': 'https://images.unsplash.com/photo-1543059080-f9b1272213d5?w=1920&q=80',
   };
-
-  const initializeMap = async () => {
-    if (!mapRef.current || mapLoaded) return;
-    
-    try {
-      await loadMapbox();
-      const address = getFullAddress();
-
-      const coordinates = await geocodeAddress(address);
-      
-      if (coordinates && mapRef.current) {
-        const mapInstance = createMapboxMap(mapRef.current, coordinates, {
-          zoom: 15,
-          interactive: true,
-          title: property.titulo_propriedade,
-        });
-
-        setMapLoaded(true);
-      }
-    } catch (error) {
-      console.error('Error loading Mapbox:', error);
-    }
-  };
-
-  return (
-    <div 
-      ref={mapRef} 
-      className="w-full h-full bg-gray-200 min-h-[200px]"
-    />
-  );
-};
-
-// Componente para image/map com estado próprio
-const PropertyImageOrMap = ({ property }: { property: Property }) => {
-  const isImageNotFound = !property.imagem || 
-                          property.imagem === '' || 
-                          property.imagem.includes('/not-found') ||
-                          property.imagem.includes('imovel_sao_goncalo.jpeg') ||
-                          property.imagem.includes('placeholder');
-  
-  const [imageError, setImageError] = useState(isImageNotFound);
-  
-  if (imageError || isImageNotFound) {
-    return <PropertyMap property={property} />;
-  }
-  
-  return (
-    <img
-      src={property.imagem}
-      alt={property.titulo_propriedade || 'Imóvel'}
-      className="w-full h-full object-cover"
-      onError={() => setImageError(true)}
-    />
-  );
+  return images[estado] || images['RJ'];
 };
 
 export default function StaticCatalog() {
@@ -165,7 +96,6 @@ export default function StaticCatalog() {
     }
   }, [pageId]);
 
-  // Aplicar filtros automaticamente quando a página carregar
   useEffect(() => {
     if (seoPage && seoPage.filter_type && seoPage.filter_value) {
       applyFiltersAutomatically();
@@ -176,7 +106,6 @@ export default function StaticCatalog() {
     try {
       setLoading(true);
       
-      // Buscar página SEO
       const { data: page, error: pageError } = await supabase
         .from('seo_pages')
         .select('*')
@@ -198,7 +127,6 @@ export default function StaticCatalog() {
         return;
       }
 
-      // Incrementar contador de visualizações
       await supabase
         .from('seo_pages')
         .update({ 
@@ -208,8 +136,6 @@ export default function StaticCatalog() {
         .eq('id', page.id);
 
       setSeoPage(page);
-
-      // Buscar imóveis baseado no filtro
       await fetchPropertiesByFilter(page);
 
     } catch (error) {
@@ -226,9 +152,8 @@ export default function StaticCatalog() {
         .from('imoveis')
         .select('*', { count: 'exact' })
         .eq('estado', page.estado)
-        .gte('leilao_1', 75000); // Valor mínimo padrão
+        .gte('leilao_1', 75000);
 
-      // Aplicar filtro baseado no tipo
       if (page.filter_type === 'bairro') {
         query = query.eq('bairro', page.filter_value);
       } else if (page.filter_type === 'zona') {
@@ -237,7 +162,7 @@ export default function StaticCatalog() {
         query = query.eq('cidade', page.filter_value);
       }
 
-      const { data, error: queryError, count } = await query
+      const { data, error: queryError } = await query
         .order('data_leilao_1', { ascending: true, nullsFirst: false })
         .limit(100);
 
@@ -267,21 +192,18 @@ export default function StaticCatalog() {
     updateURL(filters);
   };
 
-  const shareUrl = () => {
-    const url = window.location.href;
-    navigator.clipboard.writeText(url);
-    toast.success('Link copiado para a área de transferência!');
+  const handleWhatsAppClick = () => {
+    const whatsappNumber = '5521977294848';
+    const message = encodeURIComponent(
+      seoPage 
+        ? `Olá! Tenho interesse em imóveis em leilão em ${seoPage.regiao}/${seoPage.estado}. Gostaria de mais informações.`
+        : 'Olá! Gostaria de mais informações sobre imóveis em leilão.'
+    );
+    window.open(`https://wa.me/${whatsappNumber}?text=${message}`, '_blank');
   };
 
-  const createPropertyUrl = (property: Property) => {
-    const slug = property.titulo_propriedade
-      ?.toLowerCase()
-      .replace(/[^a-z0-9\s-]/g, '')
-      .replace(/\s+/g, '-')
-      .replace(/-+/g, '-')
-      .trim() || 'imovel';
-    
-    return `/imovel/${property.id}/${slug}`;
+  const handleOpportunityClick = () => {
+    handleWhatsAppClick();
   };
 
   const getCanonicalUrl = () => {
@@ -293,7 +215,7 @@ export default function StaticCatalog() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#d68e08] mx-auto mb-4"></div>
           <p className="text-gray-600 font-body">Carregando catálogo...</p>
         </div>
       </div>
@@ -306,7 +228,7 @@ export default function StaticCatalog() {
         <div className="text-center">
           <h1 className="text-2xl font-display font-bold text-gray-900 mb-4">Página não encontrada</h1>
           <p className="text-gray-600 font-body mb-6">{error || 'Esta página não existe ou foi removida.'}</p>
-          <Button onClick={() => navigate('/')} className="flex items-center gap-2 bg-primary hover:bg-primary-dark">
+          <Button onClick={() => navigate('/')} className="flex items-center gap-2 bg-[#d68e08] hover:bg-[#b87a07]">
             <ArrowLeft className="h-4 w-4" />
             Voltar ao início
           </Button>
@@ -314,6 +236,11 @@ export default function StaticCatalog() {
       </div>
     );
   }
+
+  const stateName = seoPage.estado === 'RJ' ? 'Rio de Janeiro' : 'São Paulo';
+  const title = seoPage.h1_title || `Imóveis em Leilão em ${seoPage.regiao}`;
+  const introText = seoPage.intro_text || `Receba oportunidades de leilões personalizadas, de acordo com o seu perfil.`;
+  const backgroundImage = getBackgroundImage(seoPage.estado);
 
   return (
     <>
@@ -324,78 +251,198 @@ export default function StaticCatalog() {
         canonicalUrl={getCanonicalUrl()}
       />
       
+      {/* ============================================
+          BARRA SUPERIOR DE CONTATO (igual /leilao-rj)
+          ============================================ */}
+      <SocialBar onWhatsAppClick={handleWhatsAppClick} />
+      
+      {/* ============================================
+          HEADER COM LOGO E MENU (igual /leilao-rj)
+          ============================================ */}
       <Header />
       
       <main className="min-h-screen">
         {/* ============================================
-            1. CABEÇALHO (Hero Section)
-            - H1 com título da região
-            - Texto introdutório contextualizando a região
-            - CTA para receber oportunidades
+            HERO SECTION (igual /leilao-rj)
             ============================================ */}
-        <RegionIntroSection
-          regionName={seoPage.regiao}
-          introText={seoPage.intro_text}
-          h1Title={seoPage.h1_title}
-          estado={seoPage.estado}
-          filterType={seoPage.filter_type}
-          filterValue={seoPage.filter_value}
-          propertyCount={properties.length}
-        />
-
-        {/* ============================================
-            2. CORPO DA PÁGINA
-            ============================================ */}
-        
-        {/* 2.1 Descrição da região */}
-        <RegionDescriptionSection
-          regionName={seoPage.regiao}
-          description={seoPage.region_description}
-          estado={seoPage.estado}
-          propertyCount={properties.length}
-        />
-
-        {/* 2.2 Barra de filtros e ações */}
-        <div className="bg-white border-b sticky top-[72px] z-40">
-          <div className="max-w-7xl mx-auto px-4 py-3">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              {/* Filtros ativos */}
-              <div className="flex items-center gap-3 flex-wrap">
-                <Badge className="bg-[#d68e08] text-white font-body">
-                  {seoPage.filter_type === 'bairro' ? 'Bairro' : seoPage.filter_type === 'zona' ? 'Zona' : 'Cidade'}: {seoPage.filter_value}
-                </Badge>
-                <Badge variant="outline" className="font-body">
-                  Ordenação: Data do Leilão
-                </Badge>
-                <span className="text-sm font-body text-[#333333]">
-                  <span className="font-semibold text-[#d68e08]">{properties.length}</span> imóveis encontrados
-                </span>
-              </div>
-              
-              {/* Ações */}
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={shareUrl}
-                  className="flex items-center gap-2 font-body text-[#d68e08] border-[#d68e08] hover:bg-[#d68e08] hover:text-white"
-                >
-                  <Share2 className="h-4 w-4" />
-                  Compartilhar
-                </Button>
+        <section className="relative">
+          <div 
+            className="bg-cover bg-center bg-no-repeat h-[400px] sm:h-[450px] md:h-[500px] lg:h-[550px] relative"
+            style={{ backgroundImage: `url('${backgroundImage}')` }}
+          >
+            {/* Overlay escuro */}
+            <div className="absolute inset-0 bg-black/15"></div>
+            
+            {/* Conteúdo */}
+            <div className="relative z-10 container mx-auto h-full flex items-center justify-center px-4">
+              <div className="max-w-[960px] w-full flex flex-col lg:flex-row items-center lg:items-start gap-6 lg:gap-8">
+                <div className="flex-1 max-w-[512px] text-center lg:text-left lg:ml-[100px]">
+                  <div className="mb-4 sm:mb-6">
+                    <h1 
+                      className="text-white font-medium text-2xl sm:text-3xl md:text-4xl lg:text-[44px] leading-tight lg:leading-[52.8px] mb-4" 
+                      style={{ fontFamily: "Playfair Display, serif" }}
+                    >
+                      {title}
+                    </h1>
+                  </div>
+                  
+                  <div className="mb-6 sm:mb-8">
+                    <p 
+                      className="text-white font-bold text-base sm:text-lg md:text-xl leading-relaxed" 
+                      style={{ fontFamily: "Quicksand, sans-serif" }}
+                    >
+                      {introText}
+                    </p>
+                  </div>
+                  
+                  <div className="flex justify-center lg:justify-start">
+                    <button
+                      onClick={handleOpportunityClick}
+                      className="inline-flex items-center justify-center bg-gradient-to-r from-[#6d4403] via-[#b57309] to-[#d48d07] text-white rounded-full px-4 sm:px-6 md:px-7 py-3 sm:py-4 font-normal text-sm sm:text-base md:text-[19.8px] leading-relaxed hover:opacity-90 transition-opacity cursor-pointer"
+                      style={{ fontFamily: "Quicksand, sans-serif" }}
+                    >
+                      <span className="text-center">Quero receber novas oportunidades</span>
+                      <ChevronRight className="ml-2 h-5 w-5 sm:h-6 sm:w-6 md:h-6 md:w-7 flex-shrink-0" />
+                    </button>
+                  </div>
+                </div>
+                
+                <div className="w-[383px] hidden xl:block"></div>
               </div>
             </div>
           </div>
-        </div>
+        </section>
 
-        {/* 2.3 Lista de Imóveis */}
-        <section className="bg-[#f5f5f5] py-8 md:py-12">
-          <div className="max-w-7xl mx-auto px-4">
-            {properties.length === 0 ? (
-              <div className="text-center py-16 bg-white rounded-xl shadow-sm">
-                <div className="w-16 h-16 bg-[#ebe5de] rounded-full flex items-center justify-center mx-auto mb-4">
-                  <MapPin className="h-8 w-8 text-[#d68e08]" />
+        {/* ============================================
+            SEÇÃO DE VÍDEO + TÍTULOS (igual /leilao-rj)
+            ============================================ */}
+        <section className="relative -mt-16 sm:-mt-20 pt-16 sm:pt-20">
+          <div 
+            className="bg-cover bg-center bg-no-repeat min-h-[400px] sm:min-h-[450px] md:min-h-[506px] relative"
+            style={{ backgroundImage: "url('/fundo-marmore-1-webp.png')" }}
+          >
+            <div className="container mx-auto relative z-10 py-8 sm:py-10 md:py-12 px-4">
+              <div className="max-w-[1170px] mx-auto">
+                {/* Player de vídeo */}
+                <div className="mb-6 sm:mb-8 flex justify-center">
+                  <div className="relative w-full max-w-[560px] aspect-video bg-black rounded-lg overflow-hidden">
+                    <iframe
+                      src="https://www.youtube.com/embed/G8Wp2ju3CaU"
+                      title="Como funciona nossa assessoria em leilões de imóveis"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                      className="w-full h-full"
+                    ></iframe>
+                    
+                    <div className="absolute bottom-0 left-0 bg-black/80 text-white px-2 sm:px-3 py-1 sm:py-2 rounded-tr-md">
+                      <div className="flex items-center gap-1 sm:gap-2">
+                        <span className="text-xs sm:text-sm">Assistir no</span>
+                        <svg className="w-12 sm:w-16 h-3 sm:h-4" viewBox="0 0 72 16" fill="white">
+                          <path d="M27.9727 3.12324C27.6435 1.89323 26.6768 0.926623 25.4468 0.597366C23.2197 2.24288e-07 14.285 0 14.285 0C14.285 0 5.35042 2.24288e-07 3.12323 0.597366C1.89323 0.926623 0.926623 1.89323 0.597366 3.12324C2.24288e-07 5.35042 0 10 0 10C0 10 2.24288e-07 14.6496 0.597366 16.8768C0.926623 18.1068 1.89323 19.0734 3.12323 19.4026C5.35042 20 14.285 20 14.285 20C14.285 20 23.2197 20 25.4468 19.4026C26.6768 19.0734 27.6435 18.1068 27.9727 16.8768C28.5701 14.6496 28.5701 10 28.5701 10C28.5701 10 28.5701 5.35042 27.9727 3.12324Z" />
+                          <path d="M11.4253 14.2854L18.8477 10.0004L11.4253 5.71533V14.2854Z" fill="black"/>
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
                 </div>
+                
+                {/* Títulos das oportunidades */}
+                <div className="max-w-[960px] mx-auto">
+                  <div className="text-center">
+                    <div className="flex items-center justify-center mb-4 sm:mb-6">
+                      <div className="flex items-center gap-2 sm:gap-4">
+                        <div className="hidden md:flex items-center gap-2">
+                          <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                          <div className="w-3 h-3 bg-gray-500 rounded-full"></div>
+                          <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                        </div>
+                        
+                        <h2 
+                          className="text-[#191919] font-medium text-lg sm:text-xl md:text-2xl text-center px-4"
+                          style={{ fontFamily: "Playfair Display, serif" }}
+                        >
+                          OPORTUNIDADES DE IMÓVEIS EM LEILÃO
+                        </h2>
+                        
+                        <div className="hidden md:flex items-center gap-2">
+                          <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                          <div className="w-3 h-3 bg-gray-500 rounded-full"></div>
+                          <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <h3 
+                      className="text-[#191919] font-medium text-xl sm:text-2xl md:text-3xl lg:text-[40px] text-center mb-8 sm:mb-10 md:mb-12 px-4"
+                      style={{ fontFamily: "Playfair Display, serif" }}
+                    >
+                      Imóveis até 50% abaixo da sua avaliação
+                    </h3>
+                    
+                    <div className="px-4 sm:px-6">
+                      <p 
+                        className="text-[#191919] font-normal text-sm sm:text-base md:text-[17.6px] leading-relaxed text-center max-w-4xl mx-auto"
+                        style={{ fontFamily: "Quicksand, sans-serif" }}
+                      >
+                        Os imóveis em leilão abaixo não foram objeto de análise jurídica prévia. 
+                        Entenda como funciona o nosso{" "}
+                        <span className="font-bold">estudo de viabilidade jurídica</span>{" "}
+                        clicando{" "}
+                        <a href="https://leilaodeimoveis-cataldosiston.com/leilao-de-imoveis-importancia-analise-juridica/" className="text-[#d48d07] font-bold hover:underline" target="_blank" rel="noopener noreferrer">
+                          aqui
+                        </a>{" "}
+                        ou entre em contato conosco
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ============================================
+            2. CORPO DA PÁGINA - Descrição da Região
+            (Ponto 2 do briefing)
+            ============================================ */}
+        {seoPage.region_description && (
+          <section className="bg-white py-8 md:py-12">
+            <div className="container mx-auto px-4">
+              <div className="max-w-4xl mx-auto">
+                <h2 
+                  className="text-[#191919] font-medium text-xl sm:text-2xl md:text-3xl text-center mb-6"
+                  style={{ fontFamily: "Playfair Display, serif" }}
+                >
+                  Sobre {seoPage.regiao}
+                </h2>
+                <p 
+                  className="text-[#333333] text-base md:text-lg leading-relaxed text-center"
+                  style={{ fontFamily: "Quicksand, sans-serif" }}
+                >
+                  {seoPage.region_description}
+                </p>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* ============================================
+            LISTA DE IMÓVEIS (igual /leilao-rj)
+            ============================================ */}
+        <section className="bg-white py-8 md:py-12">
+          <div className="container mx-auto px-4">
+            {/* Contador de imóveis */}
+            <div className="mb-6">
+              <p 
+                className="text-[#d68e08] font-bold text-lg"
+                style={{ fontFamily: "Quicksand, sans-serif" }}
+              >
+                {properties.length} oportunidades encontradas
+              </p>
+            </div>
+
+            {properties.length === 0 ? (
+              <div className="text-center py-16 bg-gray-50 rounded-xl">
                 <h3 className="font-display text-xl font-medium text-[#191919] mb-2">
                   Nenhum imóvel encontrado
                 </h3>
@@ -405,119 +452,36 @@ export default function StaticCatalog() {
                 </p>
                 <Button 
                   onClick={() => navigate(`/leilao-${seoPage.estado.toLowerCase()}`)} 
-                  className="bg-[#d68e08] hover:bg-[#b87a07] font-body"
+                  className="bg-[#d68e08] hover:bg-[#b87a07]"
                 >
                   Ver todos os imóveis em {seoPage.estado}
                 </Button>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {properties.map((property) => {
-                  const address = [property.endereco, property.bairro, property.cidade, property.estado]
-                    .filter(Boolean)
-                    .join(', ');
-                  const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
-                  const propertyUrl = createPropertyUrl(property);
-
-                  return (
-                    <article 
-                      key={property.id} 
-                      className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group border border-gray-100"
-                    >
-                      {/* Image */}
-                      <div className="aspect-[4/3] bg-gray-200 relative overflow-hidden">
-                        <PropertyImageOrMap property={property} />
-                        
-                        {/* Type badge */}
-                        {property.tipo_propriedade && (
-                          <Badge className="absolute top-3 left-3 bg-[#d68e08] text-white text-xs font-body">
-                            {property.tipo_propriedade}
-                          </Badge>
-                        )}
-
-                        {/* Date badge */}
-                        {property.data_leilao_1 && (
-                          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-3">
-                            <div className="flex items-center gap-1 text-white text-xs font-body">
-                              <Calendar className="h-3 w-3" />
-                              Data de encerramento: {new Date(property.data_leilao_1).toLocaleDateString('pt-BR')}
-                            </div>
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Content */}
-                      <div className="p-4">
-                        <h3 className="font-display text-base font-medium text-[#191919] mb-2 line-clamp-2 group-hover:text-[#d68e08] transition-colors min-h-[48px]">
-                          {property.titulo_propriedade || 'Imóvel em Leilão'}
-                        </h3>
-
-                        <p className="text-[#333333] text-sm font-body mb-3 flex items-start gap-1.5">
-                          <MapPin className="h-4 w-4 text-[#d68e08] mt-0.5 flex-shrink-0" />
-                          <span className="line-clamp-2">{property.bairro}, {property.cidade}</span>
-                        </p>
-
-                        {/* Price */}
-                        <div className="mb-4">
-                          <div className="text-xl font-display font-bold text-[#d68e08]">
-                            {property.leilao_1 ? formatCurrency(property.leilao_1) : 'Consulte'}
-                          </div>
-                        </div>
-
-                        {/* Features */}
-                        {(property.fgts || property.financiamento || property.parcelamento) && (
-                          <div className="flex flex-wrap gap-1.5 mb-4">
-                            {property.fgts && (
-                              <Badge variant="secondary" className="text-xs bg-green-100 text-green-700 font-body">FGTS</Badge>
-                            )}
-                            {property.financiamento && (
-                              <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-700 font-body">Financiamento</Badge>
-                            )}
-                            {property.parcelamento && (
-                              <Badge variant="secondary" className="text-xs bg-purple-100 text-purple-700 font-body">Parcelamento</Badge>
-                            )}
-                          </div>
-                        )}
-
-                        {/* Actions */}
-                        <div className="flex gap-2">
-                          <Button
-                            asChild
-                            size="sm"
-                            className="flex-1 bg-[#d68e08] hover:bg-[#b87a07] font-body"
-                          >
-                            <a href={propertyUrl}>
-                              Ver Detalhes
-                            </a>
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            asChild
-                            className="border-[#191919] text-[#191919] hover:bg-[#191919] hover:text-white"
-                          >
-                            <a href={mapsUrl} target="_blank" rel="noopener noreferrer" title="Ver no mapa">
-                              <MapPin className="h-4 w-4" />
-                            </a>
-                          </Button>
-                        </div>
-                      </div>
-                    </article>
-                  );
-                })}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {properties.map((property) => (
+                  <PropertyCard
+                    key={property.id}
+                    id={property.id}
+                    image={property.imagem || ''}
+                    title={property.titulo_propriedade || 'Imóvel em Leilão'}
+                    location={`${property.bairro || ''}, ${property.cidade || ''}, ${property.estado || ''}`}
+                    firstAuctionDate={property.data_leilao_1 || ''}
+                    firstAuctionValue={property.leilao_1 ? formatCurrency(property.leilao_1) : 'Consulte'}
+                    secondAuctionDate={property.data_leilao_2 || ''}
+                    secondAuctionValue={property.leilao_2 ? formatCurrency(property.leilao_2) : 'Consulte'}
+                    tipoLeilao={property.tipo_leilao}
+                    fgts={property.fgts}
+                    financiamento={property.financiamento}
+                    parcelamento={property.parcelamento}
+                    rawPropertyData={property}
+                    onContactClick={handleWhatsAppClick}
+                  />
+                ))}
               </div>
             )}
           </div>
         </section>
-
-        {/* 2.4 Carrossel de Imóveis Relacionados (ao final da listagem) */}
-        <RelatedPropertiesCarousel
-          currentRegion={seoPage.regiao}
-          estado={seoPage.estado}
-          filterType={seoPage.filter_type}
-          filterValue={seoPage.filter_value}
-          excludeIds={properties.map(p => p.id)}
-        />
 
         {/* ============================================
             3. CTA DE APOIO
@@ -527,7 +491,7 @@ export default function StaticCatalog() {
 
         {/* ============================================
             4. CONTEÚDO COMPLEMENTAR DA REGIÃO
-            Bairros, Atrações, Infraestrutura, Diferenciais
+            (Ponto 4 do briefing: Bairros, Atrações, Infraestrutura, Diferenciais)
             ============================================ */}
         {seoPage.region_content && (
           <RegionContentSection
@@ -539,23 +503,14 @@ export default function StaticCatalog() {
         )}
 
         {/* ============================================
-            5. SOBRE A EMPRESA
-            "Conheça a Cataldo Siston"
+            6. PROVA SOCIAL - Depoimentos (igual /leilao-rj)
             ============================================ */}
-        <AboutCompanySection />
+        <TestimonialsSection />
 
         {/* ============================================
-            6. PROVA SOCIAL
-            Casos de Sucesso + Blog
+            7. CTA FINAL - Newsletter (igual /leilao-rj)
             ============================================ */}
-        <SuccessCasesSection region={seoPage.regiao} />
-        <BlogPostsCarousel />
-
-        {/* ============================================
-            7. CTA FINAL
-            Newsletter + Contatos
-            ============================================ */}
-        <FinalCTA regionName={seoPage.regiao} />
+        <NewsletterBottomSection />
       </main>
       
       <Footer />

@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { formatCurrency } from '@/utils/stringUtils';
-import { ExternalLink, MapPin, Calendar, ArrowLeft, Eye, Share2 } from 'lucide-react';
+import { ExternalLink, MapPin, Calendar, ArrowLeft, Eye, Share2, Filter, Grid, List } from 'lucide-react';
 import { toast } from 'sonner';
 import { loadMapbox, geocodeAddress, createMapboxMap } from '@/integrations/mapbox/client';
 import { formatPropertyAddress } from '@/utils/addressFormatter';
@@ -17,12 +17,8 @@ import { Footer } from '@/components/Footer';
 import {
   RegionIntroSection,
   RegionDescriptionSection,
-  RegionContentSection,
   RelatedPropertiesCarousel,
   SupportCTA,
-  AboutCompanySection,
-  SuccessCasesSection,
-  BlogPostsCarousel,
   FinalCTA
 } from '@/components/regional';
 
@@ -40,6 +36,7 @@ interface Property {
   imagem: string;
   descricao?: string;
   tipo_leilao?: string;
+  tipo_propriedade?: string;
   fgts?: boolean;
   financiamento?: boolean;
   parcelamento?: boolean;
@@ -231,9 +228,6 @@ export default function StaticCatalog() {
       if (page.filter_type === 'bairro') {
         query = query.eq('bairro', page.filter_value);
       } else if (page.filter_type === 'zona') {
-        // Para zonas, buscar via tabela zonasrio ou zonas relacionadas
-        // Por enquanto, buscar por bairros conhecidos da zona
-        // TODO: Melhorar lógica de zonas no Sprint 3
         query = query.ilike('bairro', `%${page.filter_value}%`);
       } else if (page.filter_type === 'cidade') {
         query = query.eq('cidade', page.filter_value);
@@ -241,7 +235,7 @@ export default function StaticCatalog() {
 
       const { data, error: queryError, count } = await query
         .order('data_leilao_1', { ascending: true, nullsFirst: false })
-        .limit(100); // Limitar a 100 imóveis por página
+        .limit(100);
 
       if (queryError) {
         console.error('Erro ao buscar imóveis:', queryError);
@@ -256,7 +250,6 @@ export default function StaticCatalog() {
   const applyFiltersAutomatically = () => {
     if (!seoPage) return;
 
-    // Aplicar filtros na URL para que a página de listagem mostre os resultados
     const filters: any = {};
 
     if (seoPage.filter_type === 'bairro') {
@@ -267,8 +260,6 @@ export default function StaticCatalog() {
       filters.city = seoPage.filter_value;
     }
 
-    // Atualizar URL com filtros (sem navegar, apenas atualizar query params)
-    // Isso permite que o usuário veja os filtros aplicados
     updateURL(filters);
   };
 
@@ -299,7 +290,7 @@ export default function StaticCatalog() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-gray-600">Carregando catálogo...</p>
+          <p className="text-gray-600 font-body">Carregando catálogo...</p>
         </div>
       </div>
     );
@@ -309,9 +300,9 @@ export default function StaticCatalog() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Página não encontrada</h1>
-          <p className="text-gray-600 mb-6">{error || 'Esta página não existe ou foi removida.'}</p>
-          <Button onClick={() => navigate('/')} className="flex items-center gap-2">
+          <h1 className="text-2xl font-display font-bold text-gray-900 mb-4">Página não encontrada</h1>
+          <p className="text-gray-600 font-body mb-6">{error || 'Esta página não existe ou foi removida.'}</p>
+          <Button onClick={() => navigate('/')} className="flex items-center gap-2 bg-primary hover:bg-primary-dark">
             <ArrowLeft className="h-4 w-4" />
             Voltar ao início
           </Button>
@@ -319,13 +310,6 @@ export default function StaticCatalog() {
       </div>
     );
   }
-
-  // Parse region_content if it's a string
-  const regionContent: RegionContent | null = seoPage.region_content 
-    ? (typeof seoPage.region_content === 'string' 
-        ? JSON.parse(seoPage.region_content) 
-        : seoPage.region_content)
-    : null;
 
   return (
     <>
@@ -339,7 +323,12 @@ export default function StaticCatalog() {
       <Header />
       
       <main className="min-h-screen">
-        {/* Sprint 6: Region Intro Section (H1 + Intro Text) */}
+        {/* ============================================
+            1. CABEÇALHO (Hero Section)
+            - H1 com título da região
+            - Texto introdutório contextualizando a região
+            - CTA para receber oportunidades
+            ============================================ */}
         <RegionIntroSection
           regionName={seoPage.regiao}
           introText={seoPage.intro_text}
@@ -347,40 +336,45 @@ export default function StaticCatalog() {
           estado={seoPage.estado}
           filterType={seoPage.filter_type}
           filterValue={seoPage.filter_value}
+          propertyCount={properties.length}
         />
 
-        {/* Sprint 6: Region Description */}
+        {/* ============================================
+            2. CORPO DA PÁGINA
+            ============================================ */}
+        
+        {/* 2.1 Descrição da região */}
         <RegionDescriptionSection
           regionName={seoPage.regiao}
           description={seoPage.region_description}
+          estado={seoPage.estado}
+          propertyCount={properties.length}
         />
 
-        {/* Properties Stats Bar */}
-        <div className="bg-white border-b">
-          <div className="max-w-7xl mx-auto px-4 py-4">
-            <div className="flex flex-wrap items-center justify-between gap-4">
-              <div className="flex items-center gap-4">
-                <Badge variant={seoPage.estado === 'RJ' ? 'default' : 'secondary'} className="bg-primary text-white">
-                  {seoPage.estado === 'RJ' ? 'Rio de Janeiro' : 'São Paulo'}
-                </Badge>
-                <Badge variant="outline">
+        {/* 2.2 Barra de filtros e ações */}
+        <div className="bg-white border-b sticky top-[72px] z-40">
+          <div className="max-w-7xl mx-auto px-4 py-3">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              {/* Filtros ativos */}
+              <div className="flex items-center gap-3 flex-wrap">
+                <Badge className="bg-[#d68e08] text-white font-body">
                   {seoPage.filter_type === 'bairro' ? 'Bairro' : seoPage.filter_type === 'zona' ? 'Zona' : 'Cidade'}: {seoPage.filter_value}
                 </Badge>
-                <span className="text-sm font-medium text-gray-700">
-                  {properties.length} imóveis encontrados
+                <Badge variant="outline" className="font-body">
+                  Ordenação: Data do Leilão
+                </Badge>
+                <span className="text-sm font-body text-[#333333]">
+                  <span className="font-semibold text-[#d68e08]">{properties.length}</span> imóveis encontrados
                 </span>
               </div>
               
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2 text-sm text-gray-500">
-                  <Eye className="h-4 w-4" />
-                  {seoPage.view_count || 0} visualizações
-                </div>
+              {/* Ações */}
+              <div className="flex items-center gap-2">
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={shareUrl}
-                  className="flex items-center gap-2"
+                  className="flex items-center gap-2 font-body text-[#d68e08] border-[#d68e08] hover:bg-[#d68e08] hover:text-white"
                 >
                   <Share2 className="h-4 w-4" />
                   Compartilhar
@@ -390,26 +384,30 @@ export default function StaticCatalog() {
           </div>
         </div>
 
-        {/* Properties Grid */}
-        <section className="bg-gray-50 py-8 md:py-12">
+        {/* 2.3 Lista de Imóveis */}
+        <section className="bg-[#f5f5f5] py-8 md:py-12">
           <div className="max-w-7xl mx-auto px-4">
-            <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-6">
-              Imóveis Disponíveis em {seoPage.regiao}
-            </h2>
-            
             {properties.length === 0 ? (
-              <div className="text-center py-12 bg-white rounded-xl">
-                <p className="text-gray-500 mb-4">Nenhum imóvel encontrado para {seoPage.regiao} no momento.</p>
-                <p className="text-gray-400 text-sm mb-6">Novos imóveis são adicionados frequentemente. Volte em breve!</p>
+              <div className="text-center py-16 bg-white rounded-xl shadow-sm">
+                <div className="w-16 h-16 bg-[#ebe5de] rounded-full flex items-center justify-center mx-auto mb-4">
+                  <MapPin className="h-8 w-8 text-[#d68e08]" />
+                </div>
+                <h3 className="font-display text-xl font-medium text-[#191919] mb-2">
+                  Nenhum imóvel encontrado
+                </h3>
+                <p className="text-[#333333] font-body mb-6 max-w-md mx-auto">
+                  Não encontramos imóveis em leilão para {seoPage.regiao} no momento. 
+                  Novos imóveis são adicionados frequentemente.
+                </p>
                 <Button 
                   onClick={() => navigate(`/leilao-${seoPage.estado.toLowerCase()}`)} 
-                  className="bg-primary hover:bg-primary-dark"
+                  className="bg-[#d68e08] hover:bg-[#b87a07] font-body"
                 >
                   Ver todos os imóveis em {seoPage.estado}
                 </Button>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {properties.map((property) => {
                   const address = [property.endereco, property.bairro, property.cidade, property.estado]
                     .filter(Boolean)
@@ -418,47 +416,61 @@ export default function StaticCatalog() {
                   const propertyUrl = createPropertyUrl(property);
 
                   return (
-                    <div key={property.id} className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-all hover:-translate-y-1 group">
-                      {/* Image or Map */}
-                      <div className="aspect-video bg-gray-200 relative overflow-hidden">
+                    <article 
+                      key={property.id} 
+                      className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group border border-gray-100"
+                    >
+                      {/* Image */}
+                      <div className="aspect-[4/3] bg-gray-200 relative overflow-hidden">
                         <PropertyImageOrMap property={property} />
+                        
+                        {/* Type badge */}
+                        {property.tipo_propriedade && (
+                          <Badge className="absolute top-3 left-3 bg-[#d68e08] text-white text-xs font-body">
+                            {property.tipo_propriedade}
+                          </Badge>
+                        )}
+
+                        {/* Date badge */}
+                        {property.data_leilao_1 && (
+                          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-3">
+                            <div className="flex items-center gap-1 text-white text-xs font-body">
+                              <Calendar className="h-3 w-3" />
+                              Data de encerramento: {new Date(property.data_leilao_1).toLocaleDateString('pt-BR')}
+                            </div>
+                          </div>
+                        )}
                       </div>
 
                       {/* Content */}
                       <div className="p-4">
-                        <h3 className="font-semibold text-lg mb-2 line-clamp-2 group-hover:text-primary transition-colors">
-                          {property.titulo_propriedade || 'Título não informado'}
+                        <h3 className="font-display text-base font-medium text-[#191919] mb-2 line-clamp-2 group-hover:text-[#d68e08] transition-colors min-h-[48px]">
+                          {property.titulo_propriedade || 'Imóvel em Leilão'}
                         </h3>
 
-                        <p className="text-gray-600 text-sm mb-3 flex items-start gap-1">
-                          <MapPin className="h-4 w-4 text-gray-400 mt-0.5 flex-shrink-0" />
-                          <span className="line-clamp-2">{address}</span>
+                        <p className="text-[#333333] text-sm font-body mb-3 flex items-start gap-1.5">
+                          <MapPin className="h-4 w-4 text-[#d68e08] mt-0.5 flex-shrink-0" />
+                          <span className="line-clamp-2">{property.bairro}, {property.cidade}</span>
                         </p>
 
                         {/* Price */}
-                        <div className="mb-3">
-                          <div className="text-xl font-bold text-primary">
-                            {property.leilao_1 ? formatCurrency(property.leilao_1) : 'Valor não informado'}
+                        <div className="mb-4">
+                          <div className="text-xl font-display font-bold text-[#d68e08]">
+                            {property.leilao_1 ? formatCurrency(property.leilao_1) : 'Consulte'}
                           </div>
-                          {property.data_leilao_1 && (
-                            <div className="text-sm text-gray-500 flex items-center gap-1 mt-1">
-                              <Calendar className="h-4 w-4" />
-                              {new Date(property.data_leilao_1).toLocaleDateString('pt-BR')}
-                            </div>
-                          )}
                         </div>
 
                         {/* Features */}
                         {(property.fgts || property.financiamento || property.parcelamento) && (
-                          <div className="flex flex-wrap gap-1 mb-3">
+                          <div className="flex flex-wrap gap-1.5 mb-4">
                             {property.fgts && (
-                              <Badge variant="secondary" className="text-xs bg-green-100 text-green-700">FGTS</Badge>
+                              <Badge variant="secondary" className="text-xs bg-green-100 text-green-700 font-body">FGTS</Badge>
                             )}
                             {property.financiamento && (
-                              <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-700">Financiamento</Badge>
+                              <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-700 font-body">Financiamento</Badge>
                             )}
                             {property.parcelamento && (
-                              <Badge variant="secondary" className="text-xs bg-purple-100 text-purple-700">Parcelamento</Badge>
+                              <Badge variant="secondary" className="text-xs bg-purple-100 text-purple-700 font-body">Parcelamento</Badge>
                             )}
                           </div>
                         )}
@@ -468,10 +480,9 @@ export default function StaticCatalog() {
                           <Button
                             asChild
                             size="sm"
-                            className="flex-1 bg-primary hover:bg-primary-dark"
+                            className="flex-1 bg-[#d68e08] hover:bg-[#b87a07] font-body"
                           >
                             <a href={propertyUrl}>
-                              <ExternalLink className="h-4 w-4 mr-1" />
                               Ver Detalhes
                             </a>
                           </Button>
@@ -479,14 +490,15 @@ export default function StaticCatalog() {
                             variant="outline"
                             size="sm"
                             asChild
+                            className="border-[#191919] text-[#191919] hover:bg-[#191919] hover:text-white"
                           >
-                            <a href={mapsUrl} target="_blank" rel="noopener noreferrer">
+                            <a href={mapsUrl} target="_blank" rel="noopener noreferrer" title="Ver no mapa">
                               <MapPin className="h-4 w-4" />
                             </a>
                           </Button>
                         </div>
                       </div>
-                    </div>
+                    </article>
                   );
                 })}
               </div>
@@ -494,16 +506,7 @@ export default function StaticCatalog() {
           </div>
         </section>
 
-        {/* Sprint 6: Support CTA */}
-        <SupportCTA estado={seoPage.estado} />
-
-        {/* Sprint 6: Region Content (Neighborhoods, Attractions, Infrastructure, Highlights) */}
-        <RegionContentSection
-          regionName={seoPage.regiao}
-          content={regionContent}
-        />
-
-        {/* Sprint 6: Related Properties Carousel */}
+        {/* 2.4 Carrossel de Imóveis Relacionados (ao final da listagem) */}
         <RelatedPropertiesCarousel
           currentRegion={seoPage.regiao}
           estado={seoPage.estado}
@@ -512,16 +515,10 @@ export default function StaticCatalog() {
           excludeIds={properties.map(p => p.id)}
         />
 
-        {/* Sprint 6: Success Cases */}
-        <SuccessCasesSection region={seoPage.regiao} />
+        {/* CTA de Suporte */}
+        <SupportCTA estado={seoPage.estado} />
 
-        {/* Sprint 6: Blog Posts Carousel */}
-        <BlogPostsCarousel />
-
-        {/* Sprint 6: About Company Section */}
-        <AboutCompanySection />
-
-        {/* Sprint 6: Final CTA */}
+        {/* CTA Final */}
         <FinalCTA regionName={seoPage.regiao} />
       </main>
       

@@ -131,10 +131,10 @@ export function RelatedPropertiesCarousel({
         <div className="flex items-center justify-between mb-10">
           <div>
             <h2 className="font-display text-2xl md:text-3xl lg:text-[36px] font-medium text-[#191919]">
-              Outros Imóveis de Interesse
+              Não encontrou o que buscava?
             </h2>
             <p className="font-body text-[#333333] mt-2">
-              Confira mais oportunidades em {estado === 'RJ' ? 'Rio de Janeiro' : 'São Paulo'}
+              Veja mais imóveis em bairros próximos a {currentRegion} ou em outras regiões de {estado === 'RJ' ? 'Rio de Janeiro' : 'São Paulo'}
             </p>
           </div>
           

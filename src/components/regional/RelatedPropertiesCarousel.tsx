@@ -144,7 +144,7 @@ export function RelatedPropertiesCarousel({
                 variant="outline"
                 size="icon"
                 onClick={prevSlide}
-                className="rounded-full border-[#265c54] text-[#265c54] hover:bg-[#265c54] hover:text-white"
+                className="rounded-full border-[#191919] text-[#191919] hover:bg-[#191919] hover:text-white"
               >
                 <ChevronLeft className="h-5 w-5" />
               </Button>
@@ -152,7 +152,7 @@ export function RelatedPropertiesCarousel({
                 variant="outline"
                 size="icon"
                 onClick={nextSlide}
-                className="rounded-full border-[#265c54] text-[#265c54] hover:bg-[#265c54] hover:text-white"
+                className="rounded-full border-[#191919] text-[#191919] hover:bg-[#191919] hover:text-white"
               >
                 <ChevronRight className="h-5 w-5" />
               </Button>
@@ -202,7 +202,7 @@ export function RelatedPropertiesCarousel({
                 </p>
 
                 <div className="flex items-center justify-between">
-                  <div className="font-body text-lg font-bold text-[#265c54]">
+                  <div className="font-body text-lg font-bold text-[#d68e08]">
                     {property.leilao_1 ? formatCurrency(property.leilao_1) : 'Consulte'}
                   </div>
                   {property.data_leilao_1 && (
@@ -227,7 +227,7 @@ export function RelatedPropertiesCarousel({
                 className={`w-2.5 h-2.5 rounded-full transition-colors ${
                   Math.floor(currentIndex / itemsPerPage) === i 
                     ? 'bg-[#d68e08]' 
-                    : 'bg-[#265c54]/30 hover:bg-[#265c54]/50'
+                    : 'bg-[#191919]/30 hover:bg-[#191919]/50'
                 }`}
               />
             ))}

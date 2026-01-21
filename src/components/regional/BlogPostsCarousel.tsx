@@ -96,7 +96,7 @@ export function BlogPostsCarousel({ limit = 4 }: BlogPostsCarouselProps) {
   const visiblePosts = posts.slice(currentIndex, currentIndex + itemsPerPage);
 
   return (
-    <section className="bg-[#265c54] py-14 md:py-20">
+    <section className="bg-gradient-to-r from-[#191919] to-[#464646] py-14 md:py-20">
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex items-center justify-between mb-10">
           <div>

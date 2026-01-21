@@ -126,7 +126,7 @@ export function SuccessCasesSection({ region, limit = 3 }: SuccessCasesSectionPr
 
                 {/* Client info */}
                 <div className="flex items-center gap-3 pt-4 border-t border-gray-200">
-                  <div className="w-12 h-12 bg-[#265c54] rounded-full flex items-center justify-center text-white font-display font-medium">
+                  <div className="w-12 h-12 bg-[#191919] rounded-full flex items-center justify-center text-white font-display font-medium">
                     {successCase.client_name?.charAt(0) || 'C'}
                   </div>
                   <div>

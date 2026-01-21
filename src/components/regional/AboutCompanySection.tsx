@@ -27,21 +27,21 @@ export function AboutCompanySection() {
             
             <div className="grid grid-cols-3 gap-6 mb-8">
               <div className="text-center">
-                <div className="w-14 h-14 bg-[#265c54] rounded-full flex items-center justify-center mx-auto mb-3">
+                <div className="w-14 h-14 bg-[#191919] rounded-full flex items-center justify-center mx-auto mb-3">
                   <Award className="h-7 w-7 text-white" />
                 </div>
                 <div className="font-display text-2xl md:text-3xl font-medium text-[#191919]">15+</div>
                 <div className="font-body text-sm text-[#333333]">Anos de experiência</div>
               </div>
               <div className="text-center">
-                <div className="w-14 h-14 bg-[#265c54] rounded-full flex items-center justify-center mx-auto mb-3">
+                <div className="w-14 h-14 bg-[#191919] rounded-full flex items-center justify-center mx-auto mb-3">
                   <Users className="h-7 w-7 text-white" />
                 </div>
                 <div className="font-display text-2xl md:text-3xl font-medium text-[#191919]">500+</div>
                 <div className="font-body text-sm text-[#333333]">Clientes atendidos</div>
               </div>
               <div className="text-center">
-                <div className="w-14 h-14 bg-[#265c54] rounded-full flex items-center justify-center mx-auto mb-3">
+                <div className="w-14 h-14 bg-[#191919] rounded-full flex items-center justify-center mx-auto mb-3">
                   <Clock className="h-7 w-7 text-white" />
                 </div>
                 <div className="font-display text-2xl md:text-3xl font-medium text-[#191919]">98%</div>
@@ -81,24 +81,24 @@ export function AboutCompanySection() {
               
               <div className="space-y-4 mb-6">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-[#265c54]/10 rounded-full flex items-center justify-center">
-                    <svg className="w-4 h-4 text-[#265c54]" fill="currentColor" viewBox="0 0 20 20">
+                  <div className="w-8 h-8 bg-[#d68e08]/10 rounded-full flex items-center justify-center">
+                    <svg className="w-4 h-4 text-[#d68e08]" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
                   </div>
                   <span className="font-body text-[#333333]">Assessoria jurídica completa</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-[#265c54]/10 rounded-full flex items-center justify-center">
-                    <svg className="w-4 h-4 text-[#265c54]" fill="currentColor" viewBox="0 0 20 20">
+                  <div className="w-8 h-8 bg-[#d68e08]/10 rounded-full flex items-center justify-center">
+                    <svg className="w-4 h-4 text-[#d68e08]" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
                   </div>
                   <span className="font-body text-[#333333]">Análise de riscos do imóvel</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-[#265c54]/10 rounded-full flex items-center justify-center">
-                    <svg className="w-4 h-4 text-[#265c54]" fill="currentColor" viewBox="0 0 20 20">
+                  <div className="w-8 h-8 bg-[#d68e08]/10 rounded-full flex items-center justify-center">
+                    <svg className="w-4 h-4 text-[#d68e08]" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
                   </div>

@@ -4,6 +4,48 @@
 
 @layer base {
   :root {
+    /* Design System Cataldo Siston v2.1 (CORRIGIDO 2026-01-20) */
+    
+    /* Cores principais */
+    --color-primary: #d68e08;
+    --color-primary-dark: #b87a07;
+    --color-primary-light: #f4a82a;
+    
+    /* Tons de Grafite (paleta principal do site) */
+    --color-grafite: #191919;
+    --color-grafite-medio: #464646;
+    --color-grafite-claro: #3c3c3c;
+    --color-gray-dark: #333333;
+    --color-gray-medium: #4a4a4a;
+    
+    /* Tons claros */
+    --color-cream: #ebe5de;
+    --color-off-white: #fdfdfd;
+    --color-white: #ffffff;
+    
+    /* Footer */
+    --color-footer: #32373c;
+    
+    /* Texto */
+    --text-primary: #191919;
+    --text-secondary: #333333;
+    --text-muted: #4a4a4a;
+    --text-inverse: #ffffff;
+    
+    /* Backgrounds */
+    --bg-primary: #ffffff;
+    --bg-secondary: #fdfdfd;
+    --bg-tertiary: #ebe5de;
+    --bg-dark: #191919;
+    --bg-footer: #32373c;
+    
+    /* Gradientes */
+    --gradient-grafite: linear-gradient(90deg, #191919 0%, #464646 100%);
+    
+    /* WhatsApp */
+    --color-whatsapp: #53a451;
+    
+    /* shadcn/ui variables */
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
 

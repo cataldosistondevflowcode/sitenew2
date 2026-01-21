@@ -298,7 +298,7 @@ export default function StaticCatalog() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-600 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
           <p className="text-gray-600">Carregando catálogo...</p>
         </div>
       </div>
@@ -360,7 +360,7 @@ export default function StaticCatalog() {
           <div className="max-w-7xl mx-auto px-4 py-4">
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div className="flex items-center gap-4">
-                <Badge variant={seoPage.estado === 'RJ' ? 'default' : 'secondary'} className="bg-amber-500">
+                <Badge variant={seoPage.estado === 'RJ' ? 'default' : 'secondary'} className="bg-primary text-white">
                   {seoPage.estado === 'RJ' ? 'Rio de Janeiro' : 'São Paulo'}
                 </Badge>
                 <Badge variant="outline">
@@ -403,7 +403,7 @@ export default function StaticCatalog() {
                 <p className="text-gray-400 text-sm mb-6">Novos imóveis são adicionados frequentemente. Volte em breve!</p>
                 <Button 
                   onClick={() => navigate(`/leilao-${seoPage.estado.toLowerCase()}`)} 
-                  className="bg-amber-500 hover:bg-amber-600"
+                  className="bg-primary hover:bg-primary-dark"
                 >
                   Ver todos os imóveis em {seoPage.estado}
                 </Button>
@@ -426,7 +426,7 @@ export default function StaticCatalog() {
 
                       {/* Content */}
                       <div className="p-4">
-                        <h3 className="font-semibold text-lg mb-2 line-clamp-2 group-hover:text-amber-600 transition-colors">
+                        <h3 className="font-semibold text-lg mb-2 line-clamp-2 group-hover:text-primary transition-colors">
                           {property.titulo_propriedade || 'Título não informado'}
                         </h3>
 
@@ -437,7 +437,7 @@ export default function StaticCatalog() {
 
                         {/* Price */}
                         <div className="mb-3">
-                          <div className="text-xl font-bold text-amber-600">
+                          <div className="text-xl font-bold text-primary">
                             {property.leilao_1 ? formatCurrency(property.leilao_1) : 'Valor não informado'}
                           </div>
                           {property.data_leilao_1 && (
@@ -468,7 +468,7 @@ export default function StaticCatalog() {
                           <Button
                             asChild
                             size="sm"
-                            className="flex-1 bg-amber-500 hover:bg-amber-600"
+                            className="flex-1 bg-primary hover:bg-primary-dark"
                           >
                             <a href={propertyUrl}>
                               <ExternalLink className="h-4 w-4 mr-1" />

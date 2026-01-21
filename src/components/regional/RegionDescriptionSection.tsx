@@ -15,7 +15,7 @@ export function RegionDescriptionSection({
     <section className="bg-[#ebe5de] py-12 md:py-16">
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex flex-col md:flex-row items-start gap-6">
-          <div className="flex-shrink-0 w-14 h-14 bg-[#265c54] rounded-full flex items-center justify-center">
+          <div className="flex-shrink-0 w-14 h-14 bg-[#191919] rounded-full flex items-center justify-center">
             <Info className="h-7 w-7 text-white" />
           </div>
           <div>

@@ -59,96 +59,125 @@ export function FinalCTA({ regionName }: FinalCTAProps) {
   };
 
   return (
-    <section className="relative min-h-[500px] flex items-center">
-      {/* Background Image */}
-      <div 
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{ 
-          backgroundImage: `url('https://leilaodeimoveis-cataldosiston.com/wp-content/uploads/2024/07/Raphael-Cataldo-Siston-Advogado-especialista-em-leilao-de-imoveis-RJ-SP-1.png')`,
-          backgroundPosition: 'right center'
-        }}
-      >
-        {/* Dark overlay */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#191919] via-[#191919]/95 to-[#191919]/70" />
-      </div>
-      
-      <div className="relative z-10 w-full">
-        <div className="max-w-7xl mx-auto px-4 py-16 md:py-20">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            {/* Formulário */}
-            <div>
-              <h2 className="font-display text-2xl md:text-3xl lg:text-[36px] font-medium text-white mb-6">
-                Receba nossa newsletter
-              </h2>
-              
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <Input
-                  type="text"
-                  placeholder="Nome*"
-                  value={formData.nome}
-                  onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
-                  className="bg-transparent border-[#d68e08] text-white placeholder:text-white/60 h-12 font-body"
-                  required
-                />
-                <Input
-                  type="email"
-                  placeholder="Email*"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="bg-transparent border-[#d68e08] text-white placeholder:text-white/60 h-12 font-body"
-                  required
-                />
-                <Input
-                  type="tel"
-                  placeholder="Telefone*"
-                  value={formData.telefone}
-                  onChange={(e) => setFormData({ ...formData, telefone: e.target.value })}
-                  className="bg-transparent border-[#d68e08] text-white placeholder:text-white/60 h-12 font-body"
-                  required
-                />
-                <Button 
-                  type="submit"
-                  disabled={loading}
-                  className="w-full bg-[#d68e08] hover:bg-[#b87a07] text-white font-body font-semibold h-12 text-base"
-                >
-                  {loading ? 'ENVIANDO...' : 'ENVIAR'}
-                  {!loading && <Send className="h-4 w-4 ml-2" />}
-                </Button>
-              </form>
-
-              {/* Contatos rápidos */}
-              <div className="mt-8">
-                <p className="font-display text-lg font-medium text-white mb-4">
-                  Podemos ajudar a solucionar o seu caso!
+    <section className="relative">
+      {/* Seção Newsletter com imagem do advogado */}
+      <div className="relative min-h-[550px] flex items-center">
+        {/* Background Image - Escritório com advogado */}
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{ 
+            backgroundImage: `url('/mesa-escritorio-cataldo-siston-advogados.jpg.webp')`,
+          }}
+        >
+          {/* Dark overlay com gradiente */}
+          <div className="absolute inset-0 bg-gradient-to-r from-[#191919]/95 via-[#191919]/80 to-transparent" />
+        </div>
+        
+        <div className="relative z-10 w-full">
+          <div className="max-w-7xl mx-auto px-4 py-16 md:py-20">
+            <div className="grid md:grid-cols-2 gap-12 items-center">
+              {/* Formulário - Lado esquerdo */}
+              <div className="max-w-md">
+                <h2 className="font-display text-2xl md:text-3xl lg:text-[36px] font-medium text-white mb-2">
+                  Receba nossa newsletter
+                </h2>
+                
+                <p className="font-body text-[#d68e08] text-sm mb-6">
+                  Oportunidades de negócio, decisões, artigos, cases, etc.
                 </p>
-                <div className="flex flex-wrap gap-4">
-                  <button 
-                    onClick={handleWhatsApp}
-                    className="flex items-center gap-2 text-[#d68e08] hover:text-[#b87a07] font-body transition-colors"
+                
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div>
+                    <label className="block text-white text-sm font-body mb-1">Nome*</label>
+                    <Input
+                      type="text"
+                      value={formData.nome}
+                      onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
+                      className="bg-transparent border-white/50 text-white placeholder:text-white/40 h-11 font-body focus:border-[#d68e08]"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-white text-sm font-body mb-1">Email*</label>
+                    <Input
+                      type="email"
+                      value={formData.email}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      className="bg-transparent border-white/50 text-white placeholder:text-white/40 h-11 font-body focus:border-[#d68e08]"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-white text-sm font-body mb-1">Telefone*</label>
+                    <Input
+                      type="tel"
+                      value={formData.telefone}
+                      onChange={(e) => setFormData({ ...formData, telefone: e.target.value })}
+                      className="bg-transparent border-white/50 text-white placeholder:text-white/40 h-11 font-body focus:border-[#d68e08]"
+                      required
+                    />
+                  </div>
+                  <Button 
+                    type="submit"
+                    disabled={loading}
+                    className="w-full bg-[#d68e08] hover:bg-[#b87a07] text-white font-body font-semibold h-12 text-base uppercase tracking-wider"
                   >
-                    <MessageCircle className="h-5 w-5" />
-                    WhatsApp
-                  </button>
-                  <button 
-                    onClick={handleEmail}
-                    className="flex items-center gap-2 text-[#d68e08] hover:text-[#b87a07] font-body transition-colors"
-                  >
-                    <Mail className="h-5 w-5" />
-                    Email
-                  </button>
-                  <button 
-                    onClick={handlePhone}
-                    className="flex items-center gap-2 text-[#d68e08] hover:text-[#b87a07] font-body transition-colors"
-                  >
-                    <Phone className="h-5 w-5" />
-                    Telefone
-                  </button>
-                </div>
+                    {loading ? 'ENVIANDO...' : 'ENVIAR'}
+                    {!loading && <Send className="h-4 w-4 ml-2" />}
+                  </Button>
+                </form>
+
+                {/* Texto de privacidade */}
+                <p className="font-body text-white/60 text-xs mt-4">
+                  Prometemos não utilizar suas informações de contato para enviar qualquer tipo de SPAM.
+                </p>
               </div>
+
+              {/* Espaço para a imagem do advogado (já no background) */}
+              <div className="hidden md:block"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Barra de contato inferior - Estilo do site institucional */}
+      <div className="bg-[#3c3c3c]">
+        <div className="max-w-7xl mx-auto px-4 py-5">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+            {/* Texto */}
+            <div>
+              <h3 className="font-display text-xl md:text-2xl font-medium text-white">
+                Podemos ajudar a solucionar o seu caso!
+              </h3>
+              <p className="font-body text-[#d68e08] text-sm">
+                Entre em contato conosco
+              </p>
             </div>
 
-            {/* Espaço para a imagem do advogado (já no background) */}
-            <div className="hidden md:block"></div>
+            {/* Ícones de contato */}
+            <div className="flex items-center gap-6">
+              <button 
+                onClick={handleWhatsApp}
+                className="flex items-center justify-center w-12 h-12 rounded-full border-2 border-[#d68e08] text-[#d68e08] hover:bg-[#d68e08] hover:text-white transition-all"
+                aria-label="WhatsApp"
+              >
+                <MessageCircle className="h-6 w-6" />
+              </button>
+              <button 
+                onClick={handleEmail}
+                className="flex items-center justify-center w-12 h-12 rounded-full border-2 border-[#d68e08] text-[#d68e08] hover:bg-[#d68e08] hover:text-white transition-all"
+                aria-label="Email"
+              >
+                <Mail className="h-6 w-6" />
+              </button>
+              <button 
+                onClick={handlePhone}
+                className="flex items-center justify-center w-12 h-12 rounded-full border-2 border-[#d68e08] text-[#d68e08] hover:bg-[#d68e08] hover:text-white transition-all"
+                aria-label="Telefone"
+              >
+                <Phone className="h-6 w-6" />
+              </button>
+            </div>
           </div>
         </div>
       </div>

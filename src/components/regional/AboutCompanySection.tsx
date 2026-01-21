@@ -16,8 +16,8 @@ export function AboutCompanySection() {
       <div className="absolute bottom-0 right-1/4 w-52 h-52 bg-[#ebe5de] rounded-full opacity-40" />
       
       <div className="relative z-10 max-w-6xl mx-auto px-4">
-        {/* Título centralizado */}
-        <h2 className="font-display text-3xl md:text-4xl lg:text-[42px] font-medium text-[#191919] mb-12 text-center italic">
+        {/* Título centralizado - NÃO é itálico no site institucional */}
+        <h2 className="font-display text-3xl md:text-4xl lg:text-[42px] font-medium text-[#191919] mb-12 text-center">
           Sobre
         </h2>
         
@@ -41,7 +41,7 @@ export function AboutCompanySection() {
           
           {/* Conteúdo */}
           <div className="text-[#191919]">
-            <h3 className="font-display text-2xl md:text-3xl font-medium mb-4 italic">
+            <h3 className="font-display text-2xl md:text-3xl font-medium mb-4">
               Raphael Cataldo Siston
             </h3>
             

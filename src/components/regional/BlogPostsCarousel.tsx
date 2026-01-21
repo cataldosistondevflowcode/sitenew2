@@ -1,209 +1,199 @@
-import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { ChevronLeft, ChevronRight, Calendar, ArrowRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ArrowRight, ExternalLink } from 'lucide-react';
 
-interface BlogPost {
-  id: number;
-  title: string;
-  slug: string;
-  excerpt: string;
-  featured_image_url?: string;
-  category?: string;
-  published_at: string;
-  author_name?: string;
-}
+// Posts do blog institucional Cataldo Siston (extraídos do site)
+const blogPosts = [
+  {
+    id: 1,
+    title: 'Saiba como ocorre a imissão na posse em leilões de imóveis',
+    excerpt: 'A imissão na posse em leilões de imóveis, seja extrajudiciais ou judiciais, é algo que suscita muitos questionamentos por parte dos licitantes ou interessados em participar desta modalidade de...',
+    image: 'https://leilaodeimoveis-cataldosiston.com/wp-content/uploads/2024/07/imissao-na-posse-em-leiloes-judiciais-e-extrajudiciais.png',
+    url: 'https://leilaodeimoveis-cataldosiston.com/imissao-na-posse-em-leiloes-judiciais-e-extrajudiciais/',
+    category: 'Leilões',
+  },
+  {
+    id: 2,
+    title: 'Impugnação à arrematação do imóvel: quando pode ocorrer?',
+    excerpt: 'Um dos maiores receios de quem participa de leilões de imóveis, ou daqueles que têm interesse em participar, é chegar ao final de todo o processo e ocorrer algo...',
+    image: 'https://leilaodeimoveis-cataldosiston.com/wp-content/uploads/2024/07/Em-quais-casos-uma-arrematacao-pode-ser-anulada.png',
+    url: 'https://leilaodeimoveis-cataldosiston.com/impugnacao-a-arrematacao-do-imovel/',
+    category: 'Jurídico',
+  },
+  {
+    id: 3,
+    title: 'Leilão de imóveis: como funciona e dicas para participar',
+    excerpt: 'O Raphael Siston, sócio do escritório Cataldo Siston, deu uma entrevista para a Casa & Jardim falando como funcionam os leilões de imóveis e de que forma é possível...',
+    image: 'https://leilaodeimoveis-cataldosiston.com/wp-content/uploads/2024/07/Entrevista-do-Raphael-Siston-a-CASA-e-JARDIM.png',
+    url: 'https://leilaodeimoveis-cataldosiston.com/leilao-de-imoveis-como-funciona/',
+    category: 'Entrevista',
+  },
+  {
+    id: 4,
+    title: 'Imóveis em leilão costumam estar em péssimo estado de conservação?',
+    excerpt: 'É preciso gastar uma fortuna em reforma após arrematar imóveis em leilão? Descubra a verdade sobre o estado de conservação dos imóveis leiloados.',
+    image: 'https://leilaodeimoveis-cataldosiston.com/wp-content/uploads/2024/07/E-preciso-gastar-uma-fortuna-em-reforma-apos-arrematar-imoveis-em-leilao.png',
+    url: 'https://leilaodeimoveis-cataldosiston.com/imoveis-em-leilao-estado-de-conservacao/',
+    category: 'Dicas',
+  },
+  {
+    id: 5,
+    title: 'O que você deve pagar, após arrematar um imóvel em leilão?',
+    excerpt: 'Quais os custos após o leilão, além do valor da arrematação? Entenda todas as despesas envolvidas no processo de aquisição de imóveis em leilão.',
+    image: 'https://leilaodeimoveis-cataldosiston.com/wp-content/uploads/2024/07/Quais-os-custos-apos-o-leilao-alem-do-valor-arrematacao.png',
+    url: 'https://leilaodeimoveis-cataldosiston.com/custos-apos-arrematar-imovel-leilao/',
+    category: 'Financeiro',
+  },
+];
 
-interface BlogPostsCarouselProps {
-  limit?: number;
-}
-
-export function BlogPostsCarousel({ limit = 4 }: BlogPostsCarouselProps) {
-  const [posts, setPosts] = useState<BlogPost[]>([]);
-  const [loading, setLoading] = useState(true);
+export function BlogPostsCarousel() {
   const [currentIndex, setCurrentIndex] = useState(0);
   
   const itemsPerPage = typeof window !== 'undefined' && window.innerWidth < 768 ? 1 : 
-                       typeof window !== 'undefined' && window.innerWidth < 1024 ? 2 : 4;
-
-  useEffect(() => {
-    fetchBlogPosts();
-  }, []);
-
-  const fetchBlogPosts = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('blog_posts')
-        .select('*')
-        .eq('is_active', true)
-        .not('published_at', 'is', null)
-        .lte('published_at', new Date().toISOString())
-        .order('published_at', { ascending: false })
-        .limit(limit);
-
-      if (error) {
-        console.error('Erro ao buscar posts do blog:', error);
-      } else {
-        setPosts(data || []);
-      }
-    } catch (error) {
-      console.error('Erro ao buscar posts do blog:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+                       typeof window !== 'undefined' && window.innerWidth < 1024 ? 2 : 3;
 
   const nextSlide = () => {
     setCurrentIndex((prev) => 
-      prev + itemsPerPage >= posts.length ? 0 : prev + itemsPerPage
+      prev + 1 >= blogPosts.length ? 0 : prev + 1
     );
   };
 
   const prevSlide = () => {
     setCurrentIndex((prev) => 
-      prev - itemsPerPage < 0 ? Math.max(0, posts.length - itemsPerPage) : prev - itemsPerPage
+      prev - 1 < 0 ? blogPosts.length - 1 : prev - 1
     );
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('pt-BR', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric'
-    });
+  // Criar array circular para exibição
+  const getVisiblePosts = () => {
+    const posts = [];
+    for (let i = 0; i < itemsPerPage; i++) {
+      const index = (currentIndex + i) % blogPosts.length;
+      posts.push(blogPosts[index]);
+    }
+    return posts;
   };
 
-  if (loading) {
-    return (
-      <section className="bg-gray-50 py-12">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="animate-pulse">
-            <div className="h-8 bg-gray-200 rounded w-1/3 mb-8"></div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="bg-white rounded-lg h-80"></div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-    );
-  }
-
-  if (posts.length === 0) return null;
-
-  const visiblePosts = posts.slice(currentIndex, currentIndex + itemsPerPage);
+  const visiblePosts = getVisiblePosts();
 
   return (
     <section className="bg-gradient-to-r from-[#191919] to-[#464646] py-14 md:py-20">
       <div className="max-w-7xl mx-auto px-4">
-        <div className="flex items-center justify-between mb-10">
-          <div>
-            <h2 className="font-display text-2xl md:text-3xl lg:text-[36px] font-medium text-white">
-              Blog & Dicas
-            </h2>
-            <p className="font-body text-white/80 mt-2">
-              Conteúdos para ajudar você a investir com segurança
-            </p>
-          </div>
-          
-          {posts.length > itemsPerPage && (
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={prevSlide}
-                className="rounded-full border-white/30 text-white hover:bg-white/10"
-              >
-                <ChevronLeft className="h-5 w-5" />
-              </Button>
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={nextSlide}
-                className="rounded-full border-white/30 text-white hover:bg-white/10"
-              >
-                <ChevronRight className="h-5 w-5" />
-              </Button>
-            </div>
-          )}
+        {/* Header */}
+        <div className="text-center mb-12">
+          <h2 className="font-display text-2xl md:text-3xl lg:text-[36px] font-medium text-white mb-4">
+            Confira entrevistas e artigos do advogado Raphael
+          </h2>
+          <p className="font-display text-xl md:text-2xl text-white/90">
+            Cataldo Siston sobre leilão de imóveis
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {visiblePosts.map((post) => (
-            <article
-              key={post.id}
-              className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow group"
-            >
-              {/* Image */}
-              <div className="aspect-video bg-gray-200 relative overflow-hidden">
-                {post.featured_image_url ? (
+        {/* Carousel */}
+        <div className="relative">
+          {/* Navigation Buttons */}
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={prevSlide}
+            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 rounded-full bg-[#d68e08] border-[#d68e08] text-white hover:bg-[#b87a07] hover:border-[#b87a07] shadow-lg hidden md:flex"
+          >
+            <ChevronLeft className="h-5 w-5" />
+          </Button>
+          
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={nextSlide}
+            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 rounded-full bg-[#d68e08] border-[#d68e08] text-white hover:bg-[#b87a07] hover:border-[#b87a07] shadow-lg hidden md:flex"
+          >
+            <ChevronRight className="h-5 w-5" />
+          </Button>
+
+          {/* Posts Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 px-4 md:px-8">
+            {visiblePosts.map((post) => (
+              <a
+                key={post.id}
+                href={post.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-[#191919] rounded-lg overflow-hidden hover:shadow-xl transition-all group border border-gray-800"
+              >
+                {/* Image */}
+                <div className="aspect-video bg-gray-800 relative overflow-hidden">
                   <img
-                    src={post.featured_image_url}
+                    src={post.image}
                     alt={post.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     onError={(e) => {
-                      (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=400';
+                      (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=400&h=225&fit=crop';
                     }}
                   />
-                ) : (
-                  <div className="w-full h-full bg-[#ebe5de] flex items-center justify-center">
-                    <span className="text-4xl">📰</span>
-                  </div>
-                )}
-                {post.category && (
-                  <Badge className="absolute top-2 left-2 bg-[#d68e08] text-white text-xs font-body">
-                    {post.category}
-                  </Badge>
-                )}
-              </div>
-
-              {/* Content */}
-              <div className="p-4">
-                <div className="flex items-center gap-2 text-[#333333] text-xs mb-2 font-body">
-                  <Calendar className="h-3 w-3 text-[#d68e08]" />
-                  {formatDate(post.published_at)}
                 </div>
-                
-                <h3 className="font-display text-base font-medium text-[#191919] mb-2 line-clamp-2 group-hover:text-[#d68e08] transition-colors">
-                  {post.title}
-                </h3>
-                
-                {post.excerpt && (
-                  <p className="font-body text-[#333333] text-sm line-clamp-2 mb-4">
+
+                {/* Content */}
+                <div className="p-5">
+                  <h3 className="font-display text-lg font-medium text-white mb-3 line-clamp-2 group-hover:text-[#d68e08] transition-colors">
+                    {post.title}
+                  </h3>
+                  
+                  <p className="font-body text-white/70 text-sm line-clamp-3 mb-4">
                     {post.excerpt}
                   </p>
-                )}
 
-                <a 
-                  href={`/blog/${post.slug}`}
-                  className="text-[#d68e08] text-sm font-body font-semibold flex items-center gap-1 hover:gap-2 transition-all"
-                >
-                  Ler mais
-                  <ArrowRight className="h-4 w-4" />
-                </a>
-              </div>
-            </article>
-          ))}
-        </div>
-
-        {/* Pagination dots */}
-        {posts.length > itemsPerPage && (
-          <div className="flex justify-center gap-2 mt-8">
-            {Array.from({ length: Math.ceil(posts.length / itemsPerPage) }).map((_, i) => (
-              <button
-                key={i}
-                onClick={() => setCurrentIndex(i * itemsPerPage)}
-                className={`w-2.5 h-2.5 rounded-full transition-colors ${
-                  Math.floor(currentIndex / itemsPerPage) === i 
-                    ? 'bg-[#d68e08]' 
-                    : 'bg-white/30 hover:bg-white/50'
-                }`}
-              />
+                  {/* Read more indicator */}
+                  <div className="flex items-center gap-2 text-[#d68e08] font-body text-sm font-semibold">
+                    <span className="flex gap-1">
+                      <span className="w-2 h-2 bg-[#d68e08] rounded-full"></span>
+                      <span className="w-2 h-2 bg-[#d68e08] rounded-full"></span>
+                      <span className="w-2 h-2 bg-[#d68e08] rounded-full"></span>
+                    </span>
+                  </div>
+                </div>
+              </a>
             ))}
           </div>
-        )}
+
+          {/* Mobile Navigation */}
+          <div className="flex justify-center gap-4 mt-6 md:hidden">
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={prevSlide}
+              className="rounded-full bg-[#d68e08] border-[#d68e08] text-white hover:bg-[#b87a07]"
+            >
+              <ChevronLeft className="h-5 w-5" />
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={nextSlide}
+              className="rounded-full bg-[#d68e08] border-[#d68e08] text-white hover:bg-[#b87a07]"
+            >
+              <ChevronRight className="h-5 w-5" />
+            </Button>
+          </div>
+        </div>
+
+        {/* CTA para o blog */}
+        <div className="text-center mt-10">
+          <Button
+            asChild
+            variant="outline"
+            size="lg"
+            className="border-2 border-white text-white hover:bg-white/10 font-body font-semibold px-8"
+          >
+            <a 
+              href="https://leilaodeimoveis-cataldosiston.com/blog-cataldo-siston-advogados/" 
+              target="_blank" 
+              rel="noopener noreferrer"
+            >
+              Ver todos os artigos
+              <ExternalLink className="h-4 w-4 ml-2" />
+            </a>
+          </Button>
+        </div>
       </div>
     </section>
   );

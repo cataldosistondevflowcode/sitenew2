@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { MapPin, Phone, Mail, Award, Users, Clock } from 'lucide-react';
+import { MapPin, Phone, Mail, ExternalLink } from 'lucide-react';
 
 export function AboutCompanySection() {
   const handleContact = () => {
@@ -9,109 +9,117 @@ export function AboutCompanySection() {
   };
 
   return (
-    <section className="bg-[#ebe5de] py-14 md:py-20">
+    <section className="bg-[#f5f5f5] py-14 md:py-20">
       <div className="max-w-7xl mx-auto px-4">
         <h2 className="font-display text-2xl md:text-3xl lg:text-[36px] font-medium text-[#191919] mb-10 text-center">
-          Conheça a Cataldo Siston
+          Sobre
         </h2>
         
         <div className="grid md:grid-cols-2 gap-12 items-center">
-          {/* Texto */}
-          <div>
-            <p className="font-body text-[#333333] mb-8 leading-relaxed text-base md:text-lg">
-              A Cataldo Siston é um escritório de advocacia especializado em leilões de imóveis, 
-              com mais de 15 anos de experiência no mercado imobiliário do Rio de Janeiro e São Paulo. 
-              Nossa equipe de advogados especializados oferece assessoria completa em todas as etapas 
-              do processo de aquisição de imóveis em leilão.
-            </p>
-            
-            <div className="grid grid-cols-3 gap-6 mb-8">
-              <div className="text-center">
-                <div className="w-14 h-14 bg-[#191919] rounded-full flex items-center justify-center mx-auto mb-3">
-                  <Award className="h-7 w-7 text-white" />
-                </div>
-                <div className="font-display text-2xl md:text-3xl font-medium text-[#191919]">15+</div>
-                <div className="font-body text-sm text-[#333333]">Anos de experiência</div>
-              </div>
-              <div className="text-center">
-                <div className="w-14 h-14 bg-[#191919] rounded-full flex items-center justify-center mx-auto mb-3">
-                  <Users className="h-7 w-7 text-white" />
-                </div>
-                <div className="font-display text-2xl md:text-3xl font-medium text-[#191919]">500+</div>
-                <div className="font-body text-sm text-[#333333]">Clientes atendidos</div>
-              </div>
-              <div className="text-center">
-                <div className="w-14 h-14 bg-[#191919] rounded-full flex items-center justify-center mx-auto mb-3">
-                  <Clock className="h-7 w-7 text-white" />
-                </div>
-                <div className="font-display text-2xl md:text-3xl font-medium text-[#191919]">98%</div>
-                <div className="font-body text-sm text-[#333333]">Taxa de sucesso</div>
-              </div>
-            </div>
-            
-            {/* Contato */}
-            <div className="space-y-3">
-              <div className="flex items-center gap-3 font-body text-[#333333]">
-                <MapPin className="h-5 w-5 text-[#d68e08]" />
-                <span>Rio de Janeiro e São Paulo</span>
-              </div>
-              <div className="flex items-center gap-3 font-body text-[#333333]">
-                <Phone className="h-5 w-5 text-[#d68e08]" />
-                <span>(21) 3173-3795</span>
-              </div>
-              <div className="flex items-center gap-3 font-body text-[#333333]">
-                <Mail className="h-5 w-5 text-[#d68e08]" />
-                <span>contato@cataldosiston-adv.com.br</span>
-              </div>
+          {/* Foto do Advogado */}
+          <div className="flex justify-center">
+            <div className="relative">
+              {/* Borda dourada decorativa */}
+              <div className="absolute -bottom-4 -left-4 w-full h-full border-4 border-[#d68e08] rounded-lg"></div>
+              <img 
+                src="https://leilaodeimoveis-cataldosiston.com/wp-content/uploads/2024/07/Raphael-Cataldo-Siston-Advogado-especialista-em-leilao-de-imoveis-RJ-SP-1.png"
+                alt="Raphael Cataldo Siston - Advogado especialista em leilões de imóveis"
+                className="relative z-10 w-full max-w-[350px] rounded-lg shadow-lg"
+                onError={(e) => {
+                  // Fallback para placeholder se a imagem não carregar
+                  (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=500&fit=crop';
+                }}
+              />
             </div>
           </div>
           
-          {/* Card visual */}
-          <div className="relative">
-            <div className="bg-white rounded-lg shadow-lg p-8 md:p-10 border border-gray-100">
-              <div className="flex items-center gap-4 mb-6">
-                <div className="w-16 h-16 bg-[#d68e08] rounded-full flex items-center justify-center">
-                  <span className="text-white text-2xl font-display font-medium">CS</span>
-                </div>
-                <div>
-                  <h3 className="font-display text-xl font-medium text-[#191919]">Cataldo Siston</h3>
-                  <p className="font-body text-[#333333]">Advocacia Imobiliária</p>
-                </div>
-              </div>
-              
-              <div className="space-y-4 mb-6">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-[#d68e08]/10 rounded-full flex items-center justify-center">
-                    <svg className="w-4 h-4 text-[#d68e08]" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                  </div>
-                  <span className="font-body text-[#333333]">Assessoria jurídica completa</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-[#d68e08]/10 rounded-full flex items-center justify-center">
-                    <svg className="w-4 h-4 text-[#d68e08]" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                  </div>
-                  <span className="font-body text-[#333333]">Análise de riscos do imóvel</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-[#d68e08]/10 rounded-full flex items-center justify-center">
-                    <svg className="w-4 h-4 text-[#d68e08]" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                  </div>
-                  <span className="font-body text-[#333333]">Acompanhamento pós-leilão</span>
-                </div>
-              </div>
-              
-              <Button 
-                onClick={handleContact}
-                className="w-full bg-[#d68e08] hover:bg-[#b87a07] text-white font-body font-semibold py-3 h-auto"
+          {/* Informações */}
+          <div>
+            <h3 className="font-display text-2xl md:text-3xl font-medium text-[#191919] mb-4">
+              Raphael Cataldo Siston
+            </h3>
+            
+            <p className="font-body text-[#333333] mb-6 leading-relaxed text-base md:text-lg">
+              Advogado especialista em leilões de imóveis, com mais de 19 anos de experiência 
+              em arrematações imobiliárias. Pós-graduado em direito imobiliário e em direito 
+              processual civil.
+            </p>
+            
+            {/* Assinatura - representação visual */}
+            <div className="mb-6">
+              <img 
+                src="https://leilaodeimoveis-cataldosiston.com/wp-content/uploads/2024/07/assinatura-raphael-cataldo-siston.png"
+                alt="Assinatura Raphael Cataldo Siston"
+                className="h-16 object-contain"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).style.display = 'none';
+                }}
+              />
+            </div>
+            
+            {/* OAB e Email */}
+            <div className="space-y-2 mb-8">
+              <p className="font-body font-semibold text-[#191919]">
+                OAB/RJ nº 153.146
+              </p>
+              <a 
+                href="mailto:raphael@cataldosiston-adv.com.br"
+                className="font-body text-[#d68e08] hover:underline"
               >
-                Fale com um Especialista
-              </Button>
+                raphael@cataldosiston-adv.com.br
+              </a>
+            </div>
+            
+            {/* Informações de Contato do Escritório */}
+            <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-100">
+              <h4 className="font-display text-lg font-medium text-[#191919] mb-4">
+                Cataldo Siston Advogados
+              </h4>
+              
+              <div className="space-y-3">
+                <div className="flex items-start gap-3 font-body text-[#333333]">
+                  <MapPin className="h-5 w-5 text-[#d68e08] mt-0.5 flex-shrink-0" />
+                  <span>
+                    Av. Rio Branco, 156, Gr. 3336 a 3339<br />
+                    Centro - Rio de Janeiro - RJ - Brasil
+                  </span>
+                </div>
+                <div className="flex items-center gap-3 font-body text-[#333333]">
+                  <Phone className="h-5 w-5 text-[#d68e08]" />
+                  <a href="tel:+552131733795" className="hover:text-[#d68e08]">
+                    +55 (21) 3173-3795
+                  </a>
+                </div>
+                <div className="flex items-center gap-3 font-body text-[#333333]">
+                  <Mail className="h-5 w-5 text-[#d68e08]" />
+                  <a href="mailto:contato@cataldosiston-adv.com.br" className="hover:text-[#d68e08]">
+                    contato@cataldosiston-adv.com.br
+                  </a>
+                </div>
+              </div>
+              
+              <div className="mt-6 flex flex-col sm:flex-row gap-3">
+                <Button 
+                  onClick={handleContact}
+                  className="flex-1 bg-[#d68e08] hover:bg-[#b87a07] text-white font-body font-semibold"
+                >
+                  Fale com um Especialista
+                </Button>
+                <Button 
+                  asChild
+                  variant="outline"
+                  className="flex-1 border-[#191919] text-[#191919] hover:bg-[#191919] hover:text-white font-body"
+                >
+                  <a 
+                    href="https://leilaodeimoveis-cataldosiston.com/escritorio-imobiliario/" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                  >
+                    Conheça o Escritório
+                    <ExternalLink className="h-4 w-4 ml-2" />
+                  </a>
+                </Button>
+              </div>
             </div>
           </div>
         </div>

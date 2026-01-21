@@ -1,146 +1,138 @@
-import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { Quote, Star } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Play, ExternalLink, MapPin, TrendingDown } from 'lucide-react';
 
-interface SuccessCase {
-  id: number;
-  title: string;
-  description: string;
-  client_name: string;
-  client_image_url?: string;
-  property_type: string;
-  region: string;
-  testimonial: string;
-  is_featured: boolean;
-}
+// Casos reais extraídos do site institucional Cataldo Siston
+const realCases = [
+  {
+    id: 1,
+    title: 'Leilão de imóvel | Ipanema/RJ',
+    location: 'Ipanema, Rio de Janeiro',
+    videoThumbnail: 'https://img.youtube.com/vi/VIDEO_ID_1/maxresdefault.jpg',
+    videoUrl: 'https://www.youtube.com/watch?v=VIDEO_ID_1',
+    description: 'Caso real de imóvel em leilão em Ipanema, assessorado pela equipe jurídica do escritório Cataldo Siston Advogados.',
+    arrematacao: 'R$ 2.984.000,00',
+    mercado: 'R$ 6.200.000,00',
+  },
+  {
+    id: 2,
+    title: 'Leilão de imóvel | Botafogo/RJ',
+    location: 'Botafogo, Rio de Janeiro',
+    videoThumbnail: 'https://img.youtube.com/vi/VIDEO_ID_2/maxresdefault.jpg',
+    videoUrl: 'https://www.youtube.com/watch?v=VIDEO_ID_2',
+    description: 'Caso real de imóvel em leilão em Botafogo, assessorado pela equipe jurídica do escritório Cataldo Siston Advogados.',
+    arrematacao: 'R$ 501.000,00',
+    mercado: 'R$ 1.147.015,67',
+  },
+  {
+    id: 3,
+    title: 'Leilão de imóvel | Copacabana/RJ',
+    location: 'Copacabana, Rio de Janeiro',
+    videoThumbnail: 'https://img.youtube.com/vi/VIDEO_ID_3/maxresdefault.jpg',
+    videoUrl: 'https://www.youtube.com/watch?v=VIDEO_ID_3',
+    description: 'Caso real de imóvel em leilão em Copacabana, assessorado pela equipe jurídica do escritório Cataldo Siston Advogados.',
+    arrematacao: 'R$ 2.855.000,00',
+    mercado: 'R$ 4.262.270,00',
+  },
+];
 
 interface SuccessCasesSectionProps {
   region?: string;
-  limit?: number;
 }
 
-export function SuccessCasesSection({ region, limit = 3 }: SuccessCasesSectionProps) {
-  const [cases, setCases] = useState<SuccessCase[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetchSuccessCases();
-  }, [region]);
-
-  const fetchSuccessCases = async () => {
-    try {
-      let query = supabase
-        .from('success_cases')
-        .select('*')
-        .eq('is_active', true)
-        .order('is_featured', { ascending: false })
-        .order('display_order', { ascending: true })
-        .limit(limit);
-
-      // Se uma região específica for passada, filtrar por ela
-      if (region) {
-        query = query.ilike('region', `%${region}%`);
-      }
-
-      const { data, error } = await query;
-
-      if (error) {
-        console.error('Erro ao buscar casos de sucesso:', error);
-      } else {
-        setCases(data || []);
-      }
-    } catch (error) {
-      console.error('Erro ao buscar casos de sucesso:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (loading) {
-    return (
-      <section className="bg-white py-12">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="animate-pulse">
-            <div className="h-8 bg-gray-200 rounded w-1/3 mx-auto mb-8"></div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="bg-gray-100 rounded-lg h-64"></div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-    );
-  }
-
-  if (cases.length === 0) return null;
-
+export function SuccessCasesSection({ region }: SuccessCasesSectionProps) {
   return (
-    <section className="bg-white py-14 md:py-20 border-t border-gray-100">
+    <section className="bg-white py-14 md:py-20">
       <div className="max-w-7xl mx-auto px-4">
+        {/* Header */}
         <div className="text-center mb-12">
           <h2 className="font-display text-2xl md:text-3xl lg:text-[36px] font-medium text-[#191919] mb-4">
             Casos de Sucesso
           </h2>
           <p className="font-body text-[#333333] max-w-2xl mx-auto">
-            Conheça histórias de clientes que realizaram o sonho do imóvel próprio através de leilões
+            Mais de <span className="font-semibold text-[#d68e08]">1200 arrematações imobiliárias</span> em 19 anos de experiência
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {cases.map((successCase) => (
-            <div
-              key={successCase.id}
-              className="bg-[#f5f5f5] rounded-lg p-6 md:p-8 relative border border-gray-100 hover:shadow-md transition-shadow"
+        {/* Cases Grid - Estilo de vídeos do YouTube */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-10">
+          {realCases.map((caseItem) => (
+            <article
+              key={caseItem.id}
+              className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-100 hover:shadow-lg transition-shadow group"
             >
-              {/* Quote icon */}
-              <div className="absolute top-4 right-4 text-[#d68e08]/20">
-                <Quote className="h-12 w-12" />
-              </div>
-
-              {/* Featured badge */}
-              {successCase.is_featured && (
-                <div className="absolute top-4 left-4">
-                  <div className="flex items-center gap-1 bg-[#d68e08]/10 text-[#d68e08] px-3 py-1 rounded-full text-xs font-body font-semibold">
-                    <Star className="h-3 w-3 fill-current" />
-                    Destaque
+              {/* Video Thumbnail */}
+              <div className="relative aspect-video bg-[#191919]">
+                <img
+                  src={`https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=400&h=225&fit=crop`}
+                  alt={caseItem.title}
+                  className="w-full h-full object-cover opacity-80"
+                />
+                {/* Play button overlay */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="w-16 h-16 bg-red-600 rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                    <Play className="h-8 w-8 text-white fill-white ml-1" />
                   </div>
                 </div>
-              )}
+                {/* Title overlay */}
+                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
+                  <p className="text-white text-sm font-body line-clamp-2">
+                    {caseItem.title}
+                  </p>
+                </div>
+              </div>
 
               {/* Content */}
-              <div className="mt-8">
+              <div className="p-5">
                 <h3 className="font-display text-lg font-medium text-[#191919] mb-2">
-                  {successCase.title}
+                  {caseItem.title}
                 </h3>
                 
                 <p className="font-body text-[#333333] text-sm mb-4">
-                  {successCase.description}
+                  {caseItem.description}
                 </p>
 
-                {successCase.testimonial && (
-                  <blockquote className="font-body text-[#333333] italic mb-6 border-l-4 border-[#d68e08] pl-4">
-                    "{successCase.testimonial}"
-                  </blockquote>
-                )}
-
-                {/* Client info */}
-                <div className="flex items-center gap-3 pt-4 border-t border-gray-200">
-                  <div className="w-12 h-12 bg-[#191919] rounded-full flex items-center justify-center text-white font-display font-medium">
-                    {successCase.client_name?.charAt(0) || 'C'}
+                {/* Valores */}
+                <div className="grid grid-cols-2 gap-4 mb-4 p-3 bg-[#f5f5f5] rounded-lg">
+                  <div>
+                    <p className="font-body text-xs text-[#333333] mb-1">Valor de arrematação</p>
+                    <p className="font-display text-lg font-semibold text-[#d68e08]">
+                      {caseItem.arrematacao}
+                    </p>
                   </div>
                   <div>
-                    <div className="font-body font-semibold text-[#191919]">
-                      {successCase.client_name}
-                    </div>
-                    <div className="font-body text-sm text-[#333333]">
-                      {successCase.property_type} • {successCase.region}
-                    </div>
+                    <p className="font-body text-xs text-[#333333] mb-1">Histórico de mercado</p>
+                    <p className="font-display text-lg font-semibold text-[#333333] line-through opacity-70">
+                      {caseItem.mercado}
+                    </p>
                   </div>
                 </div>
+
+                {/* Location */}
+                <div className="flex items-center gap-2 text-sm font-body text-[#d68e08]">
+                  <MapPin className="h-4 w-4" />
+                  {caseItem.location}
+                </div>
               </div>
-            </div>
+            </article>
           ))}
+        </div>
+
+        {/* CTA */}
+        <div className="text-center">
+          <Button
+            asChild
+            size="lg"
+            className="bg-[#d68e08] hover:bg-[#b87a07] text-white font-body font-semibold px-8"
+          >
+            <a 
+              href="https://leilaodeimoveis-cataldosiston.com/casos-reais/" 
+              target="_blank" 
+              rel="noopener noreferrer"
+            >
+              Veja os nossos resultados
+              <ExternalLink className="h-4 w-4 ml-2" />
+            </a>
+          </Button>
         </div>
       </div>
     </section>

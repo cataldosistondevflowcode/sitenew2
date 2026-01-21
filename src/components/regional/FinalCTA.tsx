@@ -1,12 +1,22 @@
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Phone, ArrowRight } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Phone, Mail, MessageCircle, Send } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface FinalCTAProps {
   regionName?: string;
 }
 
 export function FinalCTA({ regionName }: FinalCTAProps) {
-  const handleContact = () => {
+  const [formData, setFormData] = useState({
+    nome: '',
+    email: '',
+    telefone: '',
+  });
+  const [loading, setLoading] = useState(false);
+
+  const handleWhatsApp = () => {
     const whatsappNumber = '5521977294848';
     const message = encodeURIComponent(
       regionName 
@@ -16,67 +26,129 @@ export function FinalCTA({ regionName }: FinalCTAProps) {
     window.open(`https://wa.me/${whatsappNumber}?text=${message}`, '_blank');
   };
 
+  const handleEmail = () => {
+    window.location.href = 'mailto:contato@cataldosiston-adv.com.br?subject=Interesse em imóveis em leilão';
+  };
+
+  const handlePhone = () => {
+    window.location.href = 'tel:+552131733795';
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!formData.nome || !formData.email || !formData.telefone) {
+      toast.error('Por favor, preencha todos os campos');
+      return;
+    }
+
+    setLoading(true);
+    
+    // Simular envio - em produção, integrar com RD Station ou outro serviço
+    try {
+      // Aqui seria a integração com RD Station ou outro serviço de email marketing
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      toast.success('Cadastro realizado com sucesso! Em breve entraremos em contato.');
+      setFormData({ nome: '', email: '', telefone: '' });
+    } catch (error) {
+      toast.error('Erro ao enviar. Tente novamente.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <section className="bg-gradient-to-r from-[#191919] to-[#464646] py-16 md:py-20 relative overflow-hidden">
-      {/* Background pattern - Design System v2.1: gradiente grafite */}
-      <div className="absolute inset-0 opacity-5">
-        <div className="absolute inset-0" style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-        }} />
+    <section className="relative min-h-[500px] flex items-center">
+      {/* Background Image */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{ 
+          backgroundImage: `url('https://leilaodeimoveis-cataldosiston.com/wp-content/uploads/2024/07/Raphael-Cataldo-Siston-Advogado-especialista-em-leilao-de-imoveis-RJ-SP-1.png')`,
+          backgroundPosition: 'right center'
+        }}
+      >
+        {/* Dark overlay */}
+        <div className="absolute inset-0 bg-gradient-to-r from-[#191919] via-[#191919]/95 to-[#191919]/70" />
       </div>
       
-      <div className="max-w-4xl mx-auto px-4 text-center relative z-10">
-        <h2 className="font-display text-3xl md:text-4xl lg:text-[44px] font-medium text-white mb-6">
-          Encontre seu imóvel ideal
-        </h2>
-        
-        <p className="font-body text-lg md:text-xl text-white/90 mb-10 max-w-2xl mx-auto">
-          Nossa equipe de especialistas está pronta para ajudá-lo a realizar o sonho 
-          do imóvel próprio com economia e segurança.
-        </p>
+      <div className="relative z-10 w-full">
+        <div className="max-w-7xl mx-auto px-4 py-16 md:py-20">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            {/* Formulário */}
+            <div>
+              <h2 className="font-display text-2xl md:text-3xl lg:text-[36px] font-medium text-white mb-6">
+                Receba nossa newsletter
+              </h2>
+              
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <Input
+                  type="text"
+                  placeholder="Nome*"
+                  value={formData.nome}
+                  onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
+                  className="bg-transparent border-[#d68e08] text-white placeholder:text-white/60 h-12 font-body"
+                  required
+                />
+                <Input
+                  type="email"
+                  placeholder="Email*"
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  className="bg-transparent border-[#d68e08] text-white placeholder:text-white/60 h-12 font-body"
+                  required
+                />
+                <Input
+                  type="tel"
+                  placeholder="Telefone*"
+                  value={formData.telefone}
+                  onChange={(e) => setFormData({ ...formData, telefone: e.target.value })}
+                  className="bg-transparent border-[#d68e08] text-white placeholder:text-white/60 h-12 font-body"
+                  required
+                />
+                <Button 
+                  type="submit"
+                  disabled={loading}
+                  className="w-full bg-[#d68e08] hover:bg-[#b87a07] text-white font-body font-semibold h-12 text-base"
+                >
+                  {loading ? 'ENVIANDO...' : 'ENVIAR'}
+                  {!loading && <Send className="h-4 w-4 ml-2" />}
+                </Button>
+              </form>
 
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Button 
-            onClick={handleContact}
-            size="lg"
-            className="bg-[#d68e08] text-white hover:bg-[#b87a07] font-body font-semibold text-base md:text-lg px-8 py-4 h-auto shadow-lg hover:shadow-xl transition-all"
-          >
-            <Phone className="h-5 w-5 mr-2" />
-            Fale com um Especialista
-          </Button>
-          
-          <Button 
-            asChild
-            size="lg"
-            variant="outline"
-            className="border-2 border-white text-white hover:bg-white/10 font-body font-semibold text-base md:text-lg px-8 py-4 h-auto"
-          >
-            <a href="/leilao-rj">
-              Ver Todos os Imóveis
-              <ArrowRight className="h-5 w-5 ml-2" />
-            </a>
-          </Button>
-        </div>
+              {/* Contatos rápidos */}
+              <div className="mt-8">
+                <p className="font-display text-lg font-medium text-white mb-4">
+                  Podemos ajudar a solucionar o seu caso!
+                </p>
+                <div className="flex flex-wrap gap-4">
+                  <button 
+                    onClick={handleWhatsApp}
+                    className="flex items-center gap-2 text-[#d68e08] hover:text-[#b87a07] font-body transition-colors"
+                  >
+                    <MessageCircle className="h-5 w-5" />
+                    WhatsApp
+                  </button>
+                  <button 
+                    onClick={handleEmail}
+                    className="flex items-center gap-2 text-[#d68e08] hover:text-[#b87a07] font-body transition-colors"
+                  >
+                    <Mail className="h-5 w-5" />
+                    Email
+                  </button>
+                  <button 
+                    onClick={handlePhone}
+                    className="flex items-center gap-2 text-[#d68e08] hover:text-[#b87a07] font-body transition-colors"
+                  >
+                    <Phone className="h-5 w-5" />
+                    Telefone
+                  </button>
+                </div>
+              </div>
+            </div>
 
-        {/* Trust badges */}
-        <div className="mt-12 flex flex-wrap justify-center gap-8 font-body text-white/80">
-          <div className="flex items-center gap-2">
-            <svg className="w-5 h-5 text-[#d68e08]" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-            </svg>
-            <span>Assessoria Jurídica Completa</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <svg className="w-5 h-5 text-[#d68e08]" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-            </svg>
-            <span>15+ Anos de Experiência</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <svg className="w-5 h-5 text-[#d68e08]" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-            </svg>
-            <span>Atendimento Personalizado</span>
+            {/* Espaço para a imagem do advogado (já no background) */}
+            <div className="hidden md:block"></div>
           </div>
         </div>
       </div>

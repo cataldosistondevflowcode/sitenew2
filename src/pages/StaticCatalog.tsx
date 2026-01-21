@@ -17,8 +17,12 @@ import { Footer } from '@/components/Footer';
 import {
   RegionIntroSection,
   RegionDescriptionSection,
+  RegionContentSection,
   RelatedPropertiesCarousel,
   SupportCTA,
+  AboutCompanySection,
+  SuccessCasesSection,
+  BlogPostsCarousel,
   FinalCTA
 } from '@/components/regional';
 
@@ -515,10 +519,42 @@ export default function StaticCatalog() {
           excludeIds={properties.map(p => p.id)}
         />
 
-        {/* CTA de Suporte */}
+        {/* ============================================
+            3. CTA DE APOIO
+            "Não encontrou o que estava procurando?"
+            ============================================ */}
         <SupportCTA estado={seoPage.estado} />
 
-        {/* CTA Final */}
+        {/* ============================================
+            4. CONTEÚDO COMPLEMENTAR DA REGIÃO
+            Bairros, Atrações, Infraestrutura, Diferenciais
+            ============================================ */}
+        {seoPage.region_content && (
+          <RegionContentSection
+            regionName={seoPage.regiao}
+            content={typeof seoPage.region_content === 'string' 
+              ? JSON.parse(seoPage.region_content) 
+              : seoPage.region_content}
+          />
+        )}
+
+        {/* ============================================
+            5. SOBRE A EMPRESA
+            "Conheça a Cataldo Siston"
+            ============================================ */}
+        <AboutCompanySection />
+
+        {/* ============================================
+            6. PROVA SOCIAL
+            Casos de Sucesso + Blog
+            ============================================ */}
+        <SuccessCasesSection region={seoPage.regiao} />
+        <BlogPostsCarousel />
+
+        {/* ============================================
+            7. CTA FINAL
+            Newsletter + Contatos
+            ============================================ */}
         <FinalCTA regionName={seoPage.regiao} />
       </main>
       

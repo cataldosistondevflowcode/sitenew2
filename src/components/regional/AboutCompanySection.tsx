@@ -9,25 +9,29 @@ export function AboutCompanySection() {
   };
 
   return (
-    <section className="bg-[#f5f5f5] py-14 md:py-20">
-      <div className="max-w-7xl mx-auto px-4">
+    <section className="bg-[#f5f5f5] py-14 md:py-20 relative overflow-hidden">
+      {/* Background decorativo - círculos como no site institucional */}
+      <div className="absolute top-0 right-0 w-96 h-96 bg-[#ebe5de] rounded-full opacity-50 translate-x-1/3 -translate-y-1/3" />
+      <div className="absolute bottom-0 right-1/4 w-64 h-64 bg-[#ebe5de] rounded-full opacity-30" />
+      
+      <div className="max-w-7xl mx-auto px-4 relative z-10">
         <h2 className="font-display text-2xl md:text-3xl lg:text-[36px] font-medium text-[#191919] mb-10 text-center">
           Sobre
         </h2>
         
         <div className="grid md:grid-cols-2 gap-12 items-center">
-          {/* Foto do Advogado */}
+          {/* Foto do Advogado - com borda dourada */}
           <div className="flex justify-center">
             <div className="relative">
               {/* Borda dourada decorativa */}
-              <div className="absolute -bottom-4 -left-4 w-full h-full border-4 border-[#d68e08] rounded-lg"></div>
+              <div className="absolute -bottom-4 -left-4 w-full h-full border-4 border-[#d68e08] rounded-sm"></div>
               <img 
-                src="https://leilaodeimoveis-cataldosiston.com/wp-content/uploads/2024/07/Raphael-Cataldo-Siston-Advogado-especialista-em-leilao-de-imoveis-RJ-SP-1.png"
+                src="/foto-recortada-cataldo.png"
                 alt="Raphael Cataldo Siston - Advogado especialista em leilões de imóveis"
-                className="relative z-10 w-full max-w-[350px] rounded-lg shadow-lg"
+                className="relative z-10 w-full max-w-[350px] rounded-sm shadow-lg"
                 onError={(e) => {
-                  // Fallback para placeholder se a imagem não carregar
-                  (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=500&fit=crop';
+                  // Fallback para imagem do site institucional
+                  (e.target as HTMLImageElement).src = 'https://leilaodeimoveis-cataldosiston.com/wp-content/uploads/2024/07/Raphael-Cataldo-Siston-Advogado-especialista-em-leilao-de-imoveis-RJ-SP-1.png';
                 }}
               />
             </div>
@@ -45,12 +49,12 @@ export function AboutCompanySection() {
               processual civil.
             </p>
             
-            {/* Assinatura - representação visual */}
-            <div className="mb-6">
+            {/* Assinatura */}
+            <div className="mb-6 h-16">
               <img 
                 src="https://leilaodeimoveis-cataldosiston.com/wp-content/uploads/2024/07/assinatura-raphael-cataldo-siston.png"
                 alt="Assinatura Raphael Cataldo Siston"
-                className="h-16 object-contain"
+                className="h-full object-contain"
                 onError={(e) => {
                   (e.target as HTMLImageElement).style.display = 'none';
                 }}
@@ -64,13 +68,13 @@ export function AboutCompanySection() {
               </p>
               <a 
                 href="mailto:raphael@cataldosiston-adv.com.br"
-                className="font-body text-[#d68e08] hover:underline"
+                className="font-body text-[#d68e08] hover:underline block"
               >
                 raphael@cataldosiston-adv.com.br
               </a>
             </div>
             
-            {/* Informações de Contato do Escritório */}
+            {/* Card de Contato do Escritório */}
             <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-100">
               <h4 className="font-display text-lg font-medium text-[#191919] mb-4">
                 Cataldo Siston Advogados

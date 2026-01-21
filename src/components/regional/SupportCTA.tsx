@@ -51,8 +51,7 @@ export function SupportCTA({ estado = 'RJ' }: SupportCTAProps) {
             <Button 
               onClick={handleSearch}
               size="lg"
-              variant="outline"
-              className="border-2 border-white text-white hover:bg-white/10 font-body font-semibold px-8 py-3 h-auto"
+              className="bg-transparent border-2 border-white text-white hover:bg-white/10 font-body font-semibold px-8 py-3 h-auto"
             >
               <Search className="h-5 w-5 mr-2" />
               Buscar Imóveis

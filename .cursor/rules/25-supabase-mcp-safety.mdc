@@ -1,0 +1,62 @@
+---
+description: Supabase MCP obrigatório para qualquer mudança/consulta de banco. Proteção total da tabela de imóveis.
+globs: ["src/**", "supabase/**", "scripts/**", "**/*.sql", "**/*schema*.*", "**/*migration*.*"]
+alwaysApply: true
+---
+
+# Regra crítica: Banco de dados = sempre via MCP do Supabase
+
+## 1) Obrigatório usar o MCP do Supabase
+
+Sempre que a tarefa envolver **qualquer coisa de banco** (tabelas, views, policies, RLS, queries, migrations, edge functions, seeds), você DEVE:
+
+1. **Abrir o MCP do Supabase** no Cursor
+2. **Inspecionar o schema real antes de propor mudanças**:
+   - listar tabelas relevantes
+   - checar colunas, tipos, constraints
+   - checar RLS/policies
+3. Só então escrever código/migration/query.
+
+✅ Se você não conseguir confirmar o schema via MCP, **não chute**: peça para eu rodar o comando/abrir o painel e trazer o resultado.
+
+---
+
+## 2) Regra de ouro: NÃO MEXER NA TABELA `imoveis`
+
+> Muita atenção: o site atual já usa a tabela de imóveis.
+
+- **PROIBIDO**: `ALTER TABLE imoveis`, `DROP`, `RENAME`, trocar tipos, remover/alterar colunas, mudar constraints, mudar triggers, mudar policies, mudar indexes, etc.
+- **PERMITIDO**: apenas **leituras** (`SELECT`) e, se necessário, **criar objetos novos sem tocar nela** (ex.: novas tabelas, views novas, tabelas auxiliares).
+
+Se a mudança solicitada *parecer* exigir alteração na `imoveis`:
+1. Pare.
+2. Escreva uma proposta curta com alternativas seguras (ex.: view, tabela auxiliar, materialized view, join por chave).
+3. Aguarde confirmação explícita.
+
+---
+
+## 3) Padrão seguro para evoluir sem quebrar o site
+
+Quando precisar de novos dados para filtros/SEO/admin:
+- Criar **tabelas novas** (ex.: `filter_cities`, `filter_neighborhoods`, `seo_pages`, etc.)
+- Criar **views** para compatibilidade (quando fizer sentido), sem alterar `imoveis`
+- Migrar o frontend para ler das novas tabelas, mantendo fallbacks se necessário
+- Aplicar RLS e policies desde o início
+
+---
+
+## 4) Segurança e chaves
+
+- Nunca use `service_role` no frontend.
+- Segredos ficam em variáveis do ambiente (Netlify/Supabase secrets).
+- Nunca commitar `.env` real.
+
+---
+
+## 5) Checklist obrigatório antes de finalizar uma mudança de DB
+
+- [ ] Confirmei schema/policies pelo MCP
+- [ ] Não alterei `imoveis`
+- [ ] Criei migrations/SQL idempotentes (quando aplicável)
+- [ ] Atualizei docs (SPEC/DB) quando o schema crescer
+- [ ] Testei o fluxo principal do site (listagem + filtro + detalhes)

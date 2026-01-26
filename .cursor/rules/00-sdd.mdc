@@ -1,0 +1,20 @@
+---
+description: Base rules (SDD) for this repository. Must always apply.
+globs: ["**/*"]
+alwaysApply: true
+---
+
+# Regras gerais (SDD)
+1. Antes de codar, **leia `SPEC.md`** e trabalhe de acordo com os RF/RNF e critérios de aceite.
+2. Se algo não estiver no SPEC, **crie uma proposta curta** (em comentário) e peça confirmação no PR/commit message.
+3. Não introduza novas bibliotecas sem necessidade. Prefira reaproveitar hooks/componentes existentes.
+4. Mantenha TypeScript estrito e consistente.
+
+# Segurança (obrigatório)
+- Nunca escrever/colar senhas, tokens, chaves ou URLs privadas em código, docs ou commits.
+- Todo segredo deve ficar em `.env` ou variáveis do provedor (Netlify/Supabase).
+- Se precisar criar exemplos, use placeholders como `YOUR_TOKEN_HERE`.
+
+# Qualidade
+- Evite alterações grandes sem testes manuais descritos no `TEST_PLAN.md`.
+- Atualize `CHANGELOG.md` ao final de cada sprint.

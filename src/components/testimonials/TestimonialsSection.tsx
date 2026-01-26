@@ -223,19 +223,19 @@ export const TestimonialsSection = () => {
         rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=Quicksand:wght@400&family=Inter:wght@400&display=swap"
       />
-      <section className="w-full relative py-12 max-md:py-8" style={{ backgroundColor: 'rgb(245, 245, 245)' }}>
+      <section className="w-full relative py-12 max-md:py-8 overflow-hidden" style={{ backgroundColor: 'rgb(245, 245, 245)' }}>
         <img
           src="/assets/bg/fundo-marmore.png"
           alt="Fundo mármore"
           className="object-cover absolute inset-0 z-0 w-full h-full"
         />
 
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="flex flex-col justify-center items-center min-h-[600px] max-md:min-h-[500px]">
+        <div className="container mx-auto px-4 relative z-10 overflow-hidden max-w-full">
+          <div className="flex flex-col justify-center items-center min-h-[600px] max-md:min-h-[500px] max-sm:min-h-[450px]">
             <div className="flex flex-col gap-2 justify-center items-center w-full max-w-[1038px]">
-              <h1 className="text-4xl font-medium leading-10 text-center text-black w-full max-md:text-3xl max-md:leading-8 max-sm:text-2xl max-sm:leading-7 mb-4">
+              <h2 className="text-4xl font-medium leading-10 text-center text-black w-full max-md:text-3xl max-md:leading-8 max-sm:text-2xl max-sm:leading-7 mb-4" style={{ fontFamily: "Playfair Display, serif" }}>
                 Depoimentos
-              </h1>
+              </h2>
 
               <div className="flex flex-col items-center w-full mb-4">
                 <figure className="flex flex-col items-start">
@@ -245,32 +245,68 @@ export const TestimonialsSection = () => {
                 </figure>
               </div>
 
-              <div className="flex gap-6 justify-center items-center px-2.5 w-full flex-1 max-md:gap-4 max-md:px-2.5 max-sm:flex-col max-sm:gap-5 max-sm:px-1.5">
-                <NavigationButton
-                  direction="prev"
-                  onClick={handlePrevClick}
-                  className="shrink-0 max-sm:order-3"
-                />
+                {/* Desktop: botões nas laterais | Mobile: botões abaixo do card */}
+                <div className="w-full flex flex-col items-center overflow-hidden">
+                  {/* Container do card com botões laterais (desktop) */}
+                  <div className="hidden sm:flex gap-4 md:gap-6 justify-center items-start w-full max-w-full">
+                    <NavigationButton
+                      direction="prev"
+                      onClick={handlePrevClick}
+                      className="shrink-0 self-start mt-4"
+                      aria-label="Depoimento anterior"
+                    />
 
-                <div className="flex-1 h-[620px] max-md:h-[550px] max-sm:h-[500px] flex items-center justify-center max-sm:order-1">
-                  <div className={`transition-opacity duration-300 ease-in-out ${isTransitioning ? 'opacity-0' : 'opacity-100'}`}>
-                    <TestimonialCard
-                      content={currentTestimonial.content}
-                      authorName={currentTestimonial.authorName}
-                      authorTitle={currentTestimonial.authorTitle}
+                    <div className="flex-1 max-w-[800px] h-[550px] md:h-[580px] flex items-start justify-center pt-4 overflow-hidden">
+                      <div className={`transition-opacity duration-300 ease-in-out w-full ${isTransitioning ? 'opacity-0' : 'opacity-100'}`}>
+                        <TestimonialCard
+                          content={currentTestimonial.content}
+                          authorName={currentTestimonial.authorName}
+                          authorTitle={currentTestimonial.authorTitle}
+                        />
+                      </div>
+                    </div>
+
+                    <NavigationButton
+                      direction="next"
+                      onClick={handleNextClick}
+                      className="shrink-0 self-start mt-4"
+                      aria-label="Próximo depoimento"
                     />
                   </div>
-                </div>
 
-                <NavigationButton
-                  direction="next"
-                  onClick={handleNextClick}
-                  className="shrink-0 max-sm:order-2"
-                />
-              </div>
+                  {/* Mobile: card primeiro, botões abaixo */}
+                  <div className="sm:hidden flex flex-col items-center w-full max-w-full px-2 overflow-hidden">
+                    <div className="w-full max-w-full h-auto min-h-[380px] max-h-[500px] flex items-center justify-center overflow-hidden">
+                      <div className={`transition-opacity duration-300 ease-in-out w-full max-w-full ${isTransitioning ? 'opacity-0' : 'opacity-100'}`}>
+                        <TestimonialCard
+                          content={currentTestimonial.content}
+                          authorName={currentTestimonial.authorName}
+                          authorTitle={currentTestimonial.authorTitle}
+                          className="max-w-full"
+                        />
+                      </div>
+                    </div>
+                    
+                    {/* Botões de navegação mobile - horizontais abaixo do card */}
+                    <div className="flex gap-4 justify-center items-center mt-4 flex-shrink-0">
+                      <NavigationButton
+                        direction="prev"
+                        onClick={handlePrevClick}
+                        className="shrink-0"
+                        aria-label="Depoimento anterior"
+                      />
+                      <NavigationButton
+                        direction="next"
+                        onClick={handleNextClick}
+                        className="shrink-0"
+                        aria-label="Próximo depoimento"
+                      />
+                    </div>
+                  </div>
+                </div>
               
               {/* Indicators */}
-              <div className="flex gap-2 justify-center items-center mt-6 max-sm:order-4">
+              <div className="flex gap-2 justify-center items-center mt-6">
                 {testimonials.map((_, index) => (
                   <button
                     key={index}

@@ -307,9 +307,7 @@ export const PropertyCard = ({
               onError={handleImageError}
             />
           )}
-          
-          {/* Botões de ação - centralizados verticalmente */}
-          <a
+                    <a
             href={createPropertyUrl(
                 id, 
                 rawPropertyData?.endereco || location, 
@@ -319,7 +317,7 @@ export const PropertyCard = ({
               )}
             target="_blank"
             rel="noopener noreferrer"
-            className="absolute top-1/2 -translate-y-1/2 left-2 sm:left-3 bg-[#d68e08] text-white px-3 sm:px-4 py-2 sm:py-2.5 rounded text-xs sm:text-sm font-bold z-10 hover:bg-[#b8780a] transition-colors shadow-lg"
+            className="absolute top-2 sm:top-3 left-2 sm:left-3 bg-[#d68e08] text-white px-2 sm:px-3 py-1.5 sm:py-2 rounded text-xs sm:text-sm font-bold z-10 hover:bg-[#b8780a] transition-colors"
             onClick={async (e) => {
               e.preventDefault();
               await handleSaibaMaisClick(e);
@@ -338,7 +336,7 @@ export const PropertyCard = ({
             Saiba Mais
           </a>
           <button 
-            className="absolute top-1/2 -translate-y-1/2 right-2 sm:right-3 bg-[#25d366] text-white px-3 sm:px-4 py-2 sm:py-2.5 rounded text-xs sm:text-sm font-bold z-10 hover:bg-[#20b858] transition-colors shadow-lg"
+            className="absolute top-2 sm:top-3 right-2 sm:right-3 bg-[#25d366] text-white px-2 sm:px-3 py-1.5 sm:py-2 rounded text-xs sm:text-sm font-bold z-10 hover:bg-[#20b858] transition-colors"
             onClick={(e) => {
               e.stopPropagation();
               e.preventDefault();
@@ -347,7 +345,8 @@ export const PropertyCard = ({
               }
             }}
           >
-            Contato
+            <span className="hidden sm:inline">Fale conosco</span>
+            <span className="sm:hidden">Contato</span>
           </button>
           {imageOverlayText && (
             <div className="absolute bottom-2 sm:bottom-3 left-3 sm:left-4 text-white text-lg sm:text-xl font-bold">

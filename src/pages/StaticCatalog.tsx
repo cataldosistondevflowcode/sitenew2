@@ -21,7 +21,11 @@ import { NewsletterBottomSection } from '@/components/NewsletterBottomSection';
 import {
   RegionContentSection,
   SupportCTA,
+  SuccessCasesSection,
 } from '@/components/regional';
+
+// Sprint 7 - NoScript fallback for SEO
+import { NoScriptFallback } from '@/components/NoScriptFallback';
 
 interface Property {
   id: number;
@@ -634,7 +638,12 @@ export default function StaticCatalog() {
         console.error('Erro ao buscar imóveis:', queryError);
         setError('Erro ao carregar imóveis');
       } else {
-        setProperties(data || []);
+        // Deduplicar imóveis por ID para evitar duplicatas na listagem
+        const uniqueProperties = data ? 
+          data.filter((property, index, self) => 
+            index === self.findIndex((p) => p.id === property.id)
+          ) : [];
+        setProperties(uniqueProperties);
       }
     } catch (error) {
       console.error('Erro ao buscar imóveis:', error);
@@ -1011,6 +1020,14 @@ export default function StaticCatalog() {
         description={seoPage.meta_description}
         keywords={seoPage.meta_keywords || ''}
         canonicalUrl={getCanonicalUrl()}
+      />
+      
+      {/* Sprint 7 - Fallback para SEO quando JavaScript está desabilitado */}
+      <NoScriptFallback
+        pageTitle={seoPage.meta_title}
+        pageDescription={seoPage.meta_description}
+        region={seoPage.regiao}
+        estado={seoPage.estado}
       />
       
       <SocialBar onWhatsAppClick={handleWhatsAppClick} />
@@ -1740,6 +1757,9 @@ export default function StaticCatalog() {
               : seoPage.region_content}
           />
         )}
+
+        {/* Casos de Sucesso - Sprint 7 */}
+        <SuccessCasesSection region={seoPage.regiao} />
 
         {/* Depoimentos */}
         <TestimonialsSection />

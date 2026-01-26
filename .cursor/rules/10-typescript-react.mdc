@@ -1,0 +1,18 @@
+---
+description: TypeScript + React conventions for this repo.
+globs: ["src/**/*.{ts,tsx}"]
+alwaysApply: true
+---
+
+# Padrões de código (React/TS)
+- Preferir componentes funcionais e hooks.
+- Evitar `any`. Tipar interfaces e respostas do Supabase.
+- Separar responsabilidades:
+  - UI em `src/components`
+  - lógica em `src/hooks` e `src/utils`
+- Reutilizar shadcn/ui e Tailwind (não criar CSS manual sem necessidade).
+- Rotas e navegação: manter consistência com React Router.
+
+# Erros e estados
+- Sempre tratar loading/error states.
+- Falhas não devem “quebrar” a tela.

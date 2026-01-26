@@ -1,0 +1,12 @@
+---
+description: Supabase usage rules (queries, auth, RLS awareness).
+globs: ["src/**", "supabase/**", "scripts/**"]
+alwaysApply: true
+---
+
+# Regras Supabase
+- Centralizar acesso no client existente (`src/integrations/supabase/...`).
+- Nunca expor `service_role` key no frontend.
+- Para admin/CRUD, preferir tabelas específicas e políticas RLS.
+- Queries devem ser explícitas e paginadas conforme padrão do projeto.
+- Se precisar de segredo (Webflow/RD), usar Edge Function ou backend proxy.

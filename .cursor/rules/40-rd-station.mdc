@@ -1,0 +1,10 @@
+---
+description: RD Station integration rules (avoid regressions).
+globs: ["src/**", "public/**", "**/*.html"]
+alwaysApply: true
+---
+
+# Regras RD Station
+- Scripts de terceiros não podem degradar performance/SEO.
+- Eventos devem ser documentados em `TEST_PLAN.md`.
+- Validar em staging antes de produção.

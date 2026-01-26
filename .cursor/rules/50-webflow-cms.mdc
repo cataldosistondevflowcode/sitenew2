@@ -1,0 +1,11 @@
+---
+description: Webflow CMS integration rules (security-first).
+globs: ["src/**", "supabase/functions/**"]
+alwaysApply: true
+---
+
+# Regras Webflow CMS
+- Nunca colocar token Webflow no frontend.
+- Preferir Edge Function como proxy.
+- Cachear respostas quando possível.
+- Mapear campos do CMS para tipos TS explícitos.

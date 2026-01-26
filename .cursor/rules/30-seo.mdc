@@ -1,0 +1,15 @@
+---
+description: SEO and pages-regional generation rules.
+globs: ["config/**", "scripts/**", "html-static/**", "src/**"]
+alwaysApply: true
+---
+
+# Regras SEO
+- Migração: implementar `noindex, follow` conforme fase.
+- Canônicas: 1 por página; evitar canônicas inconsistentes em URLs com parâmetros.
+- Páginas regionais:
+  - Slug estável
+  - Meta title/description/keywords
+  - H1 coerente com região
+  - Script de filtro determinístico (sem race)
+- Ao alterar geração de páginas, rodar `npm run seo:generate` e validar 3 páginas manualmente.

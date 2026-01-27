@@ -34,9 +34,12 @@ O site utiliza **React** (Single Page Application - SPA). Neste tipo de arquitet
 
 ## 2. Solução Implementada
 
-### Abordagem: Páginas HTML Estáticas Pré-renderizadas
+### Abordagem: Duas Versões de Cada Página
 
-Criamos **25 arquivos HTML independentes**, um para cada região, com conteúdo único e específico. Estes arquivos são servidos diretamente pelo servidor, **sem necessidade de JavaScript**.
+Criamos **25 arquivos HTML independentes** (`.html`), um para cada região, com conteúdo único e específico. A arquitetura funciona assim:
+
+- **Usuários normais** acessam `/catalogo/copacabana-rj` → recebem a **SPA React** com design completo
+- **Google/crawlers** acessam `/catalogo/copacabana-rj.html` → recebem o **HTML estático** com conteúdo único
 
 ### Arquitetura da Solução:
 
@@ -44,11 +47,9 @@ Criamos **25 arquivos HTML independentes**, um para cada região, com conteúdo 
 ┌─────────────────────────────────────────────────────────────────┐
 │                    ANTES (Problema)                              │
 ├─────────────────────────────────────────────────────────────────┤
-│  Usuário/Google acessa: /catalogo/copacabana-rj                 │
+│  Google acessa: /catalogo/copacabana-rj                         │
 │           ↓                                                      │
 │  Servidor retorna: index.html (genérico)                        │
-│           ↓                                                      │
-│  JavaScript carrega: conteúdo de Copacabana                     │
 │           ↓                                                      │
 │  Google (sem JS): vê apenas HTML genérico = DUPLICADO           │
 └─────────────────────────────────────────────────────────────────┘
@@ -56,13 +57,19 @@ Criamos **25 arquivos HTML independentes**, um para cada região, com conteúdo 
 ┌─────────────────────────────────────────────────────────────────┐
 │                    DEPOIS (Solução)                              │
 ├─────────────────────────────────────────────────────────────────┤
-│  Usuário/Google acessa: /catalogo/copacabana-rj                 │
+│  USUÁRIO acessa: /catalogo/copacabana-rj                        │
 │           ↓                                                      │
-│  Servidor retorna: copacabana-rj.html (específico)              │
+│  Servidor retorna: index.html → SPA React com design completo   │
+│                                                                  │
+│  GOOGLE acessa: /catalogo/copacabana-rj.html                    │
 │           ↓                                                      │
-│  Google (sem JS): vê conteúdo ÚNICO de Copacabana = INDEXÁVEL   │
+│  Servidor retorna: copacabana-rj.html (HTML estático)           │
+│           ↓                                                      │
+│  Google vê: conteúdo ÚNICO de Copacabana = INDEXÁVEL            │
 └─────────────────────────────────────────────────────────────────┘
 ```
+
+**Importante:** O sitemap e os links no `<noscript>` do `index.html` apontam para as versões `.html`, garantindo que o Google encontre e indexe as páginas estáticas.
 
 ---
 
@@ -178,51 +185,60 @@ O arquivo `vercel.json` foi configurado para servir as páginas estáticas:
 
 ### Verificação
 
-Qualquer ferramenta de SEO (Screaming Frog, Google Search Console, curl) pode verificar que cada URL agora retorna HTML único:
+Qualquer ferramenta de SEO (Screaming Frog, Google Search Console, curl) pode verificar que cada URL `.html` retorna HTML único:
 
 ```bash
-# Teste via linha de comando
-curl -s https://sitenew2.vercel.app/catalogo/copacabana-rj | grep "<h1>"
+# Teste via linha de comando - VERSÃO ESTÁTICA PARA SEO
+curl -s https://sitenew2.vercel.app/catalogo/copacabana-rj.html | grep "<h1>"
 # Resultado: <h1>Imóveis em Leilão em Copacabana - Rio de Janeiro</h1>
 
-curl -s https://sitenew2.vercel.app/catalogo/jardins-sp | grep "<h1>"
+curl -s https://sitenew2.vercel.app/catalogo/jardins-sp.html | grep "<h1>"
 # Resultado: <h1>Imóveis em Leilão nos Jardins - São Paulo</h1>
+
+# Teste da versão SPA (usuários normais)
+# Acessar https://sitenew2.vercel.app/catalogo/copacabana-rj
+# → Mostra o site completo com design, filtros, vídeos, etc.
 ```
 
 ---
 
 ## 5. URLs das Páginas em Produção
 
-Todas as páginas estão disponíveis em:
-
-**Rio de Janeiro:**
+### Versão SPA (para usuários - com design completo):
 - https://sitenew2.vercel.app/catalogo/copacabana-rj
 - https://sitenew2.vercel.app/catalogo/ipanema-rj
-- https://sitenew2.vercel.app/catalogo/leblon-rj
-- https://sitenew2.vercel.app/catalogo/barra-tijuca-rj
-- https://sitenew2.vercel.app/catalogo/botafogo-rj
-- https://sitenew2.vercel.app/catalogo/flamengo-rj
-- https://sitenew2.vercel.app/catalogo/laranjeiras-rj
-- https://sitenew2.vercel.app/catalogo/tijuca-rj
-- https://sitenew2.vercel.app/catalogo/recreio-rj
-- https://sitenew2.vercel.app/catalogo/zona-sul-rj
-- https://sitenew2.vercel.app/catalogo/zona-norte-rj
-- https://sitenew2.vercel.app/catalogo/zona-oeste-rj
-- https://sitenew2.vercel.app/catalogo/niteroi-rj
-- https://sitenew2.vercel.app/catalogo/centro-rj
-- https://sitenew2.vercel.app/catalogo/meier-rj
+- (etc.)
+
+### Versão HTML Estática (para Google/SEO - com conteúdo único):
+
+**Rio de Janeiro:**
+- https://sitenew2.vercel.app/catalogo/copacabana-rj.html
+- https://sitenew2.vercel.app/catalogo/ipanema-rj.html
+- https://sitenew2.vercel.app/catalogo/leblon-rj.html
+- https://sitenew2.vercel.app/catalogo/barra-tijuca-rj.html
+- https://sitenew2.vercel.app/catalogo/botafogo-rj.html
+- https://sitenew2.vercel.app/catalogo/flamengo-rj.html
+- https://sitenew2.vercel.app/catalogo/laranjeiras-rj.html
+- https://sitenew2.vercel.app/catalogo/tijuca-rj.html
+- https://sitenew2.vercel.app/catalogo/recreio-rj.html
+- https://sitenew2.vercel.app/catalogo/zona-sul-rj.html
+- https://sitenew2.vercel.app/catalogo/zona-norte-rj.html
+- https://sitenew2.vercel.app/catalogo/zona-oeste-rj.html
+- https://sitenew2.vercel.app/catalogo/niteroi-rj.html
+- https://sitenew2.vercel.app/catalogo/centro-rj.html
+- https://sitenew2.vercel.app/catalogo/meier-rj.html
 
 **São Paulo:**
-- https://sitenew2.vercel.app/catalogo/jardins-sp
-- https://sitenew2.vercel.app/catalogo/pinheiros-sp
-- https://sitenew2.vercel.app/catalogo/moema-sp
-- https://sitenew2.vercel.app/catalogo/itaim-bibi-sp
-- https://sitenew2.vercel.app/catalogo/vila-mariana-sp
-- https://sitenew2.vercel.app/catalogo/zona-sul-sp
-- https://sitenew2.vercel.app/catalogo/zona-oeste-sp
-- https://sitenew2.vercel.app/catalogo/zona-norte-sp
-- https://sitenew2.vercel.app/catalogo/zona-leste-sp
-- https://sitenew2.vercel.app/catalogo/centro-sp
+- https://sitenew2.vercel.app/catalogo/jardins-sp.html
+- https://sitenew2.vercel.app/catalogo/pinheiros-sp.html
+- https://sitenew2.vercel.app/catalogo/moema-sp.html
+- https://sitenew2.vercel.app/catalogo/itaim-bibi-sp.html
+- https://sitenew2.vercel.app/catalogo/vila-mariana-sp.html
+- https://sitenew2.vercel.app/catalogo/zona-sul-sp.html
+- https://sitenew2.vercel.app/catalogo/zona-oeste-sp.html
+- https://sitenew2.vercel.app/catalogo/zona-norte-sp.html
+- https://sitenew2.vercel.app/catalogo/zona-leste-sp.html
+- https://sitenew2.vercel.app/catalogo/centro-sp.html
 
 ---
 

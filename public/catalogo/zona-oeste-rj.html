@@ -17,24 +17,13 @@
   <meta property="og:site_name" content="Cataldo Siston Advogados">
   <meta property="og:locale" content="pt_BR">
   
-  <!-- Redirect para SPA quando JavaScript está habilitado -->
-  <script>
-    // Se JS está ativo, redireciona para a SPA (usuários normais)
-    // Se JS está desabilitado (crawlers), mostra este HTML estático
-    (function() {
-      // Verifica se já está na SPA (evita loop)
-      if (window.location.search.indexOf('spa=1') !== -1) {
-        return; // Já redirecionou, não faz nada
-      }
-      var currentPath = window.location.pathname;
-      // Remove .html se existir
-      if (currentPath.endsWith('.html')) {
-        currentPath = currentPath.slice(0, -5);
-      }
-      // Redireciona para a SPA mantendo a mesma rota
-      window.location.replace(currentPath + '?spa=1');
-    })();
-  </script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Link para a versão interativa (SPA) -->
+  <link rel="alternate" href="https://sitenew2.vercel.app/catalogo/zona-oeste-rj" title="Versão interativa">
   
   <style>
     body { font-family: 'Quicksand', Arial, sans-serif; margin: 0; padding: 0; color: #191919; line-height: 1.6; }
@@ -157,5 +146,16 @@
       <a href="https://leilaodeimoveis-cataldosiston.com/contato-advogados-imobiliarios/">Contato</a>
     </nav>
   </footer>
+  
+  <!-- Aviso para usuários com JS habilitado -->
+  <script>
+    // Se usuário tem JS, mostra link para versão completa
+    document.body.insertAdjacentHTML('afterbegin', 
+      '<div style="background:#d68e08;color:white;padding:15px;text-align:center;">' +
+      '<strong>Versão simplificada para buscadores.</strong> ' +
+      '<a href="https://sitenew2.vercel.app/catalogo/zona-oeste-rj" style="color:white;text-decoration:underline;">Clique aqui para ver a versão completa com todos os imóveis</a>' +
+      '</div>'
+    );
+  </script>
 </body>
 </html>

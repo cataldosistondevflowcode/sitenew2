@@ -289,6 +289,83 @@ export default function StaticCatalog() {
     }
   }, [seoPage]);
 
+  // Aplicar filtros da URL APÓS os filtros iniciais da página SEO serem carregados
+  // Isso permite que o usuário adicione bairros extras via URL
+  useEffect(() => {
+    if (seoPage && filtersLoaded) {
+      const urlFilters = parseFiltersFromURL();
+      
+      // Se há filtros na URL, combiná-los com os filtros iniciais
+      if (Object.keys(urlFilters).length > 0) {
+        const combinedFilters: Filters = { ...filters };
+        let hasChanges = false;
+        
+        // Combinar bairros: se há bairro na URL, usar ele (pode ter múltiplos)
+        if (urlFilters.neighborhood) {
+          const urlBairros = urlFilters.neighborhood.split(',').map(b => b.trim()).filter(Boolean);
+          
+          // Se a URL tem bairros diferentes do filtro inicial
+          if (urlBairros.length > 0 && urlFilters.neighborhood !== filters.neighborhood) {
+            combinedFilters.neighborhood = urlFilters.neighborhood;
+            setSelectedNeighborhoods(urlBairros);
+            setSelectedNeighborhood(urlBairros.length > 1 
+              ? `${urlBairros.length} bairros selecionados` 
+              : urlBairros[0]);
+            hasChanges = true;
+          }
+        }
+        
+        // Aplicar cidade da URL se diferente
+        if (urlFilters.city && urlFilters.city !== filters.city) {
+          combinedFilters.city = urlFilters.city;
+          setSelectedCity(urlFilters.city);
+          setSelectedCityName(urlFilters.city);
+          hasChanges = true;
+        }
+        
+        // Aplicar tipo da URL
+        if (urlFilters.type && urlFilters.type !== filters.type) {
+          combinedFilters.type = urlFilters.type;
+          hasChanges = true;
+        }
+        
+        // Aplicar tipo de leilão da URL
+        if (urlFilters.auctionType && urlFilters.auctionType !== filters.auctionType) {
+          combinedFilters.auctionType = urlFilters.auctionType;
+          hasChanges = true;
+        }
+        
+        // Aplicar faixa de preço da URL
+        if (urlFilters.priceRange && (
+          urlFilters.priceRange.min !== filters.priceRange?.min ||
+          urlFilters.priceRange.max !== filters.priceRange?.max
+        )) {
+          combinedFilters.priceRange = urlFilters.priceRange;
+          hasChanges = true;
+        }
+        
+        // Aplicar data de encerramento
+        if (urlFilters.dataFimSegundoLeilao && urlFilters.dataFimSegundoLeilao !== filters.dataFimSegundoLeilao) {
+          combinedFilters.dataFimSegundoLeilao = urlFilters.dataFimSegundoLeilao;
+          setDataFimSegundoLeilao(urlFilters.dataFimSegundoLeilao);
+          hasChanges = true;
+        }
+        
+        // Aplicar keyword da URL
+        if (urlFilters.keyword && urlFilters.keyword !== filters.keyword) {
+          combinedFilters.keyword = urlFilters.keyword;
+          setKeywordInput(urlFilters.keyword);
+          hasChanges = true;
+        }
+        
+        // Só atualizar os filtros se houve mudanças
+        if (hasChanges) {
+          setFilters(combinedFilters);
+        }
+      }
+    }
+  }, [filtersLoaded, seoPage]); // Executa quando filtersLoaded muda para true
+
   // Carregar cidades e tipos de propriedade
   useEffect(() => {
     if (seoPage) {

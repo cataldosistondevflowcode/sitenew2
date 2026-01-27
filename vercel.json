@@ -1,9 +1,9 @@
 {
-  "cleanUrls": true,
+  "cleanUrls": false,
   "trailingSlash": false,
   "rewrites": [
     {
-      "source": "/(.*)",
+      "source": "/((?!catalogo/.*\\.html$).*)",
       "destination": "/index.html"
     }
   ],

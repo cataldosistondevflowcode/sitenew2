@@ -4,6 +4,131 @@
   "rewrites": [
     {
       "source": "/catalogo/copacabana-rj",
+      "has": [{ "type": "query", "key": "spa" }],
+      "destination": "/index.html"
+    },
+    {
+      "source": "/catalogo/ipanema-rj",
+      "has": [{ "type": "query", "key": "spa" }],
+      "destination": "/index.html"
+    },
+    {
+      "source": "/catalogo/leblon-rj",
+      "has": [{ "type": "query", "key": "spa" }],
+      "destination": "/index.html"
+    },
+    {
+      "source": "/catalogo/barra-tijuca-rj",
+      "has": [{ "type": "query", "key": "spa" }],
+      "destination": "/index.html"
+    },
+    {
+      "source": "/catalogo/botafogo-rj",
+      "has": [{ "type": "query", "key": "spa" }],
+      "destination": "/index.html"
+    },
+    {
+      "source": "/catalogo/flamengo-rj",
+      "has": [{ "type": "query", "key": "spa" }],
+      "destination": "/index.html"
+    },
+    {
+      "source": "/catalogo/laranjeiras-rj",
+      "has": [{ "type": "query", "key": "spa" }],
+      "destination": "/index.html"
+    },
+    {
+      "source": "/catalogo/tijuca-rj",
+      "has": [{ "type": "query", "key": "spa" }],
+      "destination": "/index.html"
+    },
+    {
+      "source": "/catalogo/recreio-rj",
+      "has": [{ "type": "query", "key": "spa" }],
+      "destination": "/index.html"
+    },
+    {
+      "source": "/catalogo/zona-sul-rj",
+      "has": [{ "type": "query", "key": "spa" }],
+      "destination": "/index.html"
+    },
+    {
+      "source": "/catalogo/zona-norte-rj",
+      "has": [{ "type": "query", "key": "spa" }],
+      "destination": "/index.html"
+    },
+    {
+      "source": "/catalogo/zona-oeste-rj",
+      "has": [{ "type": "query", "key": "spa" }],
+      "destination": "/index.html"
+    },
+    {
+      "source": "/catalogo/niteroi-rj",
+      "has": [{ "type": "query", "key": "spa" }],
+      "destination": "/index.html"
+    },
+    {
+      "source": "/catalogo/centro-rj",
+      "has": [{ "type": "query", "key": "spa" }],
+      "destination": "/index.html"
+    },
+    {
+      "source": "/catalogo/meier-rj",
+      "has": [{ "type": "query", "key": "spa" }],
+      "destination": "/index.html"
+    },
+    {
+      "source": "/catalogo/jardins-sp",
+      "has": [{ "type": "query", "key": "spa" }],
+      "destination": "/index.html"
+    },
+    {
+      "source": "/catalogo/pinheiros-sp",
+      "has": [{ "type": "query", "key": "spa" }],
+      "destination": "/index.html"
+    },
+    {
+      "source": "/catalogo/moema-sp",
+      "has": [{ "type": "query", "key": "spa" }],
+      "destination": "/index.html"
+    },
+    {
+      "source": "/catalogo/itaim-bibi-sp",
+      "has": [{ "type": "query", "key": "spa" }],
+      "destination": "/index.html"
+    },
+    {
+      "source": "/catalogo/vila-mariana-sp",
+      "has": [{ "type": "query", "key": "spa" }],
+      "destination": "/index.html"
+    },
+    {
+      "source": "/catalogo/zona-sul-sp",
+      "has": [{ "type": "query", "key": "spa" }],
+      "destination": "/index.html"
+    },
+    {
+      "source": "/catalogo/zona-oeste-sp",
+      "has": [{ "type": "query", "key": "spa" }],
+      "destination": "/index.html"
+    },
+    {
+      "source": "/catalogo/zona-norte-sp",
+      "has": [{ "type": "query", "key": "spa" }],
+      "destination": "/index.html"
+    },
+    {
+      "source": "/catalogo/zona-leste-sp",
+      "has": [{ "type": "query", "key": "spa" }],
+      "destination": "/index.html"
+    },
+    {
+      "source": "/catalogo/centro-sp",
+      "has": [{ "type": "query", "key": "spa" }],
+      "destination": "/index.html"
+    },
+    {
+      "source": "/catalogo/copacabana-rj",
       "destination": "/catalogo/copacabana-rj.html"
     },
     {

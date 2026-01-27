@@ -641,6 +641,21 @@ function generatePageHTML(region) {
   <meta property="og:site_name" content="Cataldo Siston Advogados">
   <meta property="og:locale" content="pt_BR">
   
+  <!-- Redirect para SPA quando JavaScript está habilitado -->
+  <script>
+    // Se JS está ativo, redireciona para a SPA (usuários normais)
+    // Se JS está desabilitado (crawlers), mostra este HTML estático
+    (function() {
+      var currentPath = window.location.pathname;
+      // Remove .html se existir
+      if (currentPath.endsWith('.html')) {
+        currentPath = currentPath.slice(0, -5);
+      }
+      // Redireciona para a SPA mantendo a mesma rota
+      window.location.replace(currentPath + '?spa=1');
+    })();
+  </script>
+  
   <style>
     body { font-family: 'Quicksand', Arial, sans-serif; margin: 0; padding: 0; color: #191919; line-height: 1.6; }
     .container { max-width: 900px; margin: 0 auto; padding: 20px; }

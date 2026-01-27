@@ -646,6 +646,10 @@ function generatePageHTML(region) {
     // Se JS está ativo, redireciona para a SPA (usuários normais)
     // Se JS está desabilitado (crawlers), mostra este HTML estático
     (function() {
+      // Verifica se já está na SPA (evita loop)
+      if (window.location.search.indexOf('spa=1') !== -1) {
+        return; // Já redirecionou, não faz nada
+      }
       var currentPath = window.location.pathname;
       // Remove .html se existir
       if (currentPath.endsWith('.html')) {

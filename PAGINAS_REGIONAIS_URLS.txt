@@ -1,0 +1,96 @@
+=====================================================
+CATALDO SISTON - URLS DAS PÁGINAS REGIONAIS
+Deploy: https://sitenew2.vercel.app
+=====================================================
+
+=== RIO DE JANEIRO (15 páginas) ===
+
+1. Copacabana
+   https://sitenew2.vercel.app/catalogo/copacabana-rj
+
+2. Ipanema
+   https://sitenew2.vercel.app/catalogo/ipanema-rj
+
+3. Leblon
+   https://sitenew2.vercel.app/catalogo/leblon-rj
+
+4. Barra da Tijuca
+   https://sitenew2.vercel.app/catalogo/barra-da-tijuca-rj
+
+5. Botafogo
+   https://sitenew2.vercel.app/catalogo/botafogo-rj
+
+6. Flamengo
+   https://sitenew2.vercel.app/catalogo/flamengo-rj
+
+7. Tijuca
+   https://sitenew2.vercel.app/catalogo/tijuca-rj
+
+8. Recreio dos Bandeirantes
+   https://sitenew2.vercel.app/catalogo/recreio-dos-bandeirantes-rj
+
+9. Niterói
+   https://sitenew2.vercel.app/catalogo/niteroi-rj
+
+10. Centro RJ
+    https://sitenew2.vercel.app/catalogo/centro-rj
+
+11. Zona Sul RJ
+    https://sitenew2.vercel.app/catalogo/zona-sul-rj
+
+12. Zona Norte RJ
+    https://sitenew2.vercel.app/catalogo/zona-norte-rj
+
+13. Zona Oeste RJ
+    https://sitenew2.vercel.app/catalogo/zona-oeste-rj
+
+14. Baixada Fluminense
+    https://sitenew2.vercel.app/catalogo/baixada-fluminense-rj
+
+15. Região dos Lagos
+    https://sitenew2.vercel.app/catalogo/regiao-dos-lagos-rj
+
+
+=== SÃO PAULO (10 páginas) ===
+
+16. Jardins
+    https://sitenew2.vercel.app/catalogo/jardins-sp
+
+17. Pinheiros
+    https://sitenew2.vercel.app/catalogo/pinheiros-sp
+
+18. Moema
+    https://sitenew2.vercel.app/catalogo/moema-sp
+
+19. Itaim Bibi
+    https://sitenew2.vercel.app/catalogo/itaim-bibi-sp
+
+20. Vila Mariana
+    https://sitenew2.vercel.app/catalogo/vila-mariana-sp
+
+21. Perdizes
+    https://sitenew2.vercel.app/catalogo/perdizes-sp
+
+22. Brooklin
+    https://sitenew2.vercel.app/catalogo/brooklin-sp
+
+23. Santana
+    https://sitenew2.vercel.app/catalogo/santana-sp
+
+24. Centro SP
+    https://sitenew2.vercel.app/catalogo/centro-sp
+
+25. Zona Sul SP
+    https://sitenew2.vercel.app/catalogo/zona-sul-sp
+
+
+=== PÁGINA PRINCIPAL (Catálogo geral) ===
+
+    https://sitenew2.vercel.app/catalogo
+
+
+=====================================================
+Total: 25 páginas regionais + 1 catálogo geral
+Data: 26/01/2026
+Commit: 457731c
+=====================================================

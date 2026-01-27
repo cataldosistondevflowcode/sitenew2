@@ -13,7 +13,8 @@
     "preview": "vite preview",
     "seo:list": "node scripts/manage-seo-pages.js list",
     "seo:sync": "node scripts/manage-seo-pages.js sync",
-    "seo:generate": "node scripts/manage-seo-pages.js generate"
+    "seo:generate": "node scripts/manage-seo-pages.js generate",
+    "seo:static-pages": "node scripts/generate-static-pages.cjs"
   },
   "dependencies": {
     "@googlemaps/js-api-loader": "^1.16.8",
@@ -89,6 +90,7 @@
     "tailwindcss": "^3.4.11",
     "typescript": "^5.5.3",
     "typescript-eslint": "^8.0.1",
-    "vite": "^5.4.1"
+    "vite": "^5.4.1",
+    "vite-plugin-prerender": "^1.0.8"
   }
 }

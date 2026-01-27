@@ -1,6 +1,47 @@
 # CHANGELOG.md
 _Data: 2026-01-27_
 
+## 2026-01-27 (v2.5.0) — SEO: Conteúdo Único para Páginas Regionais 🔍
+
+### Problema Identificado pela LiveSEO
+O Google identificava todas as páginas regionais como "idênticas" porque o conteúdo `<noscript>` era genérico para todas as rotas.
+
+### Soluções Implementadas
+
+**1. Dados Estáticos Únicos por Região:**
+- Criado `src/data/regionContent.ts` com informações específicas de cada região
+- Incluído: bairros, atrações, infraestrutura, diferenciais, tipos de imóveis, faixa de preço, transporte
+
+**2. NoScriptFallback Melhorado:**
+- Componente agora recebe `pageId` e carrega conteúdo específico
+- Cada página regional tem texto único para SEO
+
+**3. Páginas HTML Estáticas:**
+- Script `npm run seo:static-pages` gera HTML estático para cada região
+- Arquivos em `/public/catalogo/*.html` com conteúdo único e indexável
+- Links no index.html apontam para páginas estáticas
+
+**4. Index.html Atualizado:**
+- Conteúdo `<noscript>` agora inclui cards únicos por região
+- Links para páginas HTML estáticas
+
+### Arquivos Criados/Modificados
+- **NOVO:** `src/data/regionContent.ts` — Dados únicos por região
+- **NOVO:** `scripts/generate-static-pages.cjs` — Gerador de HTML estático
+- **NOVO:** `public/catalogo/*.html` — 10+ páginas HTML estáticas
+- `src/components/NoScriptFallback.tsx` — Suporte a conteúdo regional
+- `src/pages/StaticCatalog.tsx` — Passa pageId para fallback
+- `index.html` — Conteúdo noscript melhorado
+- `package.json` — Script seo:static-pages
+
+### Impacto SEO
+- ✅ Cada página regional agora tem conteúdo único
+- ✅ Google pode distinguir entre páginas diferentes
+- ✅ Links internos melhoram a descoberta de páginas
+- ✅ Conteúdo visível mesmo sem JavaScript
+
+---
+
 ## 2026-01-27 (v2.4.1) — Correção Crítica: Bug de Filtro de Data 🐛
 
 ### Bug Corrigido

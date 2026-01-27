@@ -1025,12 +1025,14 @@ export default function StaticCatalog() {
         canonicalUrl={getCanonicalUrl()}
       />
       
-      {/* Sprint 7 - Fallback para SEO quando JavaScript está desabilitado */}
+      {/* Sprint 7/8 - Fallback para SEO quando JavaScript está desabilitado */}
+      {/* Cada página tem conteúdo ÚNICO para evitar que Google interprete como duplicadas */}
       <NoScriptFallback
         pageTitle={seoPage.meta_title}
         pageDescription={seoPage.meta_description}
         region={seoPage.regiao}
         estado={seoPage.estado}
+        pageId={seoPage.page_id}
       />
       
       <SocialBar onWhatsAppClick={handleWhatsAppClick} />

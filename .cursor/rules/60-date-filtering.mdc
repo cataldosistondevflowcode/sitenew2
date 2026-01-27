@@ -1,0 +1,46 @@
+# Regras de Filtro de Data (Supabase)
+
+## CRÍTICO: Colunas DATE vs TIMESTAMP
+
+As colunas `data_leilao_1` e `data_leilao_2` na tabela `imoveis` são do tipo **DATE** (não TIMESTAMP).
+
+### ❌ NUNCA FAZER:
+```typescript
+// ERRADO - gera timestamp completo que falha na comparação
+const date = new Date().toISOString();
+query.or(`data_leilao_1.gte.${date}`);
+```
+
+### ✅ SEMPRE FAZER:
+```typescript
+// CORRETO - usar utilitário que retorna YYYY-MM-DD
+import { getTodayDateString } from '@/utils/dateUtils';
+
+const date = getTodayDateString();
+query.or(`data_leilao_1.gte.${date}`);
+```
+
+## Utilitário Disponível
+
+O arquivo `src/utils/dateUtils.ts` contém funções para manipulação segura de datas:
+
+- `getTodayDateString()` — Retorna data atual em YYYY-MM-DD
+- `toDateString(date)` — Converte Date para YYYY-MM-DD
+- `getCurrentDateForAuctionFilter()` — Data atual no fuso de São Paulo
+- `formatDateBR(dateString)` — Formata para exibição (DD/MM/YYYY)
+- `isAuctionDateFuture(dateString)` — Verifica se leilão é futuro
+
+## Arquivos que usam filtro de data
+
+Se modificar qualquer um destes arquivos, verificar se usa `getTodayDateString()`:
+
+- `src/pages/StaticCatalog.tsx`
+- `src/pages/Index.tsx`
+- `src/pages/LeilaoSP.tsx`
+- `src/pages/LeilaoRJ.tsx`
+- `src/pages/LeilaoCaixaRJ.tsx`
+- `src/components/admin/PropertiesTable.tsx`
+
+## Referência
+
+Bug original documentado em `CHANGELOG.md` versão 2.4.1 (2026-01-27).

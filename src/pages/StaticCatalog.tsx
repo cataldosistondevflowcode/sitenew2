@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { formatCurrency, flexibleSearch, sanitizeSearchInput } from '@/utils/stringUtils';
+import { getTodayDateString } from '@/utils/dateUtils';
 import { ArrowLeft, ChevronRight, ChevronDown, Filter, X, MapPin, Home, Building, Tractor, Trees, FileText, Globe, DollarSign, CalendarIcon, Car, SquareStack, Gavel } from 'lucide-react';
 import { toast } from 'sonner';
 import { SEO } from '@/components/SEO';
@@ -615,8 +616,10 @@ export default function StaticCatalog() {
       }
 
       // Filtro de data para leilões futuros
+      // IMPORTANTE: Usar getTodayDateString() que retorna YYYY-MM-DD
+      // As colunas data_leilao_1 e data_leilao_2 são do tipo DATE (não timestamp)
       if (!filters.dataFimSegundoLeilao) {
-        const currentDate = new Date().toISOString();
+        const currentDate = getTodayDateString();
         query = query.or(`data_leilao_1.is.null,data_leilao_1.gte.${currentDate},data_leilao_2.gte.${currentDate}`);
       }
 

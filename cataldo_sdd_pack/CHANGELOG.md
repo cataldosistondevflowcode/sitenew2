@@ -1,5 +1,41 @@
 # CHANGELOG.md
-_Data: 2026-01-26_
+_Data: 2026-01-27_
+
+## 2026-01-27 (v2.4.1) — Correção Crítica: Bug de Filtro de Data 🐛
+
+### Bug Corrigido
+**BUG CRÍTICO:** Páginas regionais exibiam "0 oportunidades encontradas" mesmo com imóveis válidos no banco.
+
+**Causa Raiz:**
+- As colunas `data_leilao_1` e `data_leilao_2` são do tipo `DATE` (formato: YYYY-MM-DD)
+- O código usava `toISOString()` que gera timestamp completo (ex: `2026-01-27T02:00:32.626Z`)
+- A comparação entre tipos diferentes (`DATE` vs `TIMESTAMP`) falhava silenciosamente no Supabase
+
+**Solução:**
+- Criado utilitário centralizado `src/utils/dateUtils.ts` com função `getTodayDateString()`
+- Todas as comparações de data agora usam formato `YYYY-MM-DD`
+- Adicionados comentários explicativos para prevenir regressão
+
+### Arquivos Modificados
+- **NOVO:** `src/utils/dateUtils.ts` — Utilitário centralizado para formatação de datas
+- `src/pages/StaticCatalog.tsx` — Corrigido filtro de data
+- `src/pages/Index.tsx` — Corrigido filtro de data
+- `src/pages/LeilaoSP.tsx` — Corrigido filtro de data
+- `src/pages/LeilaoRJ.tsx` — Corrigido filtro de data
+- `src/pages/LeilaoCaixaRJ.tsx` — Corrigido filtro de data
+- `src/components/admin/PropertiesTable.tsx` — Corrigido filtro de data
+
+### Prevenção de Regressão
+- Utilitário `getTodayDateString()` deve ser usado em TODAS as comparações com colunas DATE
+- Comentários adicionados em cada local corrigido
+- Documentação no próprio arquivo `dateUtils.ts` explica o problema e a solução
+
+### Impacto
+- ✅ Páginas regionais agora exibem imóveis corretamente
+- ✅ Filtros de leilões futuros funcionam em todas as páginas
+- ✅ Admin panel filtra corretamente por "Leilões Atuais"
+
+---
 
 ## 2026-01-26 (v2.4.0) — Sprint 6 + Sprint 7: CONCLUÍDAS ✅
 

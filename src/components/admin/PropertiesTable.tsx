@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Tables } from '@/integrations/supabase/types';
 import { escapeSqlLike } from '@/utils/stringUtils';
+import { getTodayDateString } from '@/utils/dateUtils';
 import {
   Table,
   TableBody,
@@ -106,10 +107,11 @@ const PropertiesTable = () => {
       }
 
       // Filtro "Atual" - apenas leilões que ainda não passaram
+      // IMPORTANTE: Usar formato YYYY-MM-DD pois as colunas são do tipo DATE, não TIMESTAMP
       if (showCurrentOnly) {
-        const currentDateForFilter = new Date();
+        const currentDateForFilter = getTodayDateString();
         // Considerar tanto 1º quanto 2º leilão - incluir se qualquer um for futuro ou nulo
-        query = query.or(`data_leilao_1.is.null,data_leilao_1.gte.${currentDateForFilter.toISOString()},data_leilao_2.gte.${currentDateForFilter.toISOString()}`);
+        query = query.or(`data_leilao_1.is.null,data_leilao_1.gte.${currentDateForFilter},data_leilao_2.gte.${currentDateForFilter}`);
       }
 
       // Aplicar paginação

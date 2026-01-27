@@ -21,6 +21,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useFilterParams } from "@/hooks/useFilterParams";
 import { flexibleSearch, escapeSqlLike, sanitizeSearchInput } from "@/utils/stringUtils";
+import { getTodayDateString } from "@/utils/dateUtils";
 import { executeWhatsAppAction, initializeWhatsAppScript } from "@/utils/whatsappScript";
 import { SEO } from "@/components/SEO";
 
@@ -665,13 +666,14 @@ const LeilaoCaixaRJ = () => {
 
         
         // Obter a data atual para comparação no servidor
-        const currentDateForFilter = new Date();
+        // IMPORTANTE: Usar formato YYYY-MM-DD pois as colunas são do tipo DATE, não TIMESTAMP
+        const currentDateForFilter = getTodayDateString();
         
         let countQuery = query;
         
         // Adicionar filtro de data para considerar apenas leilões futuros
         // Considerar tanto 1º quanto 2º leilão - incluir se qualquer um for futuro ou nulo
-        countQuery = countQuery.or(`data_leilao_1.is.null,data_leilao_1.gte.${currentDateForFilter.toISOString()},data_leilao_2.gte.${currentDateForFilter.toISOString()}`);
+        countQuery = countQuery.or(`data_leilao_1.is.null,data_leilao_1.gte.${currentDateForFilter},data_leilao_2.gte.${currentDateForFilter}`);
         
         // Obter a contagem total para calcular o número de páginas
         const countResult = await countQuery;
@@ -691,7 +693,7 @@ const LeilaoCaixaRJ = () => {
 
         // Aplicar o mesmo filtro de data na query principal
         // Considerar tanto 1º quanto 2º leilão - incluir se qualquer um for futuro ou nulo
-        query = query.or(`data_leilao_1.is.null,data_leilao_1.gte.${currentDateForFilter.toISOString()},data_leilao_2.gte.${currentDateForFilter.toISOString()}`);
+        query = query.or(`data_leilao_1.is.null,data_leilao_1.gte.${currentDateForFilter},data_leilao_2.gte.${currentDateForFilter}`);
 
         const { data, error } = await query
           .range(from, to)

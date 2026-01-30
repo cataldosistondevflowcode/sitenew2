@@ -1,8 +1,43 @@
 # Plano de Implementação: SEO JS-Off para Páginas Regionais
 
 **Data:** 29/01/2026  
+**Última Atualização:** 30/01/2026  
 **Referência:** [Diagnóstico](./SEO_JS_OFF_DIAGNOSTICO.md)  
 **Solicitante:** LiveSEO (Augusto Xavier)
+
+---
+
+## ⚠️ ATUALIZAÇÃO IMPORTANTE (30/01/2026)
+
+### Novo Requisito: Paridade Total HTML vs React
+
+Após análise detalhada dos prints da versão React, identificamos que o fallback HTML atual **não possui paridade completa** com a versão renderizada.
+
+**Documentação complementar:**
+- **[SEO_FALLBACK_HTML_SPEC.md](./SEO_FALLBACK_HTML_SPEC.md)** - Especificação completa de todos os elementos
+- **[SEO_FALLBACK_SPRINTS.md](./SEO_FALLBACK_SPRINTS.md)** - Plano de sprints para implementação
+
+### Elementos que FALTAM no HTML Estático:
+
+| # | Elemento | Status Atual |
+|---|----------|--------------|
+| 1 | Header Superior (email, telefone, WhatsApp, redes sociais) | ❌ Falta |
+| 2 | Hero com imagem de fundo | ❌ Falta |
+| 3 | Vídeo Institucional (YouTube embed/thumbnail) | ❌ Falta |
+| 4 | Seção "Oportunidades de Imóveis em Leilão" | ❌ Falta |
+| 5 | CTA "Não encontrou o que estava procurando?" | ❌ Falta |
+| 6 | Ícones na seção "Conheça mais sobre" | ❌ Falta |
+| 7 | Casos de Sucesso com thumbnails de vídeo | ⚠️ Só texto |
+| 8 | Seção Depoimentos com carrossel estático | ❌ Falta |
+| 9 | Seção Newsletter com formulário e foto | ❌ Falta |
+| 10 | Footer completo (3 colunas + redes sociais) | ⚠️ Diferente |
+
+### Exceção Acordada:
+- **Filtros de imóveis** - NÃO incluir no HTML estático
+- **Listagem de imóveis** - NÃO incluir no HTML estático
+
+### Próximo Passo:
+Seguir o plano em `SEO_FALLBACK_SPRINTS.md` para implementar paridade total.
 
 ---
 

@@ -357,7 +357,7 @@ img {
 }
 
 /* ===========================================
-   CTA Not Found Section
+   CTA Not Found Section (igual ao React SupportCTA)
    =========================================== */
 .cta-not-found {
   background: var(--color-primary);
@@ -366,46 +366,72 @@ img {
 }
 
 .cta-not-found .container {
-  text-align: center;
+  max-width: 1200px;
 }
 
-.cta-not-found h2 {
+.cta-not-found__content {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 40px;
+  align-items: center;
+  margin-bottom: 40px;
+}
+
+.cta-not-found__text h2 {
   font-family: var(--font-display);
-  font-size: 1.8rem;
+  font-size: 2rem;
   margin: 0 0 15px;
 }
 
-.cta-not-found p {
-  margin: 0 0 25px;
-  opacity: 0.95;
+.cta-not-found__text p {
+  margin: 0;
+  opacity: 0.9;
+  font-size: 1.1rem;
 }
 
 .cta-not-found__buttons {
   display: flex;
-  justify-content: center;
   gap: 15px;
   flex-wrap: wrap;
-  margin-bottom: 30px;
 }
 
-.btn-outline {
+.btn-white {
   display: inline-flex;
   align-items: center;
   gap: 8px;
   background: var(--color-white);
   color: var(--color-primary);
-  padding: 12px 24px;
+  padding: 14px 28px;
   border-radius: 6px;
   font-weight: 600;
   transition: all 0.2s;
 }
 
-.btn-outline:hover {
+.btn-white:hover {
   background: var(--color-gray-100);
   color: var(--color-primary);
 }
 
-.btn-outline svg {
+.btn-outline-white {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  color: var(--color-white);
+  padding: 14px 28px;
+  border-radius: 6px;
+  border: 2px solid var(--color-white);
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.btn-outline-white:hover {
+  background: rgba(255,255,255,0.1);
+  color: var(--color-white);
+}
+
+.btn-white svg,
+.btn-outline-white svg {
   width: 20px;
   height: 20px;
 }
@@ -415,82 +441,132 @@ img {
   justify-content: center;
   gap: 30px;
   flex-wrap: wrap;
+  padding-top: 30px;
+  border-top: 1px solid rgba(255,255,255,0.2);
 }
 
 .cta-not-found__links a {
-  color: var(--color-white);
+  color: rgba(255,255,255,0.8);
   font-size: 0.9rem;
   display: flex;
   align-items: center;
   gap: 6px;
-  opacity: 0.9;
 }
 
 .cta-not-found__links a:hover {
-  opacity: 1;
-  text-decoration: underline;
   color: var(--color-white);
 }
 
+.cta-not-found__links svg {
+  width: 16px;
+  height: 16px;
+}
+
+@media (max-width: 768px) {
+  .cta-not-found__content {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+  
+  .cta-not-found__buttons {
+    justify-content: center;
+  }
+}
+
 /* ===========================================
-   Region Details Section
+   Region Details Section (igual ao React RegionContentSection)
    =========================================== */
 .region-details {
   padding: 60px 20px;
-  background: var(--color-gray-100);
+  background: var(--color-white);
 }
 
 .region-details h2 {
   font-family: var(--font-display);
-  font-size: 1.8rem;
+  font-size: 2rem;
   margin: 0 0 40px;
   text-align: center;
+  color: var(--color-text);
 }
 
 .region-details__grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: 25px;
-  max-width: 1100px;
+  max-width: 1200px;
   margin: 0 auto;
 }
 
+@media (max-width: 1024px) {
+  .region-details__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .region-details__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .detail-card {
-  background: var(--color-white);
+  background: var(--color-gray-100);
   padding: 25px;
   border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  border: 1px solid var(--color-gray-200);
+  transition: box-shadow 0.2s;
+}
+
+.detail-card:hover {
+  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
 }
 
 .detail-card__header {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 15px;
+  margin-bottom: 20px;
 }
 
 .detail-card__header svg {
-  width: 28px;
-  height: 28px;
-  color: var(--color-primary);
+  width: 24px;
+  height: 24px;
+  padding: 12px;
+  box-sizing: content-box;
+  background: var(--color-text);
+  border-radius: 50%;
+  color: var(--color-white);
+  stroke: var(--color-white);
 }
 
 .detail-card__header h3 {
   font-family: var(--font-display);
   font-size: 1.1rem;
   margin: 0;
-  color: var(--color-primary);
+  color: var(--color-text);
+  font-weight: 500;
 }
 
 .detail-card ul {
-  list-style: disc;
-  padding-left: 20px;
+  list-style: none;
+  padding: 0;
   margin: 0;
 }
 
 .detail-card li {
-  margin-bottom: 8px;
-  color: var(--color-text);
+  margin-bottom: 10px;
+  color: #333;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.detail-card li::before {
+  content: '•';
+  color: var(--color-primary);
+  font-weight: bold;
+  margin-top: -1px;
 }
 
 /* ===========================================

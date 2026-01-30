@@ -16,15 +16,23 @@ const path = require('path');
 
 // Caminhos
 const SEED_FILE = path.join(__dirname, '..', 'data', 'regional_pages_seo_seed.json');
+const CONTENT_FILE = path.join(__dirname, '..', 'data', 'region-content.json');
 const OUTPUT_DIR = path.join(__dirname, '..', 'public', 'catalogo');
 const BASE_URL = process.env.BASE_URL || 'https://sitenew2.vercel.app';
 
 // Configuração de robots (pode ser sobrescrita por ENV)
 const ROBOTS_CONTENT = process.env.NOINDEX === 'true' ? 'noindex, follow' : 'index, follow';
 
-// Dados de conteúdo local para regiões (textos "Sobre", bairros, etc.)
-// TODO: Migrar para arquivo separado ou banco de dados
-const regionContentData = {
+// Carregar dados de conteúdo do arquivo JSON
+let regionContentData = {};
+if (fs.existsSync(CONTENT_FILE)) {
+  const contentJson = JSON.parse(fs.readFileSync(CONTENT_FILE, 'utf-8'));
+  regionContentData = contentJson.regions || {};
+  console.log(`📄 Conteúdo carregado: ${Object.keys(regionContentData).length} regiões`);
+}
+
+// Fallback para dados inline (caso o arquivo não exista)
+const inlineContentData = {
   'copacabana-rj': {
     heroDescription: 'Copacabana é um dos bairros mais icônicos do Rio de Janeiro, conhecido mundialmente por sua praia de 4km, calçadão em pedras portuguesas e vida cultural vibrante. Encontre oportunidades únicas de imóveis em leilão com até 50% de desconto do valor de mercado.',
     aboutText: 'Copacabana oferece uma combinação única de tradição e modernidade. O bairro conta com excelente infraestrutura de transporte (metrô, ônibus), hospitais renomados, escolas tradicionais e uma vida noturna agitada. É um dos metros quadrados mais valorizados do Rio de Janeiro, com alta liquidez para investimentos imobiliários.',

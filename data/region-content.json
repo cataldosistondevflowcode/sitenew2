@@ -8,561 +8,2177 @@
     "copacabana-rj": {
       "heroDescription": "Copacabana é um dos bairros mais icônicos do Rio de Janeiro, conhecido mundialmente por sua praia de 4km, calçadão em pedras portuguesas e vida cultural vibrante. Encontre oportunidades únicas de imóveis em leilão com até 50% de desconto do valor de mercado.",
       "aboutText": "Copacabana oferece uma combinação única de tradição e modernidade. O bairro conta com excelente infraestrutura de transporte (metrô, ônibus), hospitais renomados, escolas tradicionais e uma vida noturna agitada. É um dos metros quadrados mais valorizados do Rio de Janeiro, com alta liquidez para investimentos imobiliários.",
-      "neighborhoods": ["Leme", "Copacabana", "Posto 5", "Posto 6"],
-      "attractions": ["Praia de Copacabana", "Forte de Copacabana", "Pedra do Leme", "Beco das Garrafas"],
-      "infrastructure": ["Metrô Linha 1", "Hospital Copa Star", "Colégio Santo Inácio", "Supermercados Zona Sul"],
-      "highlights": ["4km de orla", "Calçadão histórico", "Réveillon famoso", "Vista para o Pão de Açúcar"],
-      "propertyTypes": ["Apartamentos", "Coberturas", "Salas comerciais", "Lojas"],
+      "neighborhoods": [
+        "Leme",
+        "Copacabana",
+        "Posto 5",
+        "Posto 6"
+      ],
+      "attractions": [
+        "Praia de Copacabana",
+        "Forte de Copacabana",
+        "Pedra do Leme",
+        "Beco das Garrafas"
+      ],
+      "infrastructure": [
+        "Metrô Linha 1",
+        "Hospital Copa Star",
+        "Colégio Santo Inácio",
+        "Supermercados Zona Sul"
+      ],
+      "highlights": [
+        "4km de orla",
+        "Calçadão histórico",
+        "Réveillon famoso",
+        "Vista para o Pão de Açúcar"
+      ],
+      "propertyTypes": [
+        "Apartamentos",
+        "Coberturas",
+        "Salas comerciais",
+        "Lojas"
+      ],
       "priceRange": "R$ 400.000 a R$ 3.000.000",
       "transport": "Cardeal Arcoverde, Siqueira Campos, Cantagalo",
-      "relatedRegions": ["ipanema-rj", "leblon-rj", "botafogo-rj", "flamengo-rj", "barra-da-tijuca-rj", "zona-sul-rj"],
+      "relatedRegions": [
+        "ipanema-rj",
+        "leblon-rj",
+        "botafogo-rj",
+        "flamengo-rj",
+        "barra-da-tijuca-rj",
+        "zona-sul-rj"
+      ],
       "successCases": [
-        { "title": "Apartamento 3 quartos - Posto 5", "savings": "42%", "description": "Cliente adquiriu apartamento de 95m² por R$ 580.000 (valor de mercado: R$ 1.000.000). Processo concluído em 4 meses." },
-        { "title": "Cobertura duplex - Leme", "savings": "38%", "description": "Cobertura de 180m² com vista para o mar arrematada por R$ 1.200.000. Assessoria completa desde a análise até a imissão na posse." },
-        { "title": "Sala comercial - Av. Nossa Senhora de Copacabana", "savings": "45%", "description": "Investidor adquiriu sala de 50m² em ponto comercial nobre por R$ 280.000. Excelente para renda de aluguel." }
+        {
+          "title": "Apartamento 3 quartos - Posto 5",
+          "savings": "42%",
+          "description": "Cliente adquiriu apartamento de 95m² por R$ 580.000 (valor de mercado: R$ 1.000.000). Processo concluído em 4 meses."
+        },
+        {
+          "title": "Cobertura duplex - Leme",
+          "savings": "38%",
+          "description": "Cobertura de 180m² com vista para o mar arrematada por R$ 1.200.000. Assessoria completa desde a análise até a imissão na posse."
+        },
+        {
+          "title": "Sala comercial - Av. Nossa Senhora de Copacabana",
+          "savings": "45%",
+          "description": "Investidor adquiriu sala de 50m² em ponto comercial nobre por R$ 280.000. Excelente para renda de aluguel."
+        }
       ]
     },
     "ipanema-rj": {
       "heroDescription": "Ipanema é sinônimo de sofisticação e qualidade de vida no Rio de Janeiro. Famosa pela praia imortalizada em canção, o bairro oferece as melhores lojas, restaurantes e uma das localizações mais privilegiadas do Brasil. Encontre oportunidades únicas de imóveis em leilão com até 50% de desconto.",
       "aboutText": "Ipanema é considerado um dos metros quadrados mais valorizados do Brasil. O bairro possui ruas arborizadas, forte comércio de luxo na Rua Garcia D'Ávila e Visconde de Pirajá, além de uma vida cultural intensa. A proximidade com a Lagoa Rodrigo de Freitas e o Leblon torna a região ainda mais atrativa para investidores e moradores exigentes.",
-      "neighborhoods": ["Ipanema", "Arpoador", "Lagoa", "General Osório"],
-      "attractions": ["Praia de Ipanema", "Pedra do Arpoador", "Praça Nossa Senhora da Paz", "Feira Hippie"],
-      "infrastructure": ["Metrô General Osório", "Hospital São Lucas", "Colégio Andrews", "Shopping Leblon"],
-      "highlights": ["Pôr do sol no Arpoador", "Rua Garcia D'Ávila", "Praça General Osório", "Proximidade com Lagoa"],
-      "propertyTypes": ["Apartamentos de alto padrão", "Coberturas", "Casas"],
+      "neighborhoods": [
+        "Ipanema",
+        "Arpoador",
+        "Lagoa",
+        "General Osório"
+      ],
+      "attractions": [
+        "Praia de Ipanema",
+        "Pedra do Arpoador",
+        "Praça Nossa Senhora da Paz",
+        "Feira Hippie"
+      ],
+      "infrastructure": [
+        "Metrô General Osório",
+        "Hospital São Lucas",
+        "Colégio Andrews",
+        "Shopping Leblon"
+      ],
+      "highlights": [
+        "Pôr do sol no Arpoador",
+        "Rua Garcia D'Ávila",
+        "Praça General Osório",
+        "Proximidade com Lagoa"
+      ],
+      "propertyTypes": [
+        "Apartamentos de alto padrão",
+        "Coberturas",
+        "Casas"
+      ],
       "priceRange": "R$ 800.000 a R$ 8.000.000",
       "transport": "General Osório (Linha 1)",
-      "relatedRegions": ["copacabana-rj", "leblon-rj", "botafogo-rj", "flamengo-rj", "barra-da-tijuca-rj", "zona-sul-rj"],
+      "relatedRegions": [
+        "copacabana-rj",
+        "leblon-rj",
+        "botafogo-rj",
+        "flamengo-rj",
+        "barra-da-tijuca-rj",
+        "zona-sul-rj"
+      ],
       "successCases": [
-        { "title": "Apartamento 4 quartos - Rua Visconde de Pirajá", "savings": "48%", "description": "Cliente adquiriu apartamento de 150m² por R$ 1.800.000 (valor de mercado: R$ 3.500.000). Localização privilegiada próximo à praia." },
-        { "title": "Cobertura triplex - Rua Prudente de Morais", "savings": "40%", "description": "Cobertura de 280m² com vista para o mar e Lagoa arrematada por R$ 4.200.000. Um dos melhores negócios da região." },
-        { "title": "Apartamento 2 quartos - General Osório", "savings": "35%", "description": "Jovem casal adquiriu primeiro imóvel de 75m² por R$ 780.000. Próximo ao metrô e à Praça General Osório." }
+        {
+          "title": "Apartamento 4 quartos - Rua Visconde de Pirajá",
+          "savings": "48%",
+          "description": "Cliente adquiriu apartamento de 150m² por R$ 1.800.000 (valor de mercado: R$ 3.500.000). Localização privilegiada próximo à praia."
+        },
+        {
+          "title": "Cobertura triplex - Rua Prudente de Morais",
+          "savings": "40%",
+          "description": "Cobertura de 280m² com vista para o mar e Lagoa arrematada por R$ 4.200.000. Um dos melhores negócios da região."
+        },
+        {
+          "title": "Apartamento 2 quartos - General Osório",
+          "savings": "35%",
+          "description": "Jovem casal adquiriu primeiro imóvel de 75m² por R$ 780.000. Próximo ao metrô e à Praça General Osório."
+        }
       ]
     },
     "leblon-rj": {
       "heroDescription": "O Leblon é o bairro mais exclusivo do Rio de Janeiro, com o metro quadrado mais valorizado da cidade. Oferece segurança, tranquilidade e sofisticação incomparáveis. Encontre oportunidades de imóveis em leilão com descontos significativos.",
       "aboutText": "O Leblon combina a beleza natural da praia com uma infraestrutura completa de serviços premium. Ruas arborizadas, restaurantes renomados, o Shopping Leblon e proximidade com a PUC-Rio fazem do bairro um dos mais desejados do Brasil. É ideal para famílias que buscam qualidade de vida e segurança.",
-      "neighborhoods": ["Leblon", "Gávea", "Jardim Botânico", "São Conrado"],
-      "attractions": ["Praia do Leblon", "Baixo Leblon", "Mirante do Leblon", "Shopping Leblon"],
-      "infrastructure": ["Metrô Antero de Quental", "Hospital Barra D'Or", "Colégio Santo Agostinho", "PUC-Rio"],
-      "highlights": ["Metro quadrado mais caro do Rio", "Ambiente familiar", "Baixa criminalidade", "Gastronomia premium"],
-      "propertyTypes": ["Apartamentos de luxo", "Coberturas duplex", "Casas"],
+      "neighborhoods": [
+        "Leblon",
+        "Gávea",
+        "Jardim Botânico",
+        "São Conrado"
+      ],
+      "attractions": [
+        "Praia do Leblon",
+        "Baixo Leblon",
+        "Mirante do Leblon",
+        "Shopping Leblon"
+      ],
+      "infrastructure": [
+        "Metrô Antero de Quental",
+        "Hospital Barra D'Or",
+        "Colégio Santo Agostinho",
+        "PUC-Rio"
+      ],
+      "highlights": [
+        "Metro quadrado mais caro do Rio",
+        "Ambiente familiar",
+        "Baixa criminalidade",
+        "Gastronomia premium"
+      ],
+      "propertyTypes": [
+        "Apartamentos de luxo",
+        "Coberturas duplex",
+        "Casas"
+      ],
       "priceRange": "R$ 1.500.000 a R$ 15.000.000",
       "transport": "Antero de Quental, Jardim de Alah",
-      "relatedRegions": ["ipanema-rj", "copacabana-rj", "lagoa-rj", "jardim-botanico-rj", "zona-sul-rj"],
+      "relatedRegions": [
+        "ipanema-rj",
+        "copacabana-rj",
+        "lagoa-rj",
+        "jardim-botanico-rj",
+        "zona-sul-rj"
+      ],
       "successCases": [
-        { "title": "Apartamento 3 quartos - Rua Dias Ferreira", "savings": "35%", "description": "Investidor adquiriu apartamento de 120m² por R$ 2.100.000 em região gastronômica nobre." },
-        { "title": "Cobertura linear - Av. Delfim Moreira", "savings": "42%", "description": "Cobertura de 200m² com vista para o mar arrematada por R$ 5.500.000." }
+        {
+          "title": "Apartamento 3 quartos - Rua Dias Ferreira",
+          "savings": "35%",
+          "description": "Investidor adquiriu apartamento de 120m² por R$ 2.100.000 em região gastronômica nobre."
+        },
+        {
+          "title": "Cobertura linear - Av. Delfim Moreira",
+          "savings": "42%",
+          "description": "Cobertura de 200m² com vista para o mar arrematada por R$ 5.500.000."
+        },
+        {
+          "title": "Apartamento 4 quartos - Rua General Venâncio Flores",
+          "savings": "38%",
+          "description": "Família adquiriu apartamento de 180m² com 3 vagas por R$ 3.200.000 em prédio de alto padrão."
+        }
       ]
     },
     "barra-da-tijuca-rj": {
       "heroDescription": "A Barra da Tijuca é o bairro que mais cresce no Rio de Janeiro, com infraestrutura moderna, condomínios de alto padrão e 18km de praia. Ideal para quem busca qualidade de vida e segurança em condomínios fechados.",
       "aboutText": "A Barra da Tijuca é conhecida por seus grandes condomínios, shoppings de primeira linha e qualidade de vida. O bairro oferece opções para todos os perfis, desde apartamentos compactos até mansões em condomínios fechados. Foi sede dos Jogos Olímpicos de 2016 e conta com infraestrutura moderna.",
-      "neighborhoods": ["Barra da Tijuca", "Recreio", "Itanhangá", "São Conrado", "Joá"],
-      "attractions": ["Praia da Barra", "Barra Shopping", "Village Mall", "Parque Olímpico", "Cidade das Artes"],
-      "infrastructure": ["BRT TransOeste", "Hospital Barra D'Or", "Colégios particulares", "Shopping Village Mall"],
-      "highlights": ["18km de praia", "Condomínios fechados", "Shoppings modernos", "Sede olímpica 2016"],
-      "propertyTypes": ["Apartamentos em condomínio", "Casas em condomínio", "Coberturas", "Salas comerciais"],
+      "neighborhoods": [
+        "Barra da Tijuca",
+        "Recreio",
+        "Itanhangá",
+        "São Conrado",
+        "Joá"
+      ],
+      "attractions": [
+        "Praia da Barra",
+        "Barra Shopping",
+        "Village Mall",
+        "Parque Olímpico",
+        "Cidade das Artes"
+      ],
+      "infrastructure": [
+        "BRT TransOeste",
+        "Hospital Barra D'Or",
+        "Colégios particulares",
+        "Shopping Village Mall"
+      ],
+      "highlights": [
+        "18km de praia",
+        "Condomínios fechados",
+        "Shoppings modernos",
+        "Sede olímpica 2016"
+      ],
+      "propertyTypes": [
+        "Apartamentos em condomínio",
+        "Casas em condomínio",
+        "Coberturas",
+        "Salas comerciais"
+      ],
       "priceRange": "R$ 350.000 a R$ 5.000.000",
       "transport": "BRT TransOeste, Linha Amarela, Av. das Américas",
-      "relatedRegions": ["recreio-dos-bandeirantes-rj", "jacarepagua-rj", "zona-sul-rj", "leblon-rj"],
+      "relatedRegions": [
+        "recreio-dos-bandeirantes-rj",
+        "jacarepagua-rj",
+        "zona-sul-rj",
+        "leblon-rj"
+      ],
       "successCases": [
-        { "title": "Apartamento 2 quartos - Condomínio Península", "savings": "40%", "description": "Cliente adquiriu apartamento de 80m² por R$ 420.000 em condomínio com infraestrutura completa." },
-        { "title": "Casa em condomínio - Alphaville Barra", "savings": "38%", "description": "Casa de 350m² arrematada por R$ 1.800.000 com segurança 24h e lazer completo." }
+        {
+          "title": "Apartamento 2 quartos - Condomínio Península",
+          "savings": "40%",
+          "description": "Cliente adquiriu apartamento de 80m² por R$ 420.000 em condomínio com infraestrutura completa."
+        },
+        {
+          "title": "Casa em condomínio - Alphaville Barra",
+          "savings": "38%",
+          "description": "Casa de 350m² arrematada por R$ 1.800.000 com segurança 24h e lazer completo."
+        },
+        {
+          "title": "Apartamento 2 quartos - Vista para lagoa",
+          "savings": "42%",
+          "description": "Jovem casal realizou o sonho da casa própria na região com economia significativa."
+        }
       ]
     },
     "botafogo-rj": {
       "heroDescription": "Botafogo é um bairro tradicional da Zona Sul com vista privilegiada para o Pão de Açúcar e a Baía de Guanabara. Oferece uma mistura única de prédios históricos e modernos, com forte comércio e vida cultural intensa.",
       "aboutText": "Botafogo oferece uma mistura única de prédios históricos e modernos, com forte comércio, vida cultural intensa e fácil acesso a toda cidade pelo metrô. O bairro é conhecido pela proximidade com o Bondinho do Pão de Açúcar e pela vista deslumbrante da Baía de Guanabara.",
-      "neighborhoods": ["Botafogo", "Humaitá", "Urca", "Cosme Velho"],
-      "attractions": ["Praia de Botafogo", "Bondinho do Pão de Açúcar", "Botafogo Praia Shopping", "Casa Daros"],
-      "infrastructure": ["Metrô Botafogo", "Hospital Samaritano", "Colégio São Vicente", "Botafogo Praia Shopping"],
-      "highlights": ["Vista para Pão de Açúcar", "Proximidade do metrô", "Vida cultural ativa", "Gastronomia variada"],
-      "propertyTypes": ["Apartamentos", "Coberturas", "Salas comerciais", "Casas em vilas"],
+      "neighborhoods": [
+        "Botafogo",
+        "Humaitá",
+        "Urca",
+        "Cosme Velho"
+      ],
+      "attractions": [
+        "Praia de Botafogo",
+        "Bondinho do Pão de Açúcar",
+        "Botafogo Praia Shopping",
+        "Casa Daros"
+      ],
+      "infrastructure": [
+        "Metrô Botafogo",
+        "Hospital Samaritano",
+        "Colégio São Vicente",
+        "Botafogo Praia Shopping"
+      ],
+      "highlights": [
+        "Vista para Pão de Açúcar",
+        "Proximidade do metrô",
+        "Vida cultural ativa",
+        "Gastronomia variada"
+      ],
+      "propertyTypes": [
+        "Apartamentos",
+        "Coberturas",
+        "Salas comerciais",
+        "Casas em vilas"
+      ],
       "priceRange": "R$ 400.000 a R$ 3.500.000",
       "transport": "Botafogo (integração linhas 1 e 2)",
-      "relatedRegions": ["flamengo-rj", "copacabana-rj", "laranjeiras-rj", "zona-sul-rj"],
+      "relatedRegions": [
+        "flamengo-rj",
+        "copacabana-rj",
+        "laranjeiras-rj",
+        "zona-sul-rj"
+      ],
       "successCases": [
-        { "title": "Apartamento 2 quartos - Rua Voluntários da Pátria", "savings": "37%", "description": "Apartamento de 70m² adquirido por R$ 480.000 próximo ao metrô." },
-        { "title": "Cobertura - Humaitá", "savings": "44%", "description": "Cobertura de 150m² com vista para o Cristo arrematada por R$ 1.100.000." }
+        {
+          "title": "Apartamento 2 quartos - Rua Voluntários da Pátria",
+          "savings": "37%",
+          "description": "Apartamento de 70m² adquirido por R$ 480.000 próximo ao metrô."
+        },
+        {
+          "title": "Cobertura - Humaitá",
+          "savings": "44%",
+          "description": "Cobertura de 150m² com vista para o Cristo arrematada por R$ 1.100.000."
+        },
+        {
+          "title": "Sala comercial - Ponto estratégico - Botafogo",
+          "savings": "45%",
+          "description": "Empresário adquiriu sala em localização comercial nobre por menos da metade do valor avaliado."
+        }
       ]
     },
     "flamengo-rj": {
       "heroDescription": "O Flamengo é um dos bairros mais tradicionais do Rio de Janeiro, com vista para a Baía de Guanabara e o maior parque urbano da cidade. Oferece qualidade de vida com o Aterro do Flamengo à porta.",
       "aboutText": "O Flamengo oferece qualidade de vida com o Aterro do Flamengo à porta, prédios históricos, forte comércio e fácil acesso ao Centro e Zona Sul. O bairro é conhecido pela arquitetura art déco e pela vista privilegiada da Baía de Guanabara.",
-      "neighborhoods": ["Flamengo", "Catete", "Laranjeiras", "Glória"],
-      "attractions": ["Aterro do Flamengo", "Marina da Glória", "Museu de Arte Moderna", "Praia do Flamengo"],
-      "infrastructure": ["Metrô Flamengo", "Hospital Federal", "Colégio Pedro II", "Largo do Machado"],
-      "highlights": ["Aterro do Flamengo", "Vista para Baía", "Arquitetura art déco", "Fácil acesso ao Centro"],
-      "propertyTypes": ["Apartamentos", "Coberturas", "Salas comerciais"],
+      "neighborhoods": [
+        "Flamengo",
+        "Catete",
+        "Laranjeiras",
+        "Glória"
+      ],
+      "attractions": [
+        "Aterro do Flamengo",
+        "Marina da Glória",
+        "Museu de Arte Moderna",
+        "Praia do Flamengo"
+      ],
+      "infrastructure": [
+        "Metrô Flamengo",
+        "Hospital Federal",
+        "Colégio Pedro II",
+        "Largo do Machado"
+      ],
+      "highlights": [
+        "Aterro do Flamengo",
+        "Vista para Baía",
+        "Arquitetura art déco",
+        "Fácil acesso ao Centro"
+      ],
+      "propertyTypes": [
+        "Apartamentos",
+        "Coberturas",
+        "Salas comerciais"
+      ],
       "priceRange": "R$ 350.000 a R$ 2.500.000",
       "transport": "Flamengo, Largo do Machado, Catete",
-      "relatedRegions": ["botafogo-rj", "laranjeiras-rj", "copacabana-rj", "centro-rj", "zona-sul-rj"],
+      "relatedRegions": [
+        "botafogo-rj",
+        "laranjeiras-rj",
+        "copacabana-rj",
+        "centro-rj",
+        "zona-sul-rj"
+      ],
       "successCases": [
-        { "title": "Apartamento 3 quartos - Praia do Flamengo", "savings": "39%", "description": "Apartamento de 110m² com vista para o Aterro por R$ 720.000." },
-        { "title": "Sala comercial - Largo do Machado", "savings": "45%", "description": "Sala de 40m² em ponto comercial nobre por R$ 180.000." }
+        {
+          "title": "Apartamento 3 quartos - Praia do Flamengo",
+          "savings": "39%",
+          "description": "Apartamento de 110m² com vista para o Aterro por R$ 720.000."
+        },
+        {
+          "title": "Sala comercial - Largo do Machado",
+          "savings": "45%",
+          "description": "Sala de 40m² em ponto comercial nobre por R$ 180.000."
+        },
+        {
+          "title": "Sala comercial - Ponto estratégico - Flamengo",
+          "savings": "45%",
+          "description": "Empresário adquiriu sala em localização comercial nobre por menos da metade do valor avaliado."
+        }
       ]
     },
     "laranjeiras-rj": {
       "heroDescription": "Laranjeiras é um bairro residencial e tranquilo da Zona Sul, conhecido por suas ruas arborizadas, casarões históricos e proximidade com o Corcovado. Ideal para quem busca charme e economia.",
       "aboutText": "Laranjeiras combina a tranquilidade de um bairro residencial com a praticidade de estar próximo ao Centro e à Zona Sul. O bairro é conhecido pelo Palácio Guanabara, sede do governo estadual, e pela proximidade com o trem do Corcovado.",
-      "neighborhoods": ["Laranjeiras", "Cosme Velho", "Santa Teresa", "Catete"],
-      "attractions": ["Trem do Corcovado", "Palácio Guanabara", "Parque Guinle", "Largo do Machado"],
-      "infrastructure": ["Metrô Largo do Machado", "Hospital São José", "Colégio Notre Dame", "Supermercados"],
-      "highlights": ["Próximo ao Corcovado", "Ruas arborizadas", "Casarões históricos", "Ambiente familiar"],
-      "propertyTypes": ["Apartamentos", "Casas", "Coberturas"],
+      "neighborhoods": [
+        "Laranjeiras",
+        "Cosme Velho",
+        "Santa Teresa",
+        "Catete"
+      ],
+      "attractions": [
+        "Trem do Corcovado",
+        "Palácio Guanabara",
+        "Parque Guinle",
+        "Largo do Machado"
+      ],
+      "infrastructure": [
+        "Metrô Largo do Machado",
+        "Hospital São José",
+        "Colégio Notre Dame",
+        "Supermercados"
+      ],
+      "highlights": [
+        "Próximo ao Corcovado",
+        "Ruas arborizadas",
+        "Casarões históricos",
+        "Ambiente familiar"
+      ],
+      "propertyTypes": [
+        "Apartamentos",
+        "Casas",
+        "Coberturas"
+      ],
       "priceRange": "R$ 300.000 a R$ 2.000.000",
       "transport": "Largo do Machado (próximo)",
-      "relatedRegions": ["flamengo-rj", "botafogo-rj", "copacabana-rj", "zona-sul-rj"],
+      "relatedRegions": [
+        "flamengo-rj",
+        "botafogo-rj",
+        "copacabana-rj",
+        "zona-sul-rj"
+      ],
       "successCases": [
-        { "title": "Apartamento 2 quartos - Rua das Laranjeiras", "savings": "36%", "description": "Apartamento de 65m² por R$ 320.000 em rua arborizada." }
+        {
+          "title": "Apartamento 2 quartos - Rua das Laranjeiras",
+          "savings": "36%",
+          "description": "Apartamento de 65m² por R$ 320.000 em rua arborizada."
+        },
+        {
+          "title": "Apartamento 3 quartos - Reformado - Laranjeiras",
+          "savings": "37%",
+          "description": "Cliente arrematou imóvel pronto para morar com economia superior a um terço do valor de mercado."
+        },
+        {
+          "title": "Sala comercial - Ponto estratégico - Laranjeiras",
+          "savings": "45%",
+          "description": "Empresário adquiriu sala em localização comercial nobre por menos da metade do valor avaliado."
+        }
       ]
     },
     "tijuca-rj": {
       "heroDescription": "A Tijuca é o maior bairro da Zona Norte, famoso pela Floresta da Tijuca, forte comércio e excelente infraestrutura. Oferece ótimo custo-benefício para quem busca qualidade de vida.",
       "aboutText": "A Tijuca é conhecida pela Floresta da Tijuca, o maior parque urbano do mundo, e por oferecer todas as facilidades de um grande centro urbano. O bairro tem forte comércio, boas escolas, hospitais e fácil acesso ao metrô.",
-      "neighborhoods": ["Tijuca", "Vila Isabel", "Grajaú", "Andaraí", "Maracanã"],
-      "attractions": ["Floresta da Tijuca", "Cascatinha", "Parque Nacional", "Shopping Tijuca", "Maracanã"],
-      "infrastructure": ["Metrô Saens Peña", "Hospital Federal", "UERJ", "Shopping Tijuca"],
-      "highlights": ["Floresta da Tijuca", "Forte comércio", "Ótimo custo-benefício", "Fácil acesso ao metrô"],
-      "propertyTypes": ["Apartamentos", "Casas", "Salas comerciais", "Lojas"],
+      "neighborhoods": [
+        "Tijuca",
+        "Vila Isabel",
+        "Grajaú",
+        "Andaraí",
+        "Maracanã"
+      ],
+      "attractions": [
+        "Floresta da Tijuca",
+        "Cascatinha",
+        "Parque Nacional",
+        "Shopping Tijuca",
+        "Maracanã"
+      ],
+      "infrastructure": [
+        "Metrô Saens Peña",
+        "Hospital Federal",
+        "UERJ",
+        "Shopping Tijuca"
+      ],
+      "highlights": [
+        "Floresta da Tijuca",
+        "Forte comércio",
+        "Ótimo custo-benefício",
+        "Fácil acesso ao metrô"
+      ],
+      "propertyTypes": [
+        "Apartamentos",
+        "Casas",
+        "Salas comerciais",
+        "Lojas"
+      ],
       "priceRange": "R$ 200.000 a R$ 1.200.000",
       "transport": "Saens Peña, Afonso Pena, São Francisco Xavier",
-      "relatedRegions": ["zona-norte-rj", "jacarepagua-rj", "centro-rj"],
+      "relatedRegions": [
+        "zona-norte-rj",
+        "jacarepagua-rj",
+        "centro-rj"
+      ],
       "successCases": [
-        { "title": "Apartamento 3 quartos - Praça Saens Peña", "savings": "41%", "description": "Apartamento de 90m² próximo ao metrô por R$ 380.000." },
-        { "title": "Casa - Grajaú", "savings": "38%", "description": "Casa de 200m² com quintal por R$ 520.000." }
+        {
+          "title": "Apartamento 3 quartos - Praça Saens Peña",
+          "savings": "41%",
+          "description": "Apartamento de 90m² próximo ao metrô por R$ 380.000."
+        },
+        {
+          "title": "Casa - Grajaú",
+          "savings": "38%",
+          "description": "Casa de 200m² com quintal por R$ 520.000."
+        },
+        {
+          "title": "Apartamento 2 quartos - Méier - Tijuca",
+          "savings": "42%",
+          "description": "Jovem investidor adquiriu primeiro imóvel com economia superior a 40%."
+        }
       ]
     },
     "recreio-dos-bandeirantes-rj": {
       "heroDescription": "O Recreio dos Bandeirantes oferece praias paradisíacas, condomínios de qualidade e um estilo de vida mais tranquilo. Ideal para quem busca contato com a natureza sem abrir mão da infraestrutura.",
       "aboutText": "O Recreio é conhecido por suas praias com ondas perfeitas para surf, condomínios com infraestrutura completa e um ritmo de vida mais calmo. A proximidade com a Reserva de Marapendi e as praias de Grumari fazem do bairro um refúgio na cidade.",
-      "neighborhoods": ["Recreio", "Vargem Grande", "Vargem Pequena", "Grumari", "Pontal"],
-      "attractions": ["Praia do Recreio", "Praia do Pontal", "Praia de Grumari", "Reserva de Marapendi"],
-      "infrastructure": ["BRT TransOeste", "Shopping Recreio", "Hospitais particulares", "Escolas"],
-      "highlights": ["Praias paradisíacas", "Surf e esportes aquáticos", "Condomínios com lazer", "Natureza preservada"],
-      "propertyTypes": ["Apartamentos em condomínio", "Casas", "Coberturas"],
+      "neighborhoods": [
+        "Recreio",
+        "Vargem Grande",
+        "Vargem Pequena",
+        "Grumari",
+        "Pontal"
+      ],
+      "attractions": [
+        "Praia do Recreio",
+        "Praia do Pontal",
+        "Praia de Grumari",
+        "Reserva de Marapendi"
+      ],
+      "infrastructure": [
+        "BRT TransOeste",
+        "Shopping Recreio",
+        "Hospitais particulares",
+        "Escolas"
+      ],
+      "highlights": [
+        "Praias paradisíacas",
+        "Surf e esportes aquáticos",
+        "Condomínios com lazer",
+        "Natureza preservada"
+      ],
+      "propertyTypes": [
+        "Apartamentos em condomínio",
+        "Casas",
+        "Coberturas"
+      ],
       "priceRange": "R$ 250.000 a R$ 2.000.000",
       "transport": "BRT TransOeste, Av. das Américas",
-      "relatedRegions": ["barra-da-tijuca-rj", "jacarepagua-rj", "zona-sul-rj"],
+      "relatedRegions": [
+        "barra-da-tijuca-rj",
+        "jacarepagua-rj",
+        "zona-sul-rj"
+      ],
       "successCases": [
-        { "title": "Apartamento 2 quartos - Condomínio Barra Bonita", "savings": "43%", "description": "Apartamento de 70m² por R$ 280.000 com vista para o mar." }
+        {
+          "title": "Apartamento 2 quartos - Condomínio Barra Bonita",
+          "savings": "43%",
+          "description": "Apartamento de 70m² por R$ 280.000 com vista para o mar."
+        },
+        {
+          "title": "Casa em condomínio fechado - Recreio",
+          "savings": "38%",
+          "description": "Investidor arrematou casa de 300m² com segurança 24h e lazer completo."
+        },
+        {
+          "title": "Apartamento 2 quartos - Vista para lagoa",
+          "savings": "42%",
+          "description": "Jovem casal realizou o sonho da casa própria na região com economia significativa."
+        }
       ]
     },
     "lagoa-rj": {
       "heroDescription": "A Lagoa Rodrigo de Freitas é um dos cartões postais do Rio de Janeiro. Morar na Lagoa significa ter vista exclusiva, qualidade de vida e acesso aos melhores bairros da Zona Sul.",
       "aboutText": "A Lagoa é cercada por alguns dos bairros mais nobres do Rio: Ipanema, Leblon, Jardim Botânico e Gávea. O bairro oferece pista de corrida, pedalinhos, restaurantes à beira da lagoa e uma das vistas mais bonitas da cidade.",
-      "neighborhoods": ["Lagoa", "Jardim Botânico", "Gávea", "Humaitá"],
-      "attractions": ["Lagoa Rodrigo de Freitas", "Parque dos Patins", "Pista de corrida", "Restaurantes à beira da lagoa"],
-      "infrastructure": ["Próximo ao metrô", "Hospitais", "Escolas renomadas", "Comércio de alto padrão"],
-      "highlights": ["Vista para a Lagoa", "Pista de corrida", "Proximidade com Ipanema e Leblon", "Área verde"],
-      "propertyTypes": ["Apartamentos de alto padrão", "Coberturas", "Casas"],
+      "neighborhoods": [
+        "Lagoa",
+        "Jardim Botânico",
+        "Gávea",
+        "Humaitá"
+      ],
+      "attractions": [
+        "Lagoa Rodrigo de Freitas",
+        "Parque dos Patins",
+        "Pista de corrida",
+        "Restaurantes à beira da lagoa"
+      ],
+      "infrastructure": [
+        "Próximo ao metrô",
+        "Hospitais",
+        "Escolas renomadas",
+        "Comércio de alto padrão"
+      ],
+      "highlights": [
+        "Vista para a Lagoa",
+        "Pista de corrida",
+        "Proximidade com Ipanema e Leblon",
+        "Área verde"
+      ],
+      "propertyTypes": [
+        "Apartamentos de alto padrão",
+        "Coberturas",
+        "Casas"
+      ],
       "priceRange": "R$ 1.000.000 a R$ 10.000.000",
       "transport": "Próximo às estações de Ipanema e Botafogo",
-      "relatedRegions": ["ipanema-rj", "leblon-rj", "jardim-botanico-rj", "zona-sul-rj"],
+      "relatedRegions": [
+        "ipanema-rj",
+        "leblon-rj",
+        "jardim-botanico-rj",
+        "zona-sul-rj"
+      ],
       "successCases": [
-        { "title": "Apartamento 3 quartos - Av. Epitácio Pessoa", "savings": "36%", "description": "Apartamento de 130m² com vista para a Lagoa por R$ 1.600.000." }
+        {
+          "title": "Apartamento 3 quartos - Av. Epitácio Pessoa",
+          "savings": "36%",
+          "description": "Apartamento de 130m² com vista para a Lagoa por R$ 1.600.000."
+        },
+        {
+          "title": "Cobertura duplex - Área nobre - Lagoa",
+          "savings": "42%",
+          "description": "Cobertura de 200m² com terraço e churrasqueira arrematada com excelente deságio."
+        },
+        {
+          "title": "Apartamento 4 quartos - Andar alto - Lagoa",
+          "savings": "35%",
+          "description": "Família realizou o sonho da casa própria em localização premium com economia de mais de 30%."
+        }
       ]
     },
     "jardim-botanico-rj": {
       "heroDescription": "O Jardim Botânico é o bairro mais verde do Rio de Janeiro, abrigando o famoso parque homônimo. Oferece tranquilidade, natureza e proximidade com a Lagoa e a Zona Sul.",
       "aboutText": "O bairro é conhecido pelo Jardim Botânico do Rio de Janeiro, um dos mais importantes do mundo. Ruas arborizadas, casas históricas e apartamentos de alto padrão fazem do bairro um dos mais charmosos da cidade.",
-      "neighborhoods": ["Jardim Botânico", "Gávea", "Lagoa", "Humaitá"],
-      "attractions": ["Jardim Botânico do Rio de Janeiro", "Parque Lage", "Instituto Moreira Salles", "Jockey Club"],
-      "infrastructure": ["Próximo ao metrô", "Escolas bilíngues", "Restaurantes", "Comércio local"],
-      "highlights": ["Jardim Botânico", "Parque Lage", "Ruas arborizadas", "Ambiente tranquilo"],
-      "propertyTypes": ["Apartamentos", "Casas", "Coberturas"],
+      "neighborhoods": [
+        "Jardim Botânico",
+        "Gávea",
+        "Lagoa",
+        "Humaitá"
+      ],
+      "attractions": [
+        "Jardim Botânico do Rio de Janeiro",
+        "Parque Lage",
+        "Instituto Moreira Salles",
+        "Jockey Club"
+      ],
+      "infrastructure": [
+        "Próximo ao metrô",
+        "Escolas bilíngues",
+        "Restaurantes",
+        "Comércio local"
+      ],
+      "highlights": [
+        "Jardim Botânico",
+        "Parque Lage",
+        "Ruas arborizadas",
+        "Ambiente tranquilo"
+      ],
+      "propertyTypes": [
+        "Apartamentos",
+        "Casas",
+        "Coberturas"
+      ],
       "priceRange": "R$ 800.000 a R$ 6.000.000",
       "transport": "Próximo às estações de Botafogo e Ipanema",
-      "relatedRegions": ["lagoa-rj", "leblon-rj", "ipanema-rj", "zona-sul-rj"],
+      "relatedRegions": [
+        "lagoa-rj",
+        "leblon-rj",
+        "ipanema-rj",
+        "zona-sul-rj"
+      ],
       "successCases": [
-        { "title": "Casa - Rua Pacheco Leão", "savings": "40%", "description": "Casa de 250m² em rua arborizada por R$ 1.800.000." }
+        {
+          "title": "Casa - Rua Pacheco Leão",
+          "savings": "40%",
+          "description": "Casa de 250m² em rua arborizada por R$ 1.800.000."
+        },
+        {
+          "title": "Cobertura duplex - Área nobre - Jardim Botânico",
+          "savings": "42%",
+          "description": "Cobertura de 200m² com terraço e churrasqueira arrematada com excelente deságio."
+        },
+        {
+          "title": "Apartamento 4 quartos - Andar alto - Jardim Botânico",
+          "savings": "35%",
+          "description": "Família realizou o sonho da casa própria em localização premium com economia de mais de 30%."
+        }
       ]
     },
     "icarai-rj": {
       "heroDescription": "Icaraí é o bairro mais valorizado de Niterói, com praia urbana, forte comércio e excelente infraestrutura. Oferece qualidade de vida com vista para o Rio de Janeiro.",
       "aboutText": "Icaraí é conhecido pela praia urbana, calçadão movimentado, forte comércio e vida noturna. O bairro oferece fácil acesso ao Rio de Janeiro pelas barcas e pela Ponte Rio-Niterói, com custo de vida mais acessível que a Zona Sul carioca.",
-      "neighborhoods": ["Icaraí", "São Francisco", "Charitas", "Santa Rosa"],
-      "attractions": ["Praia de Icaraí", "Calçadão", "Campo de São Bento", "MAC - Museu de Arte Contemporânea"],
-      "infrastructure": ["Barcas para o Rio", "Hospital Icaraí", "Shopping Bay Market", "Escolas"],
-      "highlights": ["Vista para o Rio", "Praia urbana", "Custo-benefício", "Fácil acesso ao Rio"],
-      "propertyTypes": ["Apartamentos", "Coberturas", "Salas comerciais"],
+      "neighborhoods": [
+        "Icaraí",
+        "São Francisco",
+        "Charitas",
+        "Santa Rosa"
+      ],
+      "attractions": [
+        "Praia de Icaraí",
+        "Calçadão",
+        "Campo de São Bento",
+        "MAC - Museu de Arte Contemporânea"
+      ],
+      "infrastructure": [
+        "Barcas para o Rio",
+        "Hospital Icaraí",
+        "Shopping Bay Market",
+        "Escolas"
+      ],
+      "highlights": [
+        "Vista para o Rio",
+        "Praia urbana",
+        "Custo-benefício",
+        "Fácil acesso ao Rio"
+      ],
+      "propertyTypes": [
+        "Apartamentos",
+        "Coberturas",
+        "Salas comerciais"
+      ],
       "priceRange": "R$ 300.000 a R$ 2.000.000",
       "transport": "Barcas, ônibus, Ponte Rio-Niterói",
-      "relatedRegions": ["niteroi-rj", "zona-sul-rj", "centro-rj"],
+      "relatedRegions": [
+        "niteroi-rj",
+        "zona-sul-rj",
+        "centro-rj"
+      ],
       "successCases": [
-        { "title": "Apartamento 3 quartos - Av. Roberto Silveira", "savings": "38%", "description": "Apartamento de 100m² com vista para a praia por R$ 480.000." }
+        {
+          "title": "Apartamento 3 quartos - Av. Roberto Silveira",
+          "savings": "38%",
+          "description": "Apartamento de 100m² com vista para a praia por R$ 480.000."
+        },
+        {
+          "title": "Cobertura - São Francisco - Icaraí",
+          "savings": "40%",
+          "description": "Investidor arrematou cobertura de 150m² em bairro valorizado de Niterói."
+        },
+        {
+          "title": "Apartamento 3 quartos - Centro - Icaraí",
+          "savings": "35%",
+          "description": "Família mudou-se para Niterói economizando mais de 35% no imóvel."
+        }
       ]
     },
     "niteroi-rj": {
       "heroDescription": "Niterói oferece qualidade de vida, praias paradisíacas como Icaraí e Itacoatiara, e vista privilegiada para o Rio de Janeiro. Uma das cidades com melhor IDH do Brasil.",
       "aboutText": "Niterói é conhecida pela alta qualidade de vida, praias limpas, forte comércio em Icaraí e infraestrutura completa. A cidade oferece fácil acesso ao Rio pelas barcas e pela Ponte, com custo de vida mais acessível.",
-      "neighborhoods": ["Icaraí", "São Francisco", "Charitas", "Itacoatiara", "Camboinhas", "Centro", "Região Oceânica"],
-      "attractions": ["MAC - Museu de Arte Contemporânea", "Praia de Icaraí", "Praia de Itacoatiara", "Fortaleza de Santa Cruz"],
-      "infrastructure": ["Barcas", "Ônibus", "Hospital Icaraí", "Shopping Bay Market", "UFF"],
-      "highlights": ["Vista para o Rio", "Praias limpas", "Alto IDH", "Custo-benefício"],
-      "propertyTypes": ["Apartamentos", "Coberturas", "Casas", "Salas comerciais"],
+      "neighborhoods": [
+        "Icaraí",
+        "São Francisco",
+        "Charitas",
+        "Itacoatiara",
+        "Camboinhas",
+        "Centro",
+        "Região Oceânica"
+      ],
+      "attractions": [
+        "MAC - Museu de Arte Contemporânea",
+        "Praia de Icaraí",
+        "Praia de Itacoatiara",
+        "Fortaleza de Santa Cruz"
+      ],
+      "infrastructure": [
+        "Barcas",
+        "Ônibus",
+        "Hospital Icaraí",
+        "Shopping Bay Market",
+        "UFF"
+      ],
+      "highlights": [
+        "Vista para o Rio",
+        "Praias limpas",
+        "Alto IDH",
+        "Custo-benefício"
+      ],
+      "propertyTypes": [
+        "Apartamentos",
+        "Coberturas",
+        "Casas",
+        "Salas comerciais"
+      ],
       "priceRange": "R$ 250.000 a R$ 3.000.000",
       "transport": "Barcas para Praça XV, Ponte Rio-Niterói",
-      "relatedRegions": ["icarai-rj", "zona-sul-rj", "centro-rj"],
+      "relatedRegions": [
+        "icarai-rj",
+        "zona-sul-rj",
+        "centro-rj"
+      ],
       "successCases": [
-        { "title": "Apartamento 2 quartos - Itacoatiara", "savings": "42%", "description": "Apartamento de 80m² próximo à praia por R$ 350.000." }
+        {
+          "title": "Apartamento 2 quartos - Itacoatiara",
+          "savings": "42%",
+          "description": "Apartamento de 80m² próximo à praia por R$ 350.000."
+        },
+        {
+          "title": "Cobertura - São Francisco - Icaraí",
+          "savings": "40%",
+          "description": "Investidor arrematou cobertura de 150m² em bairro valorizado de Niterói."
+        },
+        {
+          "title": "Apartamento 3 quartos - Centro - Icaraí",
+          "savings": "35%",
+          "description": "Família mudou-se para Niterói economizando mais de 35% no imóvel."
+        }
       ]
     },
     "regiao-dos-lagos-rj": {
       "heroDescription": "A Região dos Lagos é o destino de veraneio mais procurado do Rio de Janeiro. Cabo Frio, Búzios e Arraial do Cabo oferecem praias paradisíacas e oportunidades de investimento.",
       "aboutText": "A Região dos Lagos engloba cidades como Cabo Frio, Búzios, Arraial do Cabo, Araruama e Saquarema. É conhecida pelas praias de águas cristalinas, clima ensolarado e forte potencial turístico. Ideal para casa de veraneio ou investimento em aluguel por temporada.",
-      "neighborhoods": ["Cabo Frio", "Búzios", "Arraial do Cabo", "Araruama", "Saquarema", "São Pedro da Aldeia"],
-      "attractions": ["Praia do Forte", "Rua das Pedras (Búzios)", "Prainhas do Pontal", "Lagoa de Araruama"],
-      "infrastructure": ["Aeroporto de Cabo Frio", "Hospitais", "Comércio turístico", "Restaurantes"],
-      "highlights": ["Praias paradisíacas", "Turismo o ano todo", "Investimento em temporada", "Clima ensolarado"],
-      "propertyTypes": ["Casas de praia", "Apartamentos", "Terrenos", "Pousadas"],
+      "neighborhoods": [
+        "Cabo Frio",
+        "Búzios",
+        "Arraial do Cabo",
+        "Araruama",
+        "Saquarema",
+        "São Pedro da Aldeia"
+      ],
+      "attractions": [
+        "Praia do Forte",
+        "Rua das Pedras (Búzios)",
+        "Prainhas do Pontal",
+        "Lagoa de Araruama"
+      ],
+      "infrastructure": [
+        "Aeroporto de Cabo Frio",
+        "Hospitais",
+        "Comércio turístico",
+        "Restaurantes"
+      ],
+      "highlights": [
+        "Praias paradisíacas",
+        "Turismo o ano todo",
+        "Investimento em temporada",
+        "Clima ensolarado"
+      ],
+      "propertyTypes": [
+        "Casas de praia",
+        "Apartamentos",
+        "Terrenos",
+        "Pousadas"
+      ],
       "priceRange": "R$ 200.000 a R$ 3.000.000",
       "transport": "Via Lagos, Aeroporto de Cabo Frio",
-      "relatedRegions": ["angra-dos-reis-rj", "niteroi-rj", "zona-sul-rj"],
+      "relatedRegions": [
+        "angra-dos-reis-rj",
+        "niteroi-rj",
+        "zona-sul-rj"
+      ],
       "successCases": [
-        { "title": "Casa em Búzios - Geribá", "savings": "45%", "description": "Casa de 180m² próxima à praia por R$ 650.000." }
+        {
+          "title": "Casa em Búzios - Geribá",
+          "savings": "45%",
+          "description": "Casa de 180m² próxima à praia por R$ 650.000."
+        },
+        {
+          "title": "Apartamento frente mar - Cabo Frio",
+          "savings": "38%",
+          "description": "Cliente realizou o sonho da casa de praia própria por valor muito abaixo do mercado."
+        },
+        {
+          "title": "Terreno em condomínio - Cabo Frio",
+          "savings": "45%",
+          "description": "Investidor adquiriu terreno de 600m² em condomínio de alto padrão para construção."
+        }
       ]
     },
     "regiao-serrana-rj": {
       "heroDescription": "A Região Serrana do Rio de Janeiro oferece clima ameno, natureza exuberante e qualidade de vida. Petrópolis, Teresópolis e Nova Friburgo são destinos ideais para quem busca tranquilidade.",
       "aboutText": "A Região Serrana engloba cidades como Petrópolis (Cidade Imperial), Teresópolis e Nova Friburgo. Conhecida pelo clima de montanha, arquitetura europeia e gastronomia, é ideal para casa de campo ou moradia permanente para quem busca fugir do calor.",
-      "neighborhoods": ["Petrópolis", "Teresópolis", "Nova Friburgo", "Itaipava", "Araras"],
-      "attractions": ["Museu Imperial", "Parque Nacional da Serra dos Órgãos", "Cervejarias artesanais", "Pico do Dedo de Deus"],
-      "infrastructure": ["Hospitais", "Escolas", "Comércio local", "Restaurantes"],
-      "highlights": ["Clima de montanha", "Arquitetura europeia", "Natureza preservada", "Gastronomia"],
-      "propertyTypes": ["Casas", "Sítios", "Apartamentos", "Terrenos"],
+      "neighborhoods": [
+        "Petrópolis",
+        "Teresópolis",
+        "Nova Friburgo",
+        "Itaipava",
+        "Araras"
+      ],
+      "attractions": [
+        "Museu Imperial",
+        "Parque Nacional da Serra dos Órgãos",
+        "Cervejarias artesanais",
+        "Pico do Dedo de Deus"
+      ],
+      "infrastructure": [
+        "Hospitais",
+        "Escolas",
+        "Comércio local",
+        "Restaurantes"
+      ],
+      "highlights": [
+        "Clima de montanha",
+        "Arquitetura europeia",
+        "Natureza preservada",
+        "Gastronomia"
+      ],
+      "propertyTypes": [
+        "Casas",
+        "Sítios",
+        "Apartamentos",
+        "Terrenos"
+      ],
       "priceRange": "R$ 200.000 a R$ 2.500.000",
       "transport": "BR-040, BR-116",
-      "relatedRegions": ["zona-norte-rj", "centro-rj", "niteroi-rj"],
+      "relatedRegions": [
+        "zona-norte-rj",
+        "centro-rj",
+        "niteroi-rj"
+      ],
       "successCases": [
-        { "title": "Sítio em Itaipava", "savings": "40%", "description": "Sítio de 5.000m² com casa de 200m² por R$ 800.000." }
+        {
+          "title": "Sítio em Itaipava",
+          "savings": "40%",
+          "description": "Sítio de 5.000m² com casa de 200m² por R$ 800.000."
+        },
+        {
+          "title": "Sítio - Região serrana - Petrópolis",
+          "savings": "38%",
+          "description": "Investidor arrematou propriedade rural de 10.000m² ideal para lazer e descanso."
+        },
+        {
+          "title": "Apartamento em Petrópolis - Petrópolis",
+          "savings": "35%",
+          "description": "Cliente adquiriu apartamento no centro histórico de Petrópolis com economia expressiva."
+        }
       ]
     },
     "angra-dos-reis-rj": {
       "heroDescription": "Angra dos Reis é o paraíso do litoral sul fluminense, com 365 ilhas e mais de 2.000 praias. Ideal para quem busca imóveis de luxo em condomínios à beira-mar.",
       "aboutText": "Angra dos Reis é conhecida pelas ilhas paradisíacas, condomínios de luxo e marinas. A região atrai investidores que buscam casas de veraneio exclusivas, com acesso por lancha às praias mais bonitas do Brasil.",
-      "neighborhoods": ["Centro", "Praia do Anil", "Frade", "Bracuí", "Ilha Grande"],
-      "attractions": ["Ilha Grande", "Praias paradisíacas", "Marinas", "Passeios de barco"],
-      "infrastructure": ["Marina", "Hospitais", "Heliponto", "Comércio"],
-      "highlights": ["365 ilhas", "Condomínios de luxo", "Marinas", "Natureza preservada"],
-      "propertyTypes": ["Casas de luxo", "Apartamentos", "Terrenos em condomínio", "Ilhas particulares"],
+      "neighborhoods": [
+        "Centro",
+        "Praia do Anil",
+        "Frade",
+        "Bracuí",
+        "Ilha Grande"
+      ],
+      "attractions": [
+        "Ilha Grande",
+        "Praias paradisíacas",
+        "Marinas",
+        "Passeios de barco"
+      ],
+      "infrastructure": [
+        "Marina",
+        "Hospitais",
+        "Heliponto",
+        "Comércio"
+      ],
+      "highlights": [
+        "365 ilhas",
+        "Condomínios de luxo",
+        "Marinas",
+        "Natureza preservada"
+      ],
+      "propertyTypes": [
+        "Casas de luxo",
+        "Apartamentos",
+        "Terrenos em condomínio",
+        "Ilhas particulares"
+      ],
       "priceRange": "R$ 500.000 a R$ 10.000.000",
       "transport": "BR-101, Marina",
-      "relatedRegions": ["regiao-dos-lagos-rj", "zona-sul-rj", "barra-da-tijuca-rj"],
+      "relatedRegions": [
+        "regiao-dos-lagos-rj",
+        "zona-sul-rj",
+        "barra-da-tijuca-rj"
+      ],
       "successCases": [
-        { "title": "Casa em condomínio - Frade", "savings": "38%", "description": "Casa de 300m² com acesso à praia por R$ 1.200.000." }
+        {
+          "title": "Casa em condomínio - Frade",
+          "savings": "38%",
+          "description": "Casa de 300m² com acesso à praia por R$ 1.200.000."
+        },
+        {
+          "title": "Apartamento frente mar - Centro",
+          "savings": "38%",
+          "description": "Cliente realizou o sonho da casa de praia própria por valor muito abaixo do mercado."
+        },
+        {
+          "title": "Terreno em condomínio - Centro",
+          "savings": "45%",
+          "description": "Investidor adquiriu terreno de 600m² em condomínio de alto padrão para construção."
+        }
       ]
     },
     "zona-sul-rj": {
       "heroDescription": "A Zona Sul do Rio de Janeiro concentra os bairros mais valorizados da cidade: Copacabana, Ipanema, Leblon, Botafogo e Flamengo. Sinônimo de qualidade de vida e alta valorização.",
       "aboutText": "A Zona Sul carioca é sinônimo de qualidade de vida, com praias famosas, parques, metrô, hospitais de excelência e as melhores escolas. É a região mais procurada por investidores e moradores exigentes.",
-      "neighborhoods": ["Copacabana", "Ipanema", "Leblon", "Botafogo", "Flamengo", "Laranjeiras", "Humaitá", "Lagoa", "Gávea", "Jardim Botânico"],
-      "attractions": ["Praias", "Lagoa Rodrigo de Freitas", "Jardim Botânico", "Cristo Redentor", "Pão de Açúcar"],
-      "infrastructure": ["Metrô Linhas 1 e 2", "Hospitais renomados", "Escolas tradicionais", "Shoppings"],
-      "highlights": ["Praias mundialmente famosas", "Alta valorização", "Infraestrutura completa", "Segurança"],
-      "propertyTypes": ["Apartamentos", "Coberturas", "Casas", "Salas comerciais"],
+      "neighborhoods": [
+        "Copacabana",
+        "Ipanema",
+        "Leblon",
+        "Botafogo",
+        "Flamengo",
+        "Laranjeiras",
+        "Humaitá",
+        "Lagoa",
+        "Gávea",
+        "Jardim Botânico"
+      ],
+      "attractions": [
+        "Praias",
+        "Lagoa Rodrigo de Freitas",
+        "Jardim Botânico",
+        "Cristo Redentor",
+        "Pão de Açúcar"
+      ],
+      "infrastructure": [
+        "Metrô Linhas 1 e 2",
+        "Hospitais renomados",
+        "Escolas tradicionais",
+        "Shoppings"
+      ],
+      "highlights": [
+        "Praias mundialmente famosas",
+        "Alta valorização",
+        "Infraestrutura completa",
+        "Segurança"
+      ],
+      "propertyTypes": [
+        "Apartamentos",
+        "Coberturas",
+        "Casas",
+        "Salas comerciais"
+      ],
       "priceRange": "R$ 400.000 a R$ 15.000.000",
       "transport": "Metrô Linhas 1 e 2, ônibus, ciclovias",
-      "relatedRegions": ["copacabana-rj", "ipanema-rj", "leblon-rj", "botafogo-rj", "flamengo-rj"],
-      "successCases": []
+      "relatedRegions": [
+        "copacabana-rj",
+        "ipanema-rj",
+        "leblon-rj",
+        "botafogo-rj",
+        "flamengo-rj"
+      ],
+      "successCases": [
+        {
+          "title": "Apartamento 2 quartos - Próximo ao metrô",
+          "savings": "40%",
+          "description": "Investidor adquiriu imóvel bem localizado com excelente potencial de valorização e renda."
+        },
+        {
+          "title": "Apartamento 3 quartos - Reformado - Copacabana",
+          "savings": "37%",
+          "description": "Cliente arrematou imóvel pronto para morar com economia superior a um terço do valor de mercado."
+        },
+        {
+          "title": "Sala comercial - Ponto estratégico - Copacabana",
+          "savings": "45%",
+          "description": "Empresário adquiriu sala em localização comercial nobre por menos da metade do valor avaliado."
+        }
+      ]
     },
     "zona-norte-rj": {
       "heroDescription": "A Zona Norte é a maior região do Rio de Janeiro, oferecendo excelente custo-benefício, forte comércio e infraestrutura completa. Ideal para quem busca economia sem abrir mão de qualidade.",
       "aboutText": "A Zona Norte oferece diversidade de bairros, desde áreas mais valorizadas como Tijuca e Vila Isabel até opções mais acessíveis. Com metrô, trens e forte comércio, é uma excelente opção para moradia e investimento.",
-      "neighborhoods": ["Tijuca", "Méier", "Vila Isabel", "Grajaú", "Maracanã", "Engenho Novo", "Cachambi"],
-      "attractions": ["Maracanã", "Quinta da Boa Vista", "Floresta da Tijuca", "Shopping Nova América"],
-      "infrastructure": ["Metrô", "SuperVia", "Hospitais", "UERJ", "Shoppings"],
-      "highlights": ["Ótimo custo-benefício", "Forte comércio", "Transporte público", "Diversidade de bairros"],
-      "propertyTypes": ["Apartamentos", "Casas", "Salas comerciais", "Lojas"],
+      "neighborhoods": [
+        "Tijuca",
+        "Méier",
+        "Vila Isabel",
+        "Grajaú",
+        "Maracanã",
+        "Engenho Novo",
+        "Cachambi"
+      ],
+      "attractions": [
+        "Maracanã",
+        "Quinta da Boa Vista",
+        "Floresta da Tijuca",
+        "Shopping Nova América"
+      ],
+      "infrastructure": [
+        "Metrô",
+        "SuperVia",
+        "Hospitais",
+        "UERJ",
+        "Shoppings"
+      ],
+      "highlights": [
+        "Ótimo custo-benefício",
+        "Forte comércio",
+        "Transporte público",
+        "Diversidade de bairros"
+      ],
+      "propertyTypes": [
+        "Apartamentos",
+        "Casas",
+        "Salas comerciais",
+        "Lojas"
+      ],
       "priceRange": "R$ 150.000 a R$ 1.000.000",
       "transport": "Metrô, SuperVia, BRT TransCarioca",
-      "relatedRegions": ["tijuca-rj", "jacarepagua-rj", "centro-rj"],
-      "successCases": []
+      "relatedRegions": [
+        "tijuca-rj",
+        "jacarepagua-rj",
+        "centro-rj"
+      ],
+      "successCases": [
+        {
+          "title": "Apartamento 3 quartos - Tijuca - Tijuca",
+          "savings": "40%",
+          "description": "Família adquiriu imóvel próximo ao metrô com excelente custo-benefício."
+        },
+        {
+          "title": "Casa - Vila Isabel - Tijuca",
+          "savings": "38%",
+          "description": "Cliente arrematou casa de 200m² em bairro tradicional da Zona Norte."
+        },
+        {
+          "title": "Apartamento 2 quartos - Méier - Tijuca",
+          "savings": "42%",
+          "description": "Jovem investidor adquiriu primeiro imóvel com economia superior a 40%."
+        }
+      ]
     },
     "jacarepagua-rj": {
       "heroDescription": "Jacarepaguá é uma região em crescimento no Rio de Janeiro, com condomínios modernos, forte comércio e fácil acesso à Barra da Tijuca. Oferece ótimo custo-benefício.",
       "aboutText": "Jacarepaguá engloba bairros como Freguesia, Taquara, Tanque e Pechincha. A região cresceu muito nos últimos anos, com novos condomínios, shoppings e infraestrutura. É uma alternativa mais acessível à Barra da Tijuca.",
-      "neighborhoods": ["Freguesia", "Taquara", "Tanque", "Pechincha", "Anil", "Curicica"],
-      "attractions": ["Shopping Taquara", "Parque de Marapendi", "Cidade das Artes", "Riocentro"],
-      "infrastructure": ["BRT TransOlímpica", "Hospitais", "Shoppings", "Escolas"],
-      "highlights": ["Condomínios modernos", "Custo-benefício", "Fácil acesso à Barra", "Região em crescimento"],
-      "propertyTypes": ["Apartamentos em condomínio", "Casas", "Salas comerciais"],
+      "neighborhoods": [
+        "Freguesia",
+        "Taquara",
+        "Tanque",
+        "Pechincha",
+        "Anil",
+        "Curicica"
+      ],
+      "attractions": [
+        "Shopping Taquara",
+        "Parque de Marapendi",
+        "Cidade das Artes",
+        "Riocentro"
+      ],
+      "infrastructure": [
+        "BRT TransOlímpica",
+        "Hospitais",
+        "Shoppings",
+        "Escolas"
+      ],
+      "highlights": [
+        "Condomínios modernos",
+        "Custo-benefício",
+        "Fácil acesso à Barra",
+        "Região em crescimento"
+      ],
+      "propertyTypes": [
+        "Apartamentos em condomínio",
+        "Casas",
+        "Salas comerciais"
+      ],
       "priceRange": "R$ 200.000 a R$ 1.500.000",
       "transport": "BRT TransOlímpica, Linha Amarela",
-      "relatedRegions": ["barra-da-tijuca-rj", "recreio-dos-bandeirantes-rj", "tijuca-rj"],
+      "relatedRegions": [
+        "barra-da-tijuca-rj",
+        "recreio-dos-bandeirantes-rj",
+        "tijuca-rj"
+      ],
       "successCases": [
-        { "title": "Apartamento 2 quartos - Freguesia", "savings": "40%", "description": "Apartamento de 60m² em condomínio com lazer por R$ 220.000." }
+        {
+          "title": "Apartamento 2 quartos - Freguesia",
+          "savings": "40%",
+          "description": "Apartamento de 60m² em condomínio com lazer por R$ 220.000."
+        },
+        {
+          "title": "Casa em condomínio fechado - Freguesia",
+          "savings": "38%",
+          "description": "Investidor arrematou casa de 300m² com segurança 24h e lazer completo."
+        },
+        {
+          "title": "Apartamento 2 quartos - Vista para lagoa",
+          "savings": "42%",
+          "description": "Jovem casal realizou o sonho da casa própria na região com economia significativa."
+        }
       ]
     },
     "centro-rj": {
       "heroDescription": "O Centro do Rio de Janeiro é o coração comercial e histórico da cidade. Oferece oportunidades únicas em salas comerciais e apartamentos para retrofit com alta rentabilidade.",
       "aboutText": "O Centro é a principal região comercial e financeira do Rio, com prédios históricos, museus, teatros e forte infraestrutura de transporte. A revitalização do Porto Maravilha trouxe novos empreendimentos e valorização.",
-      "neighborhoods": ["Centro", "Lapa", "Cinelândia", "Praça Mauá", "Saúde", "Gamboa"],
-      "attractions": ["Theatro Municipal", "Praça Mauá", "Museu do Amanhã", "AquaRio", "Arcos da Lapa"],
-      "infrastructure": ["Metrô", "VLT", "Barcas", "Aeroporto Santos Dumont", "Hospitais"],
-      "highlights": ["Centro financeiro", "Patrimônio histórico", "Revitalização Porto Maravilha", "Transporte integrado"],
-      "propertyTypes": ["Salas comerciais", "Apartamentos", "Prédios comerciais", "Lojas"],
+      "neighborhoods": [
+        "Centro",
+        "Lapa",
+        "Cinelândia",
+        "Praça Mauá",
+        "Saúde",
+        "Gamboa"
+      ],
+      "attractions": [
+        "Theatro Municipal",
+        "Praça Mauá",
+        "Museu do Amanhã",
+        "AquaRio",
+        "Arcos da Lapa"
+      ],
+      "infrastructure": [
+        "Metrô",
+        "VLT",
+        "Barcas",
+        "Aeroporto Santos Dumont",
+        "Hospitais"
+      ],
+      "highlights": [
+        "Centro financeiro",
+        "Patrimônio histórico",
+        "Revitalização Porto Maravilha",
+        "Transporte integrado"
+      ],
+      "propertyTypes": [
+        "Salas comerciais",
+        "Apartamentos",
+        "Prédios comerciais",
+        "Lojas"
+      ],
       "priceRange": "R$ 100.000 a R$ 2.000.000",
       "transport": "Metrô, VLT, Barcas, Aeroporto Santos Dumont",
-      "relatedRegions": ["flamengo-rj", "niteroi-rj", "tijuca-rj", "zona-sul-rj"],
+      "relatedRegions": [
+        "flamengo-rj",
+        "niteroi-rj",
+        "tijuca-rj",
+        "zona-sul-rj"
+      ],
       "successCases": [
-        { "title": "Sala comercial - Av. Rio Branco", "savings": "50%", "description": "Sala de 50m² em prédio comercial por R$ 120.000." }
+        {
+          "title": "Sala comercial - Av. Rio Branco",
+          "savings": "50%",
+          "description": "Sala de 50m² em prédio comercial por R$ 120.000."
+        },
+        {
+          "title": "Apartamento para retrofit - Lapa - Centro",
+          "savings": "45%",
+          "description": "Cliente arrematou apartamento com potencial de valorização após reforma."
+        },
+        {
+          "title": "Loja - Centro histórico - Centro",
+          "savings": "48%",
+          "description": "Empresário adquiriu ponto comercial em área de grande circulação."
+        }
       ]
     },
     "tatuape-sp": {
       "heroDescription": "O Tatuapé é um dos bairros mais valorizados da Zona Leste de São Paulo, com forte comércio, metrô e infraestrutura completa. Oferece ótimo custo-benefício para moradia e investimento.",
       "aboutText": "O Tatuapé é conhecido pelo Shopping Metrô Tatuapé, forte comércio na Rua Tuiuti e excelente infraestrutura. O bairro oferece fácil acesso ao Centro e outras regiões pelo metrô, sendo uma das melhores opções da Zona Leste.",
-      "neighborhoods": ["Tatuapé", "Anália Franco", "Vila Carrão", "Vila Gomes Cardim"],
-      "attractions": ["Shopping Metrô Tatuapé", "Shopping Anália Franco", "Parque Ceret", "Rua Tuiuti"],
-      "infrastructure": ["Metrô Tatuapé", "Hospital Santa Marcelina", "Escolas", "Shoppings"],
-      "highlights": ["Metrô", "Forte comércio", "Valorização constante", "Infraestrutura completa"],
-      "propertyTypes": ["Apartamentos", "Casas", "Salas comerciais", "Studios"],
+      "neighborhoods": [
+        "Tatuapé",
+        "Anália Franco",
+        "Vila Carrão",
+        "Vila Gomes Cardim"
+      ],
+      "attractions": [
+        "Shopping Metrô Tatuapé",
+        "Shopping Anália Franco",
+        "Parque Ceret",
+        "Rua Tuiuti"
+      ],
+      "infrastructure": [
+        "Metrô Tatuapé",
+        "Hospital Santa Marcelina",
+        "Escolas",
+        "Shoppings"
+      ],
+      "highlights": [
+        "Metrô",
+        "Forte comércio",
+        "Valorização constante",
+        "Infraestrutura completa"
+      ],
+      "propertyTypes": [
+        "Apartamentos",
+        "Casas",
+        "Salas comerciais",
+        "Studios"
+      ],
       "priceRange": "R$ 300.000 a R$ 1.500.000",
       "transport": "Metrô Tatuapé (Linha 3 Vermelha)",
-      "relatedRegions": ["mooca-sp", "vila-mariana-sp", "pinheiros-sp"],
+      "relatedRegions": [
+        "mooca-sp",
+        "vila-mariana-sp",
+        "pinheiros-sp"
+      ],
       "successCases": [
-        { "title": "Apartamento 2 quartos - Anália Franco", "savings": "38%", "description": "Apartamento de 70m² próximo ao shopping por R$ 380.000." }
+        {
+          "title": "Apartamento 2 quartos - Anália Franco",
+          "savings": "38%",
+          "description": "Apartamento de 70m² próximo ao shopping por R$ 380.000."
+        },
+        {
+          "title": "Apartamento 3 quartos - Condomínio com lazer - Tatuapé",
+          "savings": "38%",
+          "description": "Família arrematou apartamento em condomínio completo por ótimo preço."
+        },
+        {
+          "title": "Casa - Bairro tradicional - Tatuapé",
+          "savings": "42%",
+          "description": "Investidor adquiriu imóvel em região com forte potencial de valorização."
+        }
       ]
     },
     "vila-mariana-sp": {
       "heroDescription": "A Vila Mariana é um bairro tradicional e residencial de São Paulo, com excelente infraestrutura e próximo ao Parque Ibirapuera. Ideal para famílias que buscam qualidade de vida.",
       "aboutText": "A Vila Mariana combina tradição e modernidade, com ruas arborizadas, forte comércio, hospitais renomados e proximidade do Parque Ibirapuera. O bairro tem fácil acesso ao metrô e é muito procurado por famílias.",
-      "neighborhoods": ["Vila Mariana", "Vila Clementino", "Paraíso", "Chácara Klabin"],
-      "attractions": ["Parque Ibirapuera", "Hospital São Paulo", "Shopping Santa Cruz", "Praça Pedroso"],
-      "infrastructure": ["Metrô Vila Mariana", "Hospital São Paulo/UNIFESP", "Escolas tradicionais", "Shopping Santa Cruz"],
-      "highlights": ["Próximo ao Ibirapuera", "Metrô", "Ambiente familiar", "Hospitais renomados"],
-      "propertyTypes": ["Apartamentos", "Coberturas", "Casas", "Studios"],
+      "neighborhoods": [
+        "Vila Mariana",
+        "Vila Clementino",
+        "Paraíso",
+        "Chácara Klabin"
+      ],
+      "attractions": [
+        "Parque Ibirapuera",
+        "Hospital São Paulo",
+        "Shopping Santa Cruz",
+        "Praça Pedroso"
+      ],
+      "infrastructure": [
+        "Metrô Vila Mariana",
+        "Hospital São Paulo/UNIFESP",
+        "Escolas tradicionais",
+        "Shopping Santa Cruz"
+      ],
+      "highlights": [
+        "Próximo ao Ibirapuera",
+        "Metrô",
+        "Ambiente familiar",
+        "Hospitais renomados"
+      ],
+      "propertyTypes": [
+        "Apartamentos",
+        "Coberturas",
+        "Casas",
+        "Studios"
+      ],
       "priceRange": "R$ 400.000 a R$ 3.000.000",
       "transport": "Vila Mariana, Santa Cruz, Ana Rosa (Linha 1 Azul)",
-      "relatedRegions": ["moema-sp", "pinheiros-sp", "itaim-bibi-sp"],
+      "relatedRegions": [
+        "moema-sp",
+        "pinheiros-sp",
+        "itaim-bibi-sp"
+      ],
       "successCases": [
-        { "title": "Apartamento 3 quartos - Rua Domingos de Morais", "savings": "36%", "description": "Apartamento de 100m² próximo ao metrô por R$ 650.000." }
+        {
+          "title": "Apartamento 3 quartos - Rua Domingos de Morais",
+          "savings": "36%",
+          "description": "Apartamento de 100m² próximo ao metrô por R$ 650.000."
+        },
+        {
+          "title": "Apartamento 2 quartos - Bairro valorizado - Vila Mariana",
+          "savings": "40%",
+          "description": "Jovem casal realizou o sonho da casa própria com economia expressiva."
+        },
+        {
+          "title": "Studio - Investimento - Vila Mariana",
+          "savings": "35%",
+          "description": "Investidor adquiriu studio compacto ideal para renda de aluguel."
+        }
       ]
     },
     "pinheiros-sp": {
       "heroDescription": "Pinheiros é um dos bairros mais descolados de São Paulo, com vida noturna agitada, gastronomia diversificada e excelente infraestrutura. Ideal para jovens profissionais e investidores.",
       "aboutText": "Pinheiros combina tradição e modernidade, com vilas charmosas, prédios novos, forte comércio e uma das vidas noturnas mais agitadas de São Paulo. O bairro é polo de startups e coworkings.",
-      "neighborhoods": ["Pinheiros", "Vila Madalena", "Alto de Pinheiros", "Sumaré"],
-      "attractions": ["Beco do Batman", "Praça Benedito Calixto", "Mercado de Pinheiros", "Pinacoteca"],
-      "infrastructure": ["Metrô Faria Lima", "Hospitais", "Escolas", "Shopping Eldorado"],
-      "highlights": ["Vida noturna", "Gastronomia", "Cultura", "Startups e coworkings"],
-      "propertyTypes": ["Apartamentos", "Coberturas", "Casas em vilas", "Studios"],
+      "neighborhoods": [
+        "Pinheiros",
+        "Vila Madalena",
+        "Alto de Pinheiros",
+        "Sumaré"
+      ],
+      "attractions": [
+        "Beco do Batman",
+        "Praça Benedito Calixto",
+        "Mercado de Pinheiros",
+        "Pinacoteca"
+      ],
+      "infrastructure": [
+        "Metrô Faria Lima",
+        "Hospitais",
+        "Escolas",
+        "Shopping Eldorado"
+      ],
+      "highlights": [
+        "Vida noturna",
+        "Gastronomia",
+        "Cultura",
+        "Startups e coworkings"
+      ],
+      "propertyTypes": [
+        "Apartamentos",
+        "Coberturas",
+        "Casas em vilas",
+        "Studios"
+      ],
       "priceRange": "R$ 500.000 a R$ 4.000.000",
       "transport": "Pinheiros, Faria Lima (Linha 4 Amarela)",
-      "relatedRegions": ["itaim-bibi-sp", "jardim-america-sp", "vila-mariana-sp"],
+      "relatedRegions": [
+        "itaim-bibi-sp",
+        "jardim-america-sp",
+        "vila-mariana-sp"
+      ],
       "successCases": [
-        { "title": "Apartamento 1 quarto - Vila Madalena", "savings": "35%", "description": "Studio de 40m² próximo ao Beco do Batman por R$ 320.000." }
+        {
+          "title": "Apartamento 1 quarto - Vila Madalena",
+          "savings": "35%",
+          "description": "Studio de 40m² próximo ao Beco do Batman por R$ 320.000."
+        },
+        {
+          "title": "Apartamento 2 quartos - Bairro valorizado - Pinheiros",
+          "savings": "40%",
+          "description": "Jovem casal realizou o sonho da casa própria com economia expressiva."
+        },
+        {
+          "title": "Studio - Investimento - Pinheiros",
+          "savings": "35%",
+          "description": "Investidor adquiriu studio compacto ideal para renda de aluguel."
+        }
       ]
     },
     "mooca-sp": {
       "heroDescription": "A Mooca é um dos bairros mais tradicionais de São Paulo, com forte identidade italiana, gastronomia típica e infraestrutura completa. Oferece ótimo custo-benefício na Zona Leste.",
       "aboutText": "A Mooca é conhecida pela tradição italiana, festas típicas, cantinas e forte comércio. O bairro oferece fácil acesso ao Centro e outras regiões, sendo uma excelente opção para quem busca tradição e praticidade.",
-      "neighborhoods": ["Mooca", "Alto da Mooca", "Parque da Mooca", "Cambuci"],
-      "attractions": ["Festa de San Gennaro", "Cantinas italianas", "Museu da Imigração", "Shopping Mooca Plaza"],
-      "infrastructure": ["Metrô Bresser-Mooca", "Hospitais", "Escolas", "Shopping Mooca Plaza"],
-      "highlights": ["Tradição italiana", "Gastronomia", "Custo-benefício", "Forte comércio"],
-      "propertyTypes": ["Apartamentos", "Casas", "Sobrados", "Salas comerciais"],
+      "neighborhoods": [
+        "Mooca",
+        "Alto da Mooca",
+        "Parque da Mooca",
+        "Cambuci"
+      ],
+      "attractions": [
+        "Festa de San Gennaro",
+        "Cantinas italianas",
+        "Museu da Imigração",
+        "Shopping Mooca Plaza"
+      ],
+      "infrastructure": [
+        "Metrô Bresser-Mooca",
+        "Hospitais",
+        "Escolas",
+        "Shopping Mooca Plaza"
+      ],
+      "highlights": [
+        "Tradição italiana",
+        "Gastronomia",
+        "Custo-benefício",
+        "Forte comércio"
+      ],
+      "propertyTypes": [
+        "Apartamentos",
+        "Casas",
+        "Sobrados",
+        "Salas comerciais"
+      ],
       "priceRange": "R$ 250.000 a R$ 1.200.000",
       "transport": "Bresser-Mooca (Linha 3 Vermelha)",
-      "relatedRegions": ["tatuape-sp", "vila-mariana-sp", "ipiranga-sp"],
+      "relatedRegions": [
+        "tatuape-sp",
+        "vila-mariana-sp",
+        "ipiranga-sp"
+      ],
       "successCases": [
-        { "title": "Apartamento 2 quartos - Alto da Mooca", "savings": "40%", "description": "Apartamento de 65m² em prédio novo por R$ 320.000." }
+        {
+          "title": "Apartamento 2 quartos - Alto da Mooca",
+          "savings": "40%",
+          "description": "Apartamento de 65m² em prédio novo por R$ 320.000."
+        },
+        {
+          "title": "Apartamento 3 quartos - Condomínio com lazer - Mooca",
+          "savings": "38%",
+          "description": "Família arrematou apartamento em condomínio completo por ótimo preço."
+        },
+        {
+          "title": "Casa - Bairro tradicional - Mooca",
+          "savings": "42%",
+          "description": "Investidor adquiriu imóvel em região com forte potencial de valorização."
+        }
       ]
     },
     "perdizes-sp": {
       "heroDescription": "Perdizes é um bairro nobre e tradicional de São Paulo, com ruas arborizadas, forte comércio e proximidade com a PUC-SP. Ideal para famílias e estudantes universitários.",
       "aboutText": "Perdizes é conhecido pela tranquilidade, ruas arborizadas e proximidade com a PUC-SP. O bairro oferece forte comércio, restaurantes e fácil acesso ao Centro e outras regiões.",
-      "neighborhoods": ["Perdizes", "Pompeia", "Sumaré", "Água Branca"],
-      "attractions": ["PUC-SP", "Allianz Parque", "SESC Pompeia", "Praça Vilaboim"],
-      "infrastructure": ["Próximo ao metrô", "Hospitais", "Escolas", "Comércio local"],
-      "highlights": ["Ruas arborizadas", "PUC-SP", "Ambiente familiar", "Forte comércio"],
-      "propertyTypes": ["Apartamentos", "Casas", "Coberturas"],
+      "neighborhoods": [
+        "Perdizes",
+        "Pompeia",
+        "Sumaré",
+        "Água Branca"
+      ],
+      "attractions": [
+        "PUC-SP",
+        "Allianz Parque",
+        "SESC Pompeia",
+        "Praça Vilaboim"
+      ],
+      "infrastructure": [
+        "Próximo ao metrô",
+        "Hospitais",
+        "Escolas",
+        "Comércio local"
+      ],
+      "highlights": [
+        "Ruas arborizadas",
+        "PUC-SP",
+        "Ambiente familiar",
+        "Forte comércio"
+      ],
+      "propertyTypes": [
+        "Apartamentos",
+        "Casas",
+        "Coberturas"
+      ],
       "priceRange": "R$ 500.000 a R$ 3.000.000",
       "transport": "Próximo às estações Sumaré e Barra Funda",
-      "relatedRegions": ["pinheiros-sp", "higienopolis-sp", "pacaembu-sp"],
+      "relatedRegions": [
+        "pinheiros-sp",
+        "higienopolis-sp",
+        "pacaembu-sp"
+      ],
       "successCases": [
-        { "title": "Apartamento 3 quartos - Rua Cardoso de Almeida", "savings": "37%", "description": "Apartamento de 110m² em rua arborizada por R$ 720.000." }
+        {
+          "title": "Apartamento 3 quartos - Rua Cardoso de Almeida",
+          "savings": "37%",
+          "description": "Apartamento de 110m² em rua arborizada por R$ 720.000."
+        },
+        {
+          "title": "Apartamento 2 quartos - Bairro valorizado - Perdizes",
+          "savings": "40%",
+          "description": "Jovem casal realizou o sonho da casa própria com economia expressiva."
+        },
+        {
+          "title": "Studio - Investimento - Perdizes",
+          "savings": "35%",
+          "description": "Investidor adquiriu studio compacto ideal para renda de aluguel."
+        }
       ]
     },
     "itaim-bibi-sp": {
       "heroDescription": "O Itaim Bibi é o polo empresarial de São Paulo, com escritórios de grandes empresas, restaurantes renomados e imóveis de alto padrão. Ideal para executivos e investidores.",
       "aboutText": "O Itaim Bibi concentra o principal centro financeiro de São Paulo, com a Avenida Faria Lima abrigando bancos e empresas de tecnologia. O bairro oferece gastronomia premium, vida noturna agitada e alta valorização.",
-      "neighborhoods": ["Itaim Bibi", "Vila Olímpia", "Faria Lima", "Vila Nova Conceição"],
-      "attractions": ["Avenida Faria Lima", "JK Iguatemi", "Parque do Povo", "Restaurantes estrelados"],
-      "infrastructure": ["Metrô Faria Lima", "Hospitais de primeira", "Shopping JK", "Escolas bilíngues"],
-      "highlights": ["Centro financeiro", "Alta valorização", "Gastronomia premium", "Vida corporativa"],
-      "propertyTypes": ["Apartamentos executivos", "Coberturas", "Salas comerciais", "Lajes corporativas"],
+      "neighborhoods": [
+        "Itaim Bibi",
+        "Vila Olímpia",
+        "Faria Lima",
+        "Vila Nova Conceição"
+      ],
+      "attractions": [
+        "Avenida Faria Lima",
+        "JK Iguatemi",
+        "Parque do Povo",
+        "Restaurantes estrelados"
+      ],
+      "infrastructure": [
+        "Metrô Faria Lima",
+        "Hospitais de primeira",
+        "Shopping JK",
+        "Escolas bilíngues"
+      ],
+      "highlights": [
+        "Centro financeiro",
+        "Alta valorização",
+        "Gastronomia premium",
+        "Vida corporativa"
+      ],
+      "propertyTypes": [
+        "Apartamentos executivos",
+        "Coberturas",
+        "Salas comerciais",
+        "Lajes corporativas"
+      ],
       "priceRange": "R$ 700.000 a R$ 8.000.000",
       "transport": "Faria Lima (Linha 4 Amarela)",
-      "relatedRegions": ["pinheiros-sp", "jardim-america-sp", "moema-sp"],
+      "relatedRegions": [
+        "pinheiros-sp",
+        "jardim-america-sp",
+        "moema-sp"
+      ],
       "successCases": [
-        { "title": "Apartamento 2 quartos - Vila Olímpia", "savings": "35%", "description": "Apartamento de 80m² próximo ao metrô por R$ 650.000." }
+        {
+          "title": "Apartamento 2 quartos - Vila Olímpia",
+          "savings": "35%",
+          "description": "Apartamento de 80m² próximo ao metrô por R$ 650.000."
+        },
+        {
+          "title": "Casa - Bairro nobre - Itaim Bibi",
+          "savings": "38%",
+          "description": "Família arrematou casa de 400m² em rua arborizada por valor excepcional."
+        },
+        {
+          "title": "Cobertura triplex - Vista privilegiada",
+          "savings": "40%",
+          "description": "Investidor adquiriu cobertura de alto padrão com deságio significativo."
+        }
       ]
     },
     "moema-sp": {
       "heroDescription": "Moema é um dos bairros mais desejados de São Paulo, com localização privilegiada próxima ao Parque Ibirapuera. Oferece qualidade de vida, gastronomia e infraestrutura completa.",
       "aboutText": "Moema oferece qualidade de vida com proximidade do Parque Ibirapuera, ruas arborizadas, forte comércio e gastronomia variada. O bairro é dividido em Moema Pássaros e Moema Índios, ambos muito valorizados.",
-      "neighborhoods": ["Moema Pássaros", "Moema Índios", "Vila Nova Conceição", "Planalto Paulista"],
-      "attractions": ["Parque Ibirapuera", "Shopping Ibirapuera", "Praça Pereira Coutinho", "Rua Normandia"],
-      "infrastructure": ["Metrô Moema", "Hospital Alvorada", "Escolas particulares", "Shopping Ibirapuera"],
-      "highlights": ["Próximo ao Ibirapuera", "Ruas arborizadas", "Comércio forte", "Ambiente familiar"],
-      "propertyTypes": ["Apartamentos", "Coberturas", "Casas"],
+      "neighborhoods": [
+        "Moema Pássaros",
+        "Moema Índios",
+        "Vila Nova Conceição",
+        "Planalto Paulista"
+      ],
+      "attractions": [
+        "Parque Ibirapuera",
+        "Shopping Ibirapuera",
+        "Praça Pereira Coutinho",
+        "Rua Normandia"
+      ],
+      "infrastructure": [
+        "Metrô Moema",
+        "Hospital Alvorada",
+        "Escolas particulares",
+        "Shopping Ibirapuera"
+      ],
+      "highlights": [
+        "Próximo ao Ibirapuera",
+        "Ruas arborizadas",
+        "Comércio forte",
+        "Ambiente familiar"
+      ],
+      "propertyTypes": [
+        "Apartamentos",
+        "Coberturas",
+        "Casas"
+      ],
       "priceRange": "R$ 600.000 a R$ 5.000.000",
       "transport": "Moema, Eucaliptos (Linha 5 Lilás)",
-      "relatedRegions": ["vila-mariana-sp", "itaim-bibi-sp", "campo-belo-sp"],
+      "relatedRegions": [
+        "vila-mariana-sp",
+        "itaim-bibi-sp",
+        "campo-belo-sp"
+      ],
       "successCases": [
-        { "title": "Apartamento 3 quartos - Alameda dos Arapanés", "savings": "38%", "description": "Apartamento de 120m² próximo ao Ibirapuera por R$ 950.000." }
+        {
+          "title": "Apartamento 3 quartos - Alameda dos Arapanés",
+          "savings": "38%",
+          "description": "Apartamento de 120m² próximo ao Ibirapuera por R$ 950.000."
+        },
+        {
+          "title": "Apartamento 2 quartos - Bairro valorizado - Moema Pássaros",
+          "savings": "40%",
+          "description": "Jovem casal realizou o sonho da casa própria com economia expressiva."
+        },
+        {
+          "title": "Studio - Investimento - Moema Pássaros",
+          "savings": "35%",
+          "description": "Investidor adquiriu studio compacto ideal para renda de aluguel."
+        }
       ]
     },
     "santana-sp": {
       "heroDescription": "Santana é o bairro mais valorizado da Zona Norte de São Paulo, com forte comércio, metrô e infraestrutura completa. Oferece ótimo custo-benefício para famílias.",
       "aboutText": "Santana é conhecido pelo forte comércio, fácil acesso ao metrô e infraestrutura completa. O bairro oferece opções para todos os perfis, desde apartamentos compactos até casas em ruas arborizadas.",
-      "neighborhoods": ["Santana", "Jardim São Paulo", "Casa Verde", "Mandaqui"],
-      "attractions": ["Shopping Santana", "Expo Center Norte", "Parque da Juventude", "Horto Florestal"],
-      "infrastructure": ["Metrô Santana", "Hospitais", "Escolas", "Shopping Santana"],
-      "highlights": ["Metrô", "Forte comércio", "Custo-benefício", "Infraestrutura completa"],
-      "propertyTypes": ["Apartamentos", "Casas", "Sobrados", "Salas comerciais"],
+      "neighborhoods": [
+        "Santana",
+        "Jardim São Paulo",
+        "Casa Verde",
+        "Mandaqui"
+      ],
+      "attractions": [
+        "Shopping Santana",
+        "Expo Center Norte",
+        "Parque da Juventude",
+        "Horto Florestal"
+      ],
+      "infrastructure": [
+        "Metrô Santana",
+        "Hospitais",
+        "Escolas",
+        "Shopping Santana"
+      ],
+      "highlights": [
+        "Metrô",
+        "Forte comércio",
+        "Custo-benefício",
+        "Infraestrutura completa"
+      ],
+      "propertyTypes": [
+        "Apartamentos",
+        "Casas",
+        "Sobrados",
+        "Salas comerciais"
+      ],
       "priceRange": "R$ 300.000 a R$ 1.500.000",
       "transport": "Santana, Jardim São Paulo (Linha 1 Azul)",
-      "relatedRegions": ["tatuape-sp", "vila-mariana-sp", "pinheiros-sp"],
+      "relatedRegions": [
+        "tatuape-sp",
+        "vila-mariana-sp",
+        "pinheiros-sp"
+      ],
       "successCases": [
-        { "title": "Apartamento 2 quartos - Rua Voluntários da Pátria", "savings": "39%", "description": "Apartamento de 60m² próximo ao metrô por R$ 320.000." }
+        {
+          "title": "Apartamento 2 quartos - Rua Voluntários da Pátria",
+          "savings": "39%",
+          "description": "Apartamento de 60m² próximo ao metrô por R$ 320.000."
+        },
+        {
+          "title": "Casa - Rua arborizada - Santana",
+          "savings": "37%",
+          "description": "Família realizou o sonho da casa própria em bairro tranquilo."
+        },
+        {
+          "title": "Apartamento 3 quartos - Andar alto - Santana",
+          "savings": "40%",
+          "description": "Investidor arrematou imóvel com vista privilegiada por excelente preço."
+        }
       ]
     },
     "campo-belo-sp": {
       "heroDescription": "Campo Belo é um bairro arborizado e valorizado da Zona Sul de São Paulo, com fácil acesso ao Aeroporto de Congonhas e infraestrutura completa. Ideal para executivos.",
       "aboutText": "Campo Belo é conhecido pelas ruas arborizadas, proximidade com o Aeroporto de Congonhas e infraestrutura completa. O bairro oferece fácil acesso às principais vias da cidade e é muito procurado por executivos.",
-      "neighborhoods": ["Campo Belo", "Brooklin", "Vila Cordeiro", "Santo Amaro"],
-      "attractions": ["Aeroporto de Congonhas", "Shopping Morumbi", "Parque Burle Marx", "Restaurantes"],
-      "infrastructure": ["Metrô Campo Belo", "Aeroporto de Congonhas", "Hospitais", "Escolas"],
-      "highlights": ["Próximo a Congonhas", "Ruas arborizadas", "Fácil acesso", "Valorização constante"],
-      "propertyTypes": ["Apartamentos", "Coberturas", "Casas"],
+      "neighborhoods": [
+        "Campo Belo",
+        "Brooklin",
+        "Vila Cordeiro",
+        "Santo Amaro"
+      ],
+      "attractions": [
+        "Aeroporto de Congonhas",
+        "Shopping Morumbi",
+        "Parque Burle Marx",
+        "Restaurantes"
+      ],
+      "infrastructure": [
+        "Metrô Campo Belo",
+        "Aeroporto de Congonhas",
+        "Hospitais",
+        "Escolas"
+      ],
+      "highlights": [
+        "Próximo a Congonhas",
+        "Ruas arborizadas",
+        "Fácil acesso",
+        "Valorização constante"
+      ],
+      "propertyTypes": [
+        "Apartamentos",
+        "Coberturas",
+        "Casas"
+      ],
       "priceRange": "R$ 500.000 a R$ 3.000.000",
       "transport": "Campo Belo (Linha 5 Lilás)",
-      "relatedRegions": ["moema-sp", "brooklin-sp", "itaim-bibi-sp"],
+      "relatedRegions": [
+        "moema-sp",
+        "brooklin-sp",
+        "itaim-bibi-sp"
+      ],
       "successCases": [
-        { "title": "Apartamento 2 quartos - Rua Vieira de Morais", "savings": "36%", "description": "Apartamento de 70m² próximo ao metrô por R$ 480.000." }
+        {
+          "title": "Apartamento 2 quartos - Rua Vieira de Morais",
+          "savings": "36%",
+          "description": "Apartamento de 70m² próximo ao metrô por R$ 480.000."
+        },
+        {
+          "title": "Apartamento 2 quartos - Bairro valorizado - Campo Belo",
+          "savings": "40%",
+          "description": "Jovem casal realizou o sonho da casa própria com economia expressiva."
+        },
+        {
+          "title": "Studio - Investimento - Campo Belo",
+          "savings": "35%",
+          "description": "Investidor adquiriu studio compacto ideal para renda de aluguel."
+        }
       ]
     },
     "jardim-america-sp": {
       "heroDescription": "O Jardim América é um dos bairros mais nobres de São Paulo, parte da região dos Jardins. Oferece ruas arborizadas, casas de alto padrão e proximidade com a Avenida Paulista.",
       "aboutText": "O Jardim América faz parte da região dos Jardins, conhecida pelo alto padrão, ruas arborizadas e casas históricas. O bairro oferece proximidade com a Avenida Paulista, Rua Oscar Freire e os melhores restaurantes da cidade.",
-      "neighborhoods": ["Jardim América", "Jardim Paulista", "Jardim Europa", "Cerqueira César"],
-      "attractions": ["Rua Oscar Freire", "Avenida Paulista", "Parque Trianon", "Shopping Iguatemi"],
-      "infrastructure": ["Metrô Paulista", "Hospitais Sírio-Libanês e Albert Einstein", "Escolas bilíngues", "Comércio de luxo"],
-      "highlights": ["Alto padrão", "Ruas arborizadas", "Proximidade com Paulista", "Casas históricas"],
-      "propertyTypes": ["Apartamentos de luxo", "Casas", "Coberturas"],
+      "neighborhoods": [
+        "Jardim América",
+        "Jardim Paulista",
+        "Jardim Europa",
+        "Cerqueira César"
+      ],
+      "attractions": [
+        "Rua Oscar Freire",
+        "Avenida Paulista",
+        "Parque Trianon",
+        "Shopping Iguatemi"
+      ],
+      "infrastructure": [
+        "Metrô Paulista",
+        "Hospitais Sírio-Libanês e Albert Einstein",
+        "Escolas bilíngues",
+        "Comércio de luxo"
+      ],
+      "highlights": [
+        "Alto padrão",
+        "Ruas arborizadas",
+        "Proximidade com Paulista",
+        "Casas históricas"
+      ],
+      "propertyTypes": [
+        "Apartamentos de luxo",
+        "Casas",
+        "Coberturas"
+      ],
       "priceRange": "R$ 1.000.000 a R$ 15.000.000",
       "transport": "Paulista, Trianon-MASP (Linha 2 Verde)",
-      "relatedRegions": ["pinheiros-sp", "itaim-bibi-sp", "higienopolis-sp"],
+      "relatedRegions": [
+        "pinheiros-sp",
+        "itaim-bibi-sp",
+        "higienopolis-sp"
+      ],
       "successCases": [
-        { "title": "Apartamento 4 quartos - Alameda Lorena", "savings": "33%", "description": "Apartamento de 200m² em prédio clássico por R$ 2.100.000." }
+        {
+          "title": "Apartamento 4 quartos - Alameda Lorena",
+          "savings": "33%",
+          "description": "Apartamento de 200m² em prédio clássico por R$ 2.100.000."
+        },
+        {
+          "title": "Casa - Bairro nobre - Jardim América",
+          "savings": "38%",
+          "description": "Família arrematou casa de 400m² em rua arborizada por valor excepcional."
+        },
+        {
+          "title": "Cobertura triplex - Vista privilegiada",
+          "savings": "40%",
+          "description": "Investidor adquiriu cobertura de alto padrão com deságio significativo."
+        }
       ]
     },
     "bela-vista-sp": {
       "heroDescription": "A Bela Vista é um bairro central de São Paulo, próximo à Avenida Paulista e ao centro histórico. Oferece ótimas oportunidades para moradia e investimento.",
       "aboutText": "A Bela Vista é conhecida pela proximidade com a Avenida Paulista, vida cultural intensa e gastronomia variada. O bairro oferece fácil acesso ao metrô e é muito procurado por jovens profissionais.",
-      "neighborhoods": ["Bela Vista", "Consolação", "Paraíso", "Liberdade"],
-      "attractions": ["Avenida Paulista", "MASP", "Theatro Municipal", "Rua 13 de Maio"],
-      "infrastructure": ["Metrô Brigadeiro", "Hospitais", "Escolas", "Comércio"],
-      "highlights": ["Próximo à Paulista", "Vida cultural", "Gastronomia", "Fácil acesso"],
-      "propertyTypes": ["Apartamentos", "Studios", "Salas comerciais"],
+      "neighborhoods": [
+        "Bela Vista",
+        "Consolação",
+        "Paraíso",
+        "Liberdade"
+      ],
+      "attractions": [
+        "Avenida Paulista",
+        "MASP",
+        "Theatro Municipal",
+        "Rua 13 de Maio"
+      ],
+      "infrastructure": [
+        "Metrô Brigadeiro",
+        "Hospitais",
+        "Escolas",
+        "Comércio"
+      ],
+      "highlights": [
+        "Próximo à Paulista",
+        "Vida cultural",
+        "Gastronomia",
+        "Fácil acesso"
+      ],
+      "propertyTypes": [
+        "Apartamentos",
+        "Studios",
+        "Salas comerciais"
+      ],
       "priceRange": "R$ 300.000 a R$ 1.500.000",
       "transport": "Brigadeiro, Trianon-MASP (Linha 2 Verde)",
-      "relatedRegions": ["jardim-america-sp", "vila-mariana-sp", "higienopolis-sp"],
+      "relatedRegions": [
+        "jardim-america-sp",
+        "vila-mariana-sp",
+        "higienopolis-sp"
+      ],
       "successCases": [
-        { "title": "Studio - Rua Treze de Maio", "savings": "42%", "description": "Studio de 35m² próximo ao metrô por R$ 220.000." }
+        {
+          "title": "Studio - Rua Treze de Maio",
+          "savings": "42%",
+          "description": "Studio de 35m² próximo ao metrô por R$ 220.000."
+        },
+        {
+          "title": "Apartamento 2 quartos - Bairro valorizado - Bela Vista",
+          "savings": "40%",
+          "description": "Jovem casal realizou o sonho da casa própria com economia expressiva."
+        },
+        {
+          "title": "Studio - Investimento - Bela Vista",
+          "savings": "35%",
+          "description": "Investidor adquiriu studio compacto ideal para renda de aluguel."
+        }
       ]
     },
     "brooklin-sp": {
       "heroDescription": "O Brooklin é o novo polo comercial de São Paulo, com prédios corporativos modernos, infraestrutura completa e alta valorização. Ideal para executivos e investidores.",
       "aboutText": "O Brooklin cresceu muito nos últimos anos, tornando-se um importante polo comercial de São Paulo. O bairro oferece prédios corporativos modernos, fácil acesso às marginais e infraestrutura completa.",
-      "neighborhoods": ["Brooklin Novo", "Brooklin Paulista", "Vila Cordeiro", "Campo Belo"],
-      "attractions": ["Shopping Morumbi", "Parque Burle Marx", "Restaurantes", "Bares"],
-      "infrastructure": ["Metrô Brooklin", "Hospitais", "Escolas", "Shoppings"],
-      "highlights": ["Polo comercial", "Prédios modernos", "Alta valorização", "Fácil acesso"],
-      "propertyTypes": ["Apartamentos", "Coberturas", "Salas comerciais", "Lajes corporativas"],
+      "neighborhoods": [
+        "Brooklin Novo",
+        "Brooklin Paulista",
+        "Vila Cordeiro",
+        "Campo Belo"
+      ],
+      "attractions": [
+        "Shopping Morumbi",
+        "Parque Burle Marx",
+        "Restaurantes",
+        "Bares"
+      ],
+      "infrastructure": [
+        "Metrô Brooklin",
+        "Hospitais",
+        "Escolas",
+        "Shoppings"
+      ],
+      "highlights": [
+        "Polo comercial",
+        "Prédios modernos",
+        "Alta valorização",
+        "Fácil acesso"
+      ],
+      "propertyTypes": [
+        "Apartamentos",
+        "Coberturas",
+        "Salas comerciais",
+        "Lajes corporativas"
+      ],
       "priceRange": "R$ 500.000 a R$ 4.000.000",
       "transport": "Brooklin (Linha 5 Lilás)",
-      "relatedRegions": ["campo-belo-sp", "moema-sp", "itaim-bibi-sp"],
+      "relatedRegions": [
+        "campo-belo-sp",
+        "moema-sp",
+        "itaim-bibi-sp"
+      ],
       "successCases": [
-        { "title": "Apartamento 2 quartos - Rua Flórida", "savings": "37%", "description": "Apartamento de 75m² em prédio novo por R$ 520.000." }
+        {
+          "title": "Apartamento 2 quartos - Rua Flórida",
+          "savings": "37%",
+          "description": "Apartamento de 75m² em prédio novo por R$ 520.000."
+        },
+        {
+          "title": "Apartamento 2 quartos - Bairro valorizado - Brooklin Novo",
+          "savings": "40%",
+          "description": "Jovem casal realizou o sonho da casa própria com economia expressiva."
+        },
+        {
+          "title": "Studio - Investimento - Brooklin Novo",
+          "savings": "35%",
+          "description": "Investidor adquiriu studio compacto ideal para renda de aluguel."
+        }
       ]
     },
     "pacaembu-sp": {
       "heroDescription": "O Pacaembu é um dos bairros mais tradicionais de São Paulo, com casas históricas, ruas arborizadas e o famoso estádio. Ideal para quem busca tranquilidade e tradição.",
       "aboutText": "O Pacaembu é conhecido pelo estádio homônimo, casas históricas e ruas arborizadas. O bairro oferece tranquilidade, segurança e proximidade com Perdizes e Higienópolis.",
-      "neighborhoods": ["Pacaembu", "Perdizes", "Pompeia", "Sumaré"],
-      "attractions": ["Estádio do Pacaembu", "Museu do Futebol", "Praça Charles Miller", "Parque Buenos Aires"],
-      "infrastructure": ["Próximo ao metrô", "Hospitais", "Escolas", "Comércio local"],
-      "highlights": ["Estádio do Pacaembu", "Casas históricas", "Ruas arborizadas", "Tranquilidade"],
-      "propertyTypes": ["Casas", "Apartamentos", "Coberturas"],
+      "neighborhoods": [
+        "Pacaembu",
+        "Perdizes",
+        "Pompeia",
+        "Sumaré"
+      ],
+      "attractions": [
+        "Estádio do Pacaembu",
+        "Museu do Futebol",
+        "Praça Charles Miller",
+        "Parque Buenos Aires"
+      ],
+      "infrastructure": [
+        "Próximo ao metrô",
+        "Hospitais",
+        "Escolas",
+        "Comércio local"
+      ],
+      "highlights": [
+        "Estádio do Pacaembu",
+        "Casas históricas",
+        "Ruas arborizadas",
+        "Tranquilidade"
+      ],
+      "propertyTypes": [
+        "Casas",
+        "Apartamentos",
+        "Coberturas"
+      ],
       "priceRange": "R$ 800.000 a R$ 5.000.000",
       "transport": "Próximo às estações Sumaré e Paulista",
-      "relatedRegions": ["perdizes-sp", "higienopolis-sp", "pinheiros-sp"],
+      "relatedRegions": [
+        "perdizes-sp",
+        "higienopolis-sp",
+        "pinheiros-sp"
+      ],
       "successCases": [
-        { "title": "Casa - Rua Alagoas", "savings": "35%", "description": "Casa de 300m² em terreno de 500m² por R$ 2.200.000." }
+        {
+          "title": "Casa - Rua Alagoas",
+          "savings": "35%",
+          "description": "Casa de 300m² em terreno de 500m² por R$ 2.200.000."
+        },
+        {
+          "title": "Casa - Bairro nobre - Pacaembu",
+          "savings": "38%",
+          "description": "Família arrematou casa de 400m² em rua arborizada por valor excepcional."
+        },
+        {
+          "title": "Cobertura triplex - Vista privilegiada",
+          "savings": "40%",
+          "description": "Investidor adquiriu cobertura de alto padrão com deságio significativo."
+        }
       ]
     },
     "higienopolis-sp": {
       "heroDescription": "Higienópolis é um bairro nobre e tradicional de São Paulo, com apartamentos espaçosos, ruas arborizadas e forte vida cultural. Ideal para famílias e idosos.",
       "aboutText": "Higienópolis é conhecido pelos apartamentos espaçosos, prédios clássicos e forte vida cultural. O bairro oferece proximidade com a Avenida Paulista, hospitais renomados e comércio de qualidade.",
-      "neighborhoods": ["Higienópolis", "Consolação", "Santa Cecília", "Pacaembu"],
-      "attractions": ["Shopping Pátio Higienópolis", "Mackenzie", "Parque Buenos Aires", "Sinagogas"],
-      "infrastructure": ["Próximo ao metrô", "Hospital Sírio-Libanês", "Mackenzie", "Shoppings"],
-      "highlights": ["Apartamentos espaçosos", "Prédios clássicos", "Vida cultural", "Segurança"],
-      "propertyTypes": ["Apartamentos", "Coberturas", "Casas"],
+      "neighborhoods": [
+        "Higienópolis",
+        "Consolação",
+        "Santa Cecília",
+        "Pacaembu"
+      ],
+      "attractions": [
+        "Shopping Pátio Higienópolis",
+        "Mackenzie",
+        "Parque Buenos Aires",
+        "Sinagogas"
+      ],
+      "infrastructure": [
+        "Próximo ao metrô",
+        "Hospital Sírio-Libanês",
+        "Mackenzie",
+        "Shoppings"
+      ],
+      "highlights": [
+        "Apartamentos espaçosos",
+        "Prédios clássicos",
+        "Vida cultural",
+        "Segurança"
+      ],
+      "propertyTypes": [
+        "Apartamentos",
+        "Coberturas",
+        "Casas"
+      ],
       "priceRange": "R$ 600.000 a R$ 4.000.000",
       "transport": "Próximo às estações Paulista e Higienópolis-Mackenzie",
-      "relatedRegions": ["pacaembu-sp", "perdizes-sp", "jardim-america-sp"],
+      "relatedRegions": [
+        "pacaembu-sp",
+        "perdizes-sp",
+        "jardim-america-sp"
+      ],
       "successCases": [
-        { "title": "Apartamento 4 quartos - Rua Piauí", "savings": "34%", "description": "Apartamento de 180m² em prédio clássico por R$ 1.100.000." }
+        {
+          "title": "Apartamento 4 quartos - Rua Piauí",
+          "savings": "34%",
+          "description": "Apartamento de 180m² em prédio clássico por R$ 1.100.000."
+        },
+        {
+          "title": "Casa - Bairro nobre - Higienópolis",
+          "savings": "38%",
+          "description": "Família arrematou casa de 400m² em rua arborizada por valor excepcional."
+        },
+        {
+          "title": "Cobertura triplex - Vista privilegiada",
+          "savings": "40%",
+          "description": "Investidor adquiriu cobertura de alto padrão com deságio significativo."
+        }
       ]
     },
     "alto-de-pinheiros-sp": {
       "heroDescription": "O Alto de Pinheiros é um bairro nobre e arborizado de São Paulo, com casas de alto padrão e proximidade com a USP. Ideal para famílias que buscam tranquilidade.",
       "aboutText": "O Alto de Pinheiros é conhecido pelas casas de alto padrão, ruas arborizadas e proximidade com a USP. O bairro oferece tranquilidade, segurança e fácil acesso a Pinheiros e outras regiões.",
-      "neighborhoods": ["Alto de Pinheiros", "Pinheiros", "Vila Madalena", "Butantã"],
-      "attractions": ["USP", "Parque Villa-Lobos", "Ciclovia do Rio Pinheiros", "Restaurantes"],
-      "infrastructure": ["Próximo ao metrô", "Hospitais", "Escolas bilíngues", "Comércio"],
-      "highlights": ["Casas de alto padrão", "Ruas arborizadas", "Proximidade com USP", "Tranquilidade"],
-      "propertyTypes": ["Casas", "Apartamentos", "Coberturas"],
+      "neighborhoods": [
+        "Alto de Pinheiros",
+        "Pinheiros",
+        "Vila Madalena",
+        "Butantã"
+      ],
+      "attractions": [
+        "USP",
+        "Parque Villa-Lobos",
+        "Ciclovia do Rio Pinheiros",
+        "Restaurantes"
+      ],
+      "infrastructure": [
+        "Próximo ao metrô",
+        "Hospitais",
+        "Escolas bilíngues",
+        "Comércio"
+      ],
+      "highlights": [
+        "Casas de alto padrão",
+        "Ruas arborizadas",
+        "Proximidade com USP",
+        "Tranquilidade"
+      ],
+      "propertyTypes": [
+        "Casas",
+        "Apartamentos",
+        "Coberturas"
+      ],
       "priceRange": "R$ 1.000.000 a R$ 8.000.000",
       "transport": "Próximo às estações Pinheiros e Butantã",
-      "relatedRegions": ["pinheiros-sp", "perdizes-sp", "jardim-america-sp"],
+      "relatedRegions": [
+        "pinheiros-sp",
+        "perdizes-sp",
+        "jardim-america-sp"
+      ],
       "successCases": [
-        { "title": "Casa - Rua Iquiririm", "savings": "36%", "description": "Casa de 400m² em terreno de 600m² por R$ 3.200.000." }
+        {
+          "title": "Casa - Rua Iquiririm",
+          "savings": "36%",
+          "description": "Casa de 400m² em terreno de 600m² por R$ 3.200.000."
+        },
+        {
+          "title": "Casa - Bairro nobre - Alto de Pinheiros",
+          "savings": "38%",
+          "description": "Família arrematou casa de 400m² em rua arborizada por valor excepcional."
+        },
+        {
+          "title": "Cobertura triplex - Vista privilegiada",
+          "savings": "40%",
+          "description": "Investidor adquiriu cobertura de alto padrão com deságio significativo."
+        }
       ]
     },
     "ipiranga-sp": {
       "heroDescription": "O Ipiranga é um bairro histórico de São Paulo, onde foi proclamada a Independência do Brasil. Oferece ótimo custo-benefício e infraestrutura completa.",
       "aboutText": "O Ipiranga é conhecido pelo Museu do Ipiranga, Parque da Independência e forte tradição histórica. O bairro oferece fácil acesso ao Centro e outras regiões, com ótimo custo-benefício.",
-      "neighborhoods": ["Ipiranga", "Vila Prudente", "Sacomã", "Cursino"],
-      "attractions": ["Museu do Ipiranga", "Parque da Independência", "Shopping Metrô Itaquera", "Rua do Grito"],
-      "infrastructure": ["Metrô Alto do Ipiranga", "Hospitais", "Escolas", "Comércio"],
-      "highlights": ["Museu do Ipiranga", "Parque da Independência", "Custo-benefício", "História"],
-      "propertyTypes": ["Apartamentos", "Casas", "Sobrados"],
+      "neighborhoods": [
+        "Ipiranga",
+        "Vila Prudente",
+        "Sacomã",
+        "Cursino"
+      ],
+      "attractions": [
+        "Museu do Ipiranga",
+        "Parque da Independência",
+        "Shopping Metrô Itaquera",
+        "Rua do Grito"
+      ],
+      "infrastructure": [
+        "Metrô Alto do Ipiranga",
+        "Hospitais",
+        "Escolas",
+        "Comércio"
+      ],
+      "highlights": [
+        "Museu do Ipiranga",
+        "Parque da Independência",
+        "Custo-benefício",
+        "História"
+      ],
+      "propertyTypes": [
+        "Apartamentos",
+        "Casas",
+        "Sobrados"
+      ],
       "priceRange": "R$ 200.000 a R$ 1.000.000",
       "transport": "Alto do Ipiranga (Linha 2 Verde)",
-      "relatedRegions": ["mooca-sp", "vila-mariana-sp", "tatuape-sp"],
+      "relatedRegions": [
+        "mooca-sp",
+        "vila-mariana-sp",
+        "tatuape-sp"
+      ],
       "successCases": [
-        { "title": "Apartamento 2 quartos - Av. Nazaré", "savings": "40%", "description": "Apartamento de 60m² próximo ao metrô por R$ 280.000." }
+        {
+          "title": "Apartamento 2 quartos - Av. Nazaré",
+          "savings": "40%",
+          "description": "Apartamento de 60m² próximo ao metrô por R$ 280.000."
+        },
+        {
+          "title": "Apartamento 3 quartos - Condomínio com lazer - Ipiranga",
+          "savings": "38%",
+          "description": "Família arrematou apartamento em condomínio completo por ótimo preço."
+        },
+        {
+          "title": "Casa - Bairro tradicional - Ipiranga",
+          "savings": "42%",
+          "description": "Investidor adquiriu imóvel em região com forte potencial de valorização."
+        }
       ]
     },
     "riviera-de-sao-lourenco-sp": {
       "heroDescription": "A Riviera de São Lourenço é o condomínio de praia mais exclusivo do litoral paulista. Oferece infraestrutura completa, segurança e praias paradisíacas.",
       "aboutText": "A Riviera de São Lourenço é um condomínio fechado em Bertioga, conhecido pela infraestrutura completa, segurança 24h e praias limpas. É o destino de veraneio preferido da elite paulistana.",
-      "neighborhoods": ["Riviera de São Lourenço", "Bertioga", "Guarujá", "Santos"],
-      "attractions": ["Praias", "Marina", "Golf", "Restaurantes", "Esportes náuticos"],
-      "infrastructure": ["Segurança 24h", "Marina", "Comércio interno", "Hospitais próximos"],
-      "highlights": ["Condomínio exclusivo", "Praias limpas", "Segurança 24h", "Infraestrutura completa"],
-      "propertyTypes": ["Casas de praia", "Apartamentos", "Coberturas"],
+      "neighborhoods": [
+        "Riviera de São Lourenço",
+        "Bertioga",
+        "Guarujá",
+        "Santos"
+      ],
+      "attractions": [
+        "Praias",
+        "Marina",
+        "Golf",
+        "Restaurantes",
+        "Esportes náuticos"
+      ],
+      "infrastructure": [
+        "Segurança 24h",
+        "Marina",
+        "Comércio interno",
+        "Hospitais próximos"
+      ],
+      "highlights": [
+        "Condomínio exclusivo",
+        "Praias limpas",
+        "Segurança 24h",
+        "Infraestrutura completa"
+      ],
+      "propertyTypes": [
+        "Casas de praia",
+        "Apartamentos",
+        "Coberturas"
+      ],
       "priceRange": "R$ 800.000 a R$ 10.000.000",
       "transport": "Rodovia Rio-Santos",
-      "relatedRegions": ["campo-belo-sp", "moema-sp", "jardim-america-sp"],
+      "relatedRegions": [
+        "campo-belo-sp",
+        "moema-sp",
+        "jardim-america-sp"
+      ],
       "successCases": [
-        { "title": "Casa - Módulo 24", "savings": "38%", "description": "Casa de 250m² próxima à praia por R$ 1.500.000." }
+        {
+          "title": "Casa - Módulo 24",
+          "savings": "38%",
+          "description": "Casa de 250m² próxima à praia por R$ 1.500.000."
+        },
+        {
+          "title": "Apartamento frente mar - Riviera de São Lourenço",
+          "savings": "40%",
+          "description": "Cliente realizou o sonho da casa de veraneio com economia significativa."
+        },
+        {
+          "title": "Cobertura duplex - Vista mar",
+          "savings": "35%",
+          "description": "Família arrematou cobertura em localização privilegiada."
+        }
       ]
     }
   }

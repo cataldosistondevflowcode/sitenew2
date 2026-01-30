@@ -19,6 +19,7 @@
     "seo:static-pages:legacy": "node scripts/generate-static-pages.cjs",
     "seo:vercel-rewrites": "node scripts/generate-vercel-rewrites.cjs",
     "seo:validate": "node scripts/validate-seo-pages.cjs",
+    "seo:sync-db": "node scripts/sync-seo-seed-to-db.cjs",
     "seo:parse-serps": "node scripts/parse-serps-xlsx.cjs",
     "test:seo": "npx playwright test tests/seo-js-off.spec.ts --project=chromium-js-disabled",
     "test:seo:ui": "npx playwright test tests/seo-js-off.spec.ts --project=chromium-js-disabled --ui",

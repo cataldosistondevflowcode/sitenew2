@@ -1,0 +1,73 @@
+# URLs das Páginas Regionais SEO - Cataldo Siston
+# Total: 37 páginas
+# Gerado em: 30/01/2026
+# Base URL: https://sitenew2.vercel.app
+
+# ============================================
+# RIO DE JANEIRO (19 páginas)
+# ============================================
+
+# Zona Sul
+https://sitenew2.vercel.app/catalogo/copacabana-rj
+https://sitenew2.vercel.app/catalogo/ipanema-rj
+https://sitenew2.vercel.app/catalogo/leblon-rj
+https://sitenew2.vercel.app/catalogo/botafogo-rj
+https://sitenew2.vercel.app/catalogo/flamengo-rj
+https://sitenew2.vercel.app/catalogo/laranjeiras-rj
+https://sitenew2.vercel.app/catalogo/lagoa-rj
+https://sitenew2.vercel.app/catalogo/jardim-botanico-rj
+https://sitenew2.vercel.app/catalogo/zona-sul-rj
+
+# Zona Oeste
+https://sitenew2.vercel.app/catalogo/barra-da-tijuca-rj
+https://sitenew2.vercel.app/catalogo/recreio-dos-bandeirantes-rj
+https://sitenew2.vercel.app/catalogo/jacarepagua-rj
+
+# Zona Norte
+https://sitenew2.vercel.app/catalogo/tijuca-rj
+https://sitenew2.vercel.app/catalogo/zona-norte-rj
+
+# Centro
+https://sitenew2.vercel.app/catalogo/centro-rj
+
+# Niterói
+https://sitenew2.vercel.app/catalogo/icarai-rj
+https://sitenew2.vercel.app/catalogo/niteroi-rj
+
+# Litoral e Interior
+https://sitenew2.vercel.app/catalogo/regiao-dos-lagos-rj
+https://sitenew2.vercel.app/catalogo/regiao-serrana-rj
+https://sitenew2.vercel.app/catalogo/angra-dos-reis-rj
+
+# ============================================
+# SÃO PAULO (17 páginas)
+# ============================================
+
+# Zona Oeste
+https://sitenew2.vercel.app/catalogo/pinheiros-sp
+https://sitenew2.vercel.app/catalogo/perdizes-sp
+https://sitenew2.vercel.app/catalogo/alto-de-pinheiros-sp
+
+# Zona Sul
+https://sitenew2.vercel.app/catalogo/vila-mariana-sp
+https://sitenew2.vercel.app/catalogo/moema-sp
+https://sitenew2.vercel.app/catalogo/campo-belo-sp
+https://sitenew2.vercel.app/catalogo/brooklin-sp
+
+# Centro / Jardins
+https://sitenew2.vercel.app/catalogo/itaim-bibi-sp
+https://sitenew2.vercel.app/catalogo/jardim-america-sp
+https://sitenew2.vercel.app/catalogo/bela-vista-sp
+https://sitenew2.vercel.app/catalogo/pacaembu-sp
+https://sitenew2.vercel.app/catalogo/higienopolis-sp
+
+# Zona Leste
+https://sitenew2.vercel.app/catalogo/tatuape-sp
+https://sitenew2.vercel.app/catalogo/mooca-sp
+https://sitenew2.vercel.app/catalogo/ipiranga-sp
+
+# Zona Norte
+https://sitenew2.vercel.app/catalogo/santana-sp
+
+# Litoral
+https://sitenew2.vercel.app/catalogo/riviera-de-sao-lourenco-sp

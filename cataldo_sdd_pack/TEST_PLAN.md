@@ -32,11 +32,28 @@ _Data: 2026-01-15_
 - [ ] Evento de formulário dispara
 - [ ] Evento de CTA click dispara (se aplicável)
 
-## 6) Performance
+## 6) Contexto da página (bairro vs cidade) — catálogo regional
+Testar no browser em `/catalogo/:pageId` (ex.: página Rio de Janeiro ou bairro).
+
+- [ ] **Nenhum bairro selecionado**
+  - H1 = nome da cidade (ex.: "Rio de Janeiro")
+  - Conteúdo exibido = cidade (sem texto de bairro)
+  - Nenhum bloco "Sobre [bairro]" nem benefícios/atrações de bairro visíveis
+- [ ] **Exatamente 1 bairro selecionado**
+  - H1 = nome do bairro (ex.: "Imóveis em Leilão em Botafogo")
+  - Descrição do bairro e benefícios/atrações visíveis
+  - Conteúdo SEO específico do bairro permitido
+- [ ] **Dois ou mais bairros selecionados** (ex.: Botafogo + Ipanema + Leblon)
+  - H1 = nome da cidade (ex.: "Rio de Janeiro")
+  - Nenhum texto de bairro único visível (descrição/benefícios ocultos)
+  - Listagem de imóveis correta (filtrada pelos bairros)
+  - SEO consistente: title/description sem menção a bairro único; canonical da página da cidade
+
+## 7) Performance
 - [ ] Lighthouse (mobile/desktop) sem regressões graves
 
 
-## 7) DB Safety (obrigatório quando houver mudança de dados/admin)
+## 8) DB Safety (obrigatório quando houver mudança de dados/admin)
 - [ ] Confirmei via MCP do Supabase que **não há migrations** alterando `imoveis`
 - [ ] Não alterei policies/indexes/triggers da tabela `imoveis`
 - [ ] Novas tabelas/views possuem RLS/policies adequadas (quando necessário)

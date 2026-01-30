@@ -8,6 +8,7 @@ import { ArrowLeft, ChevronRight, ChevronDown, Filter, X, MapPin, Home, Building
 import { toast } from 'sonner';
 import { SEO } from '@/components/SEO';
 import { useFilterParams, FilterParams } from '@/hooks/useFilterParams';
+import { getPageContext, getSelectedNeighborhoods, getSingleNeighborhoodName, type PageContext } from '@/utils/pageContext';
 
 // Componentes iguais à página /leilao-rj
 import { SocialBar } from '@/components/SocialBar';
@@ -300,17 +301,22 @@ export default function StaticCatalog() {
         const combinedFilters: Filters = { ...filters };
         let hasChanges = false;
         
-        // Combinar bairros: se há bairro na URL, usar ele (pode ter múltiplos)
-        if (urlFilters.neighborhood) {
-          const urlBairros = urlFilters.neighborhood.split(',').map(b => b.trim()).filter(Boolean);
-          
-          // Se a URL tem bairros diferentes do filtro inicial
-          if (urlBairros.length > 0 && urlFilters.neighborhood !== filters.neighborhood) {
-            combinedFilters.neighborhood = urlFilters.neighborhood;
+        // Combinar bairros: prioridade para bairros (plural) ou bairro (comma-separated)
+        const urlBairros =
+          urlFilters.neighborhoods && urlFilters.neighborhoods.length > 0
+            ? urlFilters.neighborhoods
+            : urlFilters.neighborhood
+              ? urlFilters.neighborhood.split(',').map((b: string) => b.trim()).filter(Boolean)
+              : [];
+        if (urlBairros.length > 0) {
+          const currentBairros = (filters.neighborhood || '').split(',').map(b => b.trim()).filter(Boolean);
+          const same = currentBairros.length === urlBairros.length && urlBairros.every((b, i) => b === currentBairros[i]);
+          if (!same) {
+            combinedFilters.neighborhood = urlBairros.join(',');
             setSelectedNeighborhoods(urlBairros);
-            setSelectedNeighborhood(urlBairros.length > 1 
-              ? `${urlBairros.length} bairros selecionados` 
-              : urlBairros[0]);
+            setSelectedNeighborhood(
+              urlBairros.length > 1 ? `${urlBairros.length} bairros selecionados` : urlBairros[0]
+            );
             hasChanges = true;
           }
         }
@@ -1043,6 +1049,7 @@ export default function StaticCatalog() {
 
   const getCanonicalUrl = () => {
     if (!seoPage) return '';
+    // Sempre página base do catálogo (contexto cidade = canonical da cidade; bairro = mesma página)
     return `https://imoveis.leilaodeimoveis-cataldosiston.com/catalogo/${seoPage.page_id}`;
   };
 
@@ -1089,15 +1096,51 @@ export default function StaticCatalog() {
     );
   }
 
-  const title = seoPage.h1_title || `Imóveis em Leilão em ${seoPage.regiao}`;
-  const introText = seoPage.intro_text || `Receba oportunidades de leilões personalizadas, de acordo com o seu perfil.`;
+  // Contexto da página: bairro (1 bairro) vs cidade (0 ou 2+ bairros) — regra centralizada
+  const rawList = getSelectedNeighborhoods(
+    selectedNeighborhoods,
+    filters.neighborhood
+  );
+  // Fallback: página carregada como bairro (SEO) antes do useEffect aplicar filtros
+  const selectedNeighborhoodsList =
+    rawList.length > 0
+      ? rawList
+      : seoPage?.filter_type === 'bairro' && seoPage?.filter_value
+        ? [seoPage.filter_value]
+        : [];
+  const pageContext: PageContext = getPageContext(selectedNeighborhoodsList);
+  const singleNeighborhoodName = getSingleNeighborhoodName(selectedNeighborhoodsList);
+  // Contexto cidade sem cidade selecionada: usar nome da cidade por estado (evitar H1 com nome de bairro)
+  const defaultCityByState: Record<string, string> = { RJ: 'Rio de Janeiro', SP: 'São Paulo' };
+  const cityDisplayName =
+    selectedCityName ||
+    (pageContext === 'city' ? defaultCityByState[seoPage.estado] || seoPage.regiao : seoPage.regiao);
+
+  const title =
+    pageContext === 'neighborhood' && singleNeighborhoodName
+      ? seoPage.h1_title || `Imóveis em Leilão em ${singleNeighborhoodName}`
+      : `Imóveis em Leilão em ${cityDisplayName}`;
+  const introText =
+    pageContext === 'neighborhood'
+      ? (seoPage.intro_text || `Receba oportunidades de leilões personalizadas, de acordo com o seu perfil.`)
+      : `Imóveis em leilão em ${cityDisplayName}. Receba oportunidades personalizadas de acordo com o seu perfil.`;
   const backgroundImage = getBackgroundImage(seoPage.estado);
+
+  // SEO: contexto cidade = título/descrição sem menção a bairro único
+  const seoTitle =
+    pageContext === 'city'
+      ? `Imóveis em Leilão em ${cityDisplayName} | Cataldo Siston`
+      : seoPage.meta_title;
+  const seoDescription =
+    pageContext === 'city'
+      ? `Encontre imóveis em leilão em ${cityDisplayName}. Oportunidades de arrematação com assessoria jurídica. Cataldo Siston.`
+      : seoPage.meta_description;
 
   return (
     <>
       <SEO 
-        title={seoPage.meta_title}
-        description={seoPage.meta_description}
+        title={seoTitle}
+        description={seoDescription}
         keywords={seoPage.meta_keywords || ''}
         canonicalUrl={getCanonicalUrl()}
       />
@@ -1239,8 +1282,8 @@ export default function StaticCatalog() {
           </div>
         </section>
 
-        {/* Descrição da Região */}
-        {seoPage.region_description && (
+        {/* Descrição da Região — apenas em contexto de bairro (1 bairro selecionado) */}
+        {pageContext === 'neighborhood' && seoPage.region_description && (
           <section className="bg-white py-8 md:py-12">
             <div className="container mx-auto px-4">
               <div className="max-w-4xl mx-auto">
@@ -1248,7 +1291,7 @@ export default function StaticCatalog() {
                   className="text-[#191919] font-medium text-xl sm:text-2xl md:text-3xl text-center mb-6"
                   style={{ fontFamily: "Playfair Display, serif" }}
                 >
-                  Sobre {seoPage.regiao}
+                  Sobre {singleNeighborhoodName ?? seoPage.regiao}
                 </h2>
                 <p 
                   className="text-[#333333] text-base md:text-lg leading-relaxed text-center"
@@ -1830,10 +1873,10 @@ export default function StaticCatalog() {
         {/* CTA de Apoio */}
         <SupportCTA estado={seoPage.estado} />
 
-        {/* Conteúdo Complementar da Região */}
-        {seoPage.region_content && (
+        {/* Conteúdo complementar (benefícios/atrações) — apenas em contexto de bairro */}
+        {pageContext === 'neighborhood' && seoPage.region_content && (
           <RegionContentSection
-            regionName={seoPage.regiao}
+            regionName={singleNeighborhoodName ?? seoPage.regiao}
             content={typeof seoPage.region_content === 'string' 
               ? JSON.parse(seoPage.region_content) 
               : seoPage.region_content}

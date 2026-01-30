@@ -5,306 +5,366 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Imóveis Jardim Botânico RJ: leilão de Casas e Aptos | Cataldo Siston</title>
   <meta name="description" content="Busca imóveis no Jardim Botânico RJ? Encontre casas e apartamentos em leilão no bairro mais verde do Rio. Oportunidades exclusivas.">
-  <meta name="keywords" content="imóveis jardim botânico rj, leilão de imóveis, jardim botânico">
+  <meta name="keywords" content="imóveis jardim botânico rj, leilão de imóveis, jardim botânico, RJ">
   <meta name="robots" content="index, follow">
-  <link rel="canonical" href="https://sitenew2.vercel.app/catalogo/jardim-botanico-rj">
+  <link rel="canonical" href="https://catalogo.cataldosiston-adv.com.br/catalogo/jardim-botanico-rj">
   
   <!-- Open Graph -->
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://sitenew2.vercel.app/catalogo/jardim-botanico-rj">
+  <meta property="og:url" content="https://catalogo.cataldosiston-adv.com.br/catalogo/jardim-botanico-rj">
   <meta property="og:title" content="Imóveis Jardim Botânico RJ: leilão de Casas e Aptos | Cataldo Siston">
   <meta property="og:description" content="Busca imóveis no Jardim Botânico RJ? Encontre casas e apartamentos em leilão no bairro mais verde do Rio. Oportunidades exclusivas.">
+  <meta property="og:image" content="https://catalogo.cataldosiston-adv.com.br/visao-panoramica-rio-janeiro.jpg">
   <meta property="og:site_name" content="Cataldo Siston Advogados">
   <meta property="og:locale" content="pt_BR">
+  
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Imóveis Jardim Botânico RJ: leilão de Casas e Aptos | Cataldo Siston">
+  <meta name="twitter:description" content="Busca imóveis no Jardim Botânico RJ? Encontre casas e apartamentos em leilão no bairro mais verde do Rio. Oportunidades exclusivas.">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="32x32" href="/cropped-favicon-cataldo-siston-1-1-32x32.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/cropped-favicon-cataldo-siston-1-1-180x180.png">
   
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   
-  <style>
-    * { box-sizing: border-box; }
-    body { font-family: 'Quicksand', Arial, sans-serif; margin: 0; padding: 0; color: #191919; line-height: 1.6; }
-    a { color: inherit; }
-    .container { max-width: 1100px; margin: 0 auto; padding: 20px; }
-    
-    /* Header/Nav */
-    header { background: #3C3C3C; color: white; padding: 0; }
-    .header-top { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; max-width: 1100px; margin: 0 auto; }
-    .logo { font-family: 'Playfair Display', Georgia, serif; color: #d68e08; font-size: 24px; font-weight: 700; text-decoration: none; }
-    .logo span { color: white; font-weight: 400; }
-    nav ul { list-style: none; margin: 0; padding: 0; display: flex; gap: 25px; flex-wrap: wrap; }
-    nav a { color: white; text-decoration: none; font-size: 14px; font-weight: 500; }
-    nav a:hover { color: #d68e08; }
-    .header-contact { background: #2a2a2a; padding: 8px 20px; text-align: right; font-size: 13px; }
-    .header-contact a { color: #d68e08; margin-left: 20px; }
-    
-    /* Hero */
-    .hero { background: linear-gradient(135deg, #EBE5DE 0%, #f5f0e8 100%); padding: 50px 20px; }
-    .hero-content { max-width: 1100px; margin: 0 auto; }
-    .hero h1 { font-family: 'Playfair Display', Georgia, serif; font-size: 36px; margin: 0 0 20px; color: #191919; }
-    .hero-intro { font-size: 18px; color: #444; max-width: 800px; }
-    
-    /* Sections */
-    section { padding: 40px 20px; }
-    section h2 { font-family: 'Playfair Display', Georgia, serif; font-size: 28px; margin-bottom: 20px; color: #191919; }
-    
-    /* About Region */
-    .about-region { background: #fff; }
-    .about-text { font-size: 16px; line-height: 1.8; max-width: 900px; }
-    
-    /* Info Grid */
-    .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 25px; margin-top: 30px; }
-    .info-box { background: #f9f9f9; padding: 20px; border-radius: 8px; }
-    .info-box h3 { font-family: 'Playfair Display', Georgia, serif; font-size: 18px; margin: 0 0 15px; color: #d68e08; }
-    .info-box ul { padding-left: 20px; margin: 0; }
-    .info-box li { margin-bottom: 8px; }
-    
-    /* Stats */
-    .stats { display: flex; flex-wrap: wrap; gap: 30px; margin-top: 25px; padding: 20px; background: #EBE5DE; border-radius: 8px; }
-    .stat-item strong { color: #d68e08; }
-    
-    /* CTA */
-    .cta { background: #d68e08; color: white; padding: 40px 20px; text-align: center; }
-    .cta h2 { color: white; margin-bottom: 15px; }
-    .cta p { margin-bottom: 20px; font-size: 16px; }
-    .cta-button { display: inline-block; background: white; color: #d68e08; padding: 15px 40px; text-decoration: none; font-weight: 700; border-radius: 4px; font-size: 16px; }
-    .cta-button:hover { background: #f5f5f5; }
-    
-    /* Success Cases */
-    .success-cases { background: #f5f5f5; }
-    .cases-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; margin-top: 25px; }
-    .case-card { background: white; padding: 25px; border-radius: 8px; border-left: 4px solid #d68e08; }
-    .case-card h3 { font-family: 'Playfair Display', Georgia, serif; font-size: 18px; margin: 0 0 10px; }
-    .case-card .savings { color: #d68e08; font-weight: 700; font-size: 20px; }
-    .case-card p { margin: 10px 0 0; font-size: 14px; color: #666; }
-    
-    /* Related Links */
-    .related-links { background: #fff; }
-    .related-links ul { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; }
-    .related-links li { margin: 0; }
-    .related-links a { display: block; padding: 15px; background: #f9f9f9; color: #191919; text-decoration: none; border-radius: 4px; transition: background 0.2s; }
-    .related-links a:hover { background: #EBE5DE; }
-    .related-links a span { color: #d68e08; font-weight: 600; }
-    
-    /* Contact */
-    .contact-section { background: #EBE5DE; }
-    .contact-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 20px; }
-    .contact-item { background: white; padding: 20px; border-radius: 8px; text-align: center; }
-    .contact-item strong { display: block; color: #d68e08; margin-bottom: 5px; }
-    .contact-item a { color: #191919; text-decoration: none; }
-    
-    /* Footer */
-    footer { background: #191919; color: white; padding: 40px 20px; }
-    .footer-content { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 30px; }
-    .footer-section h4 { font-family: 'Playfair Display', Georgia, serif; color: #d68e08; margin: 0 0 15px; }
-    .footer-section ul { list-style: none; padding: 0; margin: 0; }
-    .footer-section li { margin-bottom: 8px; }
-    .footer-section a { color: #ccc; text-decoration: none; font-size: 14px; }
-    .footer-section a:hover { color: #d68e08; }
-    .footer-bottom { max-width: 1100px; margin: 30px auto 0; padding-top: 20px; border-top: 1px solid #333; text-align: center; font-size: 13px; color: #888; }
-    
-    /* Responsive */
-    @media (max-width: 768px) {
-      .header-top { flex-direction: column; gap: 15px; text-align: center; }
-      nav ul { justify-content: center; }
-      .hero h1 { font-size: 28px; }
-      .stats { flex-direction: column; gap: 15px; }
-    }
-  </style>
+  <!-- CSS Fallback -->
+  <link rel="stylesheet" href="/assets/seo/fallback.css">
 </head>
 <body>
-  <header>
-    <div class="header-contact">
-      <a href="tel:+552131733795">(21) 3173-3795</a>
-      <a href="https://wa.me/5521977294848">WhatsApp</a>
+  <!-- ==============================
+       1. TOP BAR
+       ============================== -->
+  <div class="header-topbar">
+    <div class="container">
+      <div class="header-topbar__contact">
+        <a href="mailto:contato@cataldosiston-adv.com.br">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="#d68e08"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+          contato@cataldosiston-adv.com.br
+        </a>
+        <a href="tel:+552131733795">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="#d68e08"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+          +55 (21) 3173-3795
+        </a>
+        <a href="#contact" class="btn-fale-conosco">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
+          Fale Conosco
+        </a>
+      </div>
+      <div class="header-topbar__social">
+        <a href="https://www.facebook.com/cataldosistonadvogados/" target="_blank" rel="noopener" title="Facebook">
+          <img src="https://cdn.builder.io/api/v1/image/assets/ca38ae4db7a6428881f7c632440d043a/72d95d25980c13a7793be843a3be119eac9a23d4" alt="Facebook" width="28" height="28">
+        </a>
+        <a href="https://www.instagram.com/cataldosiston.advogados/" target="_blank" rel="noopener" title="Instagram">
+          <img src="https://cdn.builder.io/api/v1/image/assets/ca38ae4db7a6428881f7c632440d043a/244b9c45e595799dda32400ab0c739ab1dcf1e36" alt="Instagram" width="28" height="28">
+        </a>
+        <a href="https://www.youtube.com/channel/UCldbgxJU1D9h3UAVUIRIRYg" target="_blank" rel="noopener" title="YouTube">
+          <img src="https://cdn.builder.io/api/v1/image/assets/ca38ae4db7a6428881f7c632440d043a/e31888807ac0e2e4d00224790a076ac9216edea3" alt="YouTube" width="28" height="28">
+        </a>
+      </div>
     </div>
-    <div class="header-top">
-      <a href="https://sitenew2.vercel.app" class="logo">Cataldo Siston <span>Advogados</span></a>
-      <nav>
+  </div>
+  
+  <!-- ==============================
+       2. HEADER PRINCIPAL
+       ============================== -->
+  <header class="header-main">
+    <div class="container">
+      <a href="https://leilaodeimoveis-cataldosiston.com/" class="header-main__logo">
+        <img src="/logotipo_cataldo_siston.png" alt="Cataldo Siston Advogados" height="48">
+      </a>
+      <nav class="header-main__nav">
         <ul>
-          <li><a href="https://sitenew2.vercel.app">Início</a></li>
-          <li><a href="https://sitenew2.vercel.app/catalogo">Imóveis em Leilão</a></li>
-          <li><a href="https://leilaodeimoveis-cataldosiston.com/escritorio/">Quem Somos</a></li>
-          <li><a href="https://leilaodeimoveis-cataldosiston.com/leilao-imoveis-rj/">Assessoria</a></li>
-          <li><a href="https://leilaodeimoveis-cataldosiston.com/casos-reais/">Casos de Sucesso</a></li>
+          <li><a href="https://leilaodeimoveis-cataldosiston.com/escritorio/">Quem somos</a></li>
+          <li><a href="https://catalogo.cataldosiston-adv.com.br" class="active">Imóveis em Leilão</a></li>
+          <li><a href="https://leilaodeimoveis-cataldosiston.com/leilao-imoveis-rj/">Assessoria em leilões</a></li>
+          <li><a href="https://leilaodeimoveis-cataldosiston.com/direito-imobiliario/">Direito Imobiliário</a></li>
+          <li><a href="https://leilaodeimoveis-cataldosiston.com/casos-reais/">Casos Reais</a></li>
+          <li><a href="https://leilaodeimoveis-cataldosiston.com/blog-cataldo-siston-advogados/">Blog</a></li>
           <li><a href="https://leilaodeimoveis-cataldosiston.com/contato-advogados-imobiliarios/">Contato</a></li>
         </ul>
       </nav>
     </div>
   </header>
-
-  <section class="hero">
-    <div class="hero-content">
-      <h1>Imóveis em Leilão em Jardim Botânico - Rio de Janeiro</h1>
-      <p class="hero-intro">O Jardim Botânico é o bairro mais verde do Rio de Janeiro, abrigando o famoso parque homônimo. Oferece tranquilidade, natureza e proximidade com a Lagoa e a Zona Sul.</p>
+  
+  <!-- ==============================
+       3. HERO SECTION
+       ============================== -->
+  <section class="hero" style="background-image: linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)), url('/visao-panoramica-rio-janeiro.jpg');">
+    <div class="hero__content">
+      <h1>Imóveis em Leilão em Jardim Botânico - RJ</h1>
+      <p class="hero__intro">O Jardim Botânico é o bairro mais verde do Rio de Janeiro, abrigando o famoso parque homônimo. Oferece tranquilidade, natureza e proximidade com a Lagoa e a Zona Sul.</p>
+      <a href="https://wa.me/5521977294848?text=Olá! Tenho interesse em imóveis em leilão em Jardim Botânico." class="btn-cta">
+        Quero receber oportunidades
+      </a>
     </div>
   </section>
-
-  <section class="about-region">
+  
+  <!-- ==============================
+       4. VÍDEO SECTION
+       ============================== -->
+  <section class="video-section">
+    <div class="video-wrapper">
+      <a href="https://www.youtube.com/watch?v=eeJ95Dy3l3s" class="video-thumbnail" target="_blank" rel="noopener" aria-label="Assistir: Leilões de Imóveis - Como Funciona?">
+        <img src="https://i.ytimg.com/vi/eeJ95Dy3l3s/maxresdefault.jpg" alt="Leilões de Imóveis - Como Funciona?" loading="lazy">
+        <span class="play-button"></span>
+      </a>
+    </div>
+  </section>
+  
+  <!-- ==============================
+       5. OPORTUNIDADES SECTION
+       ============================== -->
+  <section class="opportunities-section">
     <div class="container">
-      <h2>Sobre Jardim Botânico</h2>
-      <p class="about-text">O bairro é conhecido pelo Jardim Botânico do Rio de Janeiro, um dos mais importantes do mundo. Ruas arborizadas, casas históricas e apartamentos de alto padrão fazem do bairro um dos mais charmosos da cidade.</p>
-      
-      <div class="info-grid">
-        
-        <div class="info-box">
-          <h3>Bairros da Região</h3>
-          <ul>
-            <li>Jardim Botânico</li>
-            <li>Gávea</li>
-            <li>Lagoa</li>
-            <li>Humaitá</li>
-          </ul>
-        </div>
-        
-        <div class="info-box">
-          <h3>Atrações</h3>
-          <ul>
-            <li>Jardim Botânico do Rio de Janeiro</li>
-            <li>Parque Lage</li>
-            <li>Instituto Moreira Salles</li>
-            <li>Jockey Club</li>
-          </ul>
-        </div>
-        
-        <div class="info-box">
-          <h3>Infraestrutura</h3>
-          <ul>
-            <li>Próximo ao metrô</li>
-            <li>Escolas bilíngues</li>
-            <li>Restaurantes</li>
-            <li>Comércio local</li>
-          </ul>
-        </div>
-        
-        <div class="info-box">
-          <h3>Diferenciais</h3>
-          <ul>
-            <li>Jardim Botânico</li>
-            <li>Parque Lage</li>
-            <li>Ruas arborizadas</li>
-            <li>Ambiente tranquilo</li>
-          </ul>
-        </div>
+      <div class="opportunities-section__header">
+        <span class="opportunities-section__dots">●●●●●</span>
+        <span class="opportunities-section__subtitle">Oportunidades de Leilão</span>
+        <span class="opportunities-section__dots">●●●●●</span>
       </div>
-      
-      <div class="stats">
-        <div class="stat-item"><strong>Tipos de Imóveis:</strong> Apartamentos, Casas, Coberturas</div>
-        <div class="stat-item"><strong>Faixa de Preço:</strong> R$ 800.000 a R$ 6.000.000</div>
-        <div class="stat-item"><strong>Metrô:</strong> Próximo às estações de Botafogo e Ipanema</div>
+      <h2>Oportunidades em Jardim Botânico</h2>
+      <p class="opportunities-section__disclaimer">
+        As informações contidas neste catálogo são meramente informativas. Havendo qualquer dúvida quanto às informações disponibilizadas, consulte um advogado especializado.
+        <a href="https://leilaodeimoveis-cataldosiston.com/leilao-imoveis-rj/">Saiba mais sobre assessoria em leilões</a>
+      </p>
+    </div>
+  </section>
+  
+  <!-- ==============================
+       6. SOBRE A REGIÃO
+       ============================== -->
+  <section class="about-region">
+    <h2>Sobre Jardim Botânico</h2>
+    <p class="about-region__text">O bairro é conhecido pelo Jardim Botânico do Rio de Janeiro, um dos mais importantes do mundo. Ruas arborizadas, casas históricas e apartamentos de alto padrão fazem do bairro um dos mais charmosos da cidade.</p>
+  </section>
+  
+  <!-- ==============================
+       7. CTA - NÃO ENCONTROU
+       ============================== -->
+  <section class="cta-not-found">
+    <div class="container">
+      <h2>Não encontrou o imóvel ideal em Jardim Botânico?</h2>
+      <p>Nossa equipe pode ajudar você a encontrar a oportunidade perfeita de leilão na região.</p>
+      <div class="cta-not-found__buttons">
+        <a href="https://wa.me/5521977294848?text=Olá! Procuro imóvel em leilão em Jardim Botânico." class="btn-outline">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/></svg>
+          WhatsApp
+        </a>
+        <a href="mailto:contato@cataldosiston-adv.com.br" class="btn-outline">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+          Email
+        </a>
+        <a href="tel:+552131733795" class="btn-outline">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+          Telefone
+        </a>
+      </div>
+      <div class="cta-not-found__links">
+        <a href="https://catalogo.cataldosiston-adv.com.br/leilao-rj">Ver todos os imóveis RJ</a>
+        <a href="https://catalogo.cataldosiston-adv.com.br/leilao-sp">Ver todos os imóveis SP</a>
       </div>
     </div>
   </section>
-
-  <section class="cta">
-    <h2>Quer Receber Oportunidades em Jardim Botânico?</h2>
-    <p>Nossa equipe seleciona os melhores imóveis em leilão da região. Fale conosco pelo WhatsApp.</p>
-    <a href="https://wa.me/5521977294848?text=Olá! Tenho interesse em imóveis em leilão em Jardim Botânico." class="cta-button">Quero receber oportunidades</a>
+  
+  <!-- ==============================
+       8. DETALHES DA REGIÃO
+       ============================== -->
+  
+  <section class="region-details">
+    <div class="container">
+      <h2>Conheça Jardim Botânico</h2>
+      <div class="region-details__grid">
+        <div class="detail-card">
+        <div class="detail-card__header">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <h3>Bairros e Sub-regiões</h3>
+        </div>
+        <ul><li>Jardim Botânico</li><li>Gávea</li><li>Lagoa</li><li>Humaitá</li></ul>
+      </div>
+        <div class="detail-card">
+        <div class="detail-card__header">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          <h3>Pontos de Interesse</h3>
+        </div>
+        <ul><li>Jardim Botânico do Rio de Janeiro</li><li>Parque Lage</li><li>Instituto Moreira Salles</li><li>Jockey Club</li></ul>
+      </div>
+        <div class="detail-card">
+        <div class="detail-card__header">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M3 10h18M3 7l9-4 9 4M4 10v11M20 10v11"/></svg>
+          <h3>Infraestrutura</h3>
+        </div>
+        <ul><li>Próximo ao metrô</li><li>Escolas bilíngues</li><li>Restaurantes</li><li>Comércio local</li></ul>
+      </div>
+        <div class="detail-card">
+        <div class="detail-card__header">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <h3>Destaques</h3>
+        </div>
+        <ul><li>Jardim Botânico</li><li>Parque Lage</li><li>Ruas arborizadas</li><li>Ambiente tranquilo</li></ul>
+      </div>
+      </div>
+      <div class="stats-bar">
+        <span><strong>Tipos:</strong> Apartamentos, Casas, Coberturas</span>
+        <span><strong>Faixa:</strong> R$ 800.000 a R$ 6.000.000</span>
+        <span><strong>Transporte:</strong> Próximo às estações de Botafogo e Ipanema</span>
+      </div>
+    </div>
   </section>
-
+  
+  
+  <!-- ==============================
+       9. CASOS DE SUCESSO
+       ============================== -->
   
   <section class="success-cases">
     <div class="container">
-      <h2>Casos de Sucesso em Jardim Botânico</h2>
-      <p>Veja alguns exemplos de clientes que adquiriram imóveis em leilão na região com nossa assessoria:</p>
-      
-      <div class="cases-list">
+      <h2>Casos de Sucesso</h2>
+      <div class="success-cases__grid">
         
-        <div class="case-card">
+      <div class="case-card">
+        <div class="case-card__video">
+          <img src="https://i.ytimg.com/vi/eeJ95Dy3l3s/mqdefault.jpg" alt="Casa - Rua Pacheco Leão">
+          <a href="https://www.youtube.com/watch?v=eeJ95Dy3l3s" class="play-icon" target="_blank" rel="noopener" aria-label="Assistir vídeo"></a>
+        </div>
+        <div class="case-card__content">
           <h3>Casa - Rua Pacheco Leão</h3>
-          <div class="savings">Economia de 40%</div>
           <p>Casa de 250m² em rua arborizada por R$ 1.800.000.</p>
+          <span class="author">Cliente</span>
+        </div>
+      </div>
+    
+      </div>
+      <div class="success-cases__cta">
+        <a href="https://leilaodeimoveis-cataldosiston.com/casos-reais/" class="btn-cta">Ver mais casos de sucesso</a>
+      </div>
+    </div>
+  </section>
+  
+  
+  <!-- ==============================
+       10. DEPOIMENTOS
+       ============================== -->
+  <section class="testimonials">
+    <h2>Depoimentos</h2>
+    <div class="testimonials__quote">"</div>
+    <div class="testimonials__content">
+      <blockquote>
+        Como cliente e parceiro de negócios do escritório Cataldo Siston há quase 10 anos tenho toda tranquilidade em referenciar seus serviços, seu trabalho impecável e histórico de sucesso em todas as aquisições, investimentos e serviços a nós prestados. Além de ser um workaholic sempre comprometido nos mínimos detalhes, nos protegendo contra riscos e cumprindo estritamente todos os prazos.
+      </blockquote>
+      <div class="testimonials__author">
+        <strong>Felipe Bueno</strong>
+        <span>PRESIDENTE DA BX CAPITAL</span>
+      </div>
+    </div>
+    <div class="testimonials__dots">
+      <span class="dot active"></span>
+      <span class="dot"></span>
+      <span class="dot"></span>
+      <span class="dot"></span>
+      <span class="dot"></span>
+      <span class="dot"></span>
+      <span class="dot"></span>
+    </div>
+  </section>
+  
+  <!-- ==============================
+       11. NEWSLETTER
+       ============================== -->
+  <section class="newsletter-section" id="contact">
+    <div class="container">
+      <div class="newsletter-form-wrapper">
+        <h2>Receba nossa newsletter</h2>
+        <form class="newsletter-form" action="https://api.rd.services/platform/conversions" method="POST">
+          <input type="hidden" name="token_rdstation" value="de34ae318d19588a9ae8">
+          <input type="hidden" name="identificador" value="newsletter-site-de34ae318d19588a9ae8">
+          <input type="text" name="name" placeholder="Nome*" required>
+          <input type="email" name="email" placeholder="Email*" required>
+          <input type="tel" name="personal_phone" placeholder="Telefone*" required>
+          <button type="submit">ENVIAR</button>
+        </form>
+        
+        <div class="newsletter-contact">
+          <h3>Podemos ajudar a solucionar o seu caso!</h3>
+          <div class="newsletter-contact__buttons">
+            <a href="https://wa.me/5521977294848">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/></svg>
+              WhatsApp
+            </a>
+            <a href="mailto:contato@cataldosiston-adv.com.br">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+              Email
+            </a>
+            <a href="tel:+552131733795">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+              Telefone
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="newsletter-section__photo">
+        <img src="/foto-recortada-cataldo.png" alt="Advogado Cataldo" loading="lazy">
+      </div>
+    </div>
+  </section>
+  
+  <!-- ==============================
+       12. FOOTER
+       ============================== -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__grid">
+        <div class="footer__col">
+          <img src="https://cdn.builder.io/api/v1/image/assets/ca38ae4db7a6428881f7c632440d043a/bf5a59e7e68461e9ad6a56b785454e48938ce393" alt="Cataldo Siston" height="64" style="margin-bottom: 15px;">
+          <p>Leilões de imóveis e advocacia imobiliária</p>
+          <address>
+            <p>Av. Rio Branco, 156, Gr. 3336 a 3339</p>
+            <p>Centro - Rio de Janeiro - RJ - Brasil</p>
+            <p><a href="tel:+552131733795">+55 (21) 3173-3795</a></p>
+            <p><strong><a href="https://wa.me/5521977294848">+55 (21) 97729-4848</a></strong></p>
+          </address>
+        </div>
+        
+        <div class="footer__col">
+          <h4>Mapa do Site</h4>
+          <ul>
+            <li><a href="https://leilaodeimoveis-cataldosiston.com/escritorio/">Quem Somos</a></li>
+            <li><a href="https://catalogo.cataldosiston-adv.com.br">Imóveis em Leilão RJ</a></li>
+            <li><a href="https://catalogo.cataldosiston-adv.com.br/leilao-sp">Imóveis em Leilão SP</a></li>
+            <li><a href="https://leilaodeimoveis-cataldosiston.com/leilao-imoveis-rj/">Assessoria em leilões</a></li>
+            <li><a href="https://leilaodeimoveis-cataldosiston.com/direito-imobiliario/">Direito Imobiliário</a></li>
+            <li><a href="https://leilaodeimoveis-cataldosiston.com/distrato-imobiliario/">Distrato imobiliário</a></li>
+            <li><a href="https://leilaodeimoveis-cataldosiston.com/casos-reais/">Casos Reais</a></li>
+            <li><a href="https://leilaodeimoveis-cataldosiston.com/blog-cataldo-siston-advogados/">Blog</a></li>
+            <li><a href="https://leilaodeimoveis-cataldosiston.com/contato-advogados-imobiliarios/">Contato</a></li>
+            <li><a href="https://leilaodeimoveis-cataldosiston.com/privacidade/">Política de Privacidade</a></li>
+          </ul>
+        </div>
+        
+        <div class="footer__col">
+          <h4>Entre em Contato</h4>
+          <p>Tire suas dúvidas ou siga-nos nas redes sociais</p>
+          <p><strong><a href="mailto:contato@cataldosiston-adv.com.br">contato@cataldosiston-adv.com.br</a></strong></p>
+          <div class="footer__social">
+            <a href="https://www.facebook.com/cataldosistonadvogados/" target="_blank" rel="noopener">
+              <img src="https://cdn.builder.io/api/v1/image/assets/ca38ae4db7a6428881f7c632440d043a/72d95d25980c13a7793be843a3be119eac9a23d4" alt="Facebook" width="32" height="32">
+            </a>
+            <a href="https://www.instagram.com/cataldosiston.advogados/" target="_blank" rel="noopener">
+              <img src="https://cdn.builder.io/api/v1/image/assets/ca38ae4db7a6428881f7c632440d043a/244b9c45e595799dda32400ab0c739ab1dcf1e36" alt="Instagram" width="32" height="32">
+            </a>
+            <a href="https://www.youtube.com/channel/UCldbgxJU1D9h3UAVUIRIRYg" target="_blank" rel="noopener">
+              <img src="https://cdn.builder.io/api/v1/image/assets/ca38ae4db7a6428881f7c632440d043a/e31888807ac0e2e4d00224790a076ac9216edea3" alt="YouTube" width="32" height="32">
+            </a>
+          </div>
         </div>
       </div>
       
-      <p style="margin-top: 25px; text-align: center;">
-        <a href="https://leilaodeimoveis-cataldosiston.com/casos-reais/" style="color: #d68e08; font-weight: 600;">Ver todos os casos de sucesso →</a>
-      </p>
-    </div>
-  </section>
-
-  <section class="related-links">
-    <div class="container">
-      <h2>Outras Regiões Atendidas</h2>
-      <p>Oferecemos assessoria para imóveis em leilão em diversas regiões do Rio de Janeiro e São Paulo:</p>
-      <ul>
-        <li><a href="https://sitenew2.vercel.app/catalogo/lagoa-rj"><span>Lagoa</span> - Imóveis em leilão</a></li>
-        <li><a href="https://sitenew2.vercel.app/catalogo/leblon-rj"><span>Leblon</span> - Imóveis em leilão</a></li>
-        <li><a href="https://sitenew2.vercel.app/catalogo/ipanema-rj"><span>Ipanema</span> - Imóveis em leilão</a></li>
-        <li><a href="https://sitenew2.vercel.app/catalogo/zona-sul-rj"><span>Zona Sul</span> - Imóveis em leilão</a></li>
-      </ul>
-    </div>
-  </section>
-
-  <section class="contact-section">
-    <div class="container">
-      <h2>Entre em Contato</h2>
-      <p>Nossa equipe está pronta para ajudá-lo a encontrar o imóvel ideal em leilão.</p>
-      <div class="contact-grid">
-        <div class="contact-item">
-          <strong>WhatsApp</strong>
-          <a href="https://wa.me/5521977294848">+55 (21) 97729-4848</a>
-        </div>
-        <div class="contact-item">
-          <strong>Telefone</strong>
-          <a href="tel:+552131733795">+55 (21) 3173-3795</a>
-        </div>
-        <div class="contact-item">
-          <strong>Email</strong>
-          <a href="mailto:contato@cataldosiston-adv.com.br">contato@cataldosiston-adv.com.br</a>
-        </div>
-        <div class="contact-item">
-          <strong>Site</strong>
-          <a href="https://leilaodeimoveis-cataldosiston.com">leilaodeimoveis-cataldosiston.com</a>
-        </div>
+      <div class="footer__bottom">
+        <p>© 2026 Cataldo Siston Advogados. Todos os direitos reservados.</p>
       </div>
-    </div>
-  </section>
-
-  <footer>
-    <div class="footer-content">
-      <div class="footer-section">
-        <h4>Cataldo Siston Advogados</h4>
-        <p style="font-size: 14px; color: #ccc; margin: 0;">Especialistas em leilões de imóveis no Rio de Janeiro e São Paulo desde 2010.</p>
-        <p style="font-size: 13px; color: #888; margin-top: 15px;">Av. Rio Branco, 156<br>Gr. 3336 a 3339 - Centro<br>Rio de Janeiro - RJ</p>
-      </div>
-      <div class="footer-section">
-        <h4>Navegação</h4>
-        <ul>
-          <li><a href="https://sitenew2.vercel.app">Início</a></li>
-          <li><a href="https://sitenew2.vercel.app/catalogo">Imóveis em Leilão</a></li>
-          <li><a href="https://leilaodeimoveis-cataldosiston.com/escritorio/">Quem Somos</a></li>
-          <li><a href="https://leilaodeimoveis-cataldosiston.com/leilao-imoveis-rj/">Assessoria</a></li>
-        </ul>
-      </div>
-      <div class="footer-section">
-        <h4>Regiões RJ</h4>
-        <ul>
-          <li><a href="https://sitenew2.vercel.app/catalogo/copacabana-rj">Copacabana</a></li>
-          <li><a href="https://sitenew2.vercel.app/catalogo/ipanema-rj">Ipanema</a></li>
-          <li><a href="https://sitenew2.vercel.app/catalogo/leblon-rj">Leblon</a></li>
-          <li><a href="https://sitenew2.vercel.app/catalogo/barra-da-tijuca-rj">Barra da Tijuca</a></li>
-          <li><a href="https://sitenew2.vercel.app/catalogo/zona-sul-rj">Zona Sul</a></li>
-        </ul>
-      </div>
-      <div class="footer-section">
-        <h4>Regiões SP</h4>
-        <ul>
-          <li><a href="https://sitenew2.vercel.app/catalogo/jardins-sp">Jardins</a></li>
-          <li><a href="https://sitenew2.vercel.app/catalogo/pinheiros-sp">Pinheiros</a></li>
-          <li><a href="https://sitenew2.vercel.app/catalogo/moema-sp">Moema</a></li>
-          <li><a href="https://sitenew2.vercel.app/catalogo/itaim-bibi-sp">Itaim Bibi</a></li>
-          <li><a href="https://sitenew2.vercel.app/catalogo/vila-mariana-sp">Vila Mariana</a></li>
-        </ul>
-      </div>
-    </div>
-    <div class="footer-bottom">
-      <p>© 2025 Cataldo Siston Advogados. Todos os direitos reservados.</p>
-      <p style="margin-top: 10px;">
-        <a href="https://leilaodeimoveis-cataldosiston.com/casos-reais/" style="color: #d68e08;">Casos de Sucesso</a> |
-        <a href="https://leilaodeimoveis-cataldosiston.com/contato-advogados-imobiliarios/" style="color: #d68e08;">Contato</a>
-      </p>
     </div>
   </footer>
   

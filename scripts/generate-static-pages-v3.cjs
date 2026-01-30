@@ -1,27 +1,201 @@
-<!DOCTYPE html>
+/**
+ * Script de Geração de Páginas Estáticas SEO v3
+ * 
+ * Este script gera páginas HTML com PARIDADE TOTAL ao React app (exceto filtros/listagem).
+ * As páginas HTML são servidas para crawlers (JS off), enquanto usuários com JS são
+ * redirecionados para o SPA.
+ * 
+ * Estrutura replicada:
+ * 1. Top Bar (email, telefone, redes sociais, botão Fale Conosco)
+ * 2. Header Principal (logo, navegação)
+ * 3. Hero Section (título, descrição, CTA)
+ * 4. Vídeo Section (YouTube thumbnail + link)
+ * 5. Oportunidades Section (subtitle + disclaimer)
+ * 6. Sobre a Região (texto único)
+ * 7. CTA Não Encontrou (WhatsApp + opções)
+ * 8. Detalhes da Região (grid de infos)
+ * 9. Casos de Sucesso (cards com vídeos)
+ * 10. Depoimentos (carousel estático)
+ * 11. Newsletter (formulário + foto)
+ * 12. Footer (3 colunas + copyright)
+ */
+
+const fs = require('fs');
+const path = require('path');
+
+// Configurações
+const SEED_FILE = path.join(__dirname, '..', 'data', 'regional_pages_seo_seed.json');
+const CONTENT_FILE = path.join(__dirname, '..', 'data', 'region-content.json');
+const OUTPUT_DIR = path.join(__dirname, '..', 'public', 'catalogo');
+const BASE_URL = 'https://catalogo.cataldosiston-adv.com.br';
+const NOINDEX = process.env.NOINDEX === 'true';
+const ROBOTS_CONTENT = NOINDEX ? 'noindex, follow' : 'index, follow';
+
+// CDN Images para ícones sociais (do React original)
+const SOCIAL_ICONS = {
+  facebook: 'https://cdn.builder.io/api/v1/image/assets/ca38ae4db7a6428881f7c632440d043a/72d95d25980c13a7793be843a3be119eac9a23d4',
+  instagram: 'https://cdn.builder.io/api/v1/image/assets/ca38ae4db7a6428881f7c632440d043a/244b9c45e595799dda32400ab0c739ab1dcf1e36',
+  youtube: 'https://cdn.builder.io/api/v1/image/assets/ca38ae4db7a6428881f7c632440d043a/e31888807ac0e2e4d00224790a076ac9216edea3',
+  logo: 'https://cdn.builder.io/api/v1/image/assets/ca38ae4db7a6428881f7c632440d043a/bf5a59e7e68461e9ad6a56b785454e48938ce393'
+};
+
+// Vídeo principal do YouTube (usado em todas as páginas)
+const MAIN_VIDEO = {
+  id: 'eeJ95Dy3l3s',
+  title: 'Leilões de Imóveis - Como Funciona?',
+  thumbnail: 'https://i.ytimg.com/vi/eeJ95Dy3l3s/maxresdefault.jpg'
+};
+
+// Depoimento padrão (primeiro da lista)
+const DEFAULT_TESTIMONIAL = {
+  content: `Como cliente e parceiro de negócios do escritório Cataldo Siston há quase 10 anos tenho toda tranquilidade em referenciar seus serviços, seu trabalho impecável e histórico de sucesso em todas as aquisições, investimentos e serviços a nós prestados. Além de ser um workaholic sempre comprometido nos mínimos detalhes, nos protegendo contra riscos e cumprindo estritamente todos os prazos.`,
+  author: 'Felipe Bueno',
+  title: 'PRESIDENTE DA BX CAPITAL'
+};
+
+// Ler dados
+let seedData = [];
+let regionContentData = {};
+
+try {
+  seedData = JSON.parse(fs.readFileSync(SEED_FILE, 'utf-8')).regions;
+  console.log(`✅ Seed carregado: ${seedData.length} regiões`);
+} catch (e) {
+  console.error(`❌ Erro ao ler seed: ${e.message}`);
+  process.exit(1);
+}
+
+try {
+  regionContentData = JSON.parse(fs.readFileSync(CONTENT_FILE, 'utf-8')).regions;
+  console.log(`✅ Conteúdo carregado: ${Object.keys(regionContentData).length} regiões`);
+} catch (e) {
+  console.warn(`⚠️  Arquivo de conteúdo não encontrado, usando placeholders`);
+  regionContentData = {};
+}
+
+/**
+ * Gera HTML completo da página com paridade ao React
+ */
+function generatePageHTML(seedRegion, content) {
+  const { slug, estado, regiao, metaTitle, metaDescription, keyword } = seedRegion;
+  const region = regiao;
+  const isRJ = estado === 'RJ';
+  const isSP = estado === 'SP';
+  
+  // Conteúdo padrão se não existir
+  const c = content || {
+    heroDescription: `Encontre imóveis em leilão em ${region} com descontos de até 50% abaixo do valor de mercado. Nossa equipe especializada oferece assessoria completa, da análise jurídica à imissão na posse.`,
+    aboutText: `${region} é uma das regiões mais valorizadas de ${estado === 'RJ' ? 'Rio de Janeiro' : 'São Paulo'}. Nossa equipe de advogados especializados em leilões de imóveis está pronta para ajudá-lo a encontrar excelentes oportunidades nesta região privilegiada.`,
+    neighborhoods: [],
+    attractions: [],
+    infrastructure: [],
+    highlights: [],
+    propertyTypes: ['Apartamentos', 'Casas', 'Salas Comerciais'],
+    priceRange: 'A consultar',
+    transport: 'Consulte disponibilidade',
+    relatedRegions: [],
+    successCases: []
+  };
+  
+  // H1 específico
+  const h1 = `Imóveis em Leilão em ${region} - ${estado}`;
+  
+  // Background do hero baseado no estado
+  const heroBackground = isRJ 
+    ? '/visao-panoramica-rio-janeiro.jpg' 
+    : '/assets/ponte-estaiada-octavio-frias-sao-paulo.jpg';
+  
+  // Gerar HTML das seções opcionais
+  const neighborhoodsHTML = c.neighborhoods && c.neighborhoods.length > 0 
+    ? `<div class="detail-card">
+        <div class="detail-card__header">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <h3>Bairros e Sub-regiões</h3>
+        </div>
+        <ul>${c.neighborhoods.map(n => `<li>${n}</li>`).join('')}</ul>
+      </div>` : '';
+  
+  const attractionsHTML = c.attractions && c.attractions.length > 0
+    ? `<div class="detail-card">
+        <div class="detail-card__header">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          <h3>Pontos de Interesse</h3>
+        </div>
+        <ul>${c.attractions.map(a => `<li>${a}</li>`).join('')}</ul>
+      </div>` : '';
+  
+  const infrastructureHTML = c.infrastructure && c.infrastructure.length > 0
+    ? `<div class="detail-card">
+        <div class="detail-card__header">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M3 10h18M3 7l9-4 9 4M4 10v11M20 10v11"/></svg>
+          <h3>Infraestrutura</h3>
+        </div>
+        <ul>${c.infrastructure.map(i => `<li>${i}</li>`).join('')}</ul>
+      </div>` : '';
+  
+  const highlightsHTML = c.highlights && c.highlights.length > 0
+    ? `<div class="detail-card">
+        <div class="detail-card__header">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <h3>Destaques</h3>
+        </div>
+        <ul>${c.highlights.map(h => `<li>${h}</li>`).join('')}</ul>
+      </div>` : '';
+  
+  // Cases de sucesso
+  const casesHTML = c.successCases && c.successCases.length > 0
+    ? c.successCases.slice(0, 3).map(cs => `
+      <div class="case-card">
+        <div class="case-card__video">
+          <img src="https://i.ytimg.com/vi/${cs.videoId || 'eeJ95Dy3l3s'}/mqdefault.jpg" alt="${cs.title}">
+          <a href="https://www.youtube.com/watch?v=${cs.videoId || 'eeJ95Dy3l3s'}" class="play-icon" target="_blank" rel="noopener" aria-label="Assistir vídeo"></a>
+        </div>
+        <div class="case-card__content">
+          <h3>${cs.title}</h3>
+          <p>${cs.description}</p>
+          <span class="author">${cs.author || 'Cliente'}</span>
+        </div>
+      </div>
+    `).join('') : '';
+  
+  // Regiões relacionadas
+  const relatedHTML = (c.relatedRegions && c.relatedRegions.length > 0 
+    ? c.relatedRegions 
+    : getDefaultRelatedRegions(estado, slug)
+  ).map(r => `<a href="${BASE_URL}/catalogo/${r.slug}">${r.name}</a>`).join('');
+  
+  // Stats section
+  const statsHTML = (c.propertyTypes || c.priceRange || c.transport)
+    ? `<div class="stats-bar">
+        ${c.propertyTypes ? `<span><strong>Tipos:</strong> ${c.propertyTypes.join(', ')}</span>` : ''}
+        ${c.priceRange ? `<span><strong>Faixa:</strong> ${c.priceRange}</span>` : ''}
+        ${c.transport ? `<span><strong>Transporte:</strong> ${c.transport}</span>` : ''}
+      </div>` : '';
+
+  return `<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Imóveis Região dos Lagos em Leilão | Cataldo Siston</title>
-  <meta name="description" content="Buscando imóveis na Região dos Lagos? Oportunidades em Cabo Frio, Búzios e Araruama. Invista em casas de praia com a segurança da Cataldo Siston.">
-  <meta name="keywords" content="imóveis região dos lagos, leilão de imóveis, região dos lagos, RJ">
-  <meta name="robots" content="index, follow">
-  <link rel="canonical" href="https://catalogo.cataldosiston-adv.com.br/catalogo/regiao-dos-lagos-rj">
+  <title>${metaTitle}</title>
+  <meta name="description" content="${metaDescription}">
+  <meta name="keywords" content="${keyword}, leilão de imóveis, ${region.toLowerCase()}, ${estado}">
+  <meta name="robots" content="${ROBOTS_CONTENT}">
+  <link rel="canonical" href="${BASE_URL}/catalogo/${slug}">
   
   <!-- Open Graph -->
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://catalogo.cataldosiston-adv.com.br/catalogo/regiao-dos-lagos-rj">
-  <meta property="og:title" content="Imóveis Região dos Lagos em Leilão | Cataldo Siston">
-  <meta property="og:description" content="Buscando imóveis na Região dos Lagos? Oportunidades em Cabo Frio, Búzios e Araruama. Invista em casas de praia com a segurança da Cataldo Siston.">
-  <meta property="og:image" content="https://catalogo.cataldosiston-adv.com.br/visao-panoramica-rio-janeiro.jpg">
+  <meta property="og:url" content="${BASE_URL}/catalogo/${slug}">
+  <meta property="og:title" content="${metaTitle}">
+  <meta property="og:description" content="${metaDescription}">
+  <meta property="og:image" content="${BASE_URL}${heroBackground}">
   <meta property="og:site_name" content="Cataldo Siston Advogados">
   <meta property="og:locale" content="pt_BR">
   
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Imóveis Região dos Lagos em Leilão | Cataldo Siston">
-  <meta name="twitter:description" content="Buscando imóveis na Região dos Lagos? Oportunidades em Cabo Frio, Búzios e Araruama. Invista em casas de praia com a segurança da Cataldo Siston.">
+  <meta name="twitter:title" content="${metaTitle}">
+  <meta name="twitter:description" content="${metaDescription}">
   
   <!-- Favicon -->
   <link rel="icon" type="image/png" sizes="32x32" href="/cropped-favicon-cataldo-siston-1-1-32x32.png">
@@ -57,13 +231,13 @@
       </div>
       <div class="header-topbar__social">
         <a href="https://www.facebook.com/cataldosistonadvogados/" target="_blank" rel="noopener" title="Facebook">
-          <img src="https://cdn.builder.io/api/v1/image/assets/ca38ae4db7a6428881f7c632440d043a/72d95d25980c13a7793be843a3be119eac9a23d4" alt="Facebook" width="28" height="28">
+          <img src="${SOCIAL_ICONS.facebook}" alt="Facebook" width="28" height="28">
         </a>
         <a href="https://www.instagram.com/cataldosiston.advogados/" target="_blank" rel="noopener" title="Instagram">
-          <img src="https://cdn.builder.io/api/v1/image/assets/ca38ae4db7a6428881f7c632440d043a/244b9c45e595799dda32400ab0c739ab1dcf1e36" alt="Instagram" width="28" height="28">
+          <img src="${SOCIAL_ICONS.instagram}" alt="Instagram" width="28" height="28">
         </a>
         <a href="https://www.youtube.com/channel/UCldbgxJU1D9h3UAVUIRIRYg" target="_blank" rel="noopener" title="YouTube">
-          <img src="https://cdn.builder.io/api/v1/image/assets/ca38ae4db7a6428881f7c632440d043a/e31888807ac0e2e4d00224790a076ac9216edea3" alt="YouTube" width="28" height="28">
+          <img src="${SOCIAL_ICONS.youtube}" alt="YouTube" width="28" height="28">
         </a>
       </div>
     </div>
@@ -80,7 +254,7 @@
       <nav class="header-main__nav">
         <ul>
           <li><a href="https://leilaodeimoveis-cataldosiston.com/escritorio/">Quem somos</a></li>
-          <li><a href="https://catalogo.cataldosiston-adv.com.br" class="active">Imóveis em Leilão</a></li>
+          <li><a href="${BASE_URL}" class="active">Imóveis em Leilão</a></li>
           <li><a href="https://leilaodeimoveis-cataldosiston.com/leilao-imoveis-rj/">Assessoria em leilões</a></li>
           <li><a href="https://leilaodeimoveis-cataldosiston.com/direito-imobiliario/">Direito Imobiliário</a></li>
           <li><a href="https://leilaodeimoveis-cataldosiston.com/casos-reais/">Casos Reais</a></li>
@@ -94,11 +268,11 @@
   <!-- ==============================
        3. HERO SECTION
        ============================== -->
-  <section class="hero" style="background-image: linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)), url('/visao-panoramica-rio-janeiro.jpg');">
+  <section class="hero${isSP ? ' hero--sp' : ''}" style="background-image: linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)), url('${heroBackground}');">
     <div class="hero__content">
-      <h1>Imóveis em Leilão em Região dos lagos - RJ</h1>
-      <p class="hero__intro">A Região dos Lagos é o destino de veraneio mais procurado do Rio de Janeiro. Cabo Frio, Búzios e Arraial do Cabo oferecem praias paradisíacas e oportunidades de investimento.</p>
-      <a href="https://wa.me/5521977294848?text=Olá! Tenho interesse em imóveis em leilão em Região dos lagos." class="btn-cta">
+      <h1>${h1}</h1>
+      <p class="hero__intro">${c.heroDescription}</p>
+      <a href="https://wa.me/5521977294848?text=Olá! Tenho interesse em imóveis em leilão em ${region}." class="btn-cta">
         Quero receber oportunidades
       </a>
     </div>
@@ -109,8 +283,8 @@
        ============================== -->
   <section class="video-section">
     <div class="video-wrapper">
-      <a href="https://www.youtube.com/watch?v=eeJ95Dy3l3s" class="video-thumbnail" target="_blank" rel="noopener" aria-label="Assistir: Leilões de Imóveis - Como Funciona?">
-        <img src="https://i.ytimg.com/vi/eeJ95Dy3l3s/maxresdefault.jpg" alt="Leilões de Imóveis - Como Funciona?" loading="lazy">
+      <a href="https://www.youtube.com/watch?v=${MAIN_VIDEO.id}" class="video-thumbnail" target="_blank" rel="noopener" aria-label="Assistir: ${MAIN_VIDEO.title}">
+        <img src="${MAIN_VIDEO.thumbnail}" alt="${MAIN_VIDEO.title}" loading="lazy">
         <span class="play-button"></span>
       </a>
     </div>
@@ -126,7 +300,7 @@
         <span class="opportunities-section__subtitle">Oportunidades de Leilão</span>
         <span class="opportunities-section__dots">●●●●●</span>
       </div>
-      <h2>Oportunidades em Região dos lagos</h2>
+      <h2>Oportunidades em ${region}</h2>
       <p class="opportunities-section__disclaimer">
         As informações contidas neste catálogo são meramente informativas. Havendo qualquer dúvida quanto às informações disponibilizadas, consulte um advogado especializado.
         <a href="https://leilaodeimoveis-cataldosiston.com/leilao-imoveis-rj/">Saiba mais sobre assessoria em leilões</a>
@@ -138,8 +312,8 @@
        6. SOBRE A REGIÃO
        ============================== -->
   <section class="about-region">
-    <h2>Sobre Região dos lagos</h2>
-    <p class="about-region__text">A Região dos Lagos engloba cidades como Cabo Frio, Búzios, Arraial do Cabo, Araruama e Saquarema. É conhecida pelas praias de águas cristalinas, clima ensolarado e forte potencial turístico. Ideal para casa de veraneio ou investimento em aluguel por temporada.</p>
+    <h2>Sobre ${region}</h2>
+    <p class="about-region__text">${c.aboutText}</p>
   </section>
   
   <!-- ==============================
@@ -147,10 +321,10 @@
        ============================== -->
   <section class="cta-not-found">
     <div class="container">
-      <h2>Não encontrou o imóvel ideal em Região dos lagos?</h2>
+      <h2>Não encontrou o imóvel ideal em ${region}?</h2>
       <p>Nossa equipe pode ajudar você a encontrar a oportunidade perfeita de leilão na região.</p>
       <div class="cta-not-found__buttons">
-        <a href="https://wa.me/5521977294848?text=Olá! Procuro imóvel em leilão em Região dos lagos." class="btn-outline">
+        <a href="https://wa.me/5521977294848?text=Olá! Procuro imóvel em leilão em ${region}." class="btn-outline">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/></svg>
           WhatsApp
         </a>
@@ -164,8 +338,8 @@
         </a>
       </div>
       <div class="cta-not-found__links">
-        <a href="https://catalogo.cataldosiston-adv.com.br/leilao-rj">Ver todos os imóveis RJ</a>
-        <a href="https://catalogo.cataldosiston-adv.com.br/leilao-sp">Ver todos os imóveis SP</a>
+        <a href="${BASE_URL}/leilao-rj">Ver todos os imóveis RJ</a>
+        <a href="${BASE_URL}/leilao-sp">Ver todos os imóveis SP</a>
       </div>
     </div>
   </section>
@@ -173,77 +347,37 @@
   <!-- ==============================
        8. DETALHES DA REGIÃO
        ============================== -->
-  
+  ${(neighborhoodsHTML || attractionsHTML || infrastructureHTML || highlightsHTML) ? `
   <section class="region-details">
     <div class="container">
-      <h2>Conheça Região dos lagos</h2>
+      <h2>Conheça ${region}</h2>
       <div class="region-details__grid">
-        <div class="detail-card">
-        <div class="detail-card__header">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-          <h3>Bairros e Sub-regiões</h3>
-        </div>
-        <ul><li>Cabo Frio</li><li>Búzios</li><li>Arraial do Cabo</li><li>Araruama</li><li>Saquarema</li><li>São Pedro da Aldeia</li></ul>
+        ${neighborhoodsHTML}
+        ${attractionsHTML}
+        ${infrastructureHTML}
+        ${highlightsHTML}
       </div>
-        <div class="detail-card">
-        <div class="detail-card__header">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-          <h3>Pontos de Interesse</h3>
-        </div>
-        <ul><li>Praia do Forte</li><li>Rua das Pedras (Búzios)</li><li>Prainhas do Pontal</li><li>Lagoa de Araruama</li></ul>
-      </div>
-        <div class="detail-card">
-        <div class="detail-card__header">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M3 10h18M3 7l9-4 9 4M4 10v11M20 10v11"/></svg>
-          <h3>Infraestrutura</h3>
-        </div>
-        <ul><li>Aeroporto de Cabo Frio</li><li>Hospitais</li><li>Comércio turístico</li><li>Restaurantes</li></ul>
-      </div>
-        <div class="detail-card">
-        <div class="detail-card__header">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-          <h3>Destaques</h3>
-        </div>
-        <ul><li>Praias paradisíacas</li><li>Turismo o ano todo</li><li>Investimento em temporada</li><li>Clima ensolarado</li></ul>
-      </div>
-      </div>
-      <div class="stats-bar">
-        <span><strong>Tipos:</strong> Casas de praia, Apartamentos, Terrenos, Pousadas</span>
-        <span><strong>Faixa:</strong> R$ 200.000 a R$ 3.000.000</span>
-        <span><strong>Transporte:</strong> Via Lagos, Aeroporto de Cabo Frio</span>
-      </div>
+      ${statsHTML}
     </div>
   </section>
-  
+  ` : ''}
   
   <!-- ==============================
        9. CASOS DE SUCESSO
        ============================== -->
-  
+  ${casesHTML ? `
   <section class="success-cases">
     <div class="container">
       <h2>Casos de Sucesso</h2>
       <div class="success-cases__grid">
-        
-      <div class="case-card">
-        <div class="case-card__video">
-          <img src="https://i.ytimg.com/vi/eeJ95Dy3l3s/mqdefault.jpg" alt="Casa em Búzios - Geribá">
-          <a href="https://www.youtube.com/watch?v=eeJ95Dy3l3s" class="play-icon" target="_blank" rel="noopener" aria-label="Assistir vídeo"></a>
-        </div>
-        <div class="case-card__content">
-          <h3>Casa em Búzios - Geribá</h3>
-          <p>Casa de 180m² próxima à praia por R$ 650.000.</p>
-          <span class="author">Cliente</span>
-        </div>
-      </div>
-    
+        ${casesHTML}
       </div>
       <div class="success-cases__cta">
         <a href="https://leilaodeimoveis-cataldosiston.com/casos-reais/" class="btn-cta">Ver mais casos de sucesso</a>
       </div>
     </div>
   </section>
-  
+  ` : ''}
   
   <!-- ==============================
        10. DEPOIMENTOS
@@ -253,11 +387,11 @@
     <div class="testimonials__quote">"</div>
     <div class="testimonials__content">
       <blockquote>
-        Como cliente e parceiro de negócios do escritório Cataldo Siston há quase 10 anos tenho toda tranquilidade em referenciar seus serviços, seu trabalho impecável e histórico de sucesso em todas as aquisições, investimentos e serviços a nós prestados. Além de ser um workaholic sempre comprometido nos mínimos detalhes, nos protegendo contra riscos e cumprindo estritamente todos os prazos.
+        ${DEFAULT_TESTIMONIAL.content}
       </blockquote>
       <div class="testimonials__author">
-        <strong>Felipe Bueno</strong>
-        <span>PRESIDENTE DA BX CAPITAL</span>
+        <strong>${DEFAULT_TESTIMONIAL.author}</strong>
+        <span>${DEFAULT_TESTIMONIAL.title}</span>
       </div>
     </div>
     <div class="testimonials__dots">
@@ -318,7 +452,7 @@
     <div class="container">
       <div class="footer__grid">
         <div class="footer__col">
-          <img src="https://cdn.builder.io/api/v1/image/assets/ca38ae4db7a6428881f7c632440d043a/bf5a59e7e68461e9ad6a56b785454e48938ce393" alt="Cataldo Siston" height="64" style="margin-bottom: 15px;">
+          <img src="${SOCIAL_ICONS.logo}" alt="Cataldo Siston" height="64" style="margin-bottom: 15px;">
           <p>Leilões de imóveis e advocacia imobiliária</p>
           <address>
             <p>Av. Rio Branco, 156, Gr. 3336 a 3339</p>
@@ -332,8 +466,8 @@
           <h4>Mapa do Site</h4>
           <ul>
             <li><a href="https://leilaodeimoveis-cataldosiston.com/escritorio/">Quem Somos</a></li>
-            <li><a href="https://catalogo.cataldosiston-adv.com.br">Imóveis em Leilão RJ</a></li>
-            <li><a href="https://catalogo.cataldosiston-adv.com.br/leilao-sp">Imóveis em Leilão SP</a></li>
+            <li><a href="${BASE_URL}">Imóveis em Leilão RJ</a></li>
+            <li><a href="${BASE_URL}/leilao-sp">Imóveis em Leilão SP</a></li>
             <li><a href="https://leilaodeimoveis-cataldosiston.com/leilao-imoveis-rj/">Assessoria em leilões</a></li>
             <li><a href="https://leilaodeimoveis-cataldosiston.com/direito-imobiliario/">Direito Imobiliário</a></li>
             <li><a href="https://leilaodeimoveis-cataldosiston.com/distrato-imobiliario/">Distrato imobiliário</a></li>
@@ -350,20 +484,20 @@
           <p><strong><a href="mailto:contato@cataldosiston-adv.com.br">contato@cataldosiston-adv.com.br</a></strong></p>
           <div class="footer__social">
             <a href="https://www.facebook.com/cataldosistonadvogados/" target="_blank" rel="noopener">
-              <img src="https://cdn.builder.io/api/v1/image/assets/ca38ae4db7a6428881f7c632440d043a/72d95d25980c13a7793be843a3be119eac9a23d4" alt="Facebook" width="32" height="32">
+              <img src="${SOCIAL_ICONS.facebook}" alt="Facebook" width="32" height="32">
             </a>
             <a href="https://www.instagram.com/cataldosiston.advogados/" target="_blank" rel="noopener">
-              <img src="https://cdn.builder.io/api/v1/image/assets/ca38ae4db7a6428881f7c632440d043a/244b9c45e595799dda32400ab0c739ab1dcf1e36" alt="Instagram" width="32" height="32">
+              <img src="${SOCIAL_ICONS.instagram}" alt="Instagram" width="32" height="32">
             </a>
             <a href="https://www.youtube.com/channel/UCldbgxJU1D9h3UAVUIRIRYg" target="_blank" rel="noopener">
-              <img src="https://cdn.builder.io/api/v1/image/assets/ca38ae4db7a6428881f7c632440d043a/e31888807ac0e2e4d00224790a076ac9216edea3" alt="YouTube" width="32" height="32">
+              <img src="${SOCIAL_ICONS.youtube}" alt="YouTube" width="32" height="32">
             </a>
           </div>
         </div>
       </div>
       
       <div class="footer__bottom">
-        <p>© 2026 Cataldo Siston Advogados. Todos os direitos reservados.</p>
+        <p>© ${new Date().getFullYear()} Cataldo Siston Advogados. Todos os direitos reservados.</p>
       </div>
     </div>
   </footer>
@@ -378,4 +512,92 @@
     <!-- Crawlers sem JS veem todo o conteúdo acima normalmente -->
   </noscript>
 </body>
-</html>
+</html>`;
+}
+
+/**
+ * Retorna regiões relacionadas padrão baseado no estado
+ */
+function getDefaultRelatedRegions(estado, currentSlug) {
+  const rjRegions = [
+    { slug: 'copacabana-rj', name: 'Copacabana' },
+    { slug: 'ipanema-rj', name: 'Ipanema' },
+    { slug: 'leblon-rj', name: 'Leblon' },
+    { slug: 'barra-da-tijuca-rj', name: 'Barra da Tijuca' },
+    { slug: 'botafogo-rj', name: 'Botafogo' },
+    { slug: 'flamengo-rj', name: 'Flamengo' }
+  ];
+  
+  const spRegions = [
+    { slug: 'jardins-sp', name: 'Jardins' },
+    { slug: 'pinheiros-sp', name: 'Pinheiros' },
+    { slug: 'moema-sp', name: 'Moema' },
+    { slug: 'itaim-bibi-sp', name: 'Itaim Bibi' },
+    { slug: 'vila-mariana-sp', name: 'Vila Mariana' },
+    { slug: 'brooklin-sp', name: 'Brooklin' }
+  ];
+  
+  const regions = estado === 'RJ' ? rjRegions : spRegions;
+  return regions.filter(r => r.slug !== currentSlug).slice(0, 5);
+}
+
+/**
+ * Função principal
+ */
+function main() {
+  console.log('\n===========================================');
+  console.log('  Gerador de Páginas Estáticas SEO v3');
+  console.log('  Paridade Total HTML/React');
+  console.log('===========================================\n');
+  
+  console.log(`📋 Seed: ${SEED_FILE}`);
+  console.log(`📝 Conteúdo: ${CONTENT_FILE}`);
+  console.log(`📁 Output: ${OUTPUT_DIR}`);
+  console.log(`🤖 Robots: ${ROBOTS_CONTENT}`);
+  console.log('');
+  
+  // Criar diretório de saída se não existir
+  if (!fs.existsSync(OUTPUT_DIR)) {
+    fs.mkdirSync(OUTPUT_DIR, { recursive: true });
+    console.log(`📁 Diretório criado: ${OUTPUT_DIR}`);
+  }
+  
+  // Estatísticas
+  let generated = 0;
+  let withContent = 0;
+  
+  // Gerar páginas
+  for (const region of seedData) {
+    const slug = region.slug;
+    const content = regionContentData[slug];
+    
+    // Gerar HTML
+    const html = generatePageHTML(region, content);
+    const filePath = path.join(OUTPUT_DIR, `${slug}.html`);
+    
+    fs.writeFileSync(filePath, html, 'utf-8');
+    generated++;
+    
+    if (content) {
+      withContent++;
+      console.log(`✅ ${slug}.html (com conteúdo)`);
+    } else {
+      console.log(`📄 ${slug}.html (placeholder)`);
+    }
+  }
+  
+  console.log('\n-------------------------------------------');
+  console.log(`📊 Total gerado: ${generated} páginas`);
+  console.log(`📝 Com conteúdo: ${withContent}`);
+  console.log(`📋 Placeholders: ${generated - withContent}`);
+  console.log('-------------------------------------------\n');
+  
+  console.log('✅ Geração concluída com sucesso!');
+  console.log('\n💡 Próximos passos:');
+  console.log('   1. npm run seo:vercel-rewrites');
+  console.log('   2. git add public/catalogo/*.html');
+  console.log('   3. Deploy para Vercel\n');
+}
+
+// Executar
+main();

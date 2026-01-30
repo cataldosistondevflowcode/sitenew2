@@ -23,12 +23,25 @@ function main() {
   console.log(`📊 Regiões no seed: ${seedData.regions.length}`);
   
   // Gerar rewrites
-  const rewrites = seedData.regions.map(region => ({
-    source: `/catalogo/${region.slug}`,
-    destination: `/catalogo/${region.slug}.html`
-  }));
+  const rewrites = [];
   
-  // Adicionar fallback para SPA
+  // Para cada região: URL com ?app=1 vai para SPA, URL limpa vai para HTML estático
+  for (const region of seedData.regions) {
+    // URL com parâmetro app=1 -> SPA React
+    rewrites.push({
+      source: `/catalogo/${region.slug}`,
+      has: [{ type: 'query', key: 'app', value: '1' }],
+      destination: '/index.html'
+    });
+    
+    // URL limpa (sem parâmetros) -> HTML estático para SEO
+    rewrites.push({
+      source: `/catalogo/${region.slug}`,
+      destination: `/catalogo/${region.slug}.html`
+    });
+  }
+  
+  // Fallback geral para SPA
   rewrites.push({
     source: "/(.*)",
     destination: "/index.html"

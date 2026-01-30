@@ -307,15 +307,14 @@
     </div>
   </footer>
   
-  <!-- Progressive Enhancement: Banner para usuários com JS -->
+  <!-- SEO: Este HTML é servido para crawlers. Usuários com JS são redirecionados para o SPA -->
   <script>
-    (function() {
-      var banner = document.createElement('div');
-      banner.style.cssText = 'background:#d68e08;color:white;padding:12px 20px;text-align:center;position:fixed;top:0;left:0;right:0;z-index:9999;font-size:14px;';
-      banner.innerHTML = '<strong>Versão simplificada.</strong> <a href="https://sitenew2.vercel.app/catalogo/ipiranga-sp" style="color:white;text-decoration:underline;margin-left:10px;">Ver versão completa com filtros e todos os imóveis →</a>';
-      document.body.insertBefore(banner, document.body.firstChild);
-      document.body.style.paddingTop = '48px';
-    })();
+    // Redireciona usuários com JS para a versão SPA completa
+    // Crawlers (sem JS) veem este HTML estático
+    window.location.replace(window.location.pathname + '?app=1');
   </script>
+  <noscript>
+    <!-- Crawlers sem JS veem todo o conteúdo acima normalmente -->
+  </noscript>
 </body>
 </html>

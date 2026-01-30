@@ -4,7 +4,29 @@
   "rewrites": [
     {
       "source": "/catalogo/copacabana-rj",
+      "has": [
+        {
+          "type": "query",
+          "key": "app",
+          "value": "1"
+        }
+      ],
+      "destination": "/index.html"
+    },
+    {
+      "source": "/catalogo/copacabana-rj",
       "destination": "/catalogo/copacabana-rj.html"
+    },
+    {
+      "source": "/catalogo/tatuape-sp",
+      "has": [
+        {
+          "type": "query",
+          "key": "app",
+          "value": "1"
+        }
+      ],
+      "destination": "/index.html"
     },
     {
       "source": "/catalogo/tatuape-sp",
@@ -12,7 +34,29 @@
     },
     {
       "source": "/catalogo/barra-da-tijuca-rj",
+      "has": [
+        {
+          "type": "query",
+          "key": "app",
+          "value": "1"
+        }
+      ],
+      "destination": "/index.html"
+    },
+    {
+      "source": "/catalogo/barra-da-tijuca-rj",
       "destination": "/catalogo/barra-da-tijuca-rj.html"
+    },
+    {
+      "source": "/catalogo/vila-mariana-sp",
+      "has": [
+        {
+          "type": "query",
+          "key": "app",
+          "value": "1"
+        }
+      ],
+      "destination": "/index.html"
     },
     {
       "source": "/catalogo/vila-mariana-sp",
@@ -20,7 +64,29 @@
     },
     {
       "source": "/catalogo/pinheiros-sp",
+      "has": [
+        {
+          "type": "query",
+          "key": "app",
+          "value": "1"
+        }
+      ],
+      "destination": "/index.html"
+    },
+    {
+      "source": "/catalogo/pinheiros-sp",
       "destination": "/catalogo/pinheiros-sp.html"
+    },
+    {
+      "source": "/catalogo/tijuca-rj",
+      "has": [
+        {
+          "type": "query",
+          "key": "app",
+          "value": "1"
+        }
+      ],
+      "destination": "/index.html"
     },
     {
       "source": "/catalogo/tijuca-rj",
@@ -28,7 +94,29 @@
     },
     {
       "source": "/catalogo/mooca-sp",
+      "has": [
+        {
+          "type": "query",
+          "key": "app",
+          "value": "1"
+        }
+      ],
+      "destination": "/index.html"
+    },
+    {
+      "source": "/catalogo/mooca-sp",
       "destination": "/catalogo/mooca-sp.html"
+    },
+    {
+      "source": "/catalogo/perdizes-sp",
+      "has": [
+        {
+          "type": "query",
+          "key": "app",
+          "value": "1"
+        }
+      ],
+      "destination": "/index.html"
     },
     {
       "source": "/catalogo/perdizes-sp",
@@ -36,7 +124,29 @@
     },
     {
       "source": "/catalogo/itaim-bibi-sp",
+      "has": [
+        {
+          "type": "query",
+          "key": "app",
+          "value": "1"
+        }
+      ],
+      "destination": "/index.html"
+    },
+    {
+      "source": "/catalogo/itaim-bibi-sp",
       "destination": "/catalogo/itaim-bibi-sp.html"
+    },
+    {
+      "source": "/catalogo/riviera-de-sao-lourenco-sp",
+      "has": [
+        {
+          "type": "query",
+          "key": "app",
+          "value": "1"
+        }
+      ],
+      "destination": "/index.html"
     },
     {
       "source": "/catalogo/riviera-de-sao-lourenco-sp",
@@ -44,7 +154,29 @@
     },
     {
       "source": "/catalogo/botafogo-rj",
+      "has": [
+        {
+          "type": "query",
+          "key": "app",
+          "value": "1"
+        }
+      ],
+      "destination": "/index.html"
+    },
+    {
+      "source": "/catalogo/botafogo-rj",
       "destination": "/catalogo/botafogo-rj.html"
+    },
+    {
+      "source": "/catalogo/flamengo-rj",
+      "has": [
+        {
+          "type": "query",
+          "key": "app",
+          "value": "1"
+        }
+      ],
+      "destination": "/index.html"
     },
     {
       "source": "/catalogo/flamengo-rj",
@@ -52,7 +184,29 @@
     },
     {
       "source": "/catalogo/moema-sp",
+      "has": [
+        {
+          "type": "query",
+          "key": "app",
+          "value": "1"
+        }
+      ],
+      "destination": "/index.html"
+    },
+    {
+      "source": "/catalogo/moema-sp",
       "destination": "/catalogo/moema-sp.html"
+    },
+    {
+      "source": "/catalogo/recreio-dos-bandeirantes-rj",
+      "has": [
+        {
+          "type": "query",
+          "key": "app",
+          "value": "1"
+        }
+      ],
+      "destination": "/index.html"
     },
     {
       "source": "/catalogo/recreio-dos-bandeirantes-rj",
@@ -60,7 +214,29 @@
     },
     {
       "source": "/catalogo/santana-sp",
+      "has": [
+        {
+          "type": "query",
+          "key": "app",
+          "value": "1"
+        }
+      ],
+      "destination": "/index.html"
+    },
+    {
+      "source": "/catalogo/santana-sp",
       "destination": "/catalogo/santana-sp.html"
+    },
+    {
+      "source": "/catalogo/ipanema-rj",
+      "has": [
+        {
+          "type": "query",
+          "key": "app",
+          "value": "1"
+        }
+      ],
+      "destination": "/index.html"
     },
     {
       "source": "/catalogo/ipanema-rj",
@@ -68,7 +244,29 @@
     },
     {
       "source": "/catalogo/leblon-rj",
+      "has": [
+        {
+          "type": "query",
+          "key": "app",
+          "value": "1"
+        }
+      ],
+      "destination": "/index.html"
+    },
+    {
+      "source": "/catalogo/leblon-rj",
       "destination": "/catalogo/leblon-rj.html"
+    },
+    {
+      "source": "/catalogo/campo-belo-sp",
+      "has": [
+        {
+          "type": "query",
+          "key": "app",
+          "value": "1"
+        }
+      ],
+      "destination": "/index.html"
     },
     {
       "source": "/catalogo/campo-belo-sp",
@@ -76,7 +274,29 @@
     },
     {
       "source": "/catalogo/jardim-america-sp",
+      "has": [
+        {
+          "type": "query",
+          "key": "app",
+          "value": "1"
+        }
+      ],
+      "destination": "/index.html"
+    },
+    {
+      "source": "/catalogo/jardim-america-sp",
       "destination": "/catalogo/jardim-america-sp.html"
+    },
+    {
+      "source": "/catalogo/laranjeiras-rj",
+      "has": [
+        {
+          "type": "query",
+          "key": "app",
+          "value": "1"
+        }
+      ],
+      "destination": "/index.html"
     },
     {
       "source": "/catalogo/laranjeiras-rj",
@@ -84,7 +304,29 @@
     },
     {
       "source": "/catalogo/bela-vista-sp",
+      "has": [
+        {
+          "type": "query",
+          "key": "app",
+          "value": "1"
+        }
+      ],
+      "destination": "/index.html"
+    },
+    {
+      "source": "/catalogo/bela-vista-sp",
       "destination": "/catalogo/bela-vista-sp.html"
+    },
+    {
+      "source": "/catalogo/brooklin-sp",
+      "has": [
+        {
+          "type": "query",
+          "key": "app",
+          "value": "1"
+        }
+      ],
+      "destination": "/index.html"
     },
     {
       "source": "/catalogo/brooklin-sp",
@@ -92,7 +334,29 @@
     },
     {
       "source": "/catalogo/pacaembu-sp",
+      "has": [
+        {
+          "type": "query",
+          "key": "app",
+          "value": "1"
+        }
+      ],
+      "destination": "/index.html"
+    },
+    {
+      "source": "/catalogo/pacaembu-sp",
       "destination": "/catalogo/pacaembu-sp.html"
+    },
+    {
+      "source": "/catalogo/higienopolis-sp",
+      "has": [
+        {
+          "type": "query",
+          "key": "app",
+          "value": "1"
+        }
+      ],
+      "destination": "/index.html"
     },
     {
       "source": "/catalogo/higienopolis-sp",
@@ -100,7 +364,29 @@
     },
     {
       "source": "/catalogo/alto-de-pinheiros-sp",
+      "has": [
+        {
+          "type": "query",
+          "key": "app",
+          "value": "1"
+        }
+      ],
+      "destination": "/index.html"
+    },
+    {
+      "source": "/catalogo/alto-de-pinheiros-sp",
       "destination": "/catalogo/alto-de-pinheiros-sp.html"
+    },
+    {
+      "source": "/catalogo/ipiranga-sp",
+      "has": [
+        {
+          "type": "query",
+          "key": "app",
+          "value": "1"
+        }
+      ],
+      "destination": "/index.html"
     },
     {
       "source": "/catalogo/ipiranga-sp",
@@ -108,7 +394,29 @@
     },
     {
       "source": "/catalogo/lagoa-rj",
+      "has": [
+        {
+          "type": "query",
+          "key": "app",
+          "value": "1"
+        }
+      ],
+      "destination": "/index.html"
+    },
+    {
+      "source": "/catalogo/lagoa-rj",
       "destination": "/catalogo/lagoa-rj.html"
+    },
+    {
+      "source": "/catalogo/icarai-rj",
+      "has": [
+        {
+          "type": "query",
+          "key": "app",
+          "value": "1"
+        }
+      ],
+      "destination": "/index.html"
     },
     {
       "source": "/catalogo/icarai-rj",
@@ -116,7 +424,29 @@
     },
     {
       "source": "/catalogo/jardim-botanico-rj",
+      "has": [
+        {
+          "type": "query",
+          "key": "app",
+          "value": "1"
+        }
+      ],
+      "destination": "/index.html"
+    },
+    {
+      "source": "/catalogo/jardim-botanico-rj",
       "destination": "/catalogo/jardim-botanico-rj.html"
+    },
+    {
+      "source": "/catalogo/niteroi-rj",
+      "has": [
+        {
+          "type": "query",
+          "key": "app",
+          "value": "1"
+        }
+      ],
+      "destination": "/index.html"
     },
     {
       "source": "/catalogo/niteroi-rj",
@@ -124,7 +454,29 @@
     },
     {
       "source": "/catalogo/regiao-dos-lagos-rj",
+      "has": [
+        {
+          "type": "query",
+          "key": "app",
+          "value": "1"
+        }
+      ],
+      "destination": "/index.html"
+    },
+    {
+      "source": "/catalogo/regiao-dos-lagos-rj",
       "destination": "/catalogo/regiao-dos-lagos-rj.html"
+    },
+    {
+      "source": "/catalogo/regiao-serrana-rj",
+      "has": [
+        {
+          "type": "query",
+          "key": "app",
+          "value": "1"
+        }
+      ],
+      "destination": "/index.html"
     },
     {
       "source": "/catalogo/regiao-serrana-rj",
@@ -132,7 +484,29 @@
     },
     {
       "source": "/catalogo/angra-dos-reis-rj",
+      "has": [
+        {
+          "type": "query",
+          "key": "app",
+          "value": "1"
+        }
+      ],
+      "destination": "/index.html"
+    },
+    {
+      "source": "/catalogo/angra-dos-reis-rj",
       "destination": "/catalogo/angra-dos-reis-rj.html"
+    },
+    {
+      "source": "/catalogo/zona-sul-rj",
+      "has": [
+        {
+          "type": "query",
+          "key": "app",
+          "value": "1"
+        }
+      ],
+      "destination": "/index.html"
     },
     {
       "source": "/catalogo/zona-sul-rj",
@@ -140,11 +514,44 @@
     },
     {
       "source": "/catalogo/zona-norte-rj",
+      "has": [
+        {
+          "type": "query",
+          "key": "app",
+          "value": "1"
+        }
+      ],
+      "destination": "/index.html"
+    },
+    {
+      "source": "/catalogo/zona-norte-rj",
       "destination": "/catalogo/zona-norte-rj.html"
     },
     {
       "source": "/catalogo/jacarepagua-rj",
+      "has": [
+        {
+          "type": "query",
+          "key": "app",
+          "value": "1"
+        }
+      ],
+      "destination": "/index.html"
+    },
+    {
+      "source": "/catalogo/jacarepagua-rj",
       "destination": "/catalogo/jacarepagua-rj.html"
+    },
+    {
+      "source": "/catalogo/centro-rj",
+      "has": [
+        {
+          "type": "query",
+          "key": "app",
+          "value": "1"
+        }
+      ],
+      "destination": "/index.html"
     },
     {
       "source": "/catalogo/centro-rj",

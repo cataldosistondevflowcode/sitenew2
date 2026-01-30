@@ -3,26 +3,121 @@
   "trailingSlash": false,
   "rewrites": [
     {
-      "source": "/((?!catalogo/.*\\.html$).*)",
+      "source": "/catalogo/copacabana-rj",
+      "destination": "/catalogo/copacabana-rj.html"
+    },
+    {
+      "source": "/catalogo/ipanema-rj",
+      "destination": "/catalogo/ipanema-rj.html"
+    },
+    {
+      "source": "/catalogo/leblon-rj",
+      "destination": "/catalogo/leblon-rj.html"
+    },
+    {
+      "source": "/catalogo/barra-tijuca-rj",
+      "destination": "/catalogo/barra-tijuca-rj.html"
+    },
+    {
+      "source": "/catalogo/botafogo-rj",
+      "destination": "/catalogo/botafogo-rj.html"
+    },
+    {
+      "source": "/catalogo/flamengo-rj",
+      "destination": "/catalogo/flamengo-rj.html"
+    },
+    {
+      "source": "/catalogo/laranjeiras-rj",
+      "destination": "/catalogo/laranjeiras-rj.html"
+    },
+    {
+      "source": "/catalogo/tijuca-rj",
+      "destination": "/catalogo/tijuca-rj.html"
+    },
+    {
+      "source": "/catalogo/recreio-rj",
+      "destination": "/catalogo/recreio-rj.html"
+    },
+    {
+      "source": "/catalogo/zona-sul-rj",
+      "destination": "/catalogo/zona-sul-rj.html"
+    },
+    {
+      "source": "/catalogo/zona-norte-rj",
+      "destination": "/catalogo/zona-norte-rj.html"
+    },
+    {
+      "source": "/catalogo/zona-oeste-rj",
+      "destination": "/catalogo/zona-oeste-rj.html"
+    },
+    {
+      "source": "/catalogo/niteroi-rj",
+      "destination": "/catalogo/niteroi-rj.html"
+    },
+    {
+      "source": "/catalogo/centro-rj",
+      "destination": "/catalogo/centro-rj.html"
+    },
+    {
+      "source": "/catalogo/meier-rj",
+      "destination": "/catalogo/meier-rj.html"
+    },
+    {
+      "source": "/catalogo/jardins-sp",
+      "destination": "/catalogo/jardins-sp.html"
+    },
+    {
+      "source": "/catalogo/pinheiros-sp",
+      "destination": "/catalogo/pinheiros-sp.html"
+    },
+    {
+      "source": "/catalogo/moema-sp",
+      "destination": "/catalogo/moema-sp.html"
+    },
+    {
+      "source": "/catalogo/itaim-bibi-sp",
+      "destination": "/catalogo/itaim-bibi-sp.html"
+    },
+    {
+      "source": "/catalogo/vila-mariana-sp",
+      "destination": "/catalogo/vila-mariana-sp.html"
+    },
+    {
+      "source": "/catalogo/zona-sul-sp",
+      "destination": "/catalogo/zona-sul-sp.html"
+    },
+    {
+      "source": "/catalogo/zona-oeste-sp",
+      "destination": "/catalogo/zona-oeste-sp.html"
+    },
+    {
+      "source": "/catalogo/zona-norte-sp",
+      "destination": "/catalogo/zona-norte-sp.html"
+    },
+    {
+      "source": "/catalogo/zona-leste-sp",
+      "destination": "/catalogo/zona-leste-sp.html"
+    },
+    {
+      "source": "/catalogo/centro-sp",
+      "destination": "/catalogo/centro-sp.html"
+    },
+    {
+      "source": "/(.*)",
       "destination": "/index.html"
     }
   ],
   "headers": [
-    {
-      "source": "/catalogo/:path*.html",
-      "headers": [
-        {
-          "key": "X-Robots-Tag",
-          "value": "index, follow"
-        }
-      ]
-    },
     {
       "source": "/catalogo/:path*",
       "headers": [
         {
           "key": "X-Robots-Tag",
           "value": "index, follow"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=3600, s-maxage=86400"
         }
       ]
     }

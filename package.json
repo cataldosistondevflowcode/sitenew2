@@ -14,7 +14,9 @@
     "seo:list": "node scripts/manage-seo-pages.js list",
     "seo:sync": "node scripts/manage-seo-pages.js sync",
     "seo:generate": "node scripts/manage-seo-pages.js generate",
-    "seo:static-pages": "node scripts/generate-static-pages.cjs",
+    "seo:static-pages": "node scripts/generate-static-pages-v2.cjs",
+    "seo:static-pages:legacy": "node scripts/generate-static-pages.cjs",
+    "seo:parse-serps": "node scripts/parse-serps-xlsx.cjs",
     "test:seo": "npx playwright test tests/seo-js-off.spec.ts --project=chromium-js-disabled",
     "test:seo:ui": "npx playwright test tests/seo-js-off.spec.ts --project=chromium-js-disabled --ui",
     "test:seo:report": "npx playwright show-report"

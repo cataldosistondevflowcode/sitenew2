@@ -1,6 +1,68 @@
 # CHANGELOG.md
 _Data: 2026-02-03 | Última atualização: 2026-02-03_
 
+## 2026-02-03 (v3.4.0) — Sprint CMS v4: Validação Robusta ✅
+
+### Status: IMPLEMENTADO
+
+**Objetivo:** Implementar validação robusta e feedback visual antes de publicar conteúdo.
+
+### ✅ Entregáveis Concluídos
+
+#### 1. Validação de Conteúdo
+- [x] `validateBlockContent()` — Função genérica de validação por tipo de bloco
+  - Valida `text` / `richtext`: conteúdo não pode ser vazio
+  - Valida `image`: URL obrigatória e válida (URL constructor)
+  - Valida `cta`: texto e link obrigatórios
+  - Valida `list` / `faq`: mínimo 1 item obrigatório
+  - Retorna array de erros legíveis
+- [x] Integrada em `updateBlockDraft()` — bloqueia draft inválido
+- [x] Integrada em `publishBlock()` — bloqueia publicação até estar válido
+
+#### 2. Feedback Visual Inline
+- [x] `TextBlockEditor` — Feedback em tempo real
+  - Mostra erros de validação (Alert destructive)
+  - Textarea com borda vermelha se há erro
+  - Confirmação visual (✓) quando válido
+  - Botões desabilitados enquanto houver erro
+  
+- [x] `ImageBlockEditor` — Feedback visual robusto
+  - Lista de erros de validação
+  - Preview com borda vermelha se error
+  - Detecção de imagem inacessível (`onError`)
+  - Confirmação visual (✓) quando válido
+  - Botões desabilitados enquanto houver erro
+
+- [x] `BlockEditorFactory` — Propaga função de validação
+- [x] `AdminCmsPageEdit` — Passa validateContent para cada editor
+
+#### 3. Testes e Integração
+- [x] Build validado (sem erros TypeScript)
+- [x] Componentes renderizam corretamente
+- [x] Validação funciona antes de salvar/publicar
+- [x] Mensagens de erro são claras e acionáveis
+
+### ✅ Critérios de Aceite
+- [x] Usuário vê erro inline enquanto edita
+- [x] Mensagens de erro são específicas por tipo de bloco
+- [x] Botões Salvar/Publicar desabilitados com erro
+- [x] Confirmação visual quando conteúdo válido
+- [x] Publicação bloqueada até validação passar
+
+### 📝 Arquivos Modificados
+- `src/hooks/useCmsContent.ts` — Adicionar `validateBlockContent()` e usar em publish
+- `src/components/admin/editors/TextBlockEditor.tsx` — Feedback visual
+- `src/components/admin/editors/ImageBlockEditor.tsx` — Feedback visual robusto
+- `src/components/admin/BlockEditorFactory.tsx` — Propagar validação
+- `src/pages/AdminCmsPageEdit.tsx` — Usar validação nos editors
+
+### 🔄 Próximas Sprints
+- [ ] Sprint v5: Testes de browser completos (editar + publicar + preview)
+- [ ] Sprint v6: Mais tipos de blocos (RichText, CTA, List, FAQ)
+- [ ] Sprint v7: Versionamento e rollback de conteúdo
+
+---
+
 ## 2026-02-03 (v3.1.0) — Sprint CMS v0: Implementação MVP Completa ✅
 
 ### Status: IMPLEMENTADO E TESTADO

@@ -11,16 +11,18 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { CmsBlock } from '@/hooks/useCmsContent';
 import { BlockEditorHeader } from './BlockEditorHeader';
 import { AssetSelector } from '../AssetSelector';
-import { Image as ImageIcon } from 'lucide-react';
+import { Image as ImageIcon, AlertCircle, CheckCircle2 } from 'lucide-react';
 
 interface ImageBlockEditorProps {
   block: CmsBlock;
   onSaveDraft: (content: Record<string, any>) => Promise<boolean>;
   onPublish: () => Promise<boolean>;
   isSaving?: boolean;
+  validateContent?: (content: Record<string, any>) => string[];
 }
 
 export const ImageBlockEditor = ({
@@ -28,18 +30,26 @@ export const ImageBlockEditor = ({
   onSaveDraft,
   onPublish,
   isSaving = false,
+  validateContent,
 }: ImageBlockEditorProps) => {
   const [url, setUrl] = useState<string>(block.content_draft?.url || block.content_published?.url || '');
   const [alt, setAlt] = useState<string>(block.content_draft?.alt || block.content_published?.alt || '');
   const [isDirty, setIsDirty] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
   const [selectorOpen, setSelectorOpen] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<string[]>([]);
 
   useEffect(() => {
     const originalUrl = block.content_draft?.url || block.content_published?.url || '';
     const originalAlt = block.content_draft?.alt || block.content_published?.alt || '';
     setIsDirty(url !== originalUrl || alt !== originalAlt);
-  }, [url, alt, block.content_draft, block.content_published]);
+
+    // Validar conteúdo em tempo real
+    if (validateContent) {
+      const errors = validateContent({ url, alt });
+      setValidationErrors(errors);
+    }
+  }, [url, alt, block.content_draft, block.content_published, validateContent]);
 
   const handleSaveDraft = async () => {
     const success = await onSaveDraft({ url, alt, asset_id: null });
@@ -116,27 +126,50 @@ export const ImageBlockEditor = ({
             />
           </div>
 
+          {/* Erros de validação */}
+          {validationErrors.length > 0 && (
+            <Alert variant="destructive">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>
+                <ul className="list-disc ml-5 space-y-1">
+                  {validationErrors.map((error, idx) => (
+                    <li key={idx}>{error}</li>
+                  ))}
+                </ul>
+              </AlertDescription>
+            </Alert>
+          )}
+
           {url && (
-            <div className="border rounded p-4 bg-gray-50">
+            <div className={`border rounded p-4 ${validationErrors.length > 0 ? 'bg-red-50 border-red-200' : 'bg-gray-50'}`}>
               <p className="text-sm text-gray-600 mb-2">Preview:</p>
               <img
                 src={url}
                 alt={alt}
                 className="max-w-md max-h-64 rounded"
+                onError={() => setValidationErrors(['URL da imagem inválida ou inacessível'])}
               />
             </div>
           )}
 
-          {isDirty && (
-            <div className="bg-yellow-50 border border-yellow-200 rounded p-3 text-sm text-yellow-800">
-              ⚠️ Você tem mudanças não salvas
+          {isDirty && validationErrors.length === 0 && (
+            <div className="bg-yellow-50 border border-yellow-200 rounded p-3 text-sm text-yellow-800 flex items-center gap-2">
+              <span>⚠️</span>
+              <span>Você tem mudanças não salvas</span>
+            </div>
+          )}
+
+          {!isDirty && validationErrors.length === 0 && url && (
+            <div className="bg-green-50 border border-green-200 rounded p-3 text-sm text-green-800 flex items-center gap-2">
+              <CheckCircle2 className="h-4 w-4" />
+              <span>Imagem validada ✓</span>
             </div>
           )}
 
           <div className="flex gap-3">
             <Button
               onClick={handleSaveDraft}
-              disabled={!isDirty || isSaving || !url}
+              disabled={!isDirty || isSaving || validationErrors.length > 0}
               variant="outline"
               size="sm"
             >
@@ -145,7 +178,7 @@ export const ImageBlockEditor = ({
 
             <Button
               onClick={handlePublish}
-              disabled={isSaving || isPublishing || !url}
+              disabled={isSaving || isPublishing || validationErrors.length > 0}
               variant="default"
               size="sm"
             >

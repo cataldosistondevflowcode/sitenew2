@@ -105,10 +105,68 @@ export const useCmsContent = (pageSlug: string) => {
     }
   };
 
+  // Validar conteúdo do bloco
+  const validateBlockContent = (block: CmsBlock, content: Record<string, any>): string[] => {
+    const errors: string[] = [];
+
+    switch (block.block_type) {
+      case 'text':
+      case 'richtext':
+        if (!content.value || !content.value.trim()) {
+          errors.push('Conteúdo não pode estar vazio');
+        }
+        break;
+
+      case 'image':
+        if (!content.url || !content.url.trim()) {
+          errors.push('URL da imagem é obrigatória');
+        } else {
+          try {
+            new URL(content.url);
+          } catch {
+            errors.push('URL da imagem inválida');
+          }
+        }
+        break;
+
+      case 'cta':
+        if (!content.text || !content.text.trim()) {
+          errors.push('Texto do botão é obrigatório');
+        }
+        if (!content.url || !content.url.trim()) {
+          errors.push('URL/Link é obrigatório');
+        }
+        break;
+
+      case 'list':
+        if (!Array.isArray(content.items) || content.items.length === 0) {
+          errors.push('Lista precisa de pelo menos um item');
+        }
+        break;
+
+      case 'faq':
+        if (!Array.isArray(content.items) || content.items.length === 0) {
+          errors.push('FAQ precisa de pelo menos um item');
+        }
+        break;
+    }
+
+    return errors;
+  };
+
   // Atualizar bloco (salvar como draft)
   const updateBlockDraft = async (blockId: number, content: Record<string, any>) => {
     try {
       setIsSaving(true);
+
+      // Validar conteúdo
+      const block = blocks.find((b) => b.id === blockId);
+      if (!block) throw new Error('Bloco não encontrado');
+
+      const validationErrors = validateBlockContent(block, content);
+      if (validationErrors.length > 0) {
+        throw new Error(validationErrors.join('; '));
+      }
 
       // Atualizar content_draft no Supabase
       const { error } = await supabase
@@ -162,6 +220,18 @@ export const useCmsContent = (pageSlug: string) => {
       const block = blocks.find((b) => b.id === blockId);
       if (!block) throw new Error('Bloco não encontrado');
 
+      // Usar content_draft se existir, senão usar content_published
+      const contentToPublish = block.content_draft || block.content_published;
+      if (!contentToPublish) {
+        throw new Error('Nenhum conteúdo para publicar');
+      }
+
+      // Validar antes de publicar
+      const validationErrors = validateBlockContent(block, contentToPublish);
+      if (validationErrors.length > 0) {
+        throw new Error(`Validação falhou: ${validationErrors.join('; ')}`);
+      }
+
       // Salvar versão anterior se houver
       if (block.content_published && Object.keys(block.content_published).length > 0) {
         const { error: versionError } = await supabase
@@ -181,7 +251,8 @@ export const useCmsContent = (pageSlug: string) => {
       const { error } = await supabase
         .from('cms_blocks')
         .update({
-          content_published: block.content_draft,
+          content_published: contentToPublish,
+          content_draft: null,
           updated_at: new Date().toISOString(),
         })
         .eq('id', blockId);
@@ -290,6 +361,7 @@ export const useCmsContent = (pageSlug: string) => {
     isSaving,
     updateBlockDraft,
     publishBlock,
+    validateBlockContent,
     reloadPage: loadPage,
   };
 };

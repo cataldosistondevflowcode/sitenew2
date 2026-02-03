@@ -41,7 +41,7 @@ export default function AdminCmsPageEdit() {
     );
   }
 
-  const { page, blocks, loading, error, updateBlockDraft, publishBlock, isSaving } =
+  const { page, blocks, loading, error, updateBlockDraft, publishBlock, validateBlockContent, isSaving } =
     useCmsContent(slug);
 
   if (loading) {
@@ -148,6 +148,7 @@ export default function AdminCmsPageEdit() {
               onSaveDraft={(content) => updateBlockDraft(block.id, content)}
               onPublish={() => publishBlock(block.id)}
               isSaving={isSaving}
+              validateContent={(content) => validateBlockContent(block, content)}
             />
           ))
         )}

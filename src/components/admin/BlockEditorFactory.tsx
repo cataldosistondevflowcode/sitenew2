@@ -18,6 +18,7 @@ interface BlockEditorFactoryProps {
   onSaveDraft: (content: Record<string, any>) => Promise<boolean>;
   onPublish: () => Promise<boolean>;
   isSaving?: boolean;
+  validateContent?: (content: Record<string, any>) => string[];
 }
 
 export const BlockEditorFactory = ({
@@ -25,6 +26,7 @@ export const BlockEditorFactory = ({
   onSaveDraft,
   onPublish,
   isSaving = false,
+  validateContent,
 }: BlockEditorFactoryProps) => {
   // Renderizar editor apropriado baseado no tipo de bloco
   switch (block.block_type) {
@@ -35,6 +37,7 @@ export const BlockEditorFactory = ({
           onSaveDraft={onSaveDraft}
           onPublish={onPublish}
           isSaving={isSaving}
+          validateContent={validateContent}
         />
       );
 
@@ -45,6 +48,7 @@ export const BlockEditorFactory = ({
           onSaveDraft={onSaveDraft}
           onPublish={onPublish}
           isSaving={isSaving}
+          validateContent={validateContent}
         />
       );
 
@@ -55,6 +59,7 @@ export const BlockEditorFactory = ({
           onSaveDraft={onSaveDraft}
           onPublish={onPublish}
           isSaving={isSaving}
+          validateContent={validateContent}
         />
       );
 
@@ -65,6 +70,7 @@ export const BlockEditorFactory = ({
           onSaveDraft={onSaveDraft}
           onPublish={onPublish}
           isSaving={isSaving}
+          validateContent={validateContent}
         />
       );
 
@@ -75,6 +81,7 @@ export const BlockEditorFactory = ({
           onSaveDraft={onSaveDraft}
           onPublish={onPublish}
           isSaving={isSaving}
+          validateContent={validateContent}
         />
       );
 
@@ -85,6 +92,7 @@ export const BlockEditorFactory = ({
           onSaveDraft={onSaveDraft}
           onPublish={onPublish}
           isSaving={isSaving}
+          validateContent={validateContent}
         />
       );
 

@@ -9,10 +9,10 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useCmsContent } from '@/hooks/useCmsContent';
-import { CmsTextBlockEditor } from '@/components/admin/CmsTextBlockEditor';
+import { BlockEditorFactory } from '@/components/admin/BlockEditorFactory';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { AlertCircle, ArrowLeft, Loader2 } from 'lucide-react';
+import { AlertCircle, ArrowLeft, Loader2, Eye } from 'lucide-react';
 import { useEffect } from 'react';
 
 export default function AdminCmsPageEdit() {
@@ -75,15 +75,26 @@ export default function AdminCmsPageEdit() {
     <div className="container py-8">
       {/* Header */}
       <div className="mb-8">
-        <Button
-          onClick={() => navigate('/admin/cms')}
-          variant="ghost"
-          size="sm"
-          className="mb-4"
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Voltar
-        </Button>
+        <div className="flex items-center justify-between mb-4">
+          <Button
+            onClick={() => navigate('/admin/cms')}
+            variant="ghost"
+            size="sm"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Voltar
+          </Button>
+
+          <Button
+            onClick={() => window.open(`/preview/${page.slug}`, '_blank')}
+            variant="outline"
+            size="sm"
+            className="flex items-center gap-2"
+          >
+            <Eye className="w-4 h-4" />
+            Pré-visualizar
+          </Button>
+        </div>
 
         <div>
           <h1 className="text-3xl font-bold">{page.title}</h1>
@@ -131,7 +142,7 @@ export default function AdminCmsPageEdit() {
           </Card>
         ) : (
           blocks.map((block) => (
-            <CmsTextBlockEditor
+            <BlockEditorFactory
               key={block.id}
               block={block}
               onSaveDraft={(content) => updateBlockDraft(block.id, content)}

@@ -32,6 +32,8 @@ import AdminCreateLead from "./pages/AdminCreateLead";
 import AdminGroups from "./pages/AdminGroups";
 import AdminFilters from "./pages/AdminFilters";
 import TestUnifiedScheduleProcessor from "./pages/TestUnifiedScheduleProcessor";
+import AdminCmsPages from "./pages/AdminCmsPages";
+import AdminCmsPageEdit from "./pages/AdminCmsPageEdit";
 
 const queryClient = new QueryClient();
 
@@ -123,6 +125,17 @@ const App = () => (
             <Route path="/admin/filters" element={
               <AdminRoute>
                 <AdminFilters />
+              </AdminRoute>
+            } />
+            {/* CMS Routes */}
+            <Route path="/admin/cms" element={
+              <AdminRoute>
+                <AdminCmsPages />
+              </AdminRoute>
+            } />
+            <Route path="/admin/cms/pages/:slug/edit" element={
+              <AdminRoute>
+                <AdminCmsPageEdit />
               </AdminRoute>
             } />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

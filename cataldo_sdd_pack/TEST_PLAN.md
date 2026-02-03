@@ -1,5 +1,6 @@
 # TEST_PLAN.md — Checklist de validação
-_Data: 2026-01-15_
+_Data: 2026-01-15_  
+_Atualizado: 2026-02-03 (Admin CMS)_
 
 ## 1) Smoke test (sempre)
 - [ ] `npm install` ok
@@ -58,3 +59,89 @@ Testar no browser em `/catalogo/:pageId` (ex.: página Rio de Janeiro ou bairro)
 - [ ] Não alterei policies/indexes/triggers da tabela `imoveis`
 - [ ] Novas tabelas/views possuem RLS/policies adequadas (quando necessário)
 - [ ] Fluxo principal do site (listagem + filtro + detalhe) não regrediu
+
+---
+
+## 9) Admin CMS — Testes de Funcionalidade ⭐ NOVO
+
+> **Documento de especificação:** `CMS_ADMIN_SPEC.md`
+
+### 9.1) Autenticação e Proteção de Rotas
+- [ ] Login com email/senha válido funciona
+- [ ] Login com credenciais inválidas mostra erro
+- [ ] Acesso a `/admin` sem auth redireciona para `/admin/login`
+- [ ] Acesso a `/admin/*` sem role admin retorna 403 ou redireciona
+- [ ] Logout funciona e limpa sessão
+
+### 9.2) Lista de Páginas
+- [ ] `/admin/pages` lista todas as páginas configuradas
+- [ ] Status (draft/published) é exibido corretamente
+- [ ] Data de última atualização é exibida
+- [ ] Click em página navega para editor
+
+### 9.3) Editor de Blocos
+- [ ] Abrir página para edição carrega blocos existentes
+- [ ] Editar bloco de texto funciona
+- [ ] Editar bloco de imagem funciona
+- [ ] Editar bloco richtext funciona
+- [ ] Validação impede salvar campo vazio (se obrigatório)
+
+### 9.4) Salvar Draft
+- [ ] Botão "Salvar" grava alterações como draft
+- [ ] Após salvar, página exibe conteúdo atualizado no editor
+- [ ] Sair e voltar mantém alterações salvas
+- [ ] Site público **não** exibe conteúdo draft
+
+### 9.5) Preview
+- [ ] Botão "Pré-visualizar" abre página em modo preview
+- [ ] Preview exibe conteúdo draft
+- [ ] Indicador visual de "modo preview" é visível
+- [ ] Usuário não-autenticado **não** consegue acessar preview
+- [ ] Preview tem meta noindex, nofollow
+
+### 9.6) Publicar
+- [ ] Botão "Publicar" funciona
+- [ ] Após publicar, site público exibe novo conteúdo
+- [ ] Status da página muda para "published"
+- [ ] Versão anterior é salva para rollback (quando implementado)
+- [ ] Audit log registra a publicação
+
+### 9.7) Biblioteca de Mídia (quando implementado)
+- [ ] Upload de imagem funciona (jpg, png, webp)
+- [ ] Limite de tamanho é respeitado
+- [ ] Imagens aparecem na galeria
+- [ ] Posso selecionar imagem para bloco
+- [ ] Alt text é editável
+
+### 9.8) Histórico e Rollback (quando implementado)
+- [ ] Lista de versões é exibida
+- [ ] Posso visualizar conteúdo de versão anterior
+- [ ] Reverter restaura como draft
+- [ ] Posso publicar versão revertida
+
+### 9.9) Audit Log (quando implementado)
+- [ ] Cada ação gera registro no log
+- [ ] Log mostra actor, timestamp, ação
+- [ ] Log não pode ser editado
+- [ ] Interface de visualização funciona
+
+### 9.10) Segurança CMS
+- [ ] RLS: anon só lê status='published' em cms_pages
+- [ ] RLS: anon só lê blocos de páginas published
+- [ ] RLS: authenticated pode ler tudo
+- [ ] RLS: apenas authenticated pode escrever
+- [ ] Tabelas CMS não afetam tabela `imoveis`
+
+---
+
+## 10) Regressão após CMS ⭐ NOVO
+Após implementar qualquer sprint do CMS, validar:
+
+- [ ] Home carrega normalmente (sem CMS e com CMS)
+- [ ] Páginas regionais funcionam
+- [ ] Filtros funcionam
+- [ ] Listagem de imóveis funciona
+- [ ] Detalhes de imóvel funcionam
+- [ ] SEO não regrediu (metas, canonicals, titles)
+- [ ] Performance não degradou significativamente
+- [ ] Nenhuma rota pública expõe conteúdo admin/draft

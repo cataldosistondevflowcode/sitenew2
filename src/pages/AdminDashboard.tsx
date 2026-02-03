@@ -11,7 +11,7 @@ import PropertiesTable from '@/components/admin/PropertiesTable';
 import AnalyticsDashboard from '@/components/admin/AnalyticsDashboard';
 import AnalyticsTablesView from '@/components/admin/AnalyticsTablesView';
 import MarketingPDF from '@/components/admin/MarketingPDF';
-import { LogOut, Settings, MessageCircle, AlertTriangle, User, BarChart3, Home, Database, FileText, Phone, Calendar } from 'lucide-react';
+import { LogOut, Settings, MessageCircle, AlertTriangle, User, BarChart3, Home, Database, FileText, Phone, Calendar, Edit2 } from 'lucide-react';
 
 const AdminDashboard = () => {
   const { logout, user } = useAuth();
@@ -171,6 +171,38 @@ const AdminDashboard = () => {
                 </CardContent>
               </Card>
             </div>
+          </div>
+
+          <Separator />
+
+          {/* CMS Admin */}
+          <div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              Gerenciador de Conteúdo CMS
+            </h3>
+            <Card className="bg-purple-50 border-purple-200">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Edit2 className="h-5 w-5 text-purple-600" />
+                  Admin CMS (Tipo WordPress)
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-gray-600 mb-4">
+                  Edite o conteúdo das páginas do site (textos, imagens, blocos) com sistema draft → preview → publish.
+                </p>
+                <Button 
+                  onClick={() => navigate('/admin/cms')}
+                  className="w-full bg-purple-600 hover:bg-purple-700"
+                >
+                  <Edit2 className="h-4 w-4 mr-2" />
+                  Abrir Gerenciador CMS
+                </Button>
+                <p className="text-xs text-gray-500 mt-2">
+                  Status: <span className="text-green-600 font-semibold">Sprint CMS v0 — MVP Ativo</span>
+                </p>
+              </CardContent>
+            </Card>
           </div>
 
           <Separator />

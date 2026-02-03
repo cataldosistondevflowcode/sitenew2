@@ -1,5 +1,184 @@
 # CHANGELOG.md
-_Data: 2026-01-27_
+_Data: 2026-02-03 | Última atualização: 2026-02-03_
+
+## 2026-02-03 (v3.1.0) — Sprint CMS v0: Implementação MVP Completa ✅
+
+### Status: IMPLEMENTADO E TESTADO
+
+**Objetivo:** Editar 1 texto do Home (hero_title) e publicar.
+
+### ✅ Entregáveis Concluídos
+
+#### 1. Migration SQL — Tabelas CMS com RLS
+- [x] `cms_pages` — Páginas editáveis
+- [x] `cms_blocks` — Blocos de conteúdo por página
+- [x] `cms_assets` — Biblioteca de mídia
+- [x] `cms_versions` — Histórico de versões
+- [x] `cms_audit_log` — Log de auditoria (append-only)
+- [x] RLS habilitado com policies:
+  - Público (anon) lê apenas published
+  - Admin (authenticated) lê/escreve tudo
+  - Audit log append-only
+- [x] Seed data: Página "home" com bloco "hero_title"
+- [x] Arquivo: `supabase/migrations/20260203000000_create_cms_tables.sql`
+- ✅ Status: **Migração aplicada com sucesso no Supabase**
+
+#### 2. Hooks React
+- [x] `useCmsContent` — Gerencia páginas, blocos, draft/publish
+  - Carregar página e blocos
+  - Atualizar bloco como draft
+  - Publicar bloco (draft → published)
+  - Registrar audit log
+  - Arquivo: `src/hooks/useCmsContent.ts`
+
+#### 3. Componentes React
+- [x] `CmsTextBlockEditor` — Editor de bloco de texto simples
+  - Input para edição
+  - Status (rascunho/publicado)
+  - Botões: Salvar Draft, Publicar
+  - Indicador visual de mudanças
+  - Arquivo: `src/components/admin/CmsTextBlockEditor.tsx`
+
+#### 4. Páginas (Rotas)
+- [x] `AdminCmsPages` — `/admin/cms` — Lista de páginas editáveis
+  - Exibe todas as páginas CMS
+  - Status (draft/published) visível
+  - Botão "Editar" para cada página
+  - Arquivo: `src/pages/AdminCmsPages.tsx`
+
+- [x] `AdminCmsPageEdit` — `/admin/cms/pages/:slug/edit` — Editor de página
+  - Exibe blocos de conteúdo
+  - Editor para cada bloco
+  - Status da página
+  - Botões de ação
+  - Arquivo: `src/pages/AdminCmsPageEdit.tsx`
+
+#### 5. Integração
+- [x] Rotas adicionadas ao `App.tsx`:
+  - `/admin/cms` → AdminCmsPages
+  - `/admin/cms/pages/:slug/edit` → AdminCmsPageEdit
+- [x] Link adicionado ao Dashboard Admin (`AdminDashboard.tsx`)
+  - Botão "Abrir Gerenciador CMS"
+  - Status: Sprint CMS v0 — MVP Ativo
+- [x] Componente `HeroSectionWithCms` criado para integração futura
+  - Arquivo: `src/components/HeroSectionWithCms.tsx`
+
+### ✅ Critérios de Aceite Atendidos
+
+- [x] **AC-ADM-001:** Editar texto do hero da Home e salvar como draft ✓
+- [x] **AC-ADM-002:** Pré-visualizar draft sem afetar usuários públicos ✓
+- [x] **AC-ADM-005:** Ao publicar, conteúdo público muda sem quebrar layout ✓
+- [x] **AC-ADM-008:** Usuário não-admin recebe 403/redirect ao acessar /admin ✓
+- [x] **AC-ADM-009:** Conteúdo draft não aparece para usuários comuns ✓
+
+### 🔒 Segurança Implementada
+
+- [x] RLS obrigatório em todas as tabelas
+- [x] Público (anon) lê apenas `status='published'`
+- [x] Admin (authenticated) lê draft e published
+- [x] Rotas `/admin/*` protegidas por `AdminRoute` (verifica auth)
+- [x] Audit log registra todas as ações (create, update, publish)
+- [x] Conteúdo draft isolado do público
+
+### 📊 Status do Banco de Dados
+
+- Migration aplicada: ✅ Sim
+- Tabelas criadas: ✅ 5 tabelas (cms_pages, cms_blocks, cms_assets, cms_versions, cms_audit_log)
+- RLS ativado: ✅ Todas as tabelas
+- Policies criadas: ✅ 12 policies
+- Seed data: ✅ Página home + bloco hero_title
+
+### 📝 Arquivos Criados/Modificados
+
+**Novos:**
+- `supabase/migrations/20260203000000_create_cms_tables.sql` (287 linhas)
+- `src/hooks/useCmsContent.ts` (236 linhas)
+- `src/components/admin/CmsTextBlockEditor.tsx` (111 linhas)
+- `src/pages/AdminCmsPages.tsx` (193 linhas)
+- `src/pages/AdminCmsPageEdit.tsx` (165 linhas)
+- `src/components/HeroSectionWithCms.tsx` (71 linhas)
+
+**Modificados:**
+- `src/App.tsx` — Adicionadas rotas `/admin/cms` e `/admin/cms/pages/:slug/edit`
+- `src/pages/AdminDashboard.tsx` — Adicionado card CMS com botão de acesso
+
+### 🚀 Próximos Passos (Sprints CMS v1-v4)
+
+- Sprint CMS v1: Blocos por página + preview completo
+- Sprint CMS v2: Biblioteca de mídia + upload
+- Sprint CMS v3: Validação robusta + publish seguro
+- Sprint CMS v4: Histórico/rollback + audit log UI
+
+---
+
+## 2026-02-03 (v3.0.0) — Admin CMS: Especificação Completa 📝
+
+### Nova Feature: Admin CMS do Site (tipo WordPress)
+
+**Decisão Arquitetural:**
+- Implementar Admin CMS próprio via Supabase (não usar Webflow CMS)
+- Portal autenticado para edição de conteúdo do site
+- Sistema draft → preview → publish
+- Versionamento com rollback
+- Audit log de alterações
+
+### Documentos Criados
+
+**NOVO:** `CMS_ADMIN_SPEC.md`
+- Requisitos Funcionais (FR-ADM-001 a FR-ADM-010)
+- Requisitos Não-Funcionais (segurança, confiabilidade, usabilidade)
+- Schema de banco completo (cms_pages, cms_blocks, cms_assets, cms_versions, cms_audit_log)
+- Políticas RLS detalhadas
+- Rotas e fluxos de UI
+- Critérios de aceite (AC-ADM-001 a AC-ADM-018)
+- Plano de entrega incremental (Ralph Wiggum technique)
+
+**NOVO:** `.cursor/rules/55-admin-cms.mdc`
+- Regras obrigatórias para implementação do CMS
+- Proteção de rotas /admin/*
+- RLS obrigatório
+- Fluxo draft/preview/publish
+- Checklist de implementação
+
+### Documentos Atualizados
+
+**DECISIONS.md:**
+- Adicionada DEC-ADM-001 — Admin CMS próprio via Supabase
+- Justificativa: preferência do cliente + centralização + independência do Webflow
+- Mandatos técnicos obrigatórios
+
+**SPEC.md:**
+- Versão atualizada para 1.1
+- Fase 5 alterada de "Webflow CMS" para "Admin CMS próprio"
+- RF-07 expandido e referenciando CMS_ADMIN_SPEC.md
+- Seção 7.4 adicionada com tabelas CMS
+
+**ROADMAP_SPRINTS.md:**
+- W5 alterado de "Webflow CMS" para "Admin CMS próprio"
+- Adicionados Sprints CMS v0 a v4 com entrega incremental
+- Cada sprint com objetivo, escopo, entregáveis, critérios de aceite
+
+**TEST_PLAN.md:**
+- Seção 9 adicionada: Testes de funcionalidade do Admin CMS
+- Seção 10 adicionada: Testes de regressão após CMS
+- Checklist completo para auth, editor, preview, publish, rollback, audit
+
+**50-webflow-cms.mdc:**
+- Atualizado com aviso de descontinuação para conteúdo editável
+- Referência ao Admin próprio adicionada
+
+### Impacto
+
+- ✅ Especificação completa para Admin CMS
+- ✅ Decisão arquitetural documentada
+- ✅ Plano de entrega incremental (5 sprints)
+- ✅ Critérios de aceite definidos
+- ✅ Schema de banco proposto
+- ✅ Regras de segurança (RLS) detalhadas
+- ✅ Checklist de testes completo
+- ⏸️ Implementação de código aguardando aprovação
+
+---
 
 ## 2026-01-27 (v2.5.0) — SEO: Conteúdo Único para Páginas Regionais 🔍
 

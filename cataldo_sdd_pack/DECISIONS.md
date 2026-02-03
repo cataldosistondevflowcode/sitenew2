@@ -1,6 +1,82 @@
 # DECISIONS.md
 _Data: 2026-01-15_  
-_Atualizado: 2026-01-15 (Sprint 0)_
+_Atualizado: 2026-02-03 (Admin CMS)_
+
+---
+
+## DEC-ADM-001 — Admin CMS próprio via Supabase ⭐ DECISÃO FIXA
+
+**Data:** 2026-02-03  
+**Status:** ✅ Aceita (decisão do cliente)
+
+### Contexto
+O cliente precisa de uma forma de editar conteúdo do site (textos, imagens, blocos, CTAs, FAQs, banners) sem depender de desenvolvedores. A necessidade é similar a um "WordPress" para gerenciar conteúdo do site institucional.
+
+### Opções Consideradas
+
+1. **Webflow CMS** — Já existe integração parcial no projeto
+   - Prós: Já tem estrutura, cliente conhece
+   - Contras: Token de API, dependência externa, limitações de customização, não é a preferência do cliente
+
+2. **CMS Headless externo** (Strapi, Contentful, Sanity)
+   - Prós: Ferramentas maduras, muitos recursos
+   - Contras: Custo adicional, mais uma dependência, curva de aprendizado
+
+3. **Admin próprio via Supabase** ✅ ESCOLHIDO
+   - Prós: Já usa Supabase, centralização, controle total, sem custo adicional, independência do Webflow
+   - Contras: Mais trabalho de desenvolvimento inicial, manutenção interna
+
+### Decisão
+**Implementar Admin próprio usando Supabase como backend do CMS.**
+
+O portal admin será:
+- Rotas `/admin/*` protegidas por autenticação
+- Tabelas CMS separadas no Supabase (prefixo `cms_`)
+- Sistema de draft/preview/publish
+- Versionamento simples com rollback
+- Audit log básico
+
+### Justificativa
+- **Preferência explícita do cliente** — não quer usar Webflow CMS
+- **Centralização** — tudo no Supabase, sem fragmentar dados
+- **Independência** — não depende de serviços externos para conteúdo
+- **Controle** — pode evoluir conforme necessidade do projeto
+- **Segurança** — RLS e policies controlados internamente
+
+### Consequências
+
+**Positivas:**
+- Autonomia total sobre o CMS
+- Sem custos de terceiros
+- Integração nativa com estrutura existente
+- Preview e publish controlados
+
+**Negativas:**
+- Mais código para manter
+- Precisa implementar UI de admin do zero
+- Responsabilidade de backup/recovery
+
+### Mandatos Técnicos (obrigatórios)
+
+1. **NÃO usar Webflow CMS** como fonte de verdade para conteúdo editável do site
+2. **Criar tabelas CMS** no Supabase com prefixo `cms_`:
+   - `cms_pages` — páginas editáveis
+   - `cms_blocks` — blocos de conteúdo por página
+   - `cms_assets` — biblioteca de mídia
+   - `cms_versions` — histórico de versões
+   - `cms_audit_log` — log de alterações
+3. **Segurança obrigatória:**
+   - Rotas `/admin/*` protegidas por auth
+   - RLS: público lê apenas `status = 'published'`
+   - RLS: admin lê draft e published
+   - Somente admin pode criar/editar/publicar
+4. **Proibição:** Não alterar schema/lógica da tabela `imoveis` — CMS é completamente separado
+
+### Participantes
+- Cliente (decisor)
+- Eduardo Sousa (dev)
+
+---
 
 ## Decisões iniciais (Sprint 0)
 

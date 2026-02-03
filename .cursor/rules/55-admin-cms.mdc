@@ -1,0 +1,209 @@
+---
+description: Regras do Admin CMS (portal de edição de conteúdo tipo WordPress). Aplica-se a rotas /admin/* e tabelas cms_*.
+globs: ["src/pages/admin/**", "src/components/admin/**", "src/hooks/useCms*", "supabase/**/cms*"]
+alwaysApply: true
+---
+
+# Regras Admin CMS — Portal de Edição de Conteúdo
+
+## 1) Documento de Referência
+
+> **Antes de implementar qualquer coisa do Admin CMS, leia:**
+> - `CMS_ADMIN_SPEC.md` — Especificação completa com FRs, NFRs, schema e critérios de aceite
+> - `DECISIONS.md` — DEC-ADM-001 (decisão de usar Supabase, não Webflow)
+
+---
+
+## 2) Decisão Fixa — NÃO usar Webflow CMS
+
+**PROIBIDO:** Usar Webflow CMS como fonte de verdade para conteúdo editável do site.
+
+**OBRIGATÓRIO:** Usar Admin próprio via Supabase com tabelas `cms_*`.
+
+**Motivo:** Decisão explícita do cliente + centralização no Supabase.
+
+---
+
+## 3) Tabelas CMS no Supabase
+
+O Admin CMS usa tabelas com prefixo `cms_`:
+
+- `cms_pages` — Páginas editáveis (slug, title, status)
+- `cms_blocks` — Blocos de conteúdo por página
+- `cms_assets` — Biblioteca de mídia
+- `cms_versions` — Histórico de versões para rollback
+- `cms_audit_log` — Log de auditoria (append-only)
+
+### 3.1) Regra de Ouro: NÃO TOCAR na tabela `imoveis`
+
+O CMS é **completamente separado** do domínio de imóveis.
+
+**PROIBIDO:**
+- Qualquer referência FK entre `cms_*` e `imoveis`
+- Alterar schema/policies/triggers da tabela `imoveis` para CMS
+- Queries do CMS que façam JOIN com `imoveis`
+
+---
+
+## 4) RLS Obrigatório (Row Level Security)
+
+Todas as tabelas CMS **DEVEM** ter RLS habilitado.
+
+### Regras de Acesso:
+
+| Tabela | anon (público) | authenticated (admin) |
+|--------|----------------|----------------------|
+| `cms_pages` | SELECT onde status='published' | SELECT, INSERT, UPDATE, DELETE |
+| `cms_blocks` | SELECT onde página é published | SELECT, INSERT, UPDATE, DELETE |
+| `cms_assets` | SELECT (imagens são públicas) | SELECT, INSERT, UPDATE, DELETE |
+| `cms_versions` | ❌ Nenhum acesso | SELECT, INSERT |
+| `cms_audit_log` | ❌ Nenhum acesso | SELECT, INSERT (sem UPDATE/DELETE) |
+
+### Checklist antes de criar tabela CMS:
+- [ ] RLS habilitado (`ALTER TABLE ... ENABLE ROW LEVEL SECURITY`)
+- [ ] Policy para anon definida (ou negada explicitamente)
+- [ ] Policy para authenticated definida
+- [ ] Testado que público não vê draft
+- [ ] Testado que admin consegue ler/escrever
+
+---
+
+## 5) Proteção de Rotas /admin/*
+
+**OBRIGATÓRIO:**
+- Todas as rotas `/admin/*` devem verificar autenticação
+- Usuário não autenticado → redirect para `/admin/login`
+- Usuário autenticado sem role admin → 403 Forbidden
+- Headers de cache devem impedir leak de conteúdo admin
+
+**Implementação:**
+```tsx
+// Exemplo de guard de rota
+const AdminRoute = ({ children }) => {
+  const { user, isAdmin } = useAuth();
+  
+  if (!user) return <Navigate to="/admin/login" />;
+  if (!isAdmin) return <Navigate to="/" />;
+  
+  return children;
+};
+```
+
+---
+
+## 6) Fluxo Draft → Preview → Publish
+
+O CMS usa sistema de estados para conteúdo:
+
+1. **Draft** — Conteúdo sendo editado (não visível ao público)
+2. **Preview** — Visualização do draft antes de publicar
+3. **Published** — Conteúdo visível no site público
+
+### Regras do fluxo:
+- Salvar sempre grava em `content_draft` do bloco
+- Preview renderiza `content_draft`
+- Publicar copia `content_draft` → `content_published`
+- Site público lê apenas `content_published`
+- Antes de publicar, salvar versão anterior em `cms_versions`
+
+---
+
+## 7) Audit Log — Registro Obrigatório
+
+Toda ação administrativa **DEVE** gerar registro em `cms_audit_log`:
+
+| Ação | Deve registrar |
+|------|----------------|
+| Criar página | ✅ Sim |
+| Editar bloco | ✅ Sim |
+| Publicar | ✅ Sim |
+| Reverter versão | ✅ Sim |
+| Upload de imagem | ✅ Sim |
+| Deletar | ✅ Sim |
+
+**Campos obrigatórios:**
+- `actor_id` / `actor_email` — Quem fez
+- `action` — O que fez (create/update/publish/revert/delete/upload)
+- `entity_type` — Tipo da entidade (page/block/asset)
+- `entity_id` — ID da entidade
+- `created_at` — Quando
+
+---
+
+## 8) Segurança de Preview
+
+Preview de conteúdo draft deve ser protegido:
+
+**Opção A (recomendada):** Exigir autenticação admin
+```
+/preview/[slug] → verifica sessão admin
+```
+
+**Opção B:** Token temporário com expiração
+```
+/preview/[slug]?token=abc123&expires=1234567890
+```
+
+**PROIBIDO:** Preview acessível publicamente sem proteção.
+
+---
+
+## 9) Validação antes de Publicar
+
+Antes de publicar, validar:
+- [ ] Campos obrigatórios preenchidos
+- [ ] Imagens referenciadas existem
+- [ ] HTML/richtext não tem scripts maliciosos
+- [ ] Metas de SEO presentes (se aplicável)
+
+Se validação falhar → impedir publicação + mostrar erros.
+
+---
+
+## 10) Fallback e Rollback
+
+### Fallback:
+Se CMS falhar ao carregar conteúdo, o site deve:
+1. Tentar carregar do cache (se implementado)
+2. Exibir conteúdo hardcoded de fallback
+3. **NUNCA** quebrar a página
+
+### Rollback:
+- Sempre salvar versão anterior antes de publicar
+- Manter no mínimo 1 versão para rollback
+- UI deve permitir reverter facilmente
+
+---
+
+## 11) Checklist de Implementação de Sprint CMS
+
+Antes de marcar qualquer sprint CMS como concluída:
+
+- [ ] Documentação atualizada (`CMS_ADMIN_SPEC.md`, `ROADMAP_SPRINTS.md`)
+- [ ] RLS testado (público não vê draft)
+- [ ] Rotas admin protegidas
+- [ ] Audit log funcionando
+- [ ] Testes do `TEST_PLAN.md` seção 9 executados
+- [ ] Regressão testada (listagem/filtro/SEO não quebrou)
+- [ ] MCP do Supabase consultado para confirmar migrations
+
+---
+
+## 12) Anti-Padrões (O que NÃO fazer)
+
+❌ **PROIBIDO:**
+- Expor rotas admin sem autenticação
+- Permitir que público veja conteúdo draft
+- Alterar tabela `imoveis` para CMS
+- Usar Webflow CMS como fonte de verdade
+- Publicar sem validação
+- Deletar versões/audit log
+- Hardcodar credenciais
+
+✅ **PREFERIR:**
+- RLS em todas as tabelas
+- Validação robusta antes de publish
+- Fallbacks para falhas
+- Audit log completo
+- Versionamento com rollback
+- Separação total do domínio de imóveis

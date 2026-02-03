@@ -1,5 +1,5 @@
 # SPEC.md — Cataldo Siston | Site Leilões RJ/SP (Webflow + Código)  
-_Versão: 1.0 | Data: 2026-01-15_
+_Versão: 1.1 | Data: 2026-02-03_
 
 ## 1. Objetivo
 Entregar a etapa final do projeto de recriação do site cataldosiston.com.br, garantindo:
@@ -67,12 +67,17 @@ Se o schema não puder ser confirmado: **não chutar**.
 ### Fase 4 — RD Station (ajustes finais)
 - Ajustes finos em widgets, pop-ups e eventos conforme feedback do cliente/marketing
 
-### Fase 5 — Webflow CMS (menor prioridade / último item)
-- Permitir que o cliente edite via CMS:
-  - Texto principal (hero)
-  - Imagem de fundo (hero)
-  - Depoimentos (já existe CMS para depoimentos/vídeos)
-- Implementação preferencial via API/integração segura (não expor token no frontend)
+### Fase 5 — ~~Webflow CMS~~ → Admin CMS Próprio ⭐ ATUALIZADO
+> **DECISÃO:** Substituído por Admin CMS próprio via Supabase. Ver `CMS_ADMIN_SPEC.md` e `DECISIONS.md` (DEC-ADM-001).
+
+- Criar portal admin para edição de conteúdo do site (tipo WordPress)
+- Permitir que o cliente edite:
+  - Textos, títulos, descrições
+  - Imagens (via biblioteca de mídia)
+  - Blocos de conteúdo (CTAs, FAQs, banners, etc.)
+- Implementar sistema draft → preview → publish
+- Versionamento simples com rollback
+- **Documento de especificação:** `CMS_ADMIN_SPEC.md`
 
 ## 4. Estado atual do sistema (base técnica)
 ### 4.1 Stack
@@ -159,19 +164,26 @@ Se o schema não puder ser confirmado: **não chutar**.
 - Pop-ups e widgets renderizando corretamente
 - Não há regressão de performance/SEO por scripts
 
-### RF-07 — Webflow CMS (última fase)
-**Descrição:** permitir edição pelo cliente via CMS (escopo editável mínimo).
+### RF-07 — ~~Webflow CMS~~ → Admin CMS Próprio ⭐ SUBSTITUÍDO
+**Descrição:** Portal admin para edição de conteúdo do site (tipo WordPress).
+
+> **NOTA:** Este RF foi expandido e detalhado em `CMS_ADMIN_SPEC.md`. 
+> Ver FRs ADM-001 a ADM-010 no documento específico.
 
 **Regras:**
-1. Conteúdo editável mínimo:
-   - Hero text
-   - Hero background image
-   - Testimonials
-2. Token Webflow **não** fica no frontend (usar Edge Function / backend proxy).
+1. Criar portal admin com rotas `/admin/*` protegidas
+2. Conteúdo editável por página e por bloco
+3. Sistema draft/preview/publish
+4. Versionamento com rollback (mínimo 1 nível)
+5. Biblioteca de mídia para imagens
+6. Audit log de alterações
 
 **Critérios de aceite:**
-- Editor altera conteúdo no Webflow → mudança reflete no site
-- Sem exposição de credenciais no bundle
+- Admin edita conteúdo → salva como draft → pré-visualiza → publica
+- Mudança reflete no site público somente após publicar
+- Usuário não-admin não acessa /admin
+- Conteúdo draft não é visível para público
+- Ver critérios detalhados em `CMS_ADMIN_SPEC.md`
 
 ### RF-08 — Integração de páginas externas (quando entregues)
 **Descrição:** integrar páginas vindas de empresa externa mantendo SEO base e navegação consistente.
@@ -230,7 +242,22 @@ Se o schema não puder ser confirmado: **não chutar**.
 
 ### 7.3 Tabelas adicionais para SEO Local (Sprint 6)
 - `success_cases` (id, title, description, client_name, client_image_url, property_type, region, is_active, display_order)
-- `blog_posts` (id, title, slug, excerpt, featured_image_url, published_at, is_active) — *ou integrar com Webflow CMS*
+- `blog_posts` (id, title, slug, excerpt, featured_image_url, published_at, is_active)
+
+### 7.4 Tabelas CMS Admin (Fase 5) ⭐ NOVO
+> **Documento detalhado:** Ver schema completo em `CMS_ADMIN_SPEC.md`
+
+- `cms_pages` — Páginas editáveis do site (slug, title, status draft/published)
+- `cms_blocks` — Blocos de conteúdo por página (block_key, type, content_draft, content_published)
+- `cms_assets` — Biblioteca de mídia (filename, url, alt_text, metadata)
+- `cms_versions` — Histórico de versões para rollback (entity_type, entity_id, data_snapshot)
+- `cms_audit_log` — Log de auditoria (actor, action, entity, timestamp)
+
+**RLS obrigatório:**
+- Público lê apenas `status = 'published'`
+- Admin lê draft e published
+- Somente admin escreve
+- Audit log é append-only
 
 ## 9. Critérios de aceite globais (Definition of Done)
 - Build OK + Deploy OK

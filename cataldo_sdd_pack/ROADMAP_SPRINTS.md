@@ -1,5 +1,6 @@
 # ROADMAP_SPRINTS.md — Cataldo Siston | Execução em Sprints
 _Data: 2026-01-15_  
+_Atualizado: 2026-02-03 (Admin CMS)_  
 _Base: prazo estimado ~2 semanas (com dependências externas)._
 
 ## Workstreams
@@ -7,9 +8,9 @@ _Base: prazo estimado ~2 semanas (com dependências externas)._
 - W2) Páginas regionais fixas (SEO local) + "substituição" do filtro dinâmico
 - W3) Filtros via Supabase + Admin de gerenciamento
 - W4) RD Station (eventos, pop-ups, widgets)
-- W5) Webflow CMS (última fase)
+- ~~W5) Webflow CMS~~ → **W5) Admin CMS próprio (tipo WordPress)** ⭐ ATUALIZADO
 - W6) Integração de páginas externas (quando chegar)
-- **W7) Layout completo páginas regionais (SEO local avançado) — LiveSEO** ⭐ NOVO
+- **W7) Layout completo páginas regionais (SEO local avançado) — LiveSEO**
 
 ---
 
@@ -79,13 +80,22 @@ _Base: prazo estimado ~2 semanas (com dependências externas)._
 
 ---
 
-## Sprint 5 — Webflow CMS (2–4 dias, se entrar)
-**Escopo**
-- Definir campos editáveis
-- Criar integração segura (Edge Function) e renderizar conteúdo
+## Sprint 5 — ~~Webflow CMS~~ → Admin CMS Próprio ⭐ SUBSTITUÍDO
+> **DECISÃO:** Substituído por Admin CMS próprio via Supabase.
+> Ver `CMS_ADMIN_SPEC.md` para especificação completa.
+> Ver `DECISIONS.md` — DEC-ADM-001 para justificativa.
 
-**Entregáveis**
-- Cliente edita hero/depôimentos e vê no site
+**Status:** ⏸️ PLANEJADO (após Sprints 6 e 7)
+
+**Escopo geral:**
+- Portal admin para edição de conteúdo do site
+- Sistema draft → preview → publish
+- Biblioteca de mídia
+- Versionamento e rollback
+- Audit log
+
+**Dividido em sub-sprints incrementais (Ralph Wiggum technique):**
+- Sprint CMS v0 → Sprint CMS v4 (ver abaixo)
 
 ---
 
@@ -137,3 +147,167 @@ _Base: prazo estimado ~2 semanas (com dependências externas)._
 - ✅ Paginação usável em telas pequenas
 - ✅ Seção de Casos de Sucesso integrada
 - ✅ Fallback para JavaScript desativado
+
+---
+
+## Sprints Admin CMS (W5) — Entrega Incremental ⭐ NOVO
+
+> **Documento de especificação:** `CMS_ADMIN_SPEC.md`
+> **Decisão:** `DECISIONS.md` — DEC-ADM-001
+> **Técnica:** Ralph Wiggum (incrementos mínimos testáveis)
+
+---
+
+### Sprint CMS v0 — MVP Mínimo (Editar 1 texto + Publicar)
+**Status:** ⏸️ PLANEJADO  
+**Prioridade:** Alta  
+**Dependências:** Sprints 6 e 7 concluídas
+
+**Objetivo:** Editar 1 texto do Home e publicar.
+
+**Escopo:**
+- Criar tabelas `cms_pages` e `cms_blocks` no Supabase
+- Configurar RLS básico (público lê published, admin lê/escreve tudo)
+- Rota `/admin/pages/home/edit` funcional
+- Edição de 1 bloco de texto (ex: `hero_title`)
+- Botões "Salvar Draft" e "Publicar"
+- Home renderiza conteúdo do CMS
+
+**Entregáveis:**
+- [ ] Migrations aplicadas no Supabase
+- [ ] RLS configurado e testado
+- [ ] Editor básico de 1 bloco
+- [ ] Home lê conteúdo do CMS
+
+**Critérios de aceite:**
+- [ ] Edito título do hero da Home
+- [ ] Salvo como draft (site público não muda)
+- [ ] Publico (site público atualiza)
+- [ ] Usuário anônimo não vê draft
+
+**Riscos:**
+- Quebrar Home se CMS falhar → Mitigação: fallback para conteúdo hardcoded
+
+---
+
+### Sprint CMS v1 — Blocos por Página + Preview
+**Status:** ⏸️ PLANEJADO  
+**Prioridade:** Alta  
+**Dependências:** Sprint CMS v0
+
+**Objetivo:** Editar múltiplos blocos de uma página específica com preview.
+
+**Escopo:**
+- Lista de páginas editáveis (`/admin/pages`)
+- Editor de múltiplos blocos por página
+- Tipos de bloco: text, richtext, image (URL manual)
+- Rota `/preview/[slug]` funcional
+- Indicador visual de modo preview
+
+**Entregáveis:**
+- [ ] Lista de páginas no admin
+- [ ] Editor de múltiplos blocos
+- [ ] Preview funcional
+- [ ] Tipos text e richtext implementados
+
+**Critérios de aceite:**
+- [ ] Listo todas as páginas configuradas
+- [ ] Edito 3+ blocos de uma página
+- [ ] Preview mostra alterações antes de publicar
+- [ ] Publicar atualiza todos os blocos
+
+---
+
+### Sprint CMS v2 — Biblioteca de Mídia
+**Status:** ⏸️ PLANEJADO  
+**Prioridade:** Média  
+**Dependências:** Sprint CMS v1
+
+**Objetivo:** Upload e seleção de imagens.
+
+**Escopo:**
+- Tabela `cms_assets` criada
+- Supabase Storage configurado para bucket CMS
+- UI de upload de imagens
+- Galeria de imagens na biblioteca
+- Seletor de imagem integrado ao editor de blocos
+
+**Entregáveis:**
+- [ ] Bucket CMS no Supabase Storage
+- [ ] Tabela `cms_assets` com RLS
+- [ ] Componente de upload
+- [ ] Galeria de imagens
+- [ ] Seletor de imagem no editor
+
+**Critérios de aceite:**
+- [ ] Faço upload de imagem (jpg, png, webp)
+- [ ] Vejo imagens na biblioteca
+- [ ] Seleciono imagem para bloco
+- [ ] Alt text é editável
+
+---
+
+### Sprint CMS v3 — Preview Completo + Publish Robusto
+**Status:** ⏸️ PLANEJADO  
+**Prioridade:** Média  
+**Dependências:** Sprint CMS v2
+
+**Objetivo:** Preview em todas as páginas, publish atômico e validação.
+
+**Escopo:**
+- Preview funciona para qualquer página editável
+- Token de preview com expiração
+- Publish atômico (transação: tudo ou nada)
+- Validação de conteúdo antes de publicar
+- Mensagens de erro claras
+
+**Entregáveis:**
+- [ ] Preview universal
+- [ ] Token de preview seguro
+- [ ] Publish em transação
+- [ ] Validação de campos obrigatórios
+
+**Critérios de aceite:**
+- [ ] Preview funciona em 5+ páginas diferentes
+- [ ] Preview sem auth falha ou exige token
+- [ ] Simular erro no publish não deixa estado inconsistente
+- [ ] Validação impede publicar conteúdo inválido
+
+---
+
+### Sprint CMS v4 — Histórico/Rollback + Audit Log
+**Status:** ⏸️ PLANEJADO  
+**Prioridade:** Baixa  
+**Dependências:** Sprint CMS v3
+
+**Objetivo:** Versionamento completo e auditoria.
+
+**Escopo:**
+- Tabela `cms_versions` para histórico
+- Tabela `cms_audit_log` para auditoria
+- UI para ver histórico de versões
+- Botão "Reverter" para restaurar versão anterior
+- UI para ver audit log
+
+**Entregáveis:**
+- [ ] Tabelas de versão e audit criadas
+- [ ] Histórico salvo a cada publish
+- [ ] UI de histórico de versões
+- [ ] Rollback funcional
+- [ ] UI de audit log
+
+**Critérios de aceite:**
+- [ ] Vejo histórico de publicações de uma página
+- [ ] Reverto para versão anterior (como draft)
+- [ ] Publico versão revertida
+- [ ] Vejo log de quem alterou o quê
+
+---
+
+### Expansão Futura (Baixa Prioridade)
+- Editor WYSIWYG mais avançado (TipTap, Slate)
+- Agendamento de publicação (publish at datetime)
+- Múltiplos usuários admin com permissões
+- Locking de edição (evitar conflitos)
+- Comparação visual de versões (diff)
+- Integração com analytics (qual conteúdo performa melhor)

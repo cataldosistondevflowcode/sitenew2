@@ -1,11 +1,30 @@
 ---
-description: Webflow CMS integration rules (security-first).
+description: Webflow CMS integration rules (DESCONTINUADO para conteúdo editável - usar Admin próprio).
 globs: ["src/**", "supabase/functions/**"]
 alwaysApply: true
 ---
 
 # Regras Webflow CMS
+
+> **⚠️ ATENÇÃO:** O Webflow CMS **NÃO** é mais a fonte de verdade para conteúdo editável do site.
+> Ver `DECISIONS.md` — DEC-ADM-001.
+> Para gerenciamento de conteúdo, usar **Admin CMS próprio via Supabase**.
+> Ver `55-admin-cms.mdc` e `CMS_ADMIN_SPEC.md`.
+
+## Uso permitido do Webflow CMS
+O Webflow CMS ainda pode ser usado para:
+- Integração legada (se existir)
+- Conteúdo estático que não precisa de edição frequente
+- Depoimentos/testemunhos (se já configurado)
+
+## Regras de Segurança (quando usar Webflow)
 - Nunca colocar token Webflow no frontend.
 - Preferir Edge Function como proxy.
 - Cachear respostas quando possível.
 - Mapear campos do CMS para tipos TS explícitos.
+
+## Para conteúdo editável: usar Admin próprio
+- Rotas `/admin/*`
+- Tabelas `cms_*` no Supabase
+- Sistema draft/preview/publish
+- Ver documentação em `CMS_ADMIN_SPEC.md`

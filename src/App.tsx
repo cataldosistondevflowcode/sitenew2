@@ -35,6 +35,7 @@ import TestUnifiedScheduleProcessor from "./pages/TestUnifiedScheduleProcessor";
 import AdminCmsPages from "./pages/AdminCmsPages";
 import AdminCmsPageEdit from "./pages/AdminCmsPageEdit";
 import CmsPreview from "./pages/CmsPreview";
+import AdminCmsAssets from "./pages/AdminCmsAssets";
 
 const queryClient = new QueryClient();
 
@@ -142,6 +143,11 @@ const App = () => (
             <Route path="/preview/:slug" element={
               <AdminRoute>
                 <CmsPreview />
+              </AdminRoute>
+            } />
+            <Route path="/admin/cms/assets" element={
+              <AdminRoute>
+                <AdminCmsAssets />
               </AdminRoute>
             } />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

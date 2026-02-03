@@ -86,15 +86,24 @@ export default function AdminCmsPages() {
     <div className="container py-8">
       {/* Header */}
       <div className="mb-8">
-        <Button
-          onClick={() => navigate('/admin')}
-          variant="ghost"
-          size="sm"
-          className="mb-4"
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Voltar
-        </Button>
+        <div className="flex items-center justify-between mb-4">
+          <Button
+            onClick={() => navigate('/admin')}
+            variant="ghost"
+            size="sm"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Voltar
+          </Button>
+
+          <Button
+            onClick={() => navigate('/admin/cms/assets')}
+            variant="outline"
+            size="sm"
+          >
+            📁 Biblioteca de Mídia
+          </Button>
+        </div>
 
         <h1 className="text-3xl font-bold">Gerenciador de Conteúdo CMS</h1>
         <p className="text-gray-600 mt-2">Edite o conteúdo das páginas do site</p>

@@ -1,6 +1,94 @@
 # CHANGELOG.md
 _Data: 2026-02-03 | Última atualização: 2026-02-03_
 
+## 2026-02-03 (v3.6.0) — Sprint CMS v6: RichText Editor com TipTap ✅
+
+### Status: IMPLEMENTADO
+
+**Objetivo:** Adicionar editor WYSIWYG para rich text com formatação visual.
+
+### ✅ Entregáveis Concluídos
+
+#### 1. Dependências Instaladas
+- [x] @tiptap/react — Framework WYSIWYG
+- [x] @tiptap/starter-kit — Extensões base (parágrafo, heading, bold, italic, list, code)
+- [x] @tiptap/extension-link — Suporte a links
+
+#### 2. Componente RichTextBlockEditor
+- [x] Toolbar visual com botões de formatação
+  - Bold, Italic
+  - Headings (H1, H2, H3)
+  - Bullet List, Ordered List
+  - Links (via prompt)
+- [x] Editor WYSIWYG com TipTap
+- [x] Validação em tempo real (integrada com validateContent)
+- [x] Feedback visual de status (mudanças, validação, confirmação)
+- [x] CSS próprio para renderização HTML limpa
+
+#### 3. Integração
+- [x] RichTextBlockEditor compatível com BlockEditorFactory
+- [x] Suporta draft/publish como outros editores
+- [x] Mensagens de erro inline
+- [x] Botões desabilitados até validação passar
+
+### ✅ Critérios de Aceite
+- [x] Usuário pode aplicar bold/italic/headings
+- [x] Usuário pode criar listas com bullet e numeradas
+- [x] Usuário pode adicionar links
+- [x] Conteúdo renderiza corretamente no preview
+- [x] Validação funciona (rejeita vazio)
+- [x] Build sem erros
+
+### 📝 Arquivos Criados/Modificados
+- `src/components/admin/editors/RichTextBlockEditor.tsx` — Novo editor
+- `src/components/admin/editors/RichTextBlockEditor.css` — Estilos WYSIWYG
+- `package.json` — Adicionar TipTap + extensões
+- `src/components/admin/BlockEditorFactory.tsx` — Usar novo editor para 'richtext'
+
+### 🔄 Próximas Sprints
+- [ ] Sprint v7: CTA, List, FAQ editors
+- [ ] Sprint v8: Versionamento e rollback
+- [ ] Sprint v9: Audit log e histórico
+
+---
+
+## 2026-02-03 (v3.5.0) — Sprint CMS v5: Testes E2E Completos ✅
+
+### Status: TESTADO COM SUCESSO
+
+**Objetivo:** Testes de browser completos — editar, salvar, publicar, validar.
+
+### ✅ Entregáveis Concluídos
+
+#### 1. Fix de Autenticação
+- [x] Adicionar `isAdmin` no AuthContext
+- [x] Corrigir roteamento de `/admin/cms/pages/:slug/edit`
+- [x] Testes via browser funcionam 100%
+
+#### 2. Fluxo E2E Testado
+- [x] **Login** — Autenticação funciona
+- [x] **Edição** — Editar texto e ver validação inline
+- [x] **Salvamento de Draft** — Botão "Salvar Rascunho" funciona
+- [x] **Publicação** — Botão "Publicar" funciona
+- [x] **Status** — Página muda de "Rascunho" para "Publicada"
+- [x] **Feedback Visual** — Alertas, confirmações, erros aparecem corretamente
+
+#### 3. Validação Funciona
+- [x] Conteúdo vazio mostra erro
+- [x] Conteúdo válido habilita publicação
+- [x] Erros bloqueiam botões de ação
+- [x] Mensagens claras e acionáveis
+
+### 📸 Teste Realizado (via MCP Browser)
+1. Login: adm@hotmail.com / adm123
+2. Navegar para: `/admin/cms/pages/home/edit`
+3. Editar hero_title: "Especialistas em leilão de imóveis - Suite Cataldo Siston Advogados 2026"
+4. Clicar "Salvar Rascunho" — ✅ Sucesso
+5. Clicar "Publicar" — ✅ Sucesso
+6. Status muda para "✓ Publicada"
+
+---
+
 ## 2026-02-03 (v3.4.0) — Sprint CMS v4: Validação Robusta ✅
 
 ### Status: IMPLEMENTADO

@@ -2,6 +2,7 @@ import { useState, useEffect, createContext, useContext, ReactNode } from 'react
 
 interface AuthContextType {
   isAuthenticated: boolean;
+  isAdmin: boolean;
   login: (email: string, password: string) => boolean;
   logout: () => void;
   user: { email: string } | null;
@@ -12,6 +13,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [user, setUser] = useState<{ email: string } | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -21,6 +23,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     
     if (savedAuth === 'true') {
       setIsAuthenticated(true);
+      setIsAdmin(true);
       setUser({ email: 'adm@hotmail.com' });
     }
     setLoading(false);
@@ -30,6 +33,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     // Credenciais fixas para administração
     if (email === 'adm@hotmail.com' && password === 'adm123') {
       setIsAuthenticated(true);
+      setIsAdmin(true);
       setUser({ email });
       localStorage.setItem('admin_auth', 'true');
       return true;
@@ -39,12 +43,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const logout = () => {
     setIsAuthenticated(false);
+    setIsAdmin(false);
     setUser(null);
     localStorage.removeItem('admin_auth');
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout, user, loading }}>
+    <AuthContext.Provider value={{ isAuthenticated, isAdmin, login, logout, user, loading }}>
       {children}
     </AuthContext.Provider>
   );

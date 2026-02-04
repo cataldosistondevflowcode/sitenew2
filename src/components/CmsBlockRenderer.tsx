@@ -71,14 +71,22 @@ export const CmsBlockRenderer = ({ block, isPreview = false }: CmsBlockRendererP
       );
 
     case 'list':
+      const isOrdered = content.ordered === true;
+      const listStyle = content.style || 'default';
+      const ListTag = isOrdered ? 'ol' : 'ul';
+      
       return (
-        <ul className="my-4 ml-6 space-y-2 list-disc">
+        <ListTag className={`my-4 ml-6 space-y-2 ${
+          isOrdered ? 'list-decimal' : listStyle === 'default' ? 'list-disc' : 'list-none'
+        }`}>
           {content.items?.map((item: string, index: number) => (
             <li key={index} className="text-gray-700">
+              {listStyle === 'checkmark' && <span className="mr-2">✓</span>}
+              {listStyle === 'arrow' && <span className="mr-2">→</span>}
               {item}
             </li>
           ))}
-        </ul>
+        </ListTag>
       );
 
     case 'faq':

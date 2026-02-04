@@ -383,6 +383,14 @@ CREATE INDEX idx_cms_audit_log_entity ON cms_audit_log(entity_type, entity_id);
 CREATE INDEX idx_cms_audit_log_created ON cms_audit_log(created_at DESC);
 ```
 
+### 4.5.1 Extensões (Sprint v3/v4) — implementação
+
+**Tabela `cms_preview_tokens`** (Sprint v3): armazena tokens temporários para compartilhar link de preview sem autenticação. Campos típicos: token, page_id, expires_at, created_by. RLS: apenas authenticated insere/deleta; anon pode SELECT para validar token. Não está no schema SQL acima; migration pode existir em outro arquivo ou ter sido aplicada manualmente.
+
+**Funções RPC:**
+- `publish_block_atomic(p_block_id, p_user_id)`: publica o bloco de forma atômica; grava versão anterior em `cms_versions`, atualiza `content_published`, insere em `cms_audit_log`.
+- `revert_block_to_version(p_block_id, p_version_id, p_user_id)`: restaura `content_draft` do bloco a partir de uma versão em `cms_versions` e registra ação `revert` no audit log.
+
 ### 4.6 RLS (Row Level Security) — OBRIGATÓRIO
 
 ```sql
@@ -473,15 +481,17 @@ CREATE POLICY "cms_audit_log_admin_insert" ON cms_audit_log
 
 ### 5.1 Rotas Mínimas
 
+> **Nota:** A implementação usa o prefixo `/admin/cms` para rotas do CMS.
+
 | Rota | Descrição |
 |------|-----------|
 | `/admin/login` | Página de login |
 | `/admin` | Dashboard / home do admin |
-| `/admin/pages` | Lista de páginas editáveis |
-| `/admin/pages/[slug]/edit` | Editor de página |
-| `/admin/assets` | Biblioteca de mídia |
-| `/admin/audit-log` | Histórico de auditoria |
-| `/preview/[slug]` | Preview de página (protegido) |
+| `/admin/cms` | Lista de páginas editáveis |
+| `/admin/cms/pages/[slug]/edit` | Editor de página |
+| `/admin/cms/assets` | Biblioteca de mídia |
+| `/admin/cms/audit-log` | Histórico de auditoria |
+| `/preview/[slug]` | Preview (protegido; aceita `?token=` para link compartilhado) |
 
 ### 5.2 Fluxo de Edição
 
@@ -519,19 +529,33 @@ CREATE POLICY "cms_audit_log_admin_insert" ON cms_audit_log
 
 ### 5.3 Componentes de UI
 
-**Editor de Blocos:**
-- `BlockEditor` — Container principal
+**Editor de Blocos (BlockEditorFactory):**
 - `TextBlockEditor` — Editor de texto simples
 - `RichTextBlockEditor` — Editor WYSIWYG
-- `ImageBlockEditor` — Seletor de imagem
-- `CTABlockEditor` — Editor de CTA
+- `ImageBlockEditor` — Seletor de imagem (usa AssetSelector)
+- `CtaBlockEditor` — Editor de CTA
 - `ListBlockEditor` — Editor de lista
 - `FAQBlockEditor` — Editor de FAQ
+- Tipo `banner` está no schema mas sem editor dedicado (reservado).
+
+**UX (Sprint v8):**
+- `LivePreview` — Preview em tempo real lado a lado
+- `BlockStatusIndicator` — Status visual do bloco (tipo, draft/published)
+- `ValidationFeedback` — Feedback de validação (error/success/warning)
+- `useKeyboardShortcuts` — Atalhos Ctrl+S (salvar), Ctrl+P (publicar)
+
+**Preview compartilhado (Sprint v3):**
+- `SharePreviewButton` — Gera link de preview com token temporário
+- Hook `usePreviewToken` — Cria/valida tokens em `cms_preview_tokens`
+
+**Histórico/Rollback (Sprint v4):**
+- `BlockVersionHistory` — Lista versões do bloco e botão Reverter
+- Hook `useCmsVersions` — Lista versões e chama RPC `revert_block_to_version`
 
 **Biblioteca de Mídia:**
 - `AssetLibrary` — Grid de imagens
 - `AssetUploader` — Upload de arquivos
-- `AssetPicker` — Modal de seleção
+- `AssetSelector` — Modal de seleção de imagem para bloco
 
 ---
 
@@ -641,45 +665,39 @@ CREATE POLICY "cms_audit_log_admin_insert" ON cms_audit_log
 
 ---
 
-### Sprint CMS v3 — Preview Completo + Publish Robusto
+### Sprint CMS v3 — Preview Completo + Publish Robusto ✅
 **Objetivo:** Preview em todas as páginas, publish atômico.
 
 **Entregáveis:**
-- [ ] Preview funciona para qualquer página
-- [ ] Indicador visual de modo preview
-- [ ] Token de preview com expiração
-- [ ] Publish atômico (tudo ou nada)
-- [ ] Validação antes de publicar
+- [x] Preview funciona para qualquer página
+- [x] Indicador visual de modo preview
+- [x] Token de preview com expiração
+- [x] Publish atômico (tudo ou nada)
+- [x] Validação antes de publicar
 
-**Critérios de aceite:**
-- Preview funciona em qualquer página editável
-- Publish não deixa estado inconsistente
-- Validação impede publicar conteúdo inválido
+**Critérios de aceite:** Concluídos (ver ROADMAP_SPRINTS.md).
 
 **Testes:**
-- [ ] Preview em 5 páginas diferentes
-- [ ] Simular erro no meio do publish (deve reverter)
+- [ ] Preview em 5 páginas diferentes (manual)
+- [ ] Simular erro no meio do publish (deve reverter) (manual)
 
 ---
 
-### Sprint CMS v4 — Histórico/Rollback + Audit Log
+### Sprint CMS v4 — Histórico/Rollback + Audit Log ✅
 **Objetivo:** Versionamento e auditoria completos.
 
 **Entregáveis:**
-- [ ] Tabela `cms_versions`
-- [ ] Tabela `cms_audit_log`
-- [ ] UI de histórico de versões
-- [ ] Botão "Reverter" funcional
-- [ ] UI de audit log
+- [x] Tabela `cms_versions` (já existia; RPC grava ao publicar)
+- [x] Tabela `cms_audit_log` (já existia)
+- [x] UI de histórico de versões (BlockVersionHistory por bloco)
+- [x] Botão "Reverter" funcional (restaura como draft)
+- [x] UI de audit log (`/admin/cms/audit-log`)
 
-**Critérios de aceite:**
-- Vejo histórico de publicações
-- Reverto para versão anterior
-- Vejo log de quem alterou o quê
+**Critérios de aceite:** Concluídos (ver ROADMAP_SPRINTS.md).
 
 **Testes:**
-- [ ] Publicar 3 vezes, reverter para versão 1
-- [ ] Verificar audit log completo
+- [ ] Publicar 3 vezes, reverter para versão 1 (manual)
+- [ ] Verificar audit log completo (manual)
 
 ---
 

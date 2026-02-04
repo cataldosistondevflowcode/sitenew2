@@ -310,9 +310,10 @@ _Base: prazo estimado ~2 semanas (com dependências externas)._
 ---
 
 ### Sprint CMS v4 — Histórico/Rollback + Audit Log
-**Status:** ⏸️ PLANEJADO  
+**Status:** ✅ CONCLUÍDA  
 **Prioridade:** Baixa  
 **Dependências:** Sprint CMS v3
+**Conclusão:** 2026-02-04
 
 **Objetivo:** Versionamento completo e auditoria.
 
@@ -324,17 +325,17 @@ _Base: prazo estimado ~2 semanas (com dependências externas)._
 - UI para ver audit log
 
 **Entregáveis:**
-- [ ] Tabelas de versão e audit criadas
-- [ ] Histórico salvo a cada publish
-- [ ] UI de histórico de versões
-- [ ] Rollback funcional
-- [ ] UI de audit log
+- [x] Tabelas de versão e audit criadas (já existiam; RPC documentada em migration)
+- [x] Histórico salvo a cada publish (RPC `publish_block_atomic` grava em `cms_versions`)
+- [x] UI de histórico de versões (`BlockVersionHistory` + botão "Histórico" por bloco)
+- [x] Rollback funcional (RPC `revert_block_to_version` + hook `useCmsVersions`)
+- [x] UI de audit log (página `/admin/cms/audit-log`)
 
 **Critérios de aceite:**
-- [ ] Vejo histórico de publicações de uma página
-- [ ] Reverto para versão anterior (como draft)
-- [ ] Publico versão revertida
-- [ ] Vejo log de quem alterou o quê
+- [x] Vejo histórico de publicações de uma página (por bloco, no editor)
+- [x] Reverto para versão anterior (como draft)
+- [x] Publico versão revertida (fluxo normal de publicar)
+- [x] Vejo log de quem alterou o quê (página Log de Auditoria)
 
 ---
 

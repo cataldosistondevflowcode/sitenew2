@@ -33,6 +33,7 @@ O Admin CMS usa tabelas com prefixo `cms_`:
 - `cms_assets` — Biblioteca de mídia
 - `cms_versions` — Histórico de versões para rollback
 - `cms_audit_log` — Log de auditoria (append-only)
+- `cms_preview_tokens` — Tokens temporários para link de preview compartilhado (Sprint v3)
 
 ### 3.1) Regra de Ouro: NÃO TOCAR na tabela `imoveis`
 

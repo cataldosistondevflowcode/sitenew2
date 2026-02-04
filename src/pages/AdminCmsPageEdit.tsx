@@ -17,6 +17,7 @@ import { useEffect, useState } from 'react';
 import { LivePreview } from '@/components/admin/ux/LivePreview';
 import { BlockStatusIndicator } from '@/components/admin/ux/BlockStatusIndicator';
 import { SharePreviewButton } from '@/components/admin/SharePreviewButton';
+import { BlockVersionHistory } from '@/components/admin/BlockVersionHistory';
 
 export default function AdminCmsPageEdit() {
   const { slug } = useParams<{ slug: string }>();
@@ -46,7 +47,7 @@ export default function AdminCmsPageEdit() {
     );
   }
 
-  const { page, blocks, loading, error, updateBlockDraft, publishBlock, validateBlockContent, isSaving } =
+  const { page, blocks, loading, error, updateBlockDraft, publishBlock, validateBlockContent, isSaving, reloadPage } =
     useCmsContent(slug);
 
   // Toggle de expansão de bloco
@@ -210,6 +211,13 @@ export default function AdminCmsPageEdit() {
                       {/* Editor Colapsável */}
                       {isExpanded && (
                         <div className="border-t p-4">
+                          <div className="flex justify-end mb-2">
+                            <BlockVersionHistory
+                              blockId={block.id}
+                              blockKey={block.block_key}
+                              onReverted={reloadPage}
+                            />
+                          </div>
                           <BlockEditorFactory
                             block={block}
                             onSaveDraft={(content) => updateBlockDraft(block.id, content)}

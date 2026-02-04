@@ -96,13 +96,22 @@ export default function AdminCmsPages() {
             Voltar
           </Button>
 
-          <Button
-            onClick={() => navigate('/admin/cms/assets')}
-            variant="outline"
-            size="sm"
-          >
-            📁 Biblioteca de Mídia
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              onClick={() => navigate('/admin/cms/audit-log')}
+              variant="outline"
+              size="sm"
+            >
+              📋 Log de Auditoria
+            </Button>
+            <Button
+              onClick={() => navigate('/admin/cms/assets')}
+              variant="outline"
+              size="sm"
+            >
+              📁 Biblioteca de Mídia
+            </Button>
+          </div>
         </div>
 
         <h1 className="text-3xl font-bold">Gerenciador de Conteúdo CMS</h1>

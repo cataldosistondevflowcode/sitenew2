@@ -36,6 +36,7 @@ import AdminCmsPages from "./pages/AdminCmsPages";
 import AdminCmsPageEdit from "./pages/AdminCmsPageEdit";
 import CmsPreview from "./pages/CmsPreview";
 import AdminCmsAssets from "./pages/AdminCmsAssets";
+import AdminCmsAuditLog from "./pages/AdminCmsAuditLog";
 
 const queryClient = new QueryClient();
 
@@ -148,6 +149,11 @@ const App = () => (
             <Route path="/admin/cms/assets" element={
               <AdminRoute>
                 <AdminCmsAssets />
+              </AdminRoute>
+            } />
+            <Route path="/admin/cms/audit-log" element={
+              <AdminRoute>
+                <AdminCmsAuditLog />
               </AdminRoute>
             } />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

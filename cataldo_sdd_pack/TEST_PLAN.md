@@ -74,7 +74,7 @@ Testar no browser em `/catalogo/:pageId` (ex.: página Rio de Janeiro ou bairro)
 - [ ] Logout funciona e limpa sessão
 
 ### 9.2) Lista de Páginas
-- [ ] `/admin/pages` lista todas as páginas configuradas
+- [ ] `/admin/cms` lista todas as páginas configuradas
 - [ ] Status (draft/published) é exibido corretamente
 - [ ] Data de última atualização é exibida
 - [ ] Click em página navega para editor
@@ -145,3 +145,18 @@ Após implementar qualquer sprint do CMS, validar:
 - [ ] SEO não regrediu (metas, canonicals, titles)
 - [ ] Performance não degradou significativamente
 - [ ] Nenhuma rota pública expõe conteúdo admin/draft
+
+---
+
+## 11) Próximos passos recomendados (respaldo canônico)
+
+**Documentos de referência:** `ROADMAP_SPRINTS.md`, `CMS_ADMIN_SPEC.md`, `55-admin-cms.mdc`, `00-sdd.mdc`.
+
+| Prioridade | Ação | Documento | Risco |
+|------------|------|-----------|--------|
+| 1 | Executar testes manuais da **seção 9** (Admin CMS) e **seção 10** (Regressão); marcar [x] no TEST_PLAN no que passar | TEST_PLAN.md §9, §10 | Nenhum (só validação) |
+| 2 | Confirmar RLS: anon não vê draft (abrir site em aba anônima e conferir que conteúdo draft não aparece) | 55-admin-cms.mdc checklist | Nenhum |
+| 3 | Decidir próximo workstream: **Sprint 1** (SEO), **2** (regionais), **3** (Filtros), **4** (RD Station) conforme prioridade do negócio | ROADMAP_SPRINTS.md | Cada sprint tem spec/escopo próprio |
+| 4 | Expansão futura CMS (WYSIWYG, agendamento, diff) só com demanda explícita — está em "baixa prioridade" no ROADMAP | ROADMAP_SPRINTS.md | Não iniciar sem spec/aprovacao |
+
+**Regra SDD:** Nenhuma alteração de código/banco sem SPEC ou decisão documentada (DECISIONS.md / SPEC.md).

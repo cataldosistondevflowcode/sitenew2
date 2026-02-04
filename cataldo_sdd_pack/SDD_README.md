@@ -31,7 +31,7 @@ Principais pontos:
 
 Principais pontos:
 - **Decisão:** Admin próprio via Supabase (não Webflow CMS) — ver `DECISIONS.md`
-- **Tabelas:** Prefixo `cms_*` (cms_pages, cms_blocks, cms_assets, cms_versions, cms_audit_log)
+- **Tabelas:** Prefixo `cms_*` (cms_pages, cms_blocks, cms_assets, cms_versions, cms_audit_log, cms_preview_tokens para tokens de preview compartilhado)
 - **RLS obrigatório:** Público lê apenas published; admin lê/escreve tudo
 - **Fluxo:** Draft → Preview → Publish
 - **Regras:** Ver `.cursor/rules/55-admin-cms.mdc`

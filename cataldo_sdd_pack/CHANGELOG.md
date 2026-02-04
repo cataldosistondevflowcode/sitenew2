@@ -1,5 +1,24 @@
 # CHANGELOG.md
-_Data: 2026-02-03 | Última atualização: 2026-02-03_
+_Data: 2026-02-04 | Última atualização: 2026-02-04_
+
+## 2026-02-04 — Sprint CMS v4: Histórico/Rollback + Audit Log ✅
+
+### Objetivo
+Versionamento completo e auditoria (FR-ADM-008, FR-ADM-010).
+
+### Entregáveis
+- **Migration** `20260203100000_cms_publish_atomic_and_revert.sql`: RPC `publish_block_atomic` (salva versão em `cms_versions` + audit) e RPC `revert_block_to_version` para rollback.
+- **Hook** `useCmsVersions`: `listBlockVersions(blockId)`, `revertBlockToVersion(blockId, versionId)`.
+- **Componente** `BlockVersionHistory`: dialog com lista de versões por bloco e botão "Reverter"; integrado na página de edição (cada bloco expandido).
+- **Página** `AdminCmsAuditLog` em `/admin/cms/audit-log`: tabela com data, quem, ação, entidade.
+- **Navegação**: botão "Log de Auditoria" na lista de páginas CMS (`/admin/cms`).
+
+### Critérios de aceite
+- Histórico de publicações visível por bloco (botão "Histórico").
+- Reverter restaura conteúdo como draft; usuário pode publicar em seguida.
+- Log de auditoria visível em `/admin/cms/audit-log`.
+
+---
 
 ## 2026-02-03 (v3.8.0 - Planejado) — Sprint CMS v8: UX Zero Fricção 🎨
 

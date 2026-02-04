@@ -1,9 +1,9 @@
 # CHANGELOG.md
 _Data: 2026-02-03 | Última atualização: 2026-02-03_
 
-## 2026-02-03 (v3.7.0) — Sprint CMS v7: Melhorias de UX & Validação Avançada 🚀
+## 2026-02-03 (v3.7.0) — Sprint CMS v7: Melhorias de UX & Validação Avançada ✅
 
-### Status: EM ANDAMENTO (Fase 1-2 Concluída)
+### Status: FASES 1-4 CONCLUÍDAS (Pendente: Fase 5 Testes)
 
 **Objetivo:** Melhorar UX dos editores CTA/List/FAQ com validação robusta, drag-drop, importação em lote.
 
@@ -81,11 +81,44 @@ _Data: 2026-02-03 | Última atualização: 2026-02-03_
 - `cataldo_sdd_pack/SPRINT_CMS_V7_REALIDADE.md` — Análise
 - `SPRINT_V7_PROGRESS.md` — Progresso
 
-### 🔄 Próximos (Fase 3-5)
-- [ ] List Enhancement: numerada, ícones, drag-drop, importação
-- [ ] FAQ Enhancement: richtext nas respostas, busca, múltiplas aberturas
-- [ ] Testes E2E completos
-- [ ] Documentação final (SPEC, ROADMAP, guia cliente)
+### ✅ Entregáveis Concluídos (Fase 3: List Enhancement)
+
+#### 1. `ListBlockEditor.tsx` Refatorado
+- [x] Toggle para lista numerada (ordered)
+- [x] 3 estilos de ícones: default (•), checkmark (✓), arrow (→)
+- [x] Drag-drop para reordenar itens com `DragDropList`
+- [x] Importação em lote via `ImportModal`
+- [x] Remoção automática de duplicatas
+- [x] Botão "Limpar Tudo" com confirmação
+- [x] Preview em tempo real (<ul> ou <ol>)
+- [x] Validação robusta com `validateListContent()`
+
+#### 2. `CmsBlockRenderer.tsx` Atualizado
+- [x] Renderiza <ol> ou <ul> conforme `ordered`
+- [x] Renderiza ícones corretos (•, ✓, →)
+- [x] Classes Tailwind para estilos
+
+### ✅ Entregáveis Concluídos (Fase 4: FAQ Enhancement)
+
+#### 1. `FaqBlockEditor.tsx` Refatorado
+- [x] Toggle para permitir múltiplas aberturas simultâneas (`allowMultiple`)
+- [x] Campo de busca/filtro de perguntas em tempo real
+- [x] Comportamento diferente: sem múltiplas = accordion, com múltiplas = checklist
+- [x] Contador de caracteres: pergunta (200), resposta (5000)
+- [x] Importação em lote via `ImportModal`
+- [x] Remoção automática de duplicatas
+- [x] Suporte a quebras de linha nas respostas
+- [x] Validação robusta com `validateFAQContent()`
+
+#### 2. `CmsBlockRenderer.tsx` Atualizado
+- [x] Renderiza behavior `allowMultiple` correto
+- [x] Suporta quebras de linha (`whitespace-pre-wrap`)
+- [x] Chevron animado no summary
+
+### 🔄 Próximos (Fase 5)
+- [ ] Testes E2E completos (CTA, List, FAQ)
+- [ ] Validação de regressão
+- [ ] Documentação final (SPEC, ROADMAP)
 
 ---
 

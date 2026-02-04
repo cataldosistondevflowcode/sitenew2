@@ -12,6 +12,7 @@ import { ImageBlockEditor } from './editors/ImageBlockEditor';
 import { CtaBlockEditor } from './editors/CtaBlockEditor';
 import { ListBlockEditor } from './editors/ListBlockEditor';
 import { FaqBlockEditor } from './editors/FaqBlockEditor';
+import { BannerBlockEditor } from './editors/BannerBlockEditor';
 
 interface BlockEditorFactoryProps {
   block: CmsBlock;
@@ -88,6 +89,17 @@ export const BlockEditorFactory = ({
     case 'faq':
       return (
         <FaqBlockEditor
+          block={block}
+          onSaveDraft={onSaveDraft}
+          onPublish={onPublish}
+          isSaving={isSaving}
+          validateContent={validateContent}
+        />
+      );
+
+    case 'banner':
+      return (
+        <BannerBlockEditor
           block={block}
           onSaveDraft={onSaveDraft}
           onPublish={onPublish}

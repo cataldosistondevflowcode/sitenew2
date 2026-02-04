@@ -15,6 +15,8 @@ import { BlockEditorHeader } from './BlockEditorHeader';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { UrlInput } from './shared/UrlInput';
 import { validateCTAContent, ValidationError } from '@/utils/validation/blockValidators';
+import { ValidationFeedback } from '../ux/ValidationFeedback';
+import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 
 interface CtaBlockEditorProps {
   block: CmsBlock;
@@ -115,6 +117,28 @@ export const CtaBlockEditor = ({
   // Get color for preview
   const selectedStyle = CTA_STYLES.find((s) => s.value === style);
   const previewColor = selectedStyle?.color || '#D68E08';
+
+  // Atalhos de teclado
+  useKeyboardShortcuts({
+    shortcuts: [
+      {
+        key: 'save',
+        label: 'Salvar Rascunho',
+        description: 'Salva o CTA como rascunho',
+        combo: ['ctrl', 's'],
+        handler: () => canSave && handleSaveDraft(),
+        enabled: canSave,
+      },
+      {
+        key: 'publish',
+        label: 'Publicar',
+        description: 'Publica o CTA',
+        combo: ['ctrl', 'p'],
+        handler: () => canPublish && handlePublish(),
+        enabled: canPublish,
+      },
+    ],
+  });
 
   return (
     <Card className="mb-6">
@@ -260,26 +284,37 @@ export const CtaBlockEditor = ({
           </div>
         )}
 
-        {/* Validation Errors */}
+        {/* Validation Errors - com novo component */}
         {validationErrors.length > 0 && (
-          <div className="p-3 bg-red-50 border border-red-200 rounded text-sm text-red-800">
-            <p className="font-medium mb-1">Erros de validação:</p>
-            <ul className="space-y-1">
-              {validationErrors.map((error, idx) => (
-                <li key={idx} className="flex gap-2">
-                  <span>•</span>
-                  <span>{error.message}</span>
-                </li>
-              ))}
-            </ul>
+          <div className="space-y-2">
+            {validationErrors.map((error, idx) => (
+              <ValidationFeedback
+                key={idx}
+                status="error"
+                message={error.message}
+                suggestion={error.suggestion}
+                onDismiss={() => {
+                  setValidationErrors(validationErrors.filter((_, i) => i !== idx));
+                }}
+              />
+            ))}
           </div>
         )}
 
-        {/* Unsaved changes warning */}
+        {/* Unsaved changes warning - com novo component */}
         {isDirty && (
-          <div className="bg-yellow-50 border border-yellow-200 rounded p-3 text-sm text-yellow-800">
-            ⚠️ Você tem mudanças não salvas
-          </div>
+          <ValidationFeedback
+            status="warning"
+            message="Você tem mudanças não salvas"
+          />
+        )}
+
+        {/* Sucesso - salvo */}
+        {!isDirty && !hasErrors && block.content_draft && (
+          <ValidationFeedback
+            status="success"
+            message="✓ Rascunho salvo com sucesso"
+          />
         )}
 
         {/* Action buttons */}

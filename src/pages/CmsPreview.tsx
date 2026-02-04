@@ -3,31 +3,106 @@
  * Rota: /preview/:slug
  * 
  * Preview de página CMS em draft
- * Sprint CMS v1
+ * Sprint CMS v1 + v3 (Token de Preview)
  */
 
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useCmsContent } from '@/hooks/useCmsContent';
+import { usePreviewToken } from '@/hooks/usePreviewToken';
 import { CmsBlockRenderer } from '@/components/CmsBlockRenderer';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { AlertCircle, ArrowLeft, Loader2, Eye } from 'lucide-react';
-import { useEffect } from 'react';
+import { AlertCircle, ArrowLeft, Loader2, Eye, Clock, Link as LinkIcon } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 export default function CmsPreview() {
   const { slug } = useParams<{ slug: string }>();
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { user, isAdmin } = useAuth();
+  const { validateToken } = usePreviewToken();
 
-  // Redirecionar se não for admin
+  const [tokenAccess, setTokenAccess] = useState<boolean | null>(null);
+  const [tokenValidating, setTokenValidating] = useState(false);
+
+  // Verificar acesso: admin OU token válido
+  const token = searchParams.get('token');
+
   useEffect(() => {
-    if (!user) {
-      navigate('/admin/login');
-    } else if (!isAdmin) {
-      navigate('/');
-    }
-  }, [user, isAdmin, navigate]);
+    const checkAccess = async () => {
+      // Se é admin, tem acesso
+      if (user && isAdmin) {
+        setTokenAccess(true);
+        return;
+      }
+
+      // Se tem token na URL, validar
+      if (token) {
+        setTokenValidating(true);
+        const result = await validateToken(token);
+        setTokenValidating(false);
+
+        if (result && result.slug === slug) {
+          setTokenAccess(true);
+          return;
+        }
+      }
+
+      // Sem admin e sem token válido
+      if (!user) {
+        // Redirecionar para login apenas se não houver token
+        if (!token) {
+          navigate('/admin/login');
+        } else {
+          setTokenAccess(false);
+        }
+      } else if (!isAdmin) {
+        setTokenAccess(false);
+      }
+    };
+
+    checkAccess();
+  }, [user, isAdmin, token, slug, navigate, validateToken]);
+
+  // Validando token
+  if (tokenValidating) {
+    return (
+      <div className="container py-8 flex items-center justify-center min-h-[400px]">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
+          <p>Validando acesso...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Token inválido ou expirado
+  if (tokenAccess === false) {
+    return (
+      <div className="container py-8">
+        <Card className="border-red-200 bg-red-50 max-w-md mx-auto">
+          <CardContent className="pt-6 text-center">
+            <Clock className="w-12 h-12 text-red-500 mx-auto mb-4" />
+            <h3 className="font-semibold text-red-900 text-lg mb-2">Acesso Negado</h3>
+            <p className="text-sm text-red-800 mb-4">
+              {token 
+                ? 'O link de preview expirou ou é inválido.'
+                : 'Você não tem permissão para visualizar esta página.'
+              }
+            </p>
+            <Button
+              onClick={() => navigate('/admin/login')}
+              variant="outline"
+              size="sm"
+            >
+              Fazer Login
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   // Não pode ser undefined
   if (!slug) {
@@ -43,7 +118,7 @@ export default function CmsPreview() {
 
   const { page, blocks, loading, error } = useCmsContent(slug);
 
-  if (loading) {
+  if (loading || tokenAccess === null) {
     return (
       <div className="container py-8 flex items-center justify-center min-h-[400px]">
         <div className="flex flex-col items-center gap-4">
@@ -85,13 +160,24 @@ export default function CmsPreview() {
             </div>
 
             <div className="flex items-center gap-3">
-              <Button
-                onClick={() => navigate(`/admin/cms/pages/${page.slug}/edit`)}
-                variant="secondary"
-                size="sm"
-              >
-                ← Voltar para Edição
-              </Button>
+              {/* Indicador de acesso via token */}
+              {token && !isAdmin && (
+                <div className="bg-blue-500 px-3 py-1 rounded text-xs flex items-center gap-1">
+                  <LinkIcon className="w-3 h-3" />
+                  Acesso via link
+                </div>
+              )}
+
+              {/* Botão de voltar (só para admin) */}
+              {isAdmin && (
+                <Button
+                  onClick={() => navigate(`/admin/cms/pages/${page.slug}/edit`)}
+                  variant="secondary"
+                  size="sm"
+                >
+                  ← Voltar para Edição
+                </Button>
+              )}
 
               {page.status === 'draft' && (
                 <div className="bg-yellow-500 text-white px-3 py-1 rounded text-sm font-semibold">

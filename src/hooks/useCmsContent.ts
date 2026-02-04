@@ -211,7 +211,7 @@ export const useCmsContent = (pageSlug: string) => {
     }
   };
 
-  // Publicar bloco (draft → published)
+  // Publicar bloco (draft → published) usando função RPC atômica
   const publishBlock = async (blockId: number) => {
     try {
       setIsSaving(true);
@@ -232,32 +232,21 @@ export const useCmsContent = (pageSlug: string) => {
         throw new Error(`Validação falhou: ${validationErrors.join('; ')}`);
       }
 
-      // Salvar versão anterior se houver
-      if (block.content_published && Object.keys(block.content_published).length > 0) {
-        const { error: versionError } = await supabase
-          .from('cms_versions')
-          .insert({
-            entity_type: 'block',
-            entity_id: blockId,
-            version_number: 1, // TODO: incrementar versão
-            data_snapshot: block.content_published,
-            created_by: user?.id,
-          });
+      // Chamar função RPC atômica (Sprint v3)
+      const { data: rpcResult, error: rpcError } = await supabase
+        .rpc('publish_block_atomic', {
+          p_block_id: blockId,
+          p_user_id: user?.id || null,
+        });
 
-        if (versionError) console.warn('Erro ao salvar versão anterior:', versionError);
+      if (rpcError) {
+        throw new Error(`Erro no publish atômico: ${rpcError.message}`);
       }
 
-      // Publicar draft
-      const { error } = await supabase
-        .from('cms_blocks')
-        .update({
-          content_published: contentToPublish,
-          content_draft: null,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', blockId);
-
-      if (error) throw error;
+      // Verificar resultado da RPC
+      if (rpcResult && !rpcResult.success) {
+        throw new Error(rpcResult.error || 'Erro desconhecido no publish');
+      }
 
       // Atualizar estado local
       setBlocks((prev) =>
@@ -265,7 +254,7 @@ export const useCmsContent = (pageSlug: string) => {
           b.id === blockId
             ? {
                 ...b,
-                content_published: b.content_draft,
+                content_published: b.content_draft || b.content_published,
                 updated_at: new Date().toISOString(),
               }
             : b
@@ -274,33 +263,19 @@ export const useCmsContent = (pageSlug: string) => {
 
       // Atualizar status da página para published
       if (page) {
-        const { error: pageError } = await supabase
-          .from('cms_pages')
-          .update({
-            status: 'published',
-            published_at: new Date().toISOString(),
-            updated_by: user?.id,
-            updated_at: new Date().toISOString(),
-          })
-          .eq('id', page.id);
-
-        if (pageError) console.warn('Erro ao atualizar status da página:', pageError);
-        else {
-          setPage((prev) =>
-            prev
-              ? {
-                  ...prev,
-                  status: 'published',
-                  published_at: new Date().toISOString(),
-                  updated_at: new Date().toISOString(),
-                }
-              : null
-          );
-        }
+        setPage((prev) =>
+          prev
+            ? {
+                ...prev,
+                status: 'published',
+                published_at: new Date().toISOString(),
+                updated_at: new Date().toISOString(),
+              }
+            : null
+        );
       }
 
-      // Registrar audit log
-      await createAuditLog('publish', 'block', blockId, 'Bloco publicado');
+      // Audit log já é registrado pela função RPC (não precisa duplicar)
 
       toast({
         title: 'Sucesso',

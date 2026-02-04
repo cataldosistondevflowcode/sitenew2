@@ -12,10 +12,11 @@ import { useCmsContent } from '@/hooks/useCmsContent';
 import { BlockEditorFactory } from '@/components/admin/BlockEditorFactory';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { AlertCircle, ArrowLeft, Loader2, Eye, ChevronDown, ChevronUp } from 'lucide-react';
+import { AlertCircle, ArrowLeft, Loader2, Eye, ChevronDown, ChevronUp, Share2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { LivePreview } from '@/components/admin/ux/LivePreview';
 import { BlockStatusIndicator } from '@/components/admin/ux/BlockStatusIndicator';
+import { SharePreviewButton } from '@/components/admin/SharePreviewButton';
 
 export default function AdminCmsPageEdit() {
   const { slug } = useParams<{ slug: string }>();
@@ -137,6 +138,9 @@ export default function AdminCmsPageEdit() {
                 <Eye className="w-4 h-4 mr-2" />
                 Nova Aba
               </Button>
+
+              {/* Botão de compartilhar preview (Sprint v3) */}
+              <SharePreviewButton pageId={page.id} pageSlug={page.slug} />
             </div>
           </div>
         </div>

@@ -155,6 +155,13 @@ _Base: prazo estimado ~2 semanas (com dependências externas)._
 > **Documento de especificação:** `CMS_ADMIN_SPEC.md`
 > **Decisão:** `DECISIONS.md` — DEC-ADM-001
 > **Técnica:** Ralph Wiggum (incrementos mínimos testáveis)
+> **Rastreamento completo:** `CMS_RASTREAMENTO_COMPLETO.md` (145 campos por página)
+> **Documentos de suporte:**
+> - `CMS_RESUMO_EXECUTIVO.md` — Para stakeholders
+> - `CMS_GUIA_IMPLEMENTACAO_UX.md` — Passo a passo
+> - `CMS_VISUALIZACAO_UX.md` — Fluxo de interações
+> - `CMS_INDICE_ARQUIVOS.md` — Navegação por papel
+> - `README_CMS_COMPLETO.md` — Visão geral
 
 ---
 
@@ -275,6 +282,66 @@ _Base: prazo estimado ~2 semanas (com dependências externas)._
 - [x] Feedback visual claro de mudanças
 
 **Testes E2E:** 97% sucesso (ver `TESTE_RESULTADOS_CMS_V8.md`)
+
+---
+
+### Sprint CMS v9 — UX Sincronizada + Rastreamento Completo ⭐ PRONTA PARA INICIAR
+**Status:** 📋 PLANEJADA  
+**Prioridade:** Alta  
+**Dependências:** Sprint CMS v8, v3, v4 (concluídas)  
+**Data planejada:** 2026-02-04
+
+**Objetivo:** 
+1. Implementar split-view sincronizado com auto-scroll e highlight
+2. Rastrear 100% dos campos editáveis (145 campos por 8 páginas)
+3. Definir roadmap incrementalizado para 100% de cobertura CMS
+
+**Escopo Fase 1 (HOJE — 1 hora):**
+- [x] Componente `SyncedLivePreview.tsx` (auto-scroll + highlight + responsive)
+- [x] Hook `useSyncedBlockEditor.ts` (sincronização editor ↔ preview)
+- [ ] Integrar em `AdminCmsPageEdit.tsx`
+- [ ] Testar: auto-scroll, highlight, toggle de tamanho
+
+**Escopo Fase 2 (Próxima — 1 hora):**
+- [x] `EnhancedEditorStatusBar.tsx` (feedback visual, contador, atalhos)
+- [ ] Integrar no layout
+- [ ] Testar: validação contextual
+
+**Escopo Fase 3 (Semana — 2 horas):**
+- [x] `CtaFieldEditor.tsx` (editor composto)
+- [ ] `CardListEditor.tsx` (cards com drag-drop)
+- [ ] `StepListEditor.tsx` (passos)
+
+**Mapa de Cobertura CMS — Baseline (2% de 145 campos):**
+- Home: 34 campos (3% ✅)
+- Quem Somos: 26 campos (0% ❌)
+- Assessoria: 22 campos (0% ❌)
+- Direito: 18 campos (0% ❌)
+- Casos: 16 campos (0% ❌)
+- Blog: 4 campos (0% ❌)
+- Contato: 10 campos (0% ❌)
+- Regionais: 15 campos (13% ✅)
+- **TOTAL: 145 campos (2%)**
+
+**Roadmap para 100% (próximos 3 sprints):**
+- Sprint v10: Home → 25%
+- Sprint v11: Quem Somos + Editores compostos → 50%
+- Sprint v12: Regionais + finalizações → 100%
+
+**Documentos de suporte:**
+- `CMS_RASTREAMENTO_COMPLETO.md` — Mapa técnico de 145 campos
+- `CMS_GUIA_IMPLEMENTACAO_UX.md` — Passo a passo (Fase 1-3)
+- `CMS_VISUALIZACAO_UX.md` — Fluxo de interações
+- `CMS_RESUMO_EXECUTIVO.md` — Para stakeholders
+- `README_CMS_COMPLETO.md` — Visão geral
+
+**Critérios de aceite:**
+- [ ] Auto-scroll para bloco ativo
+- [ ] Highlight amarelo no bloco
+- [ ] Toggle de tamanho (mobile/tablet/desktop)
+- [ ] Status bar com campo ativo
+- [ ] Contador de mudanças
+- [ ] Validação contextual
 
 ---
 

@@ -722,6 +722,44 @@ CREATE POLICY "cms_audit_log_admin_insert" ON cms_audit_log
 
 ---
 
+## 11. Sprint CMS v9 — Análise + Componentes Prontos ⭐ NOVO
+
+**Status:** Pronto para implementação (2026-02-04)
+
+**Documentação Completa:**
+1. `CMS_RASTREAMENTO_COMPLETO.md` — Mapa de 145 campos por página
+2. `CMS_RESUMO_EXECUTIVO.md` — Executivo + ROI (60% tempo)
+3. `CMS_GUIA_IMPLEMENTACAO_UX.md` — Passo a passo (Fase 1-3)
+4. `CMS_VISUALIZACAO_UX.md` — Fluxo interações
+5. `CMS_INDICE_ARQUIVOS.md` — Navegação por papel
+6. `README_CMS_COMPLETO.md` — Visão geral
+
+**Componentes Prontos:**
+- `SyncedLivePreview.tsx` — Auto-scroll + highlight
+- `useSyncedBlockEditor.ts` — Hook sincronização
+- `EnhancedEditorStatusBar.tsx` — Status bar
+- `CtaFieldEditor.tsx` — Editor composto
+
+**Roadmap 4 Sprints:**
+- v9: UX sync → 2%+UX ✅
+- v10: Home → 25%
+- v11: Quem Somos → 50%
+- v12: Regionais → 100%
+
+---
+
+## 12. Changelog
+
+| Data | Versão | Alteração |
+|------|--------|-----------|
+| 2026-02-04 | 1.1 | Sprint CMS v9 integrada (UX + 145 campos + roadmap 100%) |
+| 2026-02-03 | 1.0 | Criação do documento |
+
+---
+
+_Documento criado seguindo SDD._
+_Sprint CMS v9 pronta para implementação imediata._
+
 ## 10. Referências
 
 - `DECISIONS.md` — DEC-ADM-001 (decisão de usar Supabase)

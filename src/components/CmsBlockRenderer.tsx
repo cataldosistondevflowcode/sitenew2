@@ -49,12 +49,20 @@ export const CmsBlockRenderer = ({ block, isPreview = false }: CmsBlockRendererP
         <div className="my-6">
           <a
             href={content.url}
+            target={content.target === '_blank' ? '_blank' : undefined}
+            rel={content.target === '_blank' ? 'noopener noreferrer' : undefined}
             className={`inline-block px-6 py-3 rounded font-semibold transition ${
               content.style === 'primary'
                 ? 'bg-[#D68E08] text-white hover:bg-[#B87A07]'
                 : content.style === 'secondary'
                   ? 'border-2 border-[#D68E08] text-[#D68E08] hover:bg-[#D68E08] hover:text-white'
-                  : 'bg-green-600 text-white hover:bg-green-700'
+                  : content.style === 'warning'
+                    ? 'bg-orange-500 text-white hover:bg-orange-600'
+                    : content.style === 'danger'
+                      ? 'bg-red-600 text-white hover:bg-red-700'
+                      : content.style === 'success'
+                        ? 'bg-green-600 text-white hover:bg-green-700'
+                        : 'bg-[#D68E08] text-white hover:bg-[#B87A07]'
             }`}
           >
             {content.text}

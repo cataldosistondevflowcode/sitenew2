@@ -1,6 +1,94 @@
 # CHANGELOG.md
 _Data: 2026-02-03 | Última atualização: 2026-02-03_
 
+## 2026-02-03 (v3.7.0) — Sprint CMS v7: Melhorias de UX & Validação Avançada 🚀
+
+### Status: EM ANDAMENTO (Fase 1-2 Concluída)
+
+**Objetivo:** Melhorar UX dos editores CTA/List/FAQ com validação robusta, drag-drop, importação em lote.
+
+### ✅ Entregáveis Concluídos (Fase 1: Componentes Compartilhados)
+
+#### 1. Componente `UrlInput.tsx` (NOVO)
+- [x] Validação em tempo real de URLs (http://, https://, mailto:, tel:, /, #)
+- [x] Ícone de status visual (✓/✗)
+- [x] Sugestões automáticas de correção
+- [x] Mensagens de erro contextuais
+- [x] Helper text com exemplos
+
+#### 2. Componente `DragDropList.tsx` (NOVO)
+- [x] Reordenar itens com drag-and-drop
+- [x] Remover itens com 1 clique
+- [x] Edição inline de itens (opcional)
+- [x] Feedback visual durante drag
+- [x] Mobile-friendly (touch events)
+
+#### 3. Componente `ImportModal.tsx` (NOVO)
+- [x] Importação em lote (texto, JSON, pares Q|A)
+- [x] Preview dos itens antes de importar
+- [x] Validação de formato automática
+- [x] Suporte a múltiplos formatos
+
+#### 4. Validador `validateUrl.ts` (NOVO)
+- [x] Validação de 4 tipos de URLs
+- [x] Detecção automática de tipo
+- [x] Mensagens de erro + sugestões
+- [x] Regex seguro para email/telefone
+
+#### 5. Validadores `blockValidators.ts` (NOVO)
+- [x] `validateCTAContent()` — Valida blocos CTA
+- [x] `validateListContent()` — Valida blocos List
+- [x] `validateFAQContent()` — Valida blocos FAQ
+- [x] `validateTextContent()` — Valida blocos Text
+- [x] `validateRichTextContent()` — Valida blocos RichText
+- [x] `validateImageContent()` — Valida blocos Image
+- [x] Interface `ValidationError` com field/message/type
+- [x] Funções helpers: `hasValidationErrors()`, `getValidationErrors()`, `getValidationWarnings()`
+
+### ✅ Entregáveis Concluídos (Fase 2: CTA Enhancement)
+
+#### 1. `CtaBlockEditor.tsx` Refatorado
+- [x] Usa `UrlInput` com validação em tempo real
+- [x] Campo `target` novo (_self, _blank)
+- [x] 5 estilos: primary, secondary, warning, danger, success
+- [x] Preview responsivo (mobile/tablet/desktop)
+- [x] Validação robusta com `validateCTAContent()`
+- [x] Mensagens de erro detalhadas em seção visível
+- [x] Contador de caracteres para texto
+- [x] Botões inteligentes (desabilitados se inválido)
+
+#### 2. `CmsBlockRenderer.tsx` Atualizado
+- [x] Renderiza novo campo `target` (noopener noreferrer)
+- [x] Suporta novos estilos (warning, danger, success)
+- [x] Classes Tailwind para cores
+
+### 📊 Métricas
+- **Linhas de código novas:** ~1.500
+- **Componentes novos:** 4 (UrlInput, DragDropList, ImportModal, Validators)
+- **Funcionalidades:** 15+
+- **Arquivos criados:** 5
+- **Arquivos modificados:** 2
+
+### 📝 Arquivos Criados/Modificados
+- `src/components/admin/editors/shared/UrlInput.tsx` — Novo
+- `src/components/admin/editors/shared/DragDropList.tsx` — Novo
+- `src/components/admin/editors/shared/ImportModal.tsx` — Novo
+- `src/utils/validation/validateUrl.ts` — Novo
+- `src/utils/validation/blockValidators.ts` — Novo
+- `src/components/admin/editors/CtaBlockEditor.tsx` — Melhorado
+- `src/components/CmsBlockRenderer.tsx` — Melhorado
+- `cataldo_sdd_pack/SPRINT_CMS_V7_FINAL.md` — Documentação
+- `cataldo_sdd_pack/SPRINT_CMS_V7_REALIDADE.md` — Análise
+- `SPRINT_V7_PROGRESS.md` — Progresso
+
+### 🔄 Próximos (Fase 3-5)
+- [ ] List Enhancement: numerada, ícones, drag-drop, importação
+- [ ] FAQ Enhancement: richtext nas respostas, busca, múltiplas aberturas
+- [ ] Testes E2E completos
+- [ ] Documentação final (SPEC, ROADMAP, guia cliente)
+
+---
+
 ## 2026-02-03 (v3.6.0) — Sprint CMS v6: RichText Editor com TipTap ✅
 
 ### Status: IMPLEMENTADO

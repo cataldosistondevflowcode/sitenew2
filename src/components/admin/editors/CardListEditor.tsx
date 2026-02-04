@@ -18,12 +18,14 @@ import { BlockEditorHeader } from './BlockEditorHeader';
 import { ValidationFeedback } from '../ux/ValidationFeedback';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { Plus, Trash2, GripVertical, ChevronUp, ChevronDown, Award, Shield, Headset, Star, Heart, Zap } from 'lucide-react';
+import { AssetSelector } from '../AssetSelector';
 
 interface CardItem {
   title: string;
   description: string;
   icon?: string;
   image_url?: string;
+  image_alt?: string;
   link?: string;
 }
 
@@ -57,6 +59,8 @@ export const CardListEditor = ({
   const [isDirty, setIsDirty] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
+  const [selectorOpen, setSelectorOpen] = useState(false);
+  const [selectingIndex, setSelectingIndex] = useState<number | null>(null);
 
   // Detectar dirty state
   useEffect(() => {
@@ -91,6 +95,22 @@ export const CardListEditor = ({
   const handleUpdateCard = (index: number, field: keyof CardItem, value: string) => {
     const updated = [...items];
     updated[index] = { ...updated[index], [field]: value };
+    setItems(updated);
+  };
+
+  const handleOpenImageSelector = (index: number) => {
+    setSelectingIndex(index);
+    setSelectorOpen(true);
+  };
+
+  const handleSelectAsset = (url: string, alt?: string) => {
+    if (selectingIndex === null) return;
+    const updated = [...items];
+    updated[selectingIndex] = {
+      ...updated[selectingIndex],
+      image_url: url,
+      image_alt: alt || updated[selectingIndex].image_alt,
+    };
     setItems(updated);
   };
 
@@ -182,10 +202,11 @@ export const CardListEditor = ({
   };
 
   return (
-    <Card className="mb-6">
-      <BlockEditorHeader block={block} isPublished={isPublished} />
+    <>
+      <Card className="mb-6">
+        <BlockEditorHeader block={block} isPublished={isPublished} />
 
-      <CardContent className="space-y-4">
+        <CardContent className="space-y-4">
         {/* Lista de Cards */}
         <div className="space-y-3">
           {items.map((card, index) => (
@@ -269,6 +290,46 @@ export const CardListEditor = ({
                     />
                   </div>
 
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor={`card-image-${index}`}>Imagem (opcional)</Label>
+                      <div className="flex gap-2">
+                        <Input
+                          id={`card-image-${index}`}
+                          value={card.image_url || ''}
+                          onChange={(e) => handleUpdateCard(index, 'image_url', e.target.value)}
+                          placeholder="https://... ou selecione na biblioteca"
+                        />
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={() => handleOpenImageSelector(index)}
+                        >
+                          Biblioteca
+                        </Button>
+                      </div>
+                      {card.image_url ? (
+                        <div className="mt-2 border rounded bg-gray-50 p-2">
+                          <img
+                            src={card.image_url}
+                            alt={card.image_alt || card.title || 'Imagem do card'}
+                            className="w-full max-h-40 object-cover rounded"
+                          />
+                        </div>
+                      ) : null}
+                    </div>
+
+                    <div>
+                      <Label htmlFor={`card-image-alt-${index}`}>Alt da imagem (opcional)</Label>
+                      <Input
+                        id={`card-image-alt-${index}`}
+                        value={card.image_alt || ''}
+                        onChange={(e) => handleUpdateCard(index, 'image_alt', e.target.value)}
+                        placeholder="Descricao para SEO/acessibilidade"
+                      />
+                    </div>
+                  </div>
+
                   <div>
                     <Label htmlFor={`card-icon-${index}`}>Icone</Label>
                     <div className="flex gap-2 flex-wrap mt-1">
@@ -318,6 +379,13 @@ export const CardListEditor = ({
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               {items.map((card, idx) => (
                 <div key={idx} className="p-4 bg-white rounded-lg border shadow-sm">
+                  {card.image_url ? (
+                    <img
+                      src={card.image_url}
+                      alt={card.image_alt || card.title || 'Imagem do card'}
+                      className="w-full h-24 object-cover rounded mb-3"
+                    />
+                  ) : null}
                   <div className="flex items-center gap-2 mb-2">
                     {renderIconPreview(card.icon)}
                     <h4 className="font-semibold text-sm">{card.title}</h4>
@@ -362,7 +430,19 @@ export const CardListEditor = ({
             {isPublishing ? 'Publicando...' : 'Publicar'}
           </Button>
         </div>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+
+      <AssetSelector
+        open={selectorOpen}
+        onOpenChange={(open) => {
+          if (!open) setSelectingIndex(null);
+          setSelectorOpen(open);
+        }}
+        onSelectAsset={handleSelectAsset}
+      />
+    </>
   );
 };
+
+

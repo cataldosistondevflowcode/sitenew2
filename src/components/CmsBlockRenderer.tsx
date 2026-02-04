@@ -46,6 +46,15 @@ export const CmsBlockRenderer = ({ block, isPreview = false }: CmsBlockRendererP
               key={index}
               className="p-6 bg-white rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-shadow"
             >
+              {card.image_url ? (
+                <img
+                  src={card.image_url}
+                  alt={card.image_alt || card.title || 'Imagem do card'}
+                  className="w-full h-36 object-cover rounded-lg mb-4 border"
+                  loading="lazy"
+                />
+              ) : null}
+
               <div className="flex items-center gap-3 mb-4">
                 <div className="p-3 bg-primary/10 rounded-lg">
                   <IconComponent className="w-6 h-6 text-primary" />

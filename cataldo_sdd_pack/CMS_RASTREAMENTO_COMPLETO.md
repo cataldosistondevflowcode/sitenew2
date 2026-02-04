@@ -72,44 +72,28 @@
 |-------|-----------|------|--------|------------|
 | **HERO** | | | | |
 | Título principal | `hero_title` | text | ✅ Impl | H1 do site |
-| Subtítulo/Descrição | `hero_subtitle` | richtext | ❌ Falta | Texto abaixo do H1 |
-| Imagem de fundo | `hero_image` | image | ❌ Falta | Background do hero |
+| Subtítulo/Descrição | `hero_subtitle` | richtext | ✅ Impl | Texto abaixo do H1 |
+| Imagem de fundo | `hero_image` | image | ✅ Impl | Background do hero |
 | **CTA HERO** | | | | |
-| Botão primário - texto | `hero_cta_primary_text` | text | ❌ Falta | Ex: "Buscar Imóveis" |
-| Botão primário - URL | `hero_cta_primary_url` | text | ❌ Falta | Link do botão |
-| Botão secundário - texto | `hero_cta_secondary_text` | text | ❌ Falta | Ex: "Ver Mais" |
-| Botão secundário - URL | `hero_cta_secondary_url` | text | ❌ Falta | Link secundário |
+| Botão primário (composto) | `hero_cta_primary` | cta | ✅ Impl | `{ text, url, style, target? }` |
+| Botão secundário (composto) | `hero_cta_secondary` | cta | ✅ Impl | `{ text, url, style, target? }` |
 | **SEÇÃO DESTAQUE (cards)** | | | | |
-| Título seção | `highlight_section_title` | text | ❌ Falta | H2 acima dos cards |
-| Card 1 - Título | `highlight_card_1_title` | text | ❌ Falta | Título do card |
-| Card 1 - Descrição | `highlight_card_1_desc` | richtext | ❌ Falta | Texto do card |
-| Card 1 - Ícone/Imagem | `highlight_card_1_image` | image | ❌ Falta | Imagem do card |
-| Card 2 - Título | `highlight_card_2_title` | text | ❌ Falta | Idem |
-| Card 2 - Descrição | `highlight_card_2_desc` | richtext | ❌ Falta | Idem |
-| Card 2 - Ícone/Imagem | `highlight_card_2_image` | image | ❌ Falta | Idem |
-| Card 3 - Título | `highlight_card_3_title` | text | ❌ Falta | Idem |
-| Card 3 - Descrição | `highlight_card_3_desc` | richtext | ❌ Falta | Idem |
-| Card 3 - Ícone/Imagem | `highlight_card_3_image` | image | ❌ Falta | Idem |
+| Título seção | `highlight_section_title` | text | ✅ Impl | H2 acima dos cards |
+| Cards (lista composta) | `highlight_cards` | list/cards | ✅ Impl | `items[{ title, description, icon?, image_url?, image_alt?, link? }]` |
 | **SEÇÃO "COMO FUNCIONA"** | | | | |
-| Título | `how_it_works_title` | text | ❌ Falta | H2 |
-| Descrição | `how_it_works_desc` | richtext | ❌ Falta | Texto introdutório |
-| Passo 1 - Título | `how_it_works_step_1_title` | text | ❌ Falta | |
-| Passo 1 - Descrição | `how_it_works_step_1_desc` | richtext | ❌ Falta | |
-| Passo 2 - Título | `how_it_works_step_2_title` | text | ❌ Falta | |
-| Passo 2 - Descrição | `how_it_works_step_2_desc` | richtext | ❌ Falta | |
-| Passo 3 - Título | `how_it_works_step_3_title` | text | ❌ Falta | |
-| Passo 3 - Descrição | `how_it_works_step_3_desc` | richtext | ❌ Falta | |
+| Título | `how_it_works_title` | text | ✅ Impl | H2 |
+| Descrição | `how_it_works_desc` | richtext | ✅ Impl | Texto introdutório |
+| Passos (lista composta) | `how_it_works_steps` | list/steps | ✅ Impl | `items[{ number, title, description }]` |
 | **SEÇÃO "SOBRE"** | | | | |
-| Título | `about_section_title` | text | ❌ Falta | H2 |
-| Descrição | `about_section_desc` | richtext | ❌ Falta | |
-| Imagem | `about_section_image` | image | ❌ Falta | |
+| Título | `about_section_title` | text | ✅ Impl | H2 |
+| Descrição | `about_section_desc` | richtext | ✅ Impl | |
+| Imagem | `about_section_image` | image | ✅ Impl | |
 | **CTA FINAL** | | | | |
-| Título | `final_cta_title` | text | ❌ Falta | |
-| Descrição | `final_cta_desc` | richtext | ❌ Falta | |
-| Botão - Texto | `final_cta_button_text` | text | ❌ Falta | |
-| Botão - URL | `final_cta_button_url` | text | ❌ Falta | |
+| Título | `final_cta_title` | text | ✅ Impl | |
+| Descrição | `final_cta_desc` | richtext | ✅ Impl | |
+| Botão (composto) | `final_cta_button` | cta | ✅ Impl | `{ text, url, style, target? }` |
 
-**Total: 34 campos | Implementados: 1 | Faltam: 33**
+**Total: 34 campos (representados por 16 blocos) | Implementados: 34/34 (100%) | Faltam: 0**
 
 ---
 
@@ -118,22 +102,17 @@
 | Campo | Block Key | Tipo | Status | Observações |
 |-------|-----------|------|--------|------------|
 | **HERO** | | | | |
-| Título | `quem_somos_hero_title` | text | ❌ Falta | |
-| Subtítulo | `quem_somos_hero_subtitle` | richtext | ❌ Falta | |
-| Imagem | `quem_somos_hero_image` | image | ❌ Falta | |
+| Título | `quem_somos_hero_title` | text | ✅ Impl | |
+| Subtítulo | `quem_somos_hero_subtitle` | richtext | ✅ Impl | |
+| Imagem | `quem_somos_hero_image` | image | ✅ Impl | |
 | **CONTEÚDO PRINCIPAL** | | | | |
-| Título seção | `quem_somos_content_title` | text | ❌ Falta | |
-| Parágrafo 1 | `quem_somos_para1` | richtext | ❌ Falta | |
-| Parágrafo 2 | `quem_somos_para2` | richtext | ❌ Falta | |
-| Parágrafo 3 | `quem_somos_para3` | richtext | ❌ Falta | |
+| Título seção | `quem_somos_content_title` | text | ✅ Impl | |
+| Parágrafo 1 | `quem_somos_para1` | richtext | ✅ Impl | |
+| Parágrafo 2 | `quem_somos_para2` | richtext | ✅ Impl | |
+| Parágrafo 3 | `quem_somos_para3` | richtext | ✅ Impl | |
 | **VALORES** | | | | |
-| Título | `values_title` | text | ❌ Falta | |
-| Valor 1 - Título | `value_1_title` | text | ❌ Falta | |
-| Valor 1 - Descrição | `value_1_desc` | richtext | ❌ Falta | |
-| Valor 2 - Título | `value_2_title` | text | ❌ Falta | |
-| Valor 2 - Descrição | `value_2_desc` | richtext | ❌ Falta | |
-| Valor 3 - Título | `value_3_title` | text | ❌ Falta | |
-| Valor 3 - Descrição | `value_3_desc` | richtext | ❌ Falta | |
+| Título | `values_title` | text | ✅ Impl | |
+| Valores (lista composta) | `values_cards` | list/cards | ✅ Impl | `items[{ title, description, icon?, image_url?, image_alt?, link? }]` |
 | **DEPOIMENTOS** | | | | |
 | Título | `testimonials_title` | text | ❌ Falta | |
 | Depoimento 1 - Texto | `testimonial_1_text` | richtext | ❌ Falta | |
@@ -141,12 +120,11 @@
 | Depoimento 2 - Texto | `testimonial_2_text` | richtext | ❌ Falta | |
 | Depoimento 2 - Autor | `testimonial_2_author` | text | ❌ Falta | |
 | **CTA FINAL** | | | | |
-| Título | `quem_somos_final_cta_title` | text | ❌ Falta | |
-| Texto | `quem_somos_final_cta_text` | richtext | ❌ Falta | |
-| Botão - Texto | `quem_somos_final_cta_button` | text | ❌ Falta | |
-| Botão - URL | `quem_somos_final_cta_url` | text | ❌ Falta | |
+| Título | `quem_somos_final_cta_title` | text | ✅ Impl | |
+| Texto | `quem_somos_final_cta_text` | richtext | ✅ Impl | |
+| Botão (composto) | `quem_somos_final_cta_button` | cta | ✅ Impl | `{ text, url, style, target? }` |
 
-**Total: 26 campos | Implementados: 0 | Faltam: 26**
+**Total: 26 campos | Implementados: 18 | Faltam: 8**
 
 ---
 
@@ -312,15 +290,15 @@
 
 | Página | Total Campos | Implementados | Faltam | % Cobertura |
 |--------|----------|---|---|---|
-| **Home** | 34 | 1 | 33 | 3% |
-| **Quem Somos** | 26 | 0 | 26 | 0% |
-| **Assessoria** | 22 | 0 | 22 | 0% |
-| **Direito Imobiliário** | 18 | 0 | 18 | 0% |
-| **Casos Reais** | 16 | 0 | 16 | 0% |
-| **Blog** | 4 | 0 | 4 | 0% |
-| **Contato** | 10 | 0 | 10 | 0% |
+| **Home** | 34 | 34 | 0 | 100% |
+| **Quem Somos** | 26 | 18 | 8 | 69% |
+| **Assessoria** | 22 | 3 | 19 | 14% |
+| **Direito Imobiliário** | 18 | 3 | 15 | 17% |
+| **Casos Reais** | 16 | 3 | 13 | 19% |
+| **Blog** | 4 | 3 | 1 | 75% |
+| **Contato** | 10 | 3 | 7 | 30% |
 | **Regionais** | 15 | 2 | 13 | 13% |
-| **TOTAL** | **145** | **3** | **142** | **2%** |
+| **TOTAL** | **145** | **69** | **76** | **48%** |
 
 ---
 

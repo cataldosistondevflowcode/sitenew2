@@ -432,6 +432,55 @@ _Base: prazo estimado ~2 semanas (com dependências externas)._
 - [x] Blocos publicados aparecem nas paginas
 - [x] Fallback seguro quando CMS indisponivel/vazio
 
+---
+
+### Sprint CMS v13 — Home 100% (campos) + Qualidade (cards/steps)
+**Status:** CONCLUIDA  
+**Prioridade:** Alta  
+**Dependencias:** Sprint CMS v12 (concluida)  
+**Conclusao:** 2026-02-04
+
+**Objetivo:** Fechar os 34 campos da Home via blocos compostos e melhorar validacao de listas compostas.
+
+**Entregaveis:**
+- [x] `CardListEditor`: imagem por card (`image_url`, `image_alt`) + selecao via `AssetSelector`
+- [x] `CmsBlockRenderer`: renderiza imagem do card quando presente
+- [x] `useCmsContent`: validacao robusta para cards/steps antes de salvar/publicar
+- [x] Docs: `CMS_RASTREAMENTO_COMPLETO.md` atualizado com cobertura real (Home 100%)
+
+**Criterios de aceite:**
+- [x] Cards podem ter imagem (URL manual ou biblioteca)
+- [x] Preview e site publico renderizam cards com imagem
+- [x] Publish bloqueia conteudo invalido
+- [x] `npm run build` passa
+
+---
+
+### Sprint CMS v14 — Regionais via CMS (conteudo complementar)
+**Status:** PLANEJADA  
+**Prioridade:** Media  
+**Dependencias:** Sprint CMS v13
+
+**Objetivo:** Levar para CMS o conteudo complementar das paginas regionais (texto/CTA/SEO local), mantendo listagem/filtro intactos.
+
+---
+
+### Sprint CMS v15 — Hardening (RLS/roles/seguranca)
+**Status:** PLANEJADA  
+**Prioridade:** Alta  
+**Dependencias:** Sprint CMS v14
+
+**Objetivo:** Refinar permissoes (admin real), revisar RLS e evitar leaks de conteudo.
+
+---
+
+### Sprint CMS v16 — Alinhamento final (docs, gaps, testes)
+**Status:** PLANEJADA  
+**Prioridade:** Media  
+**Dependencias:** Sprint CMS v15
+
+**Objetivo:** Fechar lacunas docs vs impl (`CMS_ADMIN_GAPS_SPEC_VS_IMPL.md`), atualizar SPEC/ACs e executar checklist do `TEST_PLAN.md`.
+
 ### Sprint CMS v3 — Preview Completo + Publish Robusto
 **Status:** ✅ CONCLUÍDA  
 **Prioridade:** Média  

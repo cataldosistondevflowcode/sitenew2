@@ -1,6 +1,22 @@
 # CHANGELOG.md
 _Data: 2026-02-04 | Ultima atualizacao: 2026-02-04_
 
+## 2026-02-04 — Sprint CMS v13: Home 100% (campos) + Qualidade (cards/steps)
+
+### Status: IMPLEMENTADA
+
+**Objetivo:** Completar os campos da Home via blocos compostos e elevar a qualidade com validacao robusta.
+
+### Entregaveis
+- [x] `CardListEditor`: suporte a `image_url`/`image_alt` + selecao por `AssetSelector`
+- [x] `CmsBlockRenderer`: renderizacao de imagem por card quando presente
+- [x] `useCmsContent`: validacao de listas compostas (cards/steps) antes de salvar/publicar
+- [x] Docs: `CMS_RASTREAMENTO_COMPLETO.md` atualizado (Home 34/34)
+- [x] SDD: artefatos em `docs/sdd/features/cms-v13-home-coverage/`
+- [x] `npm run build` passa
+
+---
+
 ## 2026-02-04 — Sprint CMS v12: Paginas institucionais publicas
 
 ### Status: IMPLEMENTADA

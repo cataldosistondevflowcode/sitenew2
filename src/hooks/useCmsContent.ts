@@ -109,6 +109,25 @@ export const useCmsContent = (pageSlug: string) => {
   const validateBlockContent = (block: CmsBlock, content: Record<string, any>): string[] => {
     const errors: string[] = [];
 
+    const isCardList =
+      block.block_key.includes('_cards') || block.block_key.includes('highlight_cards') || block.block_key.includes('values_cards');
+    const isStepList =
+      block.block_key.includes('_steps') || block.block_key.includes('how_it_works_steps');
+
+    const isValidUrlOrPath = (value: unknown) => {
+      if (typeof value !== 'string') return false;
+      const v = value.trim();
+      if (!v) return false;
+      if (v.startsWith('/')) return true;
+      try {
+        // eslint-disable-next-line no-new
+        new URL(v);
+        return true;
+      } catch {
+        return false;
+      }
+    };
+
     switch (block.block_type) {
       case 'text':
       case 'richtext':
@@ -141,6 +160,47 @@ export const useCmsContent = (pageSlug: string) => {
       case 'list':
         if (!Array.isArray(content.items) || content.items.length === 0) {
           errors.push('Lista precisa de pelo menos um item');
+          break;
+        }
+
+        // Listas compostas (cards/steps) — Sprint v13
+        if (isCardList) {
+          content.items.forEach((item: any, idx: number) => {
+            if (!item || typeof item !== 'object') {
+              errors.push(`Card #${idx + 1}: formato inválido`);
+              return;
+            }
+            if (!item.title || typeof item.title !== 'string' || !item.title.trim()) {
+              errors.push(`Card #${idx + 1}: título é obrigatório`);
+            }
+            if (!item.description || typeof item.description !== 'string' || !item.description.trim()) {
+              errors.push(`Card #${idx + 1}: descrição é obrigatória`);
+            }
+            if (item.image_url && !isValidUrlOrPath(item.image_url)) {
+              errors.push(`Card #${idx + 1}: image_url inválida`);
+            }
+            if (item.link && !isValidUrlOrPath(item.link)) {
+              errors.push(`Card #${idx + 1}: link inválido`);
+            }
+          });
+        }
+
+        if (isStepList) {
+          content.items.forEach((item: any, idx: number) => {
+            if (!item || typeof item !== 'object') {
+              errors.push(`Passo #${idx + 1}: formato inválido`);
+              return;
+            }
+            if (typeof item.number !== 'number' || !Number.isFinite(item.number) || item.number <= 0) {
+              errors.push(`Passo #${idx + 1}: número inválido`);
+            }
+            if (!item.title || typeof item.title !== 'string' || !item.title.trim()) {
+              errors.push(`Passo #${idx + 1}: título é obrigatório`);
+            }
+            if (!item.description || typeof item.description !== 'string' || !item.description.trim()) {
+              errors.push(`Passo #${idx + 1}: descrição é obrigatória`);
+            }
+          });
         }
         break;
 

@@ -6,7 +6,7 @@ import { Separator } from '@/components/ui/separator';
 import { useNavigate } from 'react-router-dom';
 
 import PropertiesTable from '@/components/admin/PropertiesTable';
-import { LogOut, Settings, MessageCircle, AlertTriangle, User, BarChart3, Home, FileText, Users, Calendar, Filter } from 'lucide-react';
+import { LogOut, Settings, MessageCircle, AlertTriangle, User, BarChart3, Home, FileText, Users, Calendar, Filter, Edit2 } from 'lucide-react';
 
 const Admin = () => {
   const { logout, user } = useAuth();
@@ -30,6 +30,10 @@ const Admin = () => {
 
   const handleGoToFilters = () => {
     navigate('/admin/filters');
+  };
+
+  const handleGoToCms = () => {
+    navigate('/admin/cms');
   };
 
   const handleWhatsAppConnect = () => {
@@ -100,6 +104,16 @@ const Admin = () => {
               >
                 <Filter className="h-4 w-4" />
                 <span className="hidden sm:inline">Filtros</span>
+              </Button>
+
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleGoToCms}
+                className="flex items-center gap-2 text-purple-600 hover:text-purple-800 hover:bg-purple-50 border-purple-300"
+              >
+                <Edit2 className="h-4 w-4" />
+                <span className="hidden sm:inline">CMS</span>
               </Button>
 
               <Button

@@ -1,7 +1,171 @@
 # CHANGELOG.md
-_Data: 2026-02-04 | Última atualização: 2026-02-04_
+_Data: 2026-02-04 | Ultima atualizacao: 2026-02-04_
 
-## 2026-02-04 — Sprint CMS v4: Histórico/Rollback + Audit Log ✅
+## 2026-02-04 — Sprint CMS v12: Paginas institucionais publicas
+
+### Status: IMPLEMENTADA
+
+**Objetivo:** Disponibilizar paginas publicas (institucionais) consumindo blocos publicados do CMS, com renderer generico e fallback seguro.
+
+### Entregaveis
+- [x] `src/pages/CmsPublicPage.tsx` — renderer generico por slug
+- [x] Novas paginas/rotas:
+  - [x] `src/pages/Assessoria.tsx` -> `/assessoria`
+  - [x] `src/pages/DireitoImobiliario.tsx` -> `/direito-imobiliario`
+  - [x] `src/pages/CasosReais.tsx` -> `/casos-reais`
+  - [x] `src/pages/Blog.tsx` -> `/blog`
+  - [x] `src/pages/Contato.tsx` -> `/contato`
+- [x] Supabase (via MCP):
+  - [x] Publicar `cms_pages` (slugs acima)
+  - [x] Criar blocos iniciais `page_title`, `page_body`, `page_cta`
+- [x] SDD: artefatos em `docs/sdd/features/cms-v12-public-pages/`
+
+### Critérios de aceite
+- [x] Rotas renderizam sem erro
+- [x] Blocos publicados aparecem
+- [x] `npm run build` passa
+
+---
+
+## 2026-02-04 — Sprint CMS v11: Home publica CMS-driven + Quem Somos
+
+### Status: IMPLEMENTADA
+
+**Objetivo:** Consumir conteudo publicado do CMS no site publico (Home) e iniciar a pagina institucional Quem Somos, com fallback seguro.
+
+### Entregaveis
+
+#### 1. Hook publico de leitura
+- [x] `useCmsPublishedBlocks` — leitura anon de `cms_pages`/`cms_blocks` publicados (RLS)
+
+#### 2. Home (`/`) consumindo CMS
+- [x] `HeroSection` agora aceita overrides (titulo/subtitulo/imagen/CTAs)
+- [x] `HeroSectionWithCms` aplica blocos do CMS: `hero_title`, `hero_subtitle`, `hero_image`, `hero_cta_primary`, `hero_cta_secondary`
+- [x] `HomeCmsMarketingSections` renderiza secoes opcionais do CMS sem quebrar a pagina
+
+#### 3. Quem Somos (`/quem-somos`)
+- [x] Nova pagina `src/pages/QuemSomos.tsx`
+- [x] Nova rota publica em `App.tsx`
+- [x] Supabase: `cms_pages.slug='quem-somos'` publicado + blocos iniciais inseridos via MCP
+
+#### 4. SDD
+- [x] Artefatos criados em `docs/sdd/features/cms-v11-home-quem-somos/` (SPEC/PLAN/TASKS)
+
+### Critérios de aceite
+- [x] Home usa CMS quando publicado e nao quebra sem CMS
+- [x] `/quem-somos` renderiza e consome CMS quando publicado
+- [x] `npm run build` passa sem erros
+
+---
+
+## 2026-02-04 — Sprint CMS v10: Completar Home (Editores Compostos)
+
+### Status: IMPLEMENTADA
+
+**Objetivo:** Cobrir 100% dos campos editaveis da Home e criar editores compostos (NFR-ADM-003).
+
+### Entregaveis
+
+#### 1. Blocos da Home Criados no Supabase (14 novos)
+- [x] `hero_subtitle` (richtext)
+- [x] `hero_cta_primary`, `hero_cta_secondary` (cta)
+- [x] `highlight_section_title` (text)
+- [x] `highlight_cards` (list/cards)
+- [x] `how_it_works_title`, `how_it_works_desc` (text/richtext)
+- [x] `how_it_works_steps` (list/steps)
+- [x] `about_section_title`, `about_section_desc`, `about_section_image` (text/richtext/image)
+- [x] `final_cta_title`, `final_cta_desc`, `final_cta_button` (text/richtext/cta)
+
+#### 2. Editores Compostos Criados
+- [x] `CardListEditor.tsx` — Editor de cards com titulo, descricao, icone, link
+  - Drag-drop para reordenar
+  - 6 icones disponiveis (Award, Shield, Headset, Star, Heart, Zap)
+  - Preview em tempo real
+- [x] `StepListEditor.tsx` — Editor de passos numerados
+  - Renumeracao automatica ao reordenar
+  - Preview visual com circulos numerados
+
+#### 3. BlockEditorFactory Atualizado
+- [x] Deteccao automatica de editores compostos pelo `block_key`
+- [x] `_cards` ou `highlight_cards` -> CardListEditor
+- [x] `_steps` ou `how_it_works_steps` -> StepListEditor
+
+#### 4. CmsBlockRenderer Atualizado
+- [x] Renderizacao de cards com icones e layout responsivo
+- [x] Renderizacao de steps com circulos numerados
+- [x] Mapa de icones Lucide para cards
+
+### Criterios de Aceite
+- [x] 16 blocos da Home editaveis via CMS (era 2, agora 16)
+- [x] CardListEditor funciona com drag-drop
+- [x] StepListEditor renumera automaticamente
+- [x] Preview mostra cards e steps corretamente
+- [x] Build passa sem erros
+
+### Arquivos Criados
+- `src/components/admin/editors/CardListEditor.tsx`
+- `src/components/admin/editors/StepListEditor.tsx`
+
+### Arquivos Modificados
+- `src/components/admin/BlockEditorFactory.tsx` — Editores compostos
+- `src/components/CmsBlockRenderer.tsx` — Renderizacao de cards/steps
+
+### Cobertura CMS Atualizada
+- Home: 16/34 campos (47%) - de 3% para 47%
+- Total: 19/145 campos (13%) - de 2% para 13%
+
+---
+
+## 2026-02-04 — Sprint CMS v9: UX Sincronizada Editor-Preview
+
+### Status: IMPLEMENTADA
+
+**Objetivo:** Implementar split-view sincronizado com auto-scroll, highlight e status bar (NFR-ADM-003).
+
+### Entregaveis
+
+#### 1. Integracao de Componentes UX
+- [x] `SyncedLivePreview` integrado em `AdminCmsPageEdit.tsx`
+- [x] `useSyncedBlockEditor` hook conectado ao editor
+- [x] `EnhancedEditorStatusBar` fixo no rodape
+
+#### 2. Sincronizacao Editor-Preview
+- [x] Auto-scroll para bloco ativo no preview
+- [x] Highlight visual (anel amarelo) no bloco sendo editado
+- [x] Toggle de tamanho de tela (mobile 375px, tablet 768px, desktop 1200px)
+- [x] Clique no preview expande bloco correspondente no editor
+
+#### 3. Status Bar Inteligente
+- [x] Mostra campo/bloco ativo em edicao
+- [x] Contador de campos modificados nao salvos
+- [x] Botoes Salvar/Publicar com estado inteligente
+- [x] Atalhos de teclado visiveis (Ctrl+S, Ctrl+P)
+- [x] Indicador de erros de validacao
+
+#### 4. BlockEditorFactory Atualizado
+- [x] Props `onFieldFocus` e `onContentChange` para sincronizacao
+- [x] Wrapper com highlight de foco (`focus-within:ring-yellow`)
+- [x] Rastreamento de mudancas nao salvas
+
+### Criterios de Aceite
+- [x] Preview scrolla automaticamente para bloco ativo
+- [x] Bloco ativo e destacado visualmente no preview
+- [x] Toggle de tamanho de tela funciona (mobile/tablet/desktop)
+- [x] Status bar mostra campo ativo e contagem de mudancas
+- [x] Build passa sem erros
+
+### Arquivos Modificados
+- `src/pages/AdminCmsPageEdit.tsx` — Integracao completa dos componentes v9
+- `src/components/admin/BlockEditorFactory.tsx` — Props de sincronizacao
+
+### Proximos Passos (Sprint v10)
+- [ ] Criar 33 blocos faltantes da Home
+- [ ] Implementar CardListEditor e StepListEditor
+- [ ] Atingir 100% de cobertura CMS na Home
+
+---
+
+## 2026-02-04 — Sprint CMS v4: Historico/Rollback + Audit Log
 
 ### Objetivo
 Versionamento completo e auditoria (FR-ADM-008, FR-ADM-010).

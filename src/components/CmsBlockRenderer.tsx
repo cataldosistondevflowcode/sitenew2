@@ -1,22 +1,90 @@
 /**
  * Componente: CmsBlockRenderer
  * 
- * Renderiza blocos CMS publicados no site público
+ * Renderiza blocos CMS publicados no site publico
  * Sprint CMS v1
+ * Sprint CMS v10 — Suporte a cards e steps compostos
  */
 
 import { CmsBlock } from '@/hooks/useCmsContent';
+import { Award, Shield, Headset, Star, Heart, Zap } from 'lucide-react';
 
 interface CmsBlockRendererProps {
   block: CmsBlock;
   isPreview?: boolean;
 }
 
+// Mapa de icones para cards
+const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
+  award: Award,
+  shield: Shield,
+  headset: Headset,
+  star: Star,
+  heart: Heart,
+  zap: Zap,
+};
+
 export const CmsBlockRenderer = ({ block, isPreview = false }: CmsBlockRendererProps) => {
   const content = isPreview ? block.content_draft : block.content_published;
 
   if (!content) {
     return null;
+  }
+
+  // Sprint v10: Detectar editores compostos pelo block_key
+  const isCardList = block.block_key.includes('_cards') || block.block_key.includes('highlight_cards');
+  const isStepList = block.block_key.includes('_steps') || block.block_key.includes('how_it_works_steps');
+
+  // Renderizar cards compostos
+  if (isCardList && block.block_type === 'list' && content.items) {
+    return (
+      <div className="my-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+        {content.items.map((card: any, index: number) => {
+          const IconComponent = ICON_MAP[card.icon] || Star;
+          return (
+            <div
+              key={index}
+              className="p-6 bg-white rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-shadow"
+            >
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-3 bg-primary/10 rounded-lg">
+                  <IconComponent className="w-6 h-6 text-primary" />
+                </div>
+                <h3 className="font-semibold text-lg text-gray-900">{card.title}</h3>
+              </div>
+              <p className="text-gray-600 text-sm leading-relaxed">{card.description}</p>
+              {card.link && (
+                <a
+                  href={card.link}
+                  className="inline-block mt-4 text-primary hover:underline text-sm font-medium"
+                >
+                  Saiba mais
+                </a>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    );
+  }
+
+  // Renderizar steps compostos
+  if (isStepList && block.block_type === 'list' && content.items) {
+    return (
+      <div className="my-6 space-y-6">
+        {content.items.map((step: any, index: number) => (
+          <div key={index} className="flex gap-6 items-start">
+            <div className="flex-shrink-0 w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center font-bold text-xl shadow-md">
+              {step.number}
+            </div>
+            <div className="flex-1 pt-1">
+              <h3 className="font-semibold text-lg text-gray-900 mb-2">{step.title}</h3>
+              <p className="text-gray-600 leading-relaxed">{step.description}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
   }
 
   switch (block.block_type) {

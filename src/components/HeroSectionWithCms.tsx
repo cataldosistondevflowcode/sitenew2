@@ -1,74 +1,51 @@
 /**
  * Componente: HeroSectionWithCms
  * 
- * Renderiza o HeroSection com título carregado do CMS
+ * Renderiza o HeroSection com conteudo carregado do CMS (publico)
  * Se o CMS falhar, usa fallback ao conteúdo padrão
- * Sprint CMS v0
+ * Sprint CMS v11 — Home publica CMS-driven
  */
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { HeroSection } from './HeroSection';
-import { supabase } from '@/integrations/supabase/client';
+import { useCmsPublishedBlocks } from '@/hooks/useCmsPublishedBlocks';
 
 interface HeroSectionWithCmsProps {
   onOpportunityClick?: () => void;
 }
 
-interface HeroBlock {
-  content_published?: {
-    value?: string;
-  };
-}
-
 export const HeroSectionWithCms = ({ onOpportunityClick }: HeroSectionWithCmsProps) => {
-  const [heroTitle, setHeroTitle] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { blocksByKey } = useCmsPublishedBlocks('home', [
+    'hero_title',
+    'hero_subtitle',
+    'hero_image',
+    'hero_cta_primary',
+    'hero_cta_secondary',
+  ]);
 
-  useEffect(() => {
-    const loadHeroTitle = async () => {
-      try {
-        setLoading(true);
+  const heroTitle = blocksByKey.hero_title?.content_published?.value as string | undefined;
+  const heroSubtitleHtml = blocksByKey.hero_subtitle?.content_published?.value as string | undefined;
+  const heroImageUrl = blocksByKey.hero_image?.content_published?.url as string | undefined;
 
-        // 1. Obter página home
-        const { data: pageData, error: pageError } = await supabase
-          .from('cms_pages')
-          .select('id')
-          .eq('slug', 'home')
-          .single();
+  const primaryCta = blocksByKey.hero_cta_primary?.content_published as
+    | { text?: string; url?: string }
+    | undefined;
+  const secondaryCta = blocksByKey.hero_cta_secondary?.content_published as
+    | { text?: string; url?: string }
+    | undefined;
 
-        if (pageError || !pageData) {
-          console.warn('CMS Home page não encontrada');
-          return;
-        }
-
-        // 2. Obter bloco hero_title
-        const { data: blockData, error: blockError } = await supabase
-          .from('cms_blocks')
-          .select('content_published')
-          .eq('page_id', pageData.id)
-          .eq('block_key', 'hero_title')
-          .single();
-
-        if (blockError || !blockData) {
-          console.warn('CMS hero_title bloco não encontrado');
-          return;
-        }
-
-        const block = blockData as HeroBlock;
-        if (block.content_published?.value) {
-          setHeroTitle(block.content_published.value);
-        }
-      } catch (error) {
-        console.warn('Erro ao carregar hero title do CMS:', error);
-      } finally {
-        setLoading(false);
+  return (
+    <HeroSection
+      onOpportunityClick={onOpportunityClick}
+      title={heroTitle}
+      subtitleHtml={heroSubtitleHtml}
+      backgroundImageUrl={heroImageUrl}
+      primaryCta={
+        primaryCta?.text && primaryCta?.url ? { text: primaryCta.text, url: primaryCta.url } : undefined
       }
-    };
-
-    loadHeroTitle();
-  }, []);
-
-  // Por enquanto, renderizar apenas o HeroSection padrão
-  // Quando implementar editor de hero customizado, usar heroTitle aqui
-  return <HeroSection onOpportunityClick={onOpportunityClick} />;
+      secondaryCta={
+        secondaryCta?.text && secondaryCta?.url ? { text: secondaryCta.text, url: secondaryCta.url } : undefined
+      }
+    />
+  );
 };

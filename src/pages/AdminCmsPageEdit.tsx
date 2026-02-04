@@ -4,18 +4,21 @@
  * 
  * Editor de página CMS
  * Sprint CMS v0 — MVP mínimo (edita página Home, bloco hero_title)
+ * Sprint CMS v9 — UX sincronizada com preview (auto-scroll, highlight, status bar)
  */
 
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useCmsContent } from '@/hooks/useCmsContent';
+import { useSyncedBlockEditor } from '@/hooks/useSyncedBlockEditor';
 import { BlockEditorFactory } from '@/components/admin/BlockEditorFactory';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { AlertCircle, ArrowLeft, Loader2, Eye, ChevronDown, ChevronUp, Share2 } from 'lucide-react';
-import { useEffect, useState } from 'react';
-import { LivePreview } from '@/components/admin/ux/LivePreview';
+import { AlertCircle, ArrowLeft, Loader2, Eye, ChevronDown, ChevronUp } from 'lucide-react';
+import { useEffect, useState, useCallback } from 'react';
+import { SyncedLivePreview } from '@/components/admin/ux/SyncedLivePreview';
 import { BlockStatusIndicator } from '@/components/admin/ux/BlockStatusIndicator';
+import { EnhancedEditorStatusBar } from '@/components/admin/ux/EnhancedEditorStatusBar';
 import { SharePreviewButton } from '@/components/admin/SharePreviewButton';
 import { BlockVersionHistory } from '@/components/admin/BlockVersionHistory';
 
@@ -25,6 +28,20 @@ export default function AdminCmsPageEdit() {
   const { user, isAdmin } = useAuth();
   const [expandedBlocks, setExpandedBlocks] = useState<Set<number>>(new Set());
   const [showPreview, setShowPreview] = useState(true);
+  const [validationErrors, setValidationErrors] = useState<Array<{ blockId: number; fieldKey: string; message: string }>>([]);
+
+  // Sprint v9: Hook de sincronização editor-preview
+  const {
+    activeBlockId,
+    activeFieldKey,
+    previewSize,
+    unsavedBlockIds,
+    unsavedCount,
+    onFieldFocus,
+    onBlockUpdate,
+    onSaveComplete,
+    setPreviewSize,
+  } = useSyncedBlockEditor();
 
   // Redirecionar se não for admin
   useEffect(() => {
@@ -59,6 +76,8 @@ export default function AdminCmsPageEdit() {
       newExpanded.add(blockId);
     }
     setExpandedBlocks(newExpanded);
+    // Sprint v9: Também dispara foco no bloco
+    onFieldFocus(blockId);
   };
 
   // Expandir todos os blocos
@@ -70,6 +89,45 @@ export default function AdminCmsPageEdit() {
   const collapseAll = () => {
     setExpandedBlocks(new Set());
   };
+
+  // Sprint v9: Salvar todos os blocos modificados
+  const handleSaveAll = useCallback(async () => {
+    const blockIdsToSave = Array.from(unsavedBlockIds);
+    let success = true;
+    
+    for (const blockId of blockIdsToSave) {
+      const block = blocks.find((b) => b.id === blockId);
+      if (block && block.content_draft) {
+        const result = await updateBlockDraft(blockId, block.content_draft);
+        if (!result) success = false;
+      }
+    }
+    
+    if (success) {
+      onSaveComplete(blockIdsToSave);
+    }
+    return success;
+  }, [unsavedBlockIds, blocks, updateBlockDraft, onSaveComplete]);
+
+  // Sprint v9: Publicar bloco ativo (ou primeiro não salvo)
+  const handlePublishActive = useCallback(async () => {
+    const blockToPublish = activeBlockId || (unsavedBlockIds.size > 0 ? Array.from(unsavedBlockIds)[0] : null);
+    if (blockToPublish) {
+      const success = await publishBlock(blockToPublish);
+      if (success) {
+        onSaveComplete([blockToPublish]);
+      }
+      return success;
+    }
+    return false;
+  }, [activeBlockId, unsavedBlockIds, publishBlock, onSaveComplete]);
+
+  // Sprint v9: Handler para quando preview clica num bloco
+  const handlePreviewBlockFocus = useCallback((blockId: number) => {
+    onFieldFocus(blockId);
+    // Também expande o bloco no editor
+    setExpandedBlocks((prev) => new Set(prev).add(blockId));
+  }, [onFieldFocus]);
 
   if (loading) {
     return (
@@ -179,16 +237,23 @@ export default function AdminCmsPageEdit() {
             {blocks.length === 0 ? (
               <Card>
                 <CardContent className="pt-6 text-center text-gray-500">
-                  Nenhum bloco de conteúdo encontrado para esta página.
+                  Nenhum bloco de conteudo encontrado para esta pagina.
                 </CardContent>
               </Card>
             ) : (
               <div className="space-y-3">
                 {blocks.map((block) => {
                   const isExpanded = expandedBlocks.has(block.id);
+                  const isActive = activeBlockId === block.id;
+                  const isUnsaved = unsavedBlockIds.has(block.id);
 
                   return (
-                    <div key={block.id} className="border rounded-lg overflow-hidden bg-white">
+                    <div 
+                      key={block.id} 
+                      className={`border rounded-lg overflow-hidden bg-white transition-all duration-200 ${
+                        isActive ? 'ring-2 ring-yellow-400 ring-offset-1' : ''
+                      } ${isUnsaved ? 'border-orange-300' : ''}`}
+                    >
                       {/* Status do Bloco */}
                       <button
                         onClick={() => toggleBlockExpanded(block.id)}
@@ -202,13 +267,13 @@ export default function AdminCmsPageEdit() {
                               ? 'draft'
                               : 'published'
                           }
-                          isDirty={false}
+                          isDirty={isUnsaved}
                           isExpanded={isExpanded}
                           onToggleExpand={() => toggleBlockExpanded(block.id)}
                         />
                       </button>
 
-                      {/* Editor Colapsável */}
+                      {/* Editor Colapsavel */}
                       {isExpanded && (
                         <div className="border-t p-4">
                           <div className="flex justify-end mb-2">
@@ -224,6 +289,8 @@ export default function AdminCmsPageEdit() {
                             onPublish={() => publishBlock(block.id)}
                             isSaving={isSaving}
                             validateContent={(content) => validateBlockContent(block, content)}
+                            onFieldFocus={onFieldFocus}
+                            onContentChange={onBlockUpdate}
                           />
                         </div>
                       )}
@@ -233,25 +300,39 @@ export default function AdminCmsPageEdit() {
               </div>
             )}
 
-            {/* Footer */}
-            <div className="bg-blue-50 p-4 rounded-lg text-sm text-blue-900 border border-blue-200 mt-6">
-              💡 <strong>Dica:</strong> Use Ctrl+S para salvar ou Ctrl+P para publicar. Clique no bloco para expandir.
-            </div>
           </div>
 
-          {/* Coluna Direita: Preview */}
+          {/* Coluna Direita: Preview Sincronizado */}
           {showPreview && (
-            <div className="sticky top-24">
-              <Card className="border-2 border-blue-200 bg-white">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-sm">Pré-visualização em Tempo Real</CardTitle>
-                </CardHeader>
-                <CardContent className="p-0">
-                  <LivePreview blocks={blocks} isDraft={page.status === 'draft'} showIndicator={true} />
-                </CardContent>
-              </Card>
+            <div className="sticky top-24 space-y-4">
+              <SyncedLivePreview
+                blocks={blocks}
+                isDraft={page.status === 'draft'}
+                activeBlockId={activeBlockId ?? undefined}
+                activeFieldKey={activeFieldKey ?? undefined}
+                onBlockFocus={handlePreviewBlockFocus}
+                previewSize={previewSize}
+                onPreviewSizeChange={setPreviewSize}
+              />
             </div>
           )}
+        </div>
+
+        {/* Sprint v9: Status Bar Fixa no Rodape */}
+        <div className="sticky bottom-0 left-0 right-0 bg-white border-t shadow-lg">
+          <div className="container">
+            <EnhancedEditorStatusBar
+              activeFieldKey={activeFieldKey}
+              activeBlockId={activeBlockId}
+              unsavedCount={unsavedCount}
+              validationErrors={validationErrors}
+              isSaving={isSaving}
+              isPublishing={isSaving}
+              onSave={handleSaveAll}
+              onPublish={handlePublishActive}
+              showShortcutHint={true}
+            />
+          </div>
         </div>
       </div>
     </div>

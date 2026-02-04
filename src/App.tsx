@@ -37,6 +37,12 @@ import AdminCmsPageEdit from "./pages/AdminCmsPageEdit";
 import CmsPreview from "./pages/CmsPreview";
 import AdminCmsAssets from "./pages/AdminCmsAssets";
 import AdminCmsAuditLog from "./pages/AdminCmsAuditLog";
+import QuemSomos from "./pages/QuemSomos";
+import Assessoria from "./pages/Assessoria";
+import DireitoImobiliario from "./pages/DireitoImobiliario";
+import CasosReais from "./pages/CasosReais";
+import Blog from "./pages/Blog";
+import Contato from "./pages/Contato";
 
 const queryClient = new QueryClient();
 
@@ -49,6 +55,12 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/quem-somos" element={<QuemSomos />} />
+            <Route path="/assessoria" element={<Assessoria />} />
+            <Route path="/direito-imobiliario" element={<DireitoImobiliario />} />
+            <Route path="/casos-reais" element={<CasosReais />} />
+            <Route path="/blog" element={<Blog />} />
+            <Route path="/contato" element={<Contato />} />
             <Route path="/leilao-caixa-rj" element={<LeilaoCaixaRJ />} />
             <Route path="/leilao-rj" element={<LeilaoRJ />} />
             <Route path="/imovel-rj" element={<LeilaoRJ />} />

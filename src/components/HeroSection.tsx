@@ -3,9 +3,56 @@ import { ChevronRight, Play } from "lucide-react";
 
 interface HeroSectionProps {
   onOpportunityClick?: () => void;
+  title?: string;
+  subtitle?: string;
+  subtitleHtml?: string;
+  backgroundImageUrl?: string;
+  primaryCta?: { text: string; url: string };
+  secondaryCta?: { text: string; url: string };
 }
 
-export const HeroSection = ({ onOpportunityClick }: HeroSectionProps) => {
+export const HeroSection = ({
+  onOpportunityClick,
+  title,
+  subtitle,
+  subtitleHtml,
+  backgroundImageUrl,
+  primaryCta,
+  secondaryCta,
+}: HeroSectionProps) => {
+  const resolvedTitle =
+    title ||
+    'Imoveis em Leilao\nno Rio de Janeiro';
+
+  const resolvedBackground =
+    backgroundImageUrl || "/visao-panoramica-rio-janeiro.jpg";
+
+  const resolvedSubtitle =
+    subtitle || 'Receba oportunidades de leiloes personalizadas, de acordo com o seu perfil.';
+
+  const renderTitle = () => {
+    const parts = resolvedTitle.split('\n').filter(Boolean);
+    if (parts.length <= 1) return <>{resolvedTitle}</>;
+    return (
+      <>
+        {parts.map((p, idx) => (
+          <React.Fragment key={idx}>
+            {p}
+            {idx < parts.length - 1 ? <br className="hidden sm:block" /> : null}
+          </React.Fragment>
+        ))}
+      </>
+    );
+  };
+
+  const handleOpenUrl = (url: string) => {
+    try {
+      onOpportunityClick?.();
+    } finally {
+      window.open(url, '_blank');
+    }
+  };
+
   return (
     <>
       {/* Primeira seção - Hero tradicional */}
@@ -13,7 +60,7 @@ export const HeroSection = ({ onOpportunityClick }: HeroSectionProps) => {
         <div 
           className="bg-cover bg-center bg-no-repeat h-[400px] sm:h-[450px] md:h-[500px] lg:h-[550px] relative"
           style={{
-            backgroundImage: "url('/visao-panoramica-rio-janeiro.jpg')"
+            backgroundImage: `url('${resolvedBackground}')`
           }}
         >
           {/* Overlay escuro */}
@@ -28,30 +75,48 @@ export const HeroSection = ({ onOpportunityClick }: HeroSectionProps) => {
                     className="text-white font-medium text-2xl sm:text-3xl md:text-4xl lg:text-[44px] leading-tight lg:leading-[52.8px] mb-4" 
                     style={{ fontFamily: "Playfair Display, serif" }}
                   >
-                    Imóveis em Leilão<br className="hidden sm:block" />{" "}
-                    no Rio de Janeiro
+                    {renderTitle()}
                   </h1>
                 </div>
                 
                 <div className="mb-6 sm:mb-8">
-                  <p 
-                    className="text-white font-bold text-base sm:text-lg md:text-xl leading-relaxed" 
-                    style={{ fontFamily: "Quicksand, sans-serif" }}
-                  >
-                    Receba oportunidades de leilões personalizadas,<br className="hidden sm:block" />
-                    de acordo com o seu perfil.
-                  </p>
+                  {subtitleHtml ? (
+                    <p
+                      className="text-white font-bold text-base sm:text-lg md:text-xl leading-relaxed"
+                      style={{ fontFamily: "Quicksand, sans-serif" }}
+                      dangerouslySetInnerHTML={{ __html: subtitleHtml }}
+                    />
+                  ) : (
+                    <p
+                      className="text-white font-bold text-base sm:text-lg md:text-xl leading-relaxed"
+                      style={{ fontFamily: "Quicksand, sans-serif" }}
+                    >
+                      {resolvedSubtitle}
+                    </p>
+                  )}
                 </div>
                 
-                <div className="flex justify-center lg:justify-start">
+                <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
                   <button
-                    onClick={onOpportunityClick}
+                    onClick={() =>
+                      primaryCta?.url ? handleOpenUrl(primaryCta.url) : onOpportunityClick?.()
+                    }
                     className="inline-flex items-center justify-center bg-gradient-to-r from-[#6d4403] via-[#b57309] to-[#d48d07] text-white rounded-full px-4 sm:px-6 md:px-7 py-3 sm:py-4 font-normal text-sm sm:text-base md:text-[19.8px] leading-relaxed hover:opacity-90 transition-opacity cursor-pointer"
-                    style={{ fontFamily: "Quicksand, sans-serif" }}
+                    style={{ fontFamily: 'Quicksand, sans-serif' }}
                   >
-                    <span className="text-center">Quero receber novas oportunidades</span>
+                    <span className="text-center">{primaryCta?.text || 'Quero receber novas oportunidades'}</span>
                     <ChevronRight className="ml-2 h-5 w-5 sm:h-6 sm:w-6 md:h-6 md:w-7 flex-shrink-0" />
                   </button>
+
+                  {secondaryCta?.text && secondaryCta?.url && (
+                    <button
+                      onClick={() => handleOpenUrl(secondaryCta.url)}
+                      className="inline-flex items-center justify-center border-2 border-white/80 text-white rounded-full px-4 sm:px-6 md:px-7 py-3 sm:py-4 font-normal text-sm sm:text-base md:text-[19.8px] leading-relaxed hover:bg-white/10 transition-colors cursor-pointer"
+                      style={{ fontFamily: 'Quicksand, sans-serif' }}
+                    >
+                      <span className="text-center">{secondaryCta.text}</span>
+                    </button>
+                  )}
                 </div>
               </div>
               

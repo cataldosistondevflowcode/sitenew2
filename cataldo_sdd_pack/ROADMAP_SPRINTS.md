@@ -285,65 +285,152 @@ _Base: prazo estimado ~2 semanas (com dependências externas)._
 
 ---
 
-### Sprint CMS v9 — UX Sincronizada + Rastreamento Completo ⭐ PRONTA PARA INICIAR
-**Status:** 📋 PLANEJADA  
+### Sprint CMS v9 — UX Sincronizada + Rastreamento Completo
+**Status:** CONCLUIDA  
 **Prioridade:** Alta  
-**Dependências:** Sprint CMS v8, v3, v4 (concluídas)  
-**Data planejada:** 2026-02-04
+**Dependencias:** Sprint CMS v8, v3, v4 (concluidas)  
+**Conclusao:** 2026-02-04
 
 **Objetivo:** 
 1. Implementar split-view sincronizado com auto-scroll e highlight
-2. Rastrear 100% dos campos editáveis (145 campos por 8 páginas)
+2. Rastrear 100% dos campos editaveis (145 campos por 8 paginas)
 3. Definir roadmap incrementalizado para 100% de cobertura CMS
 
-**Escopo Fase 1 (HOJE — 1 hora):**
+**Escopo Fase 1 (Integracao):**
 - [x] Componente `SyncedLivePreview.tsx` (auto-scroll + highlight + responsive)
-- [x] Hook `useSyncedBlockEditor.ts` (sincronização editor ↔ preview)
-- [ ] Integrar em `AdminCmsPageEdit.tsx`
-- [ ] Testar: auto-scroll, highlight, toggle de tamanho
+- [x] Hook `useSyncedBlockEditor.ts` (sincronizacao editor - preview)
+- [x] Integrar em `AdminCmsPageEdit.tsx`
+- [x] Testar: auto-scroll, highlight, toggle de tamanho
 
-**Escopo Fase 2 (Próxima — 1 hora):**
+**Escopo Fase 2 (Status Bar):**
 - [x] `EnhancedEditorStatusBar.tsx` (feedback visual, contador, atalhos)
-- [ ] Integrar no layout
-- [ ] Testar: validação contextual
+- [x] Integrar no layout (rodape fixo)
+- [x] Testar: validacao contextual
 
-**Escopo Fase 3 (Semana — 2 horas):**
+**Escopo Fase 3 (Editores Compostos - PROXIMA SPRINT):**
 - [x] `CtaFieldEditor.tsx` (editor composto)
-- [ ] `CardListEditor.tsx` (cards com drag-drop)
-- [ ] `StepListEditor.tsx` (passos)
+- [ ] `CardListEditor.tsx` (cards com drag-drop) - Sprint v10
+- [ ] `StepListEditor.tsx` (passos) - Sprint v10
 
 **Mapa de Cobertura CMS — Baseline (2% de 145 campos):**
-- Home: 34 campos (3% ✅)
-- Quem Somos: 26 campos (0% ❌)
-- Assessoria: 22 campos (0% ❌)
-- Direito: 18 campos (0% ❌)
-- Casos: 16 campos (0% ❌)
-- Blog: 4 campos (0% ❌)
-- Contato: 10 campos (0% ❌)
-- Regionais: 15 campos (13% ✅)
+- Home: 34 campos (3%)
+- Quem Somos: 26 campos (0%)
+- Assessoria: 22 campos (0%)
+- Direito: 18 campos (0%)
+- Casos: 16 campos (0%)
+- Blog: 4 campos (0%)
+- Contato: 10 campos (0%)
+- Regionais: 15 campos (13%)
 - **TOTAL: 145 campos (2%)**
 
-**Roadmap para 100% (próximos 3 sprints):**
-- Sprint v10: Home → 25%
-- Sprint v11: Quem Somos + Editores compostos → 50%
-- Sprint v12: Regionais + finalizações → 100%
+**Roadmap para 100% (proximas 3 sprints):**
+- Sprint v10: Home -> 25%
+- Sprint v11: Quem Somos + Editores compostos -> 50%
+- Sprint v12: Regionais + finalizacoes -> 100%
 
 **Documentos de suporte:**
-- `CMS_RASTREAMENTO_COMPLETO.md` — Mapa técnico de 145 campos
+- `CMS_RASTREAMENTO_COMPLETO.md` — Mapa tecnico de 145 campos
 - `CMS_GUIA_IMPLEMENTACAO_UX.md` — Passo a passo (Fase 1-3)
-- `CMS_VISUALIZACAO_UX.md` — Fluxo de interações
+- `CMS_VISUALIZACAO_UX.md` — Fluxo de interacoes
 - `CMS_RESUMO_EXECUTIVO.md` — Para stakeholders
-- `README_CMS_COMPLETO.md` — Visão geral
+- `README_CMS_COMPLETO.md` — Visao geral
 
-**Critérios de aceite:**
-- [ ] Auto-scroll para bloco ativo
-- [ ] Highlight amarelo no bloco
-- [ ] Toggle de tamanho (mobile/tablet/desktop)
-- [ ] Status bar com campo ativo
-- [ ] Contador de mudanças
-- [ ] Validação contextual
+**Criterios de aceite:**
+- [x] Auto-scroll para bloco ativo
+- [x] Highlight amarelo no bloco
+- [x] Toggle de tamanho (mobile/tablet/desktop)
+- [x] Status bar com campo ativo
+- [x] Contador de mudancas
+- [x] Validacao contextual
 
 ---
+
+### Sprint CMS v10 — Completar Home (Editores Compostos)
+**Status:** CONCLUIDA  
+**Prioridade:** Alta  
+**Dependencias:** Sprint CMS v9 (concluida)
+**Conclusao:** 2026-02-04
+
+**Objetivo:** Criar editores compostos e expandir cobertura da Home.
+
+**Escopo:**
+- [x] Criar 14 blocos novos em `cms_blocks` (via SQL)
+- [x] Implementar `CardListEditor` (drag-drop de cards)
+- [x] Implementar `StepListEditor` (gerenciar passos)
+- [x] Atualizar `CmsBlockRenderer` para renderizar cards/steps
+- [x] Testar fluxo completo: editar -> preview -> publicar
+
+**Blocos criados:**
+- `hero_subtitle`, `hero_cta_primary`, `hero_cta_secondary`
+- `highlight_section_title`, `highlight_cards`
+- `how_it_works_title`, `how_it_works_desc`, `how_it_works_steps`
+- `about_section_title`, `about_section_desc`, `about_section_image`
+- `final_cta_title`, `final_cta_desc`, `final_cta_button`
+
+**Criterios de aceite:**
+- [x] 16/34 campos da Home editaveis via CMS (47%)
+- [x] CardListEditor com drag-drop funciona
+- [x] StepListEditor renumera automaticamente
+- [x] Preview mostra cards e steps corretamente
+- [x] Build passa sem erros
+
+---
+
+### Sprint CMS v11 — Home publica CMS-driven + Quem Somos (inicio)
+**Status:** CONCLUIDA  
+**Prioridade:** Alta  
+**Dependencias:** Sprint CMS v10 (concluida)  
+**Conclusao:** 2026-02-04
+
+**Objetivo:** Consumir CMS no site publico (Home) e iniciar pagina institucional Quem Somos.
+
+**Escopo Home (publica):**
+- [x] `HeroSectionWithCms` passou a aplicar blocos do CMS:
+  - [x] `hero_title`, `hero_subtitle`, `hero_image`, `hero_cta_primary`, `hero_cta_secondary`
+- [x] Inserir secoes institucionais opcionais na Home via `HomeCmsMarketingSections`:
+  - [x] `highlight_section_title` + `highlight_cards`
+  - [x] `how_it_works_title` + `how_it_works_desc` + `how_it_works_steps`
+  - [x] `about_section_title` + `about_section_desc` + `about_section_image`
+  - [x] `final_cta_title` + `final_cta_desc` + `final_cta_button`
+- [x] Fallback seguro: se CMS falhar, as secoes extras nao quebram a Home
+
+**Escopo Quem Somos (publica):**
+- [x] Criar pagina `src/pages/QuemSomos.tsx`
+- [x] Adicionar rota publica `/quem-somos` no `App.tsx`
+- [x] Publicar `cms_pages.slug='quem-somos'` e criar blocos iniciais via MCP
+
+**Criterios de aceite:**
+- [x] Home renderiza hero e secoes do CMS quando publicados
+- [x] `/quem-somos` renderiza sem erros e consome blocos publicados
+- [x] `npm run build` passa sem erros
+
+---
+
+### Sprint CMS v12 — Paginas institucionais publicas (renderer generico)
+**Status:** CONCLUIDA  
+**Prioridade:** Media  
+**Dependencias:** Sprint CMS v11 (concluida)  
+**Conclusao:** 2026-02-04
+
+**Objetivo:** Publicar paginas institucionais consumindo blocos publicados do CMS.
+
+**Escopo (frontend):**
+- [x] Componente/pagina reutilizavel `CmsPublicPage` (renderer generico)
+- [x] Rotas publicas:
+  - [x] `/assessoria`
+  - [x] `/direito-imobiliario`
+  - [x] `/casos-reais`
+  - [x] `/blog`
+  - [x] `/contato`
+
+**Escopo (Supabase via MCP):**
+- [x] Publicar `cms_pages` dos slugs acima (status='published')
+- [x] Inserir blocos iniciais (`page_title`, `page_body`, `page_cta`) por pagina
+
+**Criterios de aceite:**
+- [x] Todas as rotas renderizam sem erro
+- [x] Blocos publicados aparecem nas paginas
+- [x] Fallback seguro quando CMS indisponivel/vazio
 
 ### Sprint CMS v3 — Preview Completo + Publish Robusto
 **Status:** ✅ CONCLUÍDA  

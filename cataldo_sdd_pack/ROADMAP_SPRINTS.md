@@ -279,9 +279,10 @@ _Base: prazo estimado ~2 semanas (com dependências externas)._
 ---
 
 ### Sprint CMS v3 — Preview Completo + Publish Robusto
-**Status:** ⏸️ PLANEJADO  
+**Status:** ✅ CONCLUÍDA  
 **Prioridade:** Média  
 **Dependências:** Sprint CMS v8
+**Conclusão:** 2026-02-04
 
 **Objetivo:** Preview em todas as páginas, publish atômico e validação.
 
@@ -293,16 +294,18 @@ _Base: prazo estimado ~2 semanas (com dependências externas)._
 - Mensagens de erro claras
 
 **Entregáveis:**
-- [ ] Preview universal
-- [ ] Token de preview seguro
-- [ ] Publish em transação
-- [ ] Validação de campos obrigatórios
+- [x] Preview universal (7 páginas CMS)
+- [x] Token de preview seguro (hook usePreviewToken)
+- [x] Publish em transação (função RPC publish_block_atomic)
+- [x] Validação de campos obrigatórios
 
 **Critérios de aceite:**
-- [ ] Preview funciona em 5+ páginas diferentes
-- [ ] Preview sem auth falha ou exige token
-- [ ] Simular erro no publish não deixa estado inconsistente
-- [ ] Validação impede publicar conteúdo inválido
+- [x] Preview funciona em 5+ páginas diferentes (testado: 7 páginas)
+- [x] Preview sem auth falha ou exige token (CmsPreview.tsx atualizado)
+- [x] Simular erro no publish não deixa estado inconsistente (transação RPC)
+- [x] Validação impede publicar conteúdo inválido
+
+**Nota:** Botão "Compartilhar Preview" implementado mas requer ajuste fino de RLS para produção.
 
 ---
 

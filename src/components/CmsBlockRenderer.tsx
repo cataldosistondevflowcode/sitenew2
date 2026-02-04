@@ -90,18 +90,20 @@ export const CmsBlockRenderer = ({ block, isPreview = false }: CmsBlockRendererP
       );
 
     case 'faq':
+      const allowMultiple = content.allowMultiple === true;
       return (
-        <div className="my-6 space-y-3">
+        <div className={`my-6 space-y-3 ${allowMultiple ? 'faq-multiple' : 'faq-accordion'}`}>
           {content.items?.map((item: any, index: number) => (
             <details
               key={index}
               className="border rounded-lg p-4 hover:bg-gray-50 transition cursor-pointer group"
+              {...(!allowMultiple && index > 0 ? { open: false } : {})}
             >
-              <summary className="font-semibold text-gray-900 flex items-center justify-between">
+              <summary className="font-semibold text-gray-900 flex items-center justify-between select-none">
                 {item.question}
-                <span className="text-gray-600 group-open:rotate-180 transition">▼</span>
+                <span className="text-gray-600 group-open:rotate-180 transition ml-2 flex-shrink-0">▼</span>
               </summary>
-              <p className="mt-3 text-gray-700 text-sm leading-relaxed">{item.answer}</p>
+              <p className="mt-3 text-gray-700 text-sm leading-relaxed whitespace-pre-wrap">{item.answer}</p>
             </details>
           ))}
         </div>

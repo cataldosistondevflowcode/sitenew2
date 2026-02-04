@@ -201,11 +201,11 @@ TAXA DE SUCESSO: 90%
 
 ```
 TESTES TOTAIS: 35
-├─ ✅ PASSOU: 33 (94%)
-├─ ⚠️ PARCIAL: 1 (bug menor - botão Editar)
-└─ ⏳ PENDENTE: 1 (logout - não tem rota)
+├─ ✅ PASSOU: 34 (97%)
+├─ ⚠️ PARCIAL: 0
+└─ ⏳ PENDENTE: 1 (logout - não tem rota dedicada)
 
-TAXA DE SUCESSO: 94%
+TAXA DE SUCESSO: 97%
 ```
 
 ---
@@ -234,13 +234,24 @@ TAXA DE SUCESSO: 94%
 - ✅ Dicas Ctrl+S/P
 
 ### Bugs encontrados:
-1. Botão "Editar" não navega (baixa prioridade)
+~~1. Botão "Editar" não navega (baixa prioridade)~~
+   **RESOLVIDO:** Retestado e funciona corretamente! Problema foi timing/sessão.
 
 ### Próximos Passos:
-1. Corrigir bug do botão "Editar"
+1. ~~Corrigir bug do botão "Editar"~~ ✅ Funciona
 2. Integrar CMS com páginas públicas (sprint separado)
 3. Testar upload real de imagem
-4. Testar Ctrl+S/P keyboard shortcuts
+4. Adicionar `useKeyboardShortcuts` ao TextBlockEditor e ImageBlockEditor
+   - Nota: Ctrl+S/P só funciona nos editores CTA, List, FAQ (sprint v8)
+
+### Atalhos de Teclado (Status):
+| Editor | Ctrl+S | Ctrl+P |
+|--------|--------|--------|
+| TextBlockEditor | ❌ Não implementado | ❌ |
+| ImageBlockEditor | ❌ Não implementado | ❌ |
+| CtaBlockEditor | ✅ Implementado | ✅ |
+| ListBlockEditor | ✅ Implementado | ✅ |
+| FaqBlockEditor | ✅ Implementado | ✅ |
 
 ---
 

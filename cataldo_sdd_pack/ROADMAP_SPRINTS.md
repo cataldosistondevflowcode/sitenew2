@@ -159,7 +159,7 @@ _Base: prazo estimado ~2 semanas (com dependências externas)._
 ---
 
 ### Sprint CMS v0 — MVP Mínimo (Editar 1 texto + Publicar)
-**Status:** ⏸️ PLANEJADO  
+**Status:** ✅ CONCLUÍDA  
 **Prioridade:** Alta  
 **Dependências:** Sprints 6 e 7 concluídas
 
@@ -174,24 +174,21 @@ _Base: prazo estimado ~2 semanas (com dependências externas)._
 - Home renderiza conteúdo do CMS
 
 **Entregáveis:**
-- [ ] Migrations aplicadas no Supabase
-- [ ] RLS configurado e testado
-- [ ] Editor básico de 1 bloco
-- [ ] Home lê conteúdo do CMS
+- [x] Migrations aplicadas no Supabase
+- [x] RLS configurado e testado
+- [x] Editor básico de 1 bloco
+- [x] Home lê conteúdo do CMS (via HeroSectionWithCms)
 
 **Critérios de aceite:**
-- [ ] Edito título do hero da Home
-- [ ] Salvo como draft (site público não muda)
-- [ ] Publico (site público atualiza)
-- [ ] Usuário anônimo não vê draft
-
-**Riscos:**
-- Quebrar Home se CMS falhar → Mitigação: fallback para conteúdo hardcoded
+- [x] Edito título do hero da Home
+- [x] Salvo como draft (site público não muda)
+- [x] Publico (site público atualiza)
+- [x] Usuário anônimo não vê draft
 
 ---
 
 ### Sprint CMS v1 — Blocos por Página + Preview
-**Status:** ⏸️ PLANEJADO  
+**Status:** ✅ CONCLUÍDA  
 **Prioridade:** Alta  
 **Dependências:** Sprint CMS v0
 
@@ -205,21 +202,21 @@ _Base: prazo estimado ~2 semanas (com dependências externas)._
 - Indicador visual de modo preview
 
 **Entregáveis:**
-- [ ] Lista de páginas no admin
-- [ ] Editor de múltiplos blocos
-- [ ] Preview funcional
-- [ ] Tipos text e richtext implementados
+- [x] Lista de páginas no admin (`/admin/cms`)
+- [x] Editor de múltiplos blocos (`/admin/cms/pages/:slug/edit`)
+- [x] Preview funcional (`/preview/:slug`)
+- [x] Tipos text, richtext, image implementados
 
 **Critérios de aceite:**
-- [ ] Listo todas as páginas configuradas
-- [ ] Edito 3+ blocos de uma página
-- [ ] Preview mostra alterações antes de publicar
-- [ ] Publicar atualiza todos os blocos
+- [x] Listo todas as páginas configuradas
+- [x] Edito 3+ blocos de uma página
+- [x] Preview mostra alterações antes de publicar
+- [x] Publicar atualiza todos os blocos
 
 ---
 
 ### Sprint CMS v2 — Biblioteca de Mídia
-**Status:** ⏸️ PLANEJADO  
+**Status:** ✅ CONCLUÍDA  
 **Prioridade:** Média  
 **Dependências:** Sprint CMS v1
 
@@ -233,24 +230,58 @@ _Base: prazo estimado ~2 semanas (com dependências externas)._
 - Seletor de imagem integrado ao editor de blocos
 
 **Entregáveis:**
-- [ ] Bucket CMS no Supabase Storage
-- [ ] Tabela `cms_assets` com RLS
-- [ ] Componente de upload
-- [ ] Galeria de imagens
-- [ ] Seletor de imagem no editor
+- [x] Bucket CMS no Supabase Storage
+- [x] Tabela `cms_assets` com RLS
+- [x] Componente de upload (`AssetUploader`)
+- [x] Galeria de imagens (`AssetLibrary`)
+- [x] Seletor de imagem no editor (`AssetSelector`)
 
 **Critérios de aceite:**
-- [ ] Faço upload de imagem (jpg, png, webp)
-- [ ] Vejo imagens na biblioteca
-- [ ] Seleciono imagem para bloco
-- [ ] Alt text é editável
+- [x] Faço upload de imagem (jpg, png, webp)
+- [x] Vejo imagens na biblioteca
+- [x] Seleciono imagem para bloco
+- [x] Alt text é editável
+
+---
+
+### Sprint CMS v8 — UX Zero Fricção
+**Status:** ✅ CONCLUÍDA  
+**Prioridade:** Alta  
+**Dependências:** Sprint CMS v2
+**Conclusão:** 2026-02-04
+
+**Objetivo:** Melhorar UX do Admin CMS para máxima usabilidade.
+
+**Escopo:**
+- Layout lado-a-lado (editor + preview)
+- Blocos colapsáveis
+- Atalhos de teclado (Ctrl+S, Ctrl+P)
+- ValidationFeedback visual
+- BlockStatusIndicator
+
+**Entregáveis:**
+- [x] Componente `ValidationFeedback` (error, success, warning, info)
+- [x] Componente `BlockStatusIndicator` (tipo, status, ações rápidas)
+- [x] Componente `LivePreview` (preview em tempo real)
+- [x] Hook `useKeyboardShortcuts` (Ctrl+S, Ctrl+P)
+- [x] Layout responsivo lado-a-lado em `AdminCmsPageEdit`
+- [x] Atalhos em todos os editores (Text, Image, CTA, List, FAQ)
+
+**Critérios de aceite:**
+- [x] Preview ao lado do editor (desktop)
+- [x] Blocos expandem/colapsam individualmente
+- [x] Ctrl+S salva rascunho
+- [x] Ctrl+P publica
+- [x] Feedback visual claro de mudanças
+
+**Testes E2E:** 97% sucesso (ver `TESTE_RESULTADOS_CMS_V8.md`)
 
 ---
 
 ### Sprint CMS v3 — Preview Completo + Publish Robusto
 **Status:** ⏸️ PLANEJADO  
 **Prioridade:** Média  
-**Dependências:** Sprint CMS v2
+**Dependências:** Sprint CMS v8
 
 **Objetivo:** Preview em todas as páginas, publish atômico e validação.
 

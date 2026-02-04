@@ -3,6 +3,7 @@
  * 
  * Editor de bloco de texto simples
  * Sprint CMS v1 — Parte do BlockEditorFactory
+ * Atualizado Sprint v8 — Atalhos Ctrl+S/P + ValidationFeedback
  */
 
 import { useState, useEffect } from 'react';
@@ -13,6 +14,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { CmsBlock } from '@/hooks/useCmsContent';
 import { BlockEditorHeader } from './BlockEditorHeader';
+import { ValidationFeedback } from '@/components/admin/ux/ValidationFeedback';
+import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { AlertCircle, CheckCircle2 } from 'lucide-react';
 
 interface TextBlockEditorProps {
@@ -70,6 +73,28 @@ export const TextBlockEditor = ({
     }
   };
 
+  // Atalhos de teclado (Sprint v8)
+  useKeyboardShortcuts({
+    shortcuts: [
+      {
+        key: 'save',
+        label: 'Salvar',
+        description: 'Salvar rascunho',
+        combo: ['ctrl', 's'],
+        handler: handleSaveDraft,
+        enabled: isDirty && !isSaving && validationErrors.length === 0,
+      },
+      {
+        key: 'publish',
+        label: 'Publicar',
+        description: 'Publicar bloco',
+        combo: ['ctrl', 'p'],
+        handler: handlePublish,
+        enabled: !isSaving && !isPublishing && validationErrors.length === 0,
+      },
+    ],
+  });
+
   const isPublished = block.content_published?.value === block.content_draft?.value;
 
   return (
@@ -90,34 +115,30 @@ export const TextBlockEditor = ({
           />
         </div>
 
-        {/* Erros de validação */}
+        {/* Erros de validação (usando ValidationFeedback) */}
         {validationErrors.length > 0 && (
-          <Alert variant="destructive">
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription>
-              <ul className="list-disc ml-5 space-y-1">
-                {validationErrors.map((error, idx) => (
-                  <li key={idx}>{error}</li>
-                ))}
-              </ul>
-            </AlertDescription>
-          </Alert>
+          <ValidationFeedback
+            status="error"
+            message={validationErrors.join('. ')}
+          />
         )}
 
         {/* Status de mudanças */}
         {isDirty && validationErrors.length === 0 && (
-          <div className="bg-yellow-50 border border-yellow-200 rounded p-3 text-sm text-yellow-800 flex items-center gap-2">
-            <span>⚠️</span>
-            <span>Você tem mudanças não salvas</span>
-          </div>
+          <ValidationFeedback
+            status="warning"
+            message="Você tem mudanças não salvas"
+            suggestion="Pressione Ctrl+S para salvar"
+            onApplySuggestion={handleSaveDraft}
+          />
         )}
 
         {/* Confirmação de validação */}
         {!isDirty && validationErrors.length === 0 && content.trim() && (
-          <div className="bg-green-50 border border-green-200 rounded p-3 text-sm text-green-800 flex items-center gap-2">
-            <CheckCircle2 className="h-4 w-4" />
-            <span>Conteúdo validado ✓</span>
-          </div>
+          <ValidationFeedback
+            status="success"
+            message="Conteúdo validado ✓"
+          />
         )}
 
         {/* Botões de ação */}

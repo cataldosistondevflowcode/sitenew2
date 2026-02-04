@@ -14,6 +14,7 @@ export interface Asset {
   id: number;
   filename: string;
   url: string;
+  storage_path: string;
   alt_text?: string;
   title?: string;
   created_at: string;
@@ -47,7 +48,7 @@ export const useAssetUpload = () => {
         throw new Error('Nenhum arquivo selecionado');
       }
 
-      if (!ALLOWED_TYPES.includes(file.type)) {
+      if (!UPLOAD_CONFIG.ALLOWED_TYPES.includes(file.type)) {
         throw new Error('Tipo de arquivo não suportado. Use JPG, PNG, WebP ou GIF.');
       }
 

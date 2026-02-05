@@ -16,7 +16,8 @@ import { Search, MessageCircle, Filter, X, MapPin, ChevronDown, Home, Building, 
 import { WhatsAppIcon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { flexibleSearch, escapeSqlLike, sanitizeSearchInput } from "@/utils/stringUtils";
@@ -246,6 +247,9 @@ const cidadesPorRegiaoRJ: Record<string, string[]> = {
 };
 
 const LeilaoRJ = () => {
+  // Hook de navegação para redirecionamento para páginas regionais (FR-V18-002)
+  const navigate = useNavigate();
+  
   // Estados para os imóveis e paginação
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
@@ -257,6 +261,9 @@ const LeilaoRJ = () => {
 
   const [isMobile, setIsMobile] = useState(false);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  
+  // Cache de mapeamentos SEO para páginas regionais (FR-V18-002)
+  const [seoPageMappings, setSeoPageMappings] = useState<Map<string, string>>(new Map());
   
   // Analytics tracking (temporariamente desabilitado)
   const trackSearch = (query: any, filters: any, count: any) => {
@@ -321,6 +328,38 @@ const LeilaoRJ = () => {
     if (twitterDescription) {
       twitterDescription.setAttribute('content', 'Leilão de imóveis no RJ e Advocacia Imobiliária. Tenha alto Retorno Financeiro com segurança com Especialistas. Entre em Contato Conosco!');
     }
+  }, []);
+
+  // Carregar mapeamentos de páginas SEO regionais para RJ (FR-V18-002)
+  useEffect(() => {
+    const loadSeoPageMappings = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('seo_pages')
+          .select('page_id, filter_type, filter_value')
+          .eq('is_active', true)
+          .eq('estado', 'RJ');
+
+        if (error) {
+          console.error('Erro ao carregar mapeamentos SEO:', error);
+          return;
+        }
+
+        // Criar mapa de bairro/zona -> page_id
+        const mappings = new Map<string, string>();
+        (data || []).forEach((page: { page_id: string; filter_type: string; filter_value: string }) => {
+          // Chave normalizada: tipo_valor (ex: "bairro_leblon", "zona_zona sul")
+          const key = `${page.filter_type}_${page.filter_value.toLowerCase()}`;
+          mappings.set(key, page.page_id);
+        });
+        
+        setSeoPageMappings(mappings);
+      } catch (error) {
+        console.error('Erro ao carregar mapeamentos SEO:', error);
+      }
+    };
+
+    loadSeoPageMappings();
   }, []);
 
   // Estados para armazenar as seleções
@@ -1195,7 +1234,44 @@ const LeilaoRJ = () => {
       newFilters.priceRanges = selectedPriceRanges.map(range => range.label);
     }
     
-    // Aplicar filtros
+    // FR-V18-002: Verificar se deve navegar para página regional
+    // Se APENAS 1 bairro está selecionado E existe página SEO para ele, navegar
+    if (selectedNeighborhoods.length === 1 && !isZoneSelected) {
+      const bairro = selectedNeighborhoods[0];
+      const seoKey = `bairro_${bairro.toLowerCase()}`;
+      const pageId = seoPageMappings.get(seoKey);
+      
+      if (pageId) {
+        // Navegar para página regional usando replace para não poluir histórico
+        navigate(`/catalogo/${pageId}`, { replace: true });
+        toast.success(`Navegando para página de ${bairro}...`);
+        
+        // Se estiver no mobile, fechar o painel de filtros
+        if (isMobile) {
+          setIsFilterOpen(false);
+        }
+        return; // Não continuar com filtro normal
+      }
+    }
+    
+    // Verificar também para zona única (quando selecionada explicitamente)
+    if (isZoneSelected && newFilters.zone) {
+      const zona = newFilters.zone;
+      const seoKey = `zona_${zona.toLowerCase()}`;
+      const pageId = seoPageMappings.get(seoKey);
+      
+      if (pageId) {
+        navigate(`/catalogo/${pageId}`, { replace: true });
+        toast.success(`Navegando para página de ${zona}...`);
+        
+        if (isMobile) {
+          setIsFilterOpen(false);
+        }
+        return;
+      }
+    }
+    
+    // Aplicar filtros normalmente (2+ bairros ou sem página SEO)
     setFilters(newFilters);
     
     // Atualizar URL com os filtros aplicados

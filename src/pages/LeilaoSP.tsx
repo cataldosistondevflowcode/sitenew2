@@ -17,6 +17,7 @@ import { WhatsAppIcon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useFilterParams } from "@/hooks/useFilterParams";
@@ -186,6 +187,9 @@ const AUCTION_TYPE_EXTRAJUDICIAL = "EXTRAJUDICIAL";
 const AUCTION_TYPE_EXTRAJUDICIAL_FINANCIAMENTO = "EXTRAJUDICIAL FINANCIÁVEL";
 
 const LeilaoSP = () => {
+  // Hook de navegação para redirecionamento para páginas regionais (FR-V18-002)
+  const navigate = useNavigate();
+  
   // Hook para gerenciar filtros na URL
   const { parseFiltersFromURL, updateURL, clearFiltersFromURL } = useFilterParams();
 
@@ -200,6 +204,9 @@ const LeilaoSP = () => {
 
   const [isMobile, setIsMobile] = useState(false);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  
+  // Cache de mapeamentos SEO para páginas regionais (FR-V18-002)
+  const [seoPageMappings, setSeoPageMappings] = useState<Map<string, string>>(new Map());
   
   // Estados para controlar os dropdowns
   const [showTypeMenu, setShowTypeMenu] = useState(false);
@@ -278,6 +285,37 @@ const LeilaoSP = () => {
     if (twitterDescription) {
       twitterDescription.setAttribute('content', 'Leilão de imóveis em SP e Advocacia Imobiliária. Tenha alto Retorno Financeiro com segurança com Especialistas. Entre em Contato Conosco!');
     }
+  }, []);
+
+  // Carregar mapeamentos de páginas SEO regionais para SP (FR-V18-002)
+  useEffect(() => {
+    const loadSeoPageMappings = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('seo_pages')
+          .select('page_id, filter_type, filter_value')
+          .eq('is_active', true)
+          .eq('estado', 'SP');
+
+        if (error) {
+          console.error('Erro ao carregar mapeamentos SEO:', error);
+          return;
+        }
+
+        // Criar mapa de bairro/zona -> page_id
+        const mappings = new Map<string, string>();
+        (data || []).forEach((page: { page_id: string; filter_type: string; filter_value: string }) => {
+          const key = `${page.filter_type}_${page.filter_value.toLowerCase()}`;
+          mappings.set(key, page.page_id);
+        });
+        
+        setSeoPageMappings(mappings);
+      } catch (error) {
+        console.error('Erro ao carregar mapeamentos SEO:', error);
+      }
+    };
+
+    loadSeoPageMappings();
   }, []);
   
   // Estado para armazenar a cidade selecionada sem a contagem entre parênteses
@@ -516,7 +554,44 @@ const LeilaoSP = () => {
     // Adicionar múltiplas faixas de preço selecionadas para persistir na URL
     // Nota: priceRanges não está na interface Filters, removido para evitar erro
     
-    // Aplicar filtros
+    // FR-V18-002: Verificar se deve navegar para página regional
+    // Se APENAS 1 bairro está selecionado E existe página SEO para ele, navegar
+    if (selectedNeighborhoods.length === 1 && !isZoneSelected) {
+      const bairro = selectedNeighborhoods[0];
+      const seoKey = `bairro_${bairro.toLowerCase()}`;
+      const pageId = seoPageMappings.get(seoKey);
+      
+      if (pageId) {
+        // Navegar para página regional usando replace para não poluir histórico
+        navigate(`/catalogo/${pageId}`, { replace: true });
+        toast.success(`Navegando para página de ${bairro}...`);
+        
+        // Se estiver no mobile, fechar o painel de filtros
+        if (isMobile) {
+          setIsFilterOpen(false);
+        }
+        return; // Não continuar com filtro normal
+      }
+    }
+    
+    // Verificar também para zona única (quando selecionada explicitamente)
+    if (isZoneSelected && newFilters.zone && newFilters.zone !== "TODA_SP") {
+      const zona = newFilters.zone;
+      const seoKey = `zona_${zona.toLowerCase()}`;
+      const pageId = seoPageMappings.get(seoKey);
+      
+      if (pageId) {
+        navigate(`/catalogo/${pageId}`, { replace: true });
+        toast.success(`Navegando para página de ${zona}...`);
+        
+        if (isMobile) {
+          setIsFilterOpen(false);
+        }
+        return;
+      }
+    }
+    
+    // Aplicar filtros normalmente (2+ bairros ou sem página SEO)
     setFilters(newFilters);
     
     // Resetar para a primeira página quando aplicar filtros
@@ -534,7 +609,7 @@ const LeilaoSP = () => {
     if (isMobile) {
       setIsFilterOpen(false);
     }
-  }, [selectedCities, selectedCity, selectedTypes, selectedType, selectedNeighborhoods, selectedNeighborhood, locationInput, keywordInput, filterSecondAuction, selectedPriceRanges, selectedPriceRange, selectedAuctionTypes, selectedAuctionType, dataFimSegundoLeilao, isMobile]);
+  }, [selectedCities, selectedCity, selectedTypes, selectedType, selectedNeighborhoods, selectedNeighborhood, locationInput, keywordInput, filterSecondAuction, selectedPriceRanges, selectedPriceRange, selectedAuctionTypes, selectedAuctionType, dataFimSegundoLeilao, isMobile, navigate, seoPageMappings]);
 
   // Função para fechar o popup de oportunidades
   const closeOpportunityPopup = () => {

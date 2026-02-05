@@ -489,6 +489,50 @@ Páginas de referência para replicar o design:
 - [ ] Posicionada após CTA de Apoio e antes dos Depoimentos
 - [ ] Vídeos do YouTube carregam corretamente
 
+### RF-13 — Estabilidade do Layout do Topo (SocialBar) ⭐ NOVO v18
+**Descrição:** O componente SocialBar (barra de topo com contatos e redes sociais) não pode sofrer layout shift ao interagir com seus elementos.
+
+**Origem:** Feedback de QA - Lucas (2026-02-05)
+
+**Regras:**
+1. Altura do SocialBar deve ser fixa (min-height definido)
+2. Ícones de redes sociais devem ter dimensões explícitas (width/height fixos)
+3. Estados de hover não podem alterar dimensões do container
+4. Ícones devem usar SVG inline (não imagens externas que causam carregamento)
+5. Não deve haver flicker/piscar ao interagir com WhatsApp/Instagram
+
+**Critérios de aceite:**
+- [x] Interagir com ícones WhatsApp/Instagram NÃO altera altura do header
+- [x] Nenhum elemento "salta" ou "desloca" durante interação
+- [x] Ícones convertidos de imagem externa para SVG inline
+- [ ] CLS (Cumulative Layout Shift) mantido abaixo de 0.1
+- [x] Funciona consistentemente em mobile, tablet e desktop
+
+### RF-14 — Navegação Automática para Página Regional (1 bairro) ⭐ NOVO v18
+**Descrição:** Quando o usuário selecionar APENAS UM bairro/região que tenha página SEO mapeada no catálogo RJ/SP, o sistema deve navegar automaticamente para essa página regional.
+
+**Origem:** Feedback de QA - Lucas (2026-02-05) + RF-03/RF-04 (Páginas Regionais)
+
+**Regras:**
+1. Se `selectedNeighborhoods.length === 1` E existe página SEO para esse bairro em `seo_pages`:
+   - Navegar para `/catalogo/{page_id}` usando `replace`
+   - URL deve refletir o slug regional
+2. Se `selectedNeighborhoods.length >= 2`:
+   - NÃO navegar para página regional
+   - Permanecer na página city (`/leilao-rj` ou `/leilao-sp`)
+   - Aplicar filtros para múltiplos bairros
+3. Se `selectedNeighborhoods.length === 0`:
+   - Permanecer na página city padrão
+4. Os slugs das páginas regionais SUBSTITUEM os filtros dessas regiões
+
+**Critérios de aceite:**
+- [x] Selecionar "Leblon" no filtro RJ e buscar → navega para `/catalogo/leblon-rj`
+- [x] URL do browser atualiza para o slug regional
+- [x] Selecionar "Leblon" + "Ipanema" → permanece em `/leilao-rj`
+- [x] Filtro multi-bairro mostra imóveis de ambos os bairros
+- [x] Limpar filtros em página regional → volta para `/leilao-rj`
+- [x] Implementado tanto em LeilaoRJ quanto em LeilaoSP
+
 ## 11. Riscos / Dependências
 - Entrega de páginas por empresa externa (pode atrasar)
 - Dependência de validação da empresa de SEO

@@ -68,37 +68,43 @@ export const ContactButton: React.FC<ContactButtonProps> = ({ onWhatsAppClick })
 export const SocialMediaLinks: React.FC = () => {
   return (
     <nav
-      className="flex gap-3 sm:gap-4 justify-center items-center w-full sm:w-auto"
+      className="flex gap-3 sm:gap-4 justify-center items-center w-full sm:w-auto min-h-[36px] sm:min-h-[40px]"
       aria-label="Social media links"
     >
       <a
         href="https://www.facebook.com/cataldosistonadvogados/"
         target="_blank"
         rel="noopener noreferrer"
-        className="flex justify-center items-center w-9 h-9 sm:w-10 sm:h-10 hover:opacity-80 transition-opacity rounded-full hover:bg-neutral-600"
+        className="flex justify-center items-center w-9 h-9 sm:w-10 sm:h-10 transition-[opacity,background-color] duration-150 rounded-full hover:bg-neutral-600 hover:opacity-80"
         aria-label="Facebook"
       >
-        <FacebookIcon />
+        <div className="w-8 h-8 flex items-center justify-center flex-shrink-0">
+          <FacebookIcon />
+        </div>
       </a>
 
       <a
         href="https://www.instagram.com/cataldosiston.advogados/"
         target="_blank"
         rel="noopener noreferrer"
-        className="flex justify-center items-center w-9 h-9 sm:w-10 sm:h-10 hover:opacity-80 transition-opacity rounded-full hover:bg-neutral-600"
+        className="flex justify-center items-center w-9 h-9 sm:w-10 sm:h-10 transition-[opacity,background-color] duration-150 rounded-full hover:bg-neutral-600 hover:opacity-80"
         aria-label="Instagram"
       >
-        <InstagramIcon />
+        <div className="w-8 h-8 flex items-center justify-center flex-shrink-0">
+          <InstagramIcon />
+        </div>
       </a>
 
       <a
         href="https://www.youtube.com/channel/UCldbgxJU1D9h3UAVUIRIRYg"
         target="_blank"
         rel="noopener noreferrer"
-        className="flex justify-center items-center w-9 h-9 sm:w-10 sm:h-10 hover:opacity-80 transition-opacity rounded-full hover:bg-neutral-600"
+        className="flex justify-center items-center w-9 h-9 sm:w-10 sm:h-10 transition-[opacity,background-color] duration-150 rounded-full hover:bg-neutral-600 hover:opacity-80"
         aria-label="YouTube"
       >
-        <YouTubeIcon />
+        <div className="w-8 h-8 flex items-center justify-center flex-shrink-0">
+          <YouTubeIcon />
+        </div>
       </a>
     </nav>
   );
@@ -110,7 +116,7 @@ interface SocialBarProps {
 
 export const SocialBar: React.FC<SocialBarProps> = ({ onWhatsAppClick }) => {
   return (
-    <header className="w-full bg-neutral-700 py-2 sm:py-3">
+    <header className="w-full bg-neutral-700 py-2 sm:py-3 min-h-[88px] sm:min-h-[52px]">
       <div className="container mx-auto px-4">
         <div className="flex flex-col lg:flex-row items-center justify-between gap-3 lg:gap-6">
           <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 lg:gap-6 w-full lg:w-auto">

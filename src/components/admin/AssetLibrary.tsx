@@ -3,16 +3,36 @@
  * 
  * Galeria de imagens com seleção e edição de metadados
  * Sprint CMS v2
+ * Sprint CMS v17: Adicionado campo de busca
  */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useAssetUpload, Asset } from '@/hooks/useAssetUpload';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Copy, Trash2, Edit2, Check, X } from 'lucide-react';
+import { Copy, Trash2, Edit2, Check, X, Search } from 'lucide-react';
 import { toast } from 'sonner';
+
+/**
+ * Hook useDebounce para evitar muitas re-renders durante digitação
+ */
+function useDebounce<T>(value: T, delay: number): T {
+  const [debouncedValue, setDebouncedValue] = useState<T>(value);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [value, delay]);
+
+  return debouncedValue;
+}
 
 interface AssetLibraryProps {
   onSelectAsset?: (url: string, alt?: string) => void;
@@ -24,6 +44,22 @@ export const AssetLibrary = ({ onSelectAsset, isSelector = false }: AssetLibrary
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editAlt, setEditAlt] = useState('');
   const [editTitle, setEditTitle] = useState('');
+  
+  // Sprint CMS v17: Campo de busca com debounce
+  const [searchQuery, setSearchQuery] = useState('');
+  const debouncedSearch = useDebounce(searchQuery, 300);
+  
+  // Filtrar assets baseado na busca
+  const filteredAssets = useMemo(() => {
+    if (!debouncedSearch.trim()) return assets;
+    const query = debouncedSearch.toLowerCase();
+    return assets.filter(a => 
+      a.filename.toLowerCase().includes(query) ||
+      a.original_filename?.toLowerCase().includes(query) ||
+      a.alt_text?.toLowerCase().includes(query) ||
+      a.title?.toLowerCase().includes(query)
+    );
+  }, [assets, debouncedSearch]);
 
   useEffect(() => {
     loadAssets();
@@ -82,12 +118,37 @@ export const AssetLibrary = ({ onSelectAsset, isSelector = false }: AssetLibrary
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Biblioteca de Imagens ({assets.length})</CardTitle>
+        <div className="flex items-center justify-between gap-4">
+          <CardTitle>Biblioteca de Imagens ({assets.length})</CardTitle>
+          
+          {/* Sprint CMS v17: Campo de busca */}
+          <div className="relative w-64">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <Input
+              placeholder="Buscar por nome..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-9 h-9"
+            />
+          </div>
+        </div>
+        
+        {/* Contador de resultados filtrados */}
+        {debouncedSearch && (
+          <p className="text-sm text-muted-foreground mt-2">
+            {filteredAssets.length} de {assets.length} imagens encontradas
+          </p>
+        )}
       </CardHeader>
 
       <CardContent>
+        {filteredAssets.length === 0 && debouncedSearch ? (
+          <p className="text-center text-gray-500 py-8">
+            Nenhuma imagem encontrada para "{debouncedSearch}"
+          </p>
+        ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {assets.map((asset) => (
+          {filteredAssets.map((asset) => (
             <div key={asset.id} className="border rounded-lg overflow-hidden hover:shadow-lg transition">
               {/* Thumbnail */}
               <div
@@ -186,6 +247,7 @@ export const AssetLibrary = ({ onSelectAsset, isSelector = false }: AssetLibrary
             </div>
           ))}
         </div>
+        )}
       </CardContent>
     </Card>
   );

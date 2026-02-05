@@ -8,3 +8,7 @@ export { AboutCompanySection } from './AboutCompanySection';
 export { SuccessCasesSection } from './SuccessCasesSection';
 export { BlogPostsCarousel } from './BlogPostsCarousel';
 export { FinalCTA } from './FinalCTA';
+
+// Sprint CMS v14 — Regionais via CMS
+export { RegionCmsContent, useHasRegionalCms } from './RegionCmsContent';
+export { RegionContentWithFallback, normalizeToSlug } from './RegionContentWithFallback';

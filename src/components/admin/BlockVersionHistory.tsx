@@ -1,6 +1,7 @@
 /**
  * BlockVersionHistory — Histórico de versões de um bloco (Sprint CMS v4)
  * Lista versões e permite reverter para uma versão anterior (como draft).
+ * Sprint CMS v17: Adicionado modal de confirmação antes de reverter
  */
 
 import { useState, useEffect } from 'react';
@@ -13,6 +14,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { useCmsVersions, type CmsVersion } from '@/hooks/useCmsVersions';
+import { ConfirmationModal } from '@/components/ConfirmationModal';
 import { History, Loader2, RotateCcw } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -33,6 +35,9 @@ export function BlockVersionHistory({
   const [open, setOpen] = useState(false);
   const { listBlockVersions, revertBlockToVersion, loading, reverting } = useCmsVersions();
   const [versions, setVersions] = useState<CmsVersion[]>([]);
+  
+  // Sprint CMS v17: Estado para modal de confirmação
+  const [confirmRevertId, setConfirmRevertId] = useState<number | null>(null);
 
   const loadVersions = async () => {
     const list = await listBlockVersions(blockId);
@@ -48,9 +53,15 @@ export function BlockVersionHistory({
   const handleRevert = async (versionId: number) => {
     const ok = await revertBlockToVersion(blockId, versionId);
     if (ok) {
+      setConfirmRevertId(null);
       setOpen(false);
       onReverted?.();
     }
+  };
+  
+  // Sprint CMS v17: Abrir modal de confirmação em vez de reverter diretamente
+  const requestRevert = (versionId: number) => {
+    setConfirmRevertId(versionId);
   };
 
   return (
@@ -90,10 +101,10 @@ export function BlockVersionHistory({
                   <Button
                     size="sm"
                     variant="outline"
-                    onClick={() => handleRevert(v.id)}
+                    onClick={() => requestRevert(v.id)}
                     disabled={reverting}
                   >
-                    {reverting ? (
+                    {reverting && confirmRevertId === v.id ? (
                       <Loader2 className="w-4 h-4 animate-spin" />
                     ) : (
                       <>
@@ -111,6 +122,18 @@ export function BlockVersionHistory({
           Reverter restaura o conteúdo como rascunho. É preciso publicar novamente para ir ao ar.
         </p>
       </DialogContent>
+      
+      {/* Sprint CMS v17: Modal de confirmação */}
+      <ConfirmationModal
+        open={confirmRevertId !== null}
+        onOpenChange={(open) => !open && setConfirmRevertId(null)}
+        title="Reverter para versão anterior?"
+        description="Isso substituirá o rascunho atual pelo conteúdo desta versão. Você precisará publicar para que as alterações fiquem visíveis ao público."
+        confirmLabel="Reverter"
+        cancelLabel="Cancelar"
+        onConfirm={() => confirmRevertId && handleRevert(confirmRevertId)}
+        variant="destructive"
+      />
     </Dialog>
   );
 }

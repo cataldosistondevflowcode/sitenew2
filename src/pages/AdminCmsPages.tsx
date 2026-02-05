@@ -4,14 +4,16 @@
  * 
  * Lista de páginas editáveis do CMS
  * Sprint CMS v0 — MVP mínimo
+ * Sprint CMS v17 — Filtro por status
  */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ArrowLeft, Edit2, AlertCircle, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
@@ -33,6 +35,22 @@ export default function AdminCmsPages() {
   const [pages, setPages] = useState<CmsPage[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  // Sprint CMS v17: Filtro por status
+  const [statusFilter, setStatusFilter] = useState<'all' | 'draft' | 'published'>('all');
+
+  // Calcular contadores e filtrar páginas
+  const { filteredPages, draftCount, publishedCount } = useMemo(() => {
+    const draftCount = pages.filter(p => p.status === 'draft').length;
+    const publishedCount = pages.filter(p => p.status === 'published').length;
+    
+    let filteredPages = pages;
+    if (statusFilter !== 'all') {
+      filteredPages = pages.filter(p => p.status === statusFilter);
+    }
+    
+    return { filteredPages, draftCount, publishedCount };
+  }, [pages, statusFilter]);
 
   // Redirecionar se não for admin
   useEffect(() => {
@@ -116,6 +134,27 @@ export default function AdminCmsPages() {
 
         <h1 className="text-3xl font-bold">Gerenciador de Conteúdo CMS</h1>
         <p className="text-gray-600 mt-2">Edite o conteúdo das páginas do site</p>
+
+        {/* Sprint CMS v17: Filtro por status */}
+        {!loading && !error && pages.length > 0 && (
+          <Tabs 
+            value={statusFilter} 
+            onValueChange={(v) => setStatusFilter(v as 'all' | 'draft' | 'published')}
+            className="mt-4"
+          >
+            <TabsList>
+              <TabsTrigger value="all">
+                Todas ({pages.length})
+              </TabsTrigger>
+              <TabsTrigger value="draft">
+                Rascunhos ({draftCount})
+              </TabsTrigger>
+              <TabsTrigger value="published">
+                Publicadas ({publishedCount})
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+        )}
       </div>
 
       {/* Loading */}
@@ -150,8 +189,14 @@ export default function AdminCmsPages() {
                 Nenhuma página de CMS encontrada. Contate o administrador.
               </CardContent>
             </Card>
+          ) : filteredPages.length === 0 ? (
+            <Card>
+              <CardContent className="pt-6 text-center text-gray-500">
+                Nenhuma página encontrada com o filtro selecionado.
+              </CardContent>
+            </Card>
           ) : (
-            pages.map((page) => (
+            filteredPages.map((page) => (
               <Card key={page.id} className="hover:shadow-md transition-shadow">
                 <CardContent className="pt-6">
                   <div className="flex items-start justify-between gap-4">

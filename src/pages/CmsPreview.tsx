@@ -4,6 +4,7 @@
  * 
  * Preview de página CMS em draft
  * Sprint CMS v1 + v3 (Token de Preview)
+ * Sprint CMS v17: Adicionado meta noindex
  */
 
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
@@ -16,6 +17,35 @@ import { Card, CardContent } from '@/components/ui/card';
 import { AlertCircle, ArrowLeft, Loader2, Eye, Clock, Link as LinkIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
+/**
+ * Hook para adicionar meta noindex na página de preview
+ * Sprint CMS v17 — FR-V17-003
+ */
+const useNoIndexMeta = () => {
+  useEffect(() => {
+    // Criar ou atualizar meta robots
+    let metaRobots = document.querySelector('meta[name="robots"]') as HTMLMetaElement;
+    const originalContent = metaRobots?.content;
+    
+    if (!metaRobots) {
+      metaRobots = document.createElement('meta');
+      metaRobots.name = 'robots';
+      document.head.appendChild(metaRobots);
+    }
+    
+    metaRobots.content = 'noindex, nofollow';
+    
+    // Cleanup: restaurar valor original ao sair
+    return () => {
+      if (originalContent !== undefined) {
+        metaRobots.content = originalContent;
+      } else {
+        metaRobots.remove();
+      }
+    };
+  }, []);
+};
+
 export default function CmsPreview() {
   const { slug } = useParams<{ slug: string }>();
   const [searchParams] = useSearchParams();
@@ -25,6 +55,9 @@ export default function CmsPreview() {
 
   const [tokenAccess, setTokenAccess] = useState<boolean | null>(null);
   const [tokenValidating, setTokenValidating] = useState(false);
+
+  // Sprint CMS v17: Garantir que preview não seja indexado
+  useNoIndexMeta();
 
   // Verificar acesso: admin OU token válido
   const token = searchParams.get('token');

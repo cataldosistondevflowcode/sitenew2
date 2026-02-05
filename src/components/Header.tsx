@@ -14,7 +14,7 @@ export const Header = ({ onContactClick }: HeaderProps) => {
 
   const navItems = [
     { label: "Quem somos", href: "https://leilaodeimoveis-cataldosiston.com/escritorio/" },
-    { label: "Imóveis em Leilão", href: "/", active: true, hasDropdown: true },
+    { label: "Imóveis em Leilão", hasDropdown: true },  // Apenas dropdown, sem navegação
     { label: "Assessoria em leilões", href: "https://leilaodeimoveis-cataldosiston.com/leilao-imoveis-rj/" },
     { label: "Direito Imobiliário", href: "https://leilaodeimoveis-cataldosiston.com/direito-imobiliario/" },
     { label: "Casos Reais", href: "https://leilaodeimoveis-cataldosiston.com/casos-reais/" },

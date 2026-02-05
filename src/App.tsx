@@ -2,10 +2,11 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import AdminRoute from "@/components/AdminRoute";
-import Index from "./pages/Index";
+// Index.tsx não é mais usado - rota "/" redireciona para "/leilao-rj"
+// import Index from "./pages/Index";
 import LeilaoCaixaRJ from "./pages/LeilaoCaixaRJ";
 import LeilaoRJ from "./pages/LeilaoRJ";
 import LeilaoSP from "./pages/LeilaoSP";
@@ -54,7 +55,8 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Index />} />
+            {/* Rota raiz redireciona para /leilao-rj - página geral de leilões foi removida */}
+            <Route path="/" element={<Navigate to="/leilao-rj" replace />} />
             <Route path="/quem-somos" element={<QuemSomos />} />
             <Route path="/assessoria" element={<Assessoria />} />
             <Route path="/direito-imobiliario" element={<DireitoImobiliario />} />

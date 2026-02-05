@@ -1139,7 +1139,7 @@ export default function StaticCatalog() {
         <div className="text-center">
           <h1 className="text-2xl font-display font-bold text-gray-900 mb-4">Página não encontrada</h1>
           <p className="text-gray-600 font-body mb-6">{error || 'Esta página não existe ou foi removida.'}</p>
-          <Button onClick={() => navigate('/')} className="flex items-center gap-2 bg-[#d68e08] hover:bg-[#b87a07]">
+          <Button onClick={() => navigate('/leilao-rj')} className="flex items-center gap-2 bg-[#d68e08] hover:bg-[#b87a07]">
             <ArrowLeft className="h-4 w-4" />
             Voltar ao início
           </Button>

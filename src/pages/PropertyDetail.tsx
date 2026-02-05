@@ -192,7 +192,7 @@ const PropertyDetail = () => {
         <div className="container mx-auto px-4 py-12 text-center">
           <h1 className="text-3xl font-bold mb-4 text-gray-900">Imóvel não encontrado</h1>
           <p className="text-lg mb-8 text-gray-700">{error || "O imóvel solicitado não está disponível."}</p>
-          <a href="/" className="bg-[#d68e08] text-white px-6 py-3 rounded-lg font-bold hover:bg-[#b8780a] transition-colors">
+          <a href="/leilao-rj" className="bg-[#d68e08] text-white px-6 py-3 rounded-lg font-bold hover:bg-[#b8780a] transition-colors">
             Voltar para a página inicial
           </a>
         </div>

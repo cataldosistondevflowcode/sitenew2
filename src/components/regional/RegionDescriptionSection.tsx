@@ -35,7 +35,7 @@ export function RegionDescriptionSection({
 
         {/* Breadcrumb Navigation */}
         <nav className="flex items-center gap-2 text-sm font-body text-[#333333]">
-          <a href="/" className="hover:text-[#d68e08] transition-colors">Home</a>
+          <a href="/leilao-rj" className="hover:text-[#d68e08] transition-colors">Início</a>
           <span className="text-gray-400">→</span>
           <a href={`/leilao-${estado.toLowerCase()}`} className="hover:text-[#d68e08] transition-colors">{estado}</a>
           <span className="text-gray-400">→</span>

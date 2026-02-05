@@ -1,0 +1,237 @@
+---
+description: Regras de UX para o Editor CMS Admin. Garante experiência consistente e intuitiva.
+globs: ["src/pages/admin/**", "src/components/admin/**", "src/components/cms/**"]
+alwaysApply: true
+---
+
+# Regras UX do Editor CMS Admin
+
+## 1) Princípio Fundamental
+
+> O editor CMS deve ser **intuitivo como WordPress/Notion**.
+> Usuário não-técnico deve conseguir editar conteúdo sem treinamento.
+
+---
+
+## 2) Layout Split-View (Obrigatório)
+
+O editor DEVE usar layout dividido:
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  HEADER: Título da página + Status + Ações             │
+├─────────────────────┬───────────────────────────────────┤
+│                     │                                   │
+│  EDITOR (50%)       │  PREVIEW (50%)                   │
+│  - Campos           │  - Visualização em tempo real    │
+│  - Blocos           │  - Sincronizado com editor       │
+│  - Validação        │  - Responsivo (toggle mobile)    │
+│                     │                                   │
+├─────────────────────┴───────────────────────────────────┤
+│  STATUS BAR: Último save + Validação + Atalhos         │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Requisitos do Split-View:
+- [ ] Preview atualiza em tempo real (debounce 300ms)
+- [ ] Scroll sincronizado entre editor e preview
+- [ ] Highlight visual do bloco sendo editado
+- [ ] Toggle para preview mobile/tablet/desktop
+
+---
+
+## 3) Feedback Visual (Obrigatório)
+
+### Estados de salvamento:
+| Estado | Indicador Visual |
+|--------|------------------|
+| Editando | Indicador amarelo "Não salvo" |
+| Salvando | Spinner + "Salvando..." |
+| Salvo | Check verde + "Salvo às HH:MM" |
+| Erro | Badge vermelho + mensagem de erro |
+
+### Validação em tempo real:
+- Campos obrigatórios vazios → borda vermelha + tooltip
+- URL inválida → feedback imediato
+- Imagem não encontrada → placeholder com aviso
+- Caracteres excedidos → contador vermelho
+
+---
+
+## 4) Atalhos de Teclado (Obrigatório)
+
+| Atalho | Ação |
+|--------|------|
+| `Ctrl+S` | Salvar rascunho |
+| `Ctrl+Shift+S` | Salvar e publicar |
+| `Ctrl+P` | Abrir preview em nova aba |
+| `Ctrl+Z` | Desfazer última alteração |
+| `Ctrl+Shift+Z` | Refazer |
+| `Escape` | Fechar modal/cancelar |
+
+### Implementação:
+```tsx
+useEffect(() => {
+  const handleKeyDown = (e: KeyboardEvent) => {
+    if (e.ctrlKey && e.key === 's') {
+      e.preventDefault();
+      handleSave();
+    }
+  };
+  window.addEventListener('keydown', handleKeyDown);
+  return () => window.removeEventListener('keydown', handleKeyDown);
+}, []);
+```
+
+---
+
+## 5) Tipos de Bloco e Seus Editores
+
+Cada tipo de bloco DEVE ter editor especializado:
+
+| Tipo | Editor | Campos |
+|------|--------|--------|
+| `hero` | HeroEditor | title, subtitle, image, cta |
+| `text` | RichTextEditor | content (HTML) |
+| `cta` | CtaEditor | label, url, target, style |
+| `image` | ImageEditor | src, alt, caption |
+| `card_list` | CardListEditor | cards[] (title, desc, icon) |
+| `faq` | FaqEditor | items[] (question, answer) |
+| `testimonial` | TestimonialEditor | items[] (quote, author, role) |
+
+### Regras dos editores:
+- NUNCA mostrar JSON bruto para o usuário
+- Campos devem ter labels claros em português
+- Usar componentes shadcn/ui consistentemente
+- Validar antes de salvar
+
+---
+
+## 6) Seletor de Imagens (ImagePicker)
+
+O componente de seleção de imagem DEVE:
+
+1. **Mostrar biblioteca existente** (cms_assets)
+2. **Permitir upload** com drag-drop
+3. **Preview da imagem selecionada**
+4. **Validar dimensões/formato** antes de salvar
+5. **Gerar alt text** se vazio (sugerir baseado no nome)
+
+```tsx
+<ImagePicker
+  value={block.content.image}
+  onChange={(url) => updateBlock({ image: url })}
+  allowUpload={true}
+  acceptedFormats={['jpg', 'png', 'webp']}
+  maxSize={2 * 1024 * 1024} // 2MB
+/>
+```
+
+---
+
+## 7) Validação Contextual
+
+### Antes de salvar draft:
+- [ ] Campos obrigatórios preenchidos
+- [ ] URLs válidas (formato)
+- [ ] Imagens referenciadas existem
+
+### Antes de publicar:
+- [ ] Tudo acima +
+- [ ] Meta title preenchido (SEO)
+- [ ] Meta description preenchida (SEO)
+- [ ] Pelo menos 1 bloco de conteúdo
+- [ ] Imagens têm alt text
+
+### Feedback de validação:
+```tsx
+{errors.length > 0 && (
+  <Alert variant="destructive">
+    <AlertTitle>Corrija antes de publicar:</AlertTitle>
+    <ul>
+      {errors.map(err => <li key={err.field}>{err.message}</li>)}
+    </ul>
+  </Alert>
+)}
+```
+
+---
+
+## 8) Confirmações e Ações Destrutivas
+
+### SEMPRE pedir confirmação para:
+- Publicar (muda conteúdo público)
+- Reverter para versão anterior
+- Deletar página/bloco
+- Descartar alterações não salvas
+
+### Padrão de confirmação:
+```tsx
+<AlertDialog>
+  <AlertDialogTrigger asChild>
+    <Button variant="destructive">Deletar</Button>
+  </AlertDialogTrigger>
+  <AlertDialogContent>
+    <AlertDialogHeader>
+      <AlertDialogTitle>Confirmar exclusão?</AlertDialogTitle>
+      <AlertDialogDescription>
+        Esta ação não pode ser desfeita.
+      </AlertDialogDescription>
+    </AlertDialogHeader>
+    <AlertDialogFooter>
+      <AlertDialogCancel>Cancelar</AlertDialogCancel>
+      <AlertDialogAction onClick={handleDelete}>
+        Confirmar
+      </AlertDialogAction>
+    </AlertDialogFooter>
+  </AlertDialogContent>
+</AlertDialog>
+```
+
+---
+
+## 9) Responsividade do Editor
+
+O editor admin DEVE funcionar em:
+- Desktop (1920px+) — Layout completo split-view
+- Laptop (1366px) — Split-view com painéis menores
+- Tablet (768px) — Tabs alternando editor/preview
+- Mobile (< 768px) — Apenas editor, preview em modal
+
+---
+
+## 10) Loading States
+
+NUNCA deixar o usuário sem feedback:
+
+```tsx
+// Durante carregamento inicial
+if (isLoading) return <EditorSkeleton />;
+
+// Durante salvamento
+<Button disabled={isSaving}>
+  {isSaving ? <Spinner /> : 'Salvar'}
+</Button>
+
+// Erro de carregamento
+if (error) return <ErrorState onRetry={refetch} />;
+```
+
+---
+
+## 11) Anti-Padrões (PROIBIDO)
+
+❌ **NUNCA:**
+- Mostrar JSON bruto editável
+- Salvar sem feedback visual
+- Publicar sem confirmação
+- Permitir navegação com alterações não salvas
+- Usar alerts/prompts nativos do browser
+- Deixar botões sem estados de loading
+
+✅ **SEMPRE:**
+- Usar componentes shadcn/ui
+- Feedback visual para todas as ações
+- Validação em tempo real
+- Confirmação para ações destrutivas
+- Auto-save de rascunho (opcional, a cada 30s)

@@ -10,7 +10,37 @@ alwaysApply: true
 
 > **Antes de implementar qualquer coisa do Admin CMS, leia:**
 > - `CMS_ADMIN_SPEC.md` — Especificação completa com FRs, NFRs, schema e critérios de aceite
-> - `DECISIONS.md` — DEC-ADM-001 (decisão de usar Supabase, não Webflow)
+> - `DECISIONS.md` — DEC-ADM-001, DEC-ADM-002 e **DEC-ADM-003** (slugs = URLs)
+
+---
+
+## 1.1) ⚠️ CMS EM PRODUÇÃO — NÃO ALTERAR SEM CONFIRMAÇÃO ⚠️
+
+> **DECISÃO DEC-ADM-002 (2026-02-05):**
+> O Admin CMS está **PRONTO PARA PRODUÇÃO**. As páginas CMS existentes possuem conteúdo validado.
+
+### REGRAS CRÍTICAS:
+
+| Ação | Permitido? | Requer confirmação? |
+|------|------------|---------------------|
+| Criar NOVA página CMS | ✅ Sim | ❌ Não |
+| Criar NOVO bloco (vazio) | ✅ Sim | ❌ Não |
+| Popular bloco VAZIO (`content_published = {}`) | ✅ Sim | ❌ Não |
+| Alterar `content_published` existente | ❌ NÃO | ✅ **PERGUNTAR ANTES** |
+| Deletar página/bloco existente | ❌ NÃO | ✅ **PERGUNTAR ANTES** |
+| Reabilitar código que consome CMS | ⚠️ Depende | ✅ **PERGUNTAR ANTES** |
+| Modificar estrutura de blocos | ❌ NÃO | ✅ **PERGUNTAR ANTES** |
+
+### Páginas Protegidas (em produção):
+- `leilao-rj`, `quem-somos`, `assessoria`, `direito-imobiliario`
+- `casos-reais`, `blog`, `contato`, `catalogo-copacabana`
+
+> **NOTA (DEC-ADM-003):** Slugs CMS = URLs públicas (ex: `/leilao-rj` → slug `leilao-rj`)
+
+### Antes de qualquer alteração em CMS existente:
+1. **PARAR** e descrever o que será alterado
+2. **PERGUNTAR** ao usuário se pode prosseguir
+3. Só executar após **confirmação explícita**
 
 ---
 

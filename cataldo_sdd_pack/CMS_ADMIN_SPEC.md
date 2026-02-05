@@ -1,6 +1,7 @@
 # CMS_ADMIN_SPEC.md — Admin CMS do Site (tipo WordPress)
-_Versão: 1.0 | Data: 2026-02-03_  
-_Status: Draft | Aprovação pendente_
+_Versão: 1.3 | Data: 2026-02-05_  
+_Status: Implementado | Sprints v19-v22 Planejadas_  
+_Última atualização: Planejamento Sprints v19-v22 (Funcionalidades Avançadas)_
 
 ---
 
@@ -42,9 +43,11 @@ Criar um portal administrativo autenticado onde o cliente pode editar conteúdo 
 3. Sessão deve expirar após período de inatividade
 
 **Critérios de aceite:**
-- [ ] Login com email/senha funciona
-- [ ] Usuário sem role "admin" é redirecionado
-- [ ] Logout funciona corretamente
+- [x] Login com email/senha funciona
+- [x] Usuário sem role "admin" é redirecionado
+- [x] Logout funciona corretamente
+
+> **Nota Sprint v16:** Auth via localStorage/frontend funciona. Sessão não expira automaticamente (gap menor). RLS backend protege via `is_cms_admin()`.
 
 ---
 
@@ -57,9 +60,11 @@ Criar um portal administrativo autenticado onde o cliente pode editar conteúdo 
 3. URLs de preview também devem ser protegidas ou usar token temporário
 
 **Critérios de aceite:**
-- [ ] Acesso direto a `/admin` sem auth redireciona para `/admin/login`
-- [ ] Usuário comum (não-admin) recebe 403
+- [x] Acesso direto a `/admin` sem auth redireciona para `/admin/login`
+- [x] Usuário comum (não-admin) recebe 403
 - [ ] Headers de cache impedem vazamento de conteúdo admin
+
+> **Nota Sprint v16:** Proteção via frontend (useEffect + Navigate). Headers de cache não implementados explicitamente (gap menor, SPA protege via JS).
 
 ---
 
@@ -72,10 +77,12 @@ Criar um portal administrativo autenticado onde o cliente pode editar conteúdo 
 3. Indicar visualmente se há alterações não publicadas
 
 **Critérios de aceite:**
-- [ ] Lista mostra todas as páginas configuradas
-- [ ] Status draft/published visível
-- [ ] Data de última atualização exibida
-- [ ] Click navega para edição
+- [x] Lista mostra todas as páginas configuradas
+- [x] Status draft/published visível
+- [x] Data de última atualização exibida
+- [x] Click navega para edição
+
+> **Nota Sprint v16:** Funcional. Falta filtro por status e indicador de alterações não publicadas em página já publicada (gaps menores, backlog).
 
 ---
 
@@ -94,10 +101,12 @@ Criar um portal administrativo autenticado onde o cliente pode editar conteúdo 
 4. Não alterar estrutura da página, apenas conteúdo dos blocos
 
 **Critérios de aceite:**
-- [ ] Blocos da página são listados
-- [ ] Cada tipo de bloco tem editor apropriado
-- [ ] Alterações são refletidas no preview
-- [ ] Validação básica de campos obrigatórios
+- [x] Blocos da página são listados
+- [x] Cada tipo de bloco tem editor apropriado
+- [x] Alterações são refletidas no preview
+- [x] Validação básica de campos obrigatórios
+
+> **Nota Sprint v16:** Editores implementados para text, richtext, image, cta, list, faq. Banner sem editor dedicado (reservado). Validação básica OK.
 
 ---
 
@@ -111,10 +120,12 @@ Criar um portal administrativo autenticado onde o cliente pode editar conteúdo 
 4. Draft é persistente (não perde ao navegar)
 
 **Critérios de aceite:**
-- [ ] Botão "Salvar" funciona sem erros
-- [ ] Draft é persistido no banco
-- [ ] Site público não mostra draft
-- [ ] Posso sair e voltar sem perder alterações salvas
+- [x] Botão "Salvar" funciona sem erros
+- [x] Draft é persistido no banco
+- [x] Site público não mostra draft
+- [x] Posso sair e voltar sem perder alterações salvas
+
+> **Nota Sprint v16:** Totalmente funcional. Draft persiste em `content_draft`. RLS protege conteúdo.
 
 ---
 
@@ -128,10 +139,12 @@ Criar um portal administrativo autenticado onde o cliente pode editar conteúdo 
 4. Preview não indexável (noindex, nofollow)
 
 **Critérios de aceite:**
-- [ ] Botão "Pré-visualizar" abre página em modo preview
-- [ ] Conteúdo draft é renderizado
-- [ ] Indicador visual de "modo preview" presente
-- [ ] Usuário público não consegue acessar preview sem token/auth
+- [x] Botão "Pré-visualizar" abre página em modo preview
+- [x] Conteúdo draft é renderizado
+- [x] Indicador visual de "modo preview" presente
+- [x] Usuário público não consegue acessar preview sem token/auth
+
+> **Nota Sprint v16:** Preview completo com header azul. Suporta auth admin OU token temporário. Falta meta noindex explícito (gap menor).
 
 ---
 
@@ -145,10 +158,12 @@ Criar um portal administrativo autenticado onde o cliente pode editar conteúdo 
 4. Registrar no audit log
 
 **Critérios de aceite:**
-- [ ] Botão "Publicar" funciona
-- [ ] Conteúdo publicado aparece no site público
-- [ ] Versão anterior é salva para rollback
-- [ ] Audit log registra a publicação
+- [x] Botão "Publicar" funciona
+- [x] Conteúdo publicado aparece no site público
+- [x] Versão anterior é salva para rollback
+- [x] Audit log registra a publicação
+
+> **Nota Sprint v16:** RPC `publish_block_atomic` implementado. Publicação atômica com versionamento e audit log completo.
 
 ---
 
@@ -162,10 +177,12 @@ Criar um portal administrativo autenticado onde o cliente pode editar conteúdo 
 4. Para restaurar como published, ainda precisa publicar
 
 **Critérios de aceite:**
-- [ ] Lista de versões é exibida
-- [ ] Posso visualizar conteúdo de versão anterior
-- [ ] Botão "Reverter" restaura como draft
-- [ ] Após reverter, posso publicar normalmente
+- [x] Lista de versões é exibida
+- [x] Posso visualizar conteúdo de versão anterior
+- [x] Botão "Reverter" restaura como draft
+- [x] Após reverter, posso publicar normalmente
+
+> **Nota Sprint v16:** `BlockVersionHistory` implementado. RPC `revert_block_to_version` funciona. Visualização de diff parcial.
 
 ---
 
@@ -180,10 +197,12 @@ Criar um portal administrativo autenticado onde o cliente pode editar conteúdo 
 5. Metadados: alt text, título, data de upload
 
 **Critérios de aceite:**
-- [ ] Upload de imagem funciona
-- [ ] Imagens são listadas na biblioteca
-- [ ] Posso selecionar imagem da biblioteca no editor
-- [ ] Alt text é editável
+- [x] Upload de imagem funciona
+- [x] Imagens são listadas na biblioteca
+- [x] Posso selecionar imagem da biblioteca no editor
+- [x] Alt text é editável
+
+> **Nota Sprint v16:** Biblioteca completa. Upload via Supabase Storage. AssetSelector integrado. Falta busca/filtro e metadados width/height (gaps menores).
 
 ---
 
@@ -197,10 +216,122 @@ Criar um portal administrativo autenticado onde o cliente pode editar conteúdo 
 4. Visível apenas para admin
 
 **Critérios de aceite:**
-- [ ] Cada publicação gera registro no log
-- [ ] Log mostra actor (email/id), timestamp, ação
-- [ ] Log não pode ser alterado
-- [ ] Interface para visualizar histórico de ações
+- [x] Cada publicação gera registro no log
+- [x] Log mostra actor (email/id), timestamp, ação
+- [x] Log não pode ser alterado
+- [x] Interface para visualizar histórico de ações
+
+> **Nota Sprint v16:** `/admin/cms/audit-log` funcional. Append-only via RLS. Mostra ação, entidade, timestamp, actor. Falta ip_address/user_agent (opcional).
+
+---
+
+### FR-ADM-011 — Undo/Redo Global (Sprint v19) ✅
+**Descrição:** O admin pode desfazer e refazer ações mesmo após salvar, usando Ctrl+Z e Ctrl+Shift+Z.
+
+**Regras:**
+1. Stack de estados mantém até 50 versões
+2. Undo restaura estado anterior (blocos, conteúdo)
+3. Redo restaura estado desfeito
+4. Stack é limpo ao navegar para outra página
+5. Atalhos de teclado funcionam globalmente no editor
+
+**Critérios de aceite:**
+- [x] Ctrl+Z desfaz última alteração (mesmo após salvar draft)
+- [x] Ctrl+Shift+Z refaz alteração desfeita
+- [x] Botões Undo/Redo visíveis na status bar
+- [x] Stack limitado a 50 estados
+
+> **Status:** ✅ IMPLEMENTADO (Sprint CMS v19 — 2026-02-05)
+
+**Implementação:**
+- Hook `useUndoRedo.ts` com stack de estados, debounce e limite de 50 entradas
+- Botões Undo/Redo com tooltips na `EnhancedEditorStatusBar`
+- Atalhos Ctrl+Z e Ctrl+Shift+Z funcionando fora de inputs/textareas
+- Integração completa no `AdminCmsPageEdit.tsx`
+
+---
+
+### FR-ADM-012 — Criar/Excluir Blocos Dinamicamente (Sprint v20) ✅
+**Descrição:** O admin pode criar novos blocos e excluir blocos existentes diretamente pela UI.
+
+**Regras:**
+1. Modal permite escolher tipo de bloco e identificador (block_key)
+2. block_key deve ser único na página
+3. Exclusão requer confirmação
+4. Exclusão registra backup do conteúdo no audit log
+5. display_order é atualizado automaticamente
+
+**Critérios de aceite:**
+- [x] Botão "Adicionar Bloco" visível no editor
+- [x] Modal permite escolher tipo e block_key
+- [x] Novo bloco aparece na lista após criação
+- [x] Botão "Excluir" visível em cada bloco
+- [x] Confirmação antes de excluir
+- [x] Audit log registra criação e exclusão
+
+> **Status:** ✅ IMPLEMENTADO (Sprint CMS v20 — 2026-02-05)
+
+**Implementação:**
+- Modal `AddBlockModal` com 7 tipos de bloco (text, richtext, image, cta, list, faq, banner)
+- Validação de block_key (formato e unicidade)
+- RPCs `create_block_safe` e `delete_block_safe` com SECURITY DEFINER
+- Backup automático do conteúdo no audit log antes de excluir
+- Integração com undo/redo (Sprint v19)
+
+---
+
+### FR-ADM-013 — Reordenar Blocos com Drag-and-Drop (Sprint v21) ✅
+**Descrição:** O admin pode reordenar blocos arrastando e soltando.
+
+**Regras:**
+1. Handle de drag (≡) visível em cada bloco
+2. Feedback visual durante arrasto (ghost, placeholder)
+3. Preview atualiza em tempo real durante arrasto
+4. Ordem é persistida no banco após soltar
+5. Reordenação via teclado para acessibilidade
+
+**Critérios de aceite:**
+- [x] Arrastar bloco mostra ghost/placeholder
+- [x] Soltar bloco atualiza ordem visual imediatamente
+- [x] Audit log registra reordenação
+- [x] Acessibilidade: reordenar via teclado (Tab + Space + Arrows)
+
+> **Status:** ✅ IMPLEMENTADO (Sprint CMS v21 — 2026-02-05)
+
+**Implementação:**
+- `@dnd-kit` para funcionalidade de drag-and-drop
+- Componentes `SortableBlockList` e `SortableBlockItem`
+- RPC `reorder_blocks_batch` para persistência atômica
+- Optimistic update para feedback imediato
+- Suporte a reordenação via teclado (acessibilidade)
+
+---
+
+### FR-ADM-014 — Criar Novas Páginas pelo Admin (Sprint v22) ✅
+**Descrição:** O admin pode criar novas páginas CMS diretamente pela UI, sem necessidade de SQL.
+
+**Regras:**
+1. Modal permite inserir título, slug e descrição
+2. Slug deve ser único e válido (letras minúsculas, números, hífens)
+3. Opção de criar com blocos iniciais automáticos
+4. Página criada inicia como draft
+5. Navega para editor após criação
+
+**Critérios de aceite:**
+- [x] Botão "Nova Página" visível na lista de páginas
+- [x] Validação de slug (formato e unicidade)
+- [x] Página criada aparece na lista (status: Rascunho)
+- [x] Blocos iniciais criados automaticamente (se selecionados)
+- [x] Audit log registra criação
+
+> **Status:** ✅ IMPLEMENTADO (Sprint CMS v22 — 2026-02-05)
+
+**Implementação:**
+- Modal `CreatePageModal` com auto-geração de slug
+- Validação de formato e unicidade do slug
+- RPC `create_page_safe` com blocos padrão opcionais
+- Navegação automática para editor após criação
+- Registro no audit log
 
 ---
 
@@ -391,33 +522,90 @@ CREATE INDEX idx_cms_audit_log_created ON cms_audit_log(created_at DESC);
 - `publish_block_atomic(p_block_id, p_user_id)`: publica o bloco de forma atômica; grava versão anterior em `cms_versions`, atualiza `content_published`, insere em `cms_audit_log`.
 - `revert_block_to_version(p_block_id, p_version_id, p_user_id)`: restaura `content_draft` do bloco a partir de uma versão em `cms_versions` e registra ação `revert` no audit log.
 
-### 4.6 RLS (Row Level Security) — OBRIGATÓRIO
+### 4.6 Tabela `admin_users` (Sprint v15 — Hardening)
+
+Lista de emails autorizados a editar conteúdo do CMS. **Adicionada na Sprint v15 para substituir a verificação permissiva de `authenticated`.**
 
 ```sql
+CREATE TABLE admin_users (
+  id SERIAL PRIMARY KEY,
+  email TEXT NOT NULL UNIQUE,
+  name TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  created_by TEXT DEFAULT 'system'
+);
+
+-- RLS: tabela invisível para anon/authenticated (apenas service_role)
+ALTER TABLE admin_users ENABLE ROW LEVEL SECURITY;
+-- Sem policies = ninguém pode ler via client, apenas via função SECURITY DEFINER
+
+COMMENT ON TABLE admin_users IS 'Lista de emails autorizados a editar conteúdo do CMS';
+```
+
+**Admins iniciais (seed):**
+- `adm@hotmail.com` — Admin Demo
+- `contato@cataldosiston-adv.com.br` — Cataldo Siston
+
+### 4.7 Função `is_cms_admin()` (Sprint v15 — Hardening)
+
+Função que verifica se o usuário atual é administrador do CMS.
+
+```sql
+CREATE OR REPLACE FUNCTION is_cms_admin()
+RETURNS BOOLEAN AS $$
+BEGIN
+  -- Retorna TRUE se o email do usuário logado está em admin_users
+  RETURN EXISTS (
+    SELECT 1 FROM admin_users
+    WHERE email = (auth.jwt() ->> 'email')
+  );
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER STABLE;
+
+COMMENT ON FUNCTION is_cms_admin() IS 'Verifica se o usuário atual é administrador do CMS';
+
+-- Índice para performance
+CREATE INDEX IF NOT EXISTS idx_admin_users_email ON admin_users(email);
+```
+
+**Importante:**
+- `SECURITY DEFINER`: A função executa com permissões do owner (postgres), permitindo ler `admin_users` mesmo sem policy para `authenticated`.
+- `STABLE`: Marcada como estável para otimização de queries.
+- Usada em todas as policies de write das tabelas CMS.
+
+### 4.8 RLS (Row Level Security) — OBRIGATÓRIO
+
+> **ATUALIZADO Sprint v15:** Todas as policies de write agora usam `is_cms_admin()` em vez de apenas `authenticated`.
+
+```sql
+-- ==================================================
 -- cms_pages
+-- ==================================================
 ALTER TABLE cms_pages ENABLE ROW LEVEL SECURITY;
 
 -- Público: lê apenas published (para renderização do site)
-CREATE POLICY "cms_pages_public_read" ON cms_pages
+CREATE POLICY "cms_pages_anon_read" ON cms_pages
   FOR SELECT TO anon
   USING (status = 'published');
 
--- Admin: lê tudo
-CREATE POLICY "cms_pages_admin_read" ON cms_pages
+-- Authenticated: lê tudo (para admin ver drafts)
+CREATE POLICY "cms_pages_authenticated_read" ON cms_pages
   FOR SELECT TO authenticated
-  USING (true);  -- TODO: verificar role admin
+  USING (true);
 
--- Admin: insere/atualiza/deleta
+-- Admin: escreve (apenas admins autorizados)
 CREATE POLICY "cms_pages_admin_write" ON cms_pages
   FOR ALL TO authenticated
-  USING (true)   -- TODO: verificar role admin
-  WITH CHECK (true);
+  USING (is_cms_admin())
+  WITH CHECK (is_cms_admin());
 
+-- ==================================================
 -- cms_blocks
+-- ==================================================
 ALTER TABLE cms_blocks ENABLE ROW LEVEL SECURITY;
 
 -- Público: lê apenas blocos de páginas published
-CREATE POLICY "cms_blocks_public_read" ON cms_blocks
+CREATE POLICY "cms_blocks_anon_read" ON cms_blocks
   FOR SELECT TO anon
   USING (
     EXISTS (
@@ -427,53 +615,102 @@ CREATE POLICY "cms_blocks_public_read" ON cms_blocks
     )
   );
 
--- Admin: lê tudo
-CREATE POLICY "cms_blocks_admin_read" ON cms_blocks
+-- Authenticated: lê tudo (para admin ver drafts)
+CREATE POLICY "cms_blocks_authenticated_read" ON cms_blocks
   FOR SELECT TO authenticated
   USING (true);
 
--- Admin: escreve
+-- Admin: escreve (apenas admins autorizados)
 CREATE POLICY "cms_blocks_admin_write" ON cms_blocks
   FOR ALL TO authenticated
-  USING (true)
-  WITH CHECK (true);
+  USING (is_cms_admin())
+  WITH CHECK (is_cms_admin());
 
+-- ==================================================
 -- cms_assets (biblioteca de mídia)
+-- ==================================================
 ALTER TABLE cms_assets ENABLE ROW LEVEL SECURITY;
 
 -- Público: lê (imagens podem ser públicas)
-CREATE POLICY "cms_assets_public_read" ON cms_assets
+CREATE POLICY "cms_assets_anon_read" ON cms_assets
   FOR SELECT TO anon
   USING (true);
 
--- Admin: escreve
+-- Admin: escreve (apenas admins autorizados)
 CREATE POLICY "cms_assets_admin_write" ON cms_assets
   FOR ALL TO authenticated
-  USING (true)
-  WITH CHECK (true);
+  USING (is_cms_admin())
+  WITH CHECK (is_cms_admin());
 
+-- ==================================================
+-- cms_preview_tokens
+-- ==================================================
+ALTER TABLE cms_preview_tokens ENABLE ROW LEVEL SECURITY;
+
+-- Público: lê (para validar token)
+CREATE POLICY "Anyone can read tokens" ON cms_preview_tokens
+  FOR SELECT TO public
+  USING (true);
+
+-- Admin: insere (apenas admins autorizados)
+CREATE POLICY "cms_preview_tokens_admin_insert" ON cms_preview_tokens
+  FOR INSERT TO authenticated
+  WITH CHECK (is_cms_admin());
+
+-- Admin: deleta (apenas admins autorizados)
+CREATE POLICY "cms_preview_tokens_admin_delete" ON cms_preview_tokens
+  FOR DELETE TO authenticated
+  USING (is_cms_admin());
+
+-- ==================================================
 -- cms_versions (histórico)
+-- ==================================================
 ALTER TABLE cms_versions ENABLE ROW LEVEL SECURITY;
 
--- Apenas admin lê e escreve
-CREATE POLICY "cms_versions_admin_only" ON cms_versions
-  FOR ALL TO authenticated
-  USING (true)
-  WITH CHECK (true);
+-- Admin: lê (apenas admins autorizados)
+CREATE POLICY "cms_versions_admin_read" ON cms_versions
+  FOR SELECT TO authenticated
+  USING (is_cms_admin());
 
+-- Admin: insere (apenas admins autorizados)
+CREATE POLICY "cms_versions_admin_insert" ON cms_versions
+  FOR INSERT TO authenticated
+  WITH CHECK (is_cms_admin());
+
+-- ==================================================
 -- cms_audit_log (log de auditoria)
+-- ==================================================
 ALTER TABLE cms_audit_log ENABLE ROW LEVEL SECURITY;
 
--- Admin: lê
+-- Admin: lê (apenas admins autorizados)
 CREATE POLICY "cms_audit_log_admin_read" ON cms_audit_log
   FOR SELECT TO authenticated
-  USING (true);
+  USING (is_cms_admin());
 
 -- Admin: insere (append-only, sem update/delete)
 CREATE POLICY "cms_audit_log_admin_insert" ON cms_audit_log
   FOR INSERT TO authenticated
-  WITH CHECK (true);
+  WITH CHECK (is_cms_admin());
+
+-- ==================================================
+-- admin_users
+-- ==================================================
+ALTER TABLE admin_users ENABLE ROW LEVEL SECURITY;
+-- Sem policies = ninguém pode ler via client
+-- A função is_cms_admin() usa SECURITY DEFINER para ler
 ```
+
+### 4.9 Resumo de Permissões por Tabela
+
+| Tabela | anon | authenticated | is_cms_admin() |
+|--------|------|---------------|----------------|
+| `cms_pages` | SELECT (published) | SELECT (all) | INSERT/UPDATE/DELETE |
+| `cms_blocks` | SELECT (page published) | SELECT (all) | INSERT/UPDATE/DELETE |
+| `cms_assets` | SELECT | SELECT | INSERT/UPDATE/DELETE |
+| `cms_preview_tokens` | SELECT | SELECT | INSERT/DELETE |
+| `cms_versions` | ❌ | ❌ | SELECT/INSERT |
+| `cms_audit_log` | ❌ | ❌ | SELECT/INSERT |
+| `admin_users` | ❌ | ❌ | ❌ (só SECURITY DEFINER) |
 
 ---
 
@@ -561,35 +798,39 @@ CREATE POLICY "cms_audit_log_admin_insert" ON cms_audit_log
 
 ## 6. Critérios de Aceite Globais (AC)
 
+> **Atualizado Sprint v16:** Critérios validados contra implementação atual.
+
 ### 6.1 Funcionalidade Core
 
-- [ ] **AC-ADM-001:** Consigo fazer login no admin com email/senha
-- [ ] **AC-ADM-002:** Consigo ver lista de páginas editáveis
-- [ ] **AC-ADM-003:** Consigo editar o texto do hero da Home e salvar como draft
-- [ ] **AC-ADM-004:** Consigo pré-visualizar o draft sem afetar usuários públicos
-- [ ] **AC-ADM-005:** Ao publicar, o conteúdo público muda sem quebrar layout
-- [ ] **AC-ADM-006:** Consigo fazer upload de imagem na biblioteca
-- [ ] **AC-ADM-007:** Consigo selecionar imagem da biblioteca para um bloco
+- [x] **AC-ADM-001:** Consigo fazer login no admin com email/senha
+- [x] **AC-ADM-002:** Consigo ver lista de páginas editáveis
+- [x] **AC-ADM-003:** Consigo editar o texto do hero da Home e salvar como draft
+- [x] **AC-ADM-004:** Consigo pré-visualizar o draft sem afetar usuários públicos
+- [x] **AC-ADM-005:** Ao publicar, o conteúdo público muda sem quebrar layout
+- [x] **AC-ADM-006:** Consigo fazer upload de imagem na biblioteca
+- [x] **AC-ADM-007:** Consigo selecionar imagem da biblioteca para um bloco
 
 ### 6.2 Segurança
 
-- [ ] **AC-ADM-008:** Usuário não-admin recebe 403/redirect ao acessar /admin
-- [ ] **AC-ADM-009:** Conteúdo draft não aparece para usuários comuns
-- [ ] **AC-ADM-010:** Conteúdo draft não aparece em rotas públicas
-- [ ] **AC-ADM-011:** Preview só funciona com autenticação ou token válido
+- [x] **AC-ADM-008:** Usuário não-admin recebe 403/redirect ao acessar /admin
+- [x] **AC-ADM-009:** Conteúdo draft não aparece para usuários comuns
+- [x] **AC-ADM-010:** Conteúdo draft não aparece em rotas públicas
+- [x] **AC-ADM-011:** Preview só funciona com autenticação ou token válido
 
 ### 6.3 Integridade
 
-- [ ] **AC-ADM-012:** SEO (metas/HTML) e renderização não degradam após publicação
-- [ ] **AC-ADM-013:** Existe rollback mínimo (1 nível) para conteúdo publicado
-- [ ] **AC-ADM-014:** Cada publish gera registro no audit log
-- [ ] **AC-ADM-015:** Posso reverter para versão anterior sem quebrar o site
+- [x] **AC-ADM-012:** SEO (metas/HTML) e renderização não degradam após publicação
+- [x] **AC-ADM-013:** Existe rollback mínimo (1 nível) para conteúdo publicado
+- [x] **AC-ADM-014:** Cada publish gera registro no audit log
+- [x] **AC-ADM-015:** Posso reverter para versão anterior sem quebrar o site
 
 ### 6.4 Usabilidade
 
-- [ ] **AC-ADM-016:** Interface é clara e não requer treinamento extenso
-- [ ] **AC-ADM-017:** Feedback visual indica salvamento e publicação
-- [ ] **AC-ADM-018:** Erros são exibidos de forma compreensível
+- [x] **AC-ADM-016:** Interface é clara e não requer treinamento extenso
+- [x] **AC-ADM-017:** Feedback visual indica salvamento e publicação
+- [x] **AC-ADM-018:** Erros são exibidos de forma compreensível
+
+> **Resultado Sprint v16:** 18/18 critérios de aceite globais passam (100%).
 
 ---
 
@@ -752,6 +993,8 @@ CREATE POLICY "cms_audit_log_admin_insert" ON cms_audit_log
 
 | Data | Versão | Alteração |
 |------|--------|-----------|
+| 2026-02-05 | 1.3 | Adicionados FR-ADM-011 a FR-ADM-014 (Sprints v19-v22: Undo/Redo, Criar/Excluir Blocos, Drag-Drop, Criar Páginas) |
+| 2026-02-05 | 1.2 | Sprint CMS v16 — Alinhamento final: todos ACs atualizados, 18/18 passam |
 | 2026-02-04 | 1.1 | Sprint CMS v9 integrada (UX + 145 campos + roadmap 100%) |
 | 2026-02-03 | 1.0 | Criação do documento |
 

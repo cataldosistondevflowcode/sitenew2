@@ -19,7 +19,7 @@ import { useRegionalCmsContent, RegionalCmsContent as CmsContentType } from '@/h
 interface RegionCmsContentProps {
   /**
    * Slug da regional (ex: 'copacabana', 'zona-sul-rj')
-   * Não precisa do prefixo 'regional-', o hook adiciona automaticamente
+   * Não precisa do prefixo 'catalogo-', o hook adiciona automaticamente
    */
   regionSlug: string;
   

@@ -1,0 +1,71 @@
+---
+description: Hierarquia de documentação do projeto. Define quais documentos são fonte de verdade e ordem de precedência.
+globs: ["**/*"]
+alwaysApply: true
+---
+
+# Hierarquia de Documentação — Fonte da Verdade
+
+## 🎯 REGRA FUNDAMENTAL
+
+> **Antes de implementar QUALQUER coisa, consulte os documentos na ordem de precedência abaixo.**
+> Se houver conflito entre documentos, o de maior precedência vence.
+
+---
+
+## 📚 ORDEM DE PRECEDÊNCIA (do mais ao menos prioritário)
+
+| # | Documento | Localização | Descrição |
+|---|-----------|-------------|-----------|
+| 1 | `SPEC.md` | `cataldo_sdd_pack/` | Requisitos, regras de negócio, critérios de aceite |
+| 2 | `DESIGN_SYSTEM.md` | `cataldo_sdd_pack/` | Padrões visuais obrigatórios (cores, fontes, componentes) |
+| 3 | `CMS_ADMIN_SPEC.md` | `cataldo_sdd_pack/` | Especificação do Admin CMS (schema, RLS, fluxos) |
+| 4 | `ROADMAP_SPRINTS.md` | `cataldo_sdd_pack/` | Cronograma, sprints, entregáveis |
+| 5 | `TEST_PLAN.md` | `cataldo_sdd_pack/` | Checklist de validação obrigatória |
+| 6 | `DECISIONS.md` | `cataldo_sdd_pack/` | Decisões arquiteturais registradas |
+| 7 | `RUNBOOK_DEPLOYMENT.md` | `cataldo_sdd_pack/` | Deploy, variáveis, comandos |
+| 8 | `.cursor/rules/*.mdc` | `.cursor/rules/` | Regras para agentes (este arquivo) |
+
+---
+
+## 🔍 COMO CONSULTAR
+
+### Para qualquer tarefa:
+1. Leia `SPEC.md` primeiro
+2. Verifique `ROADMAP_SPRINTS.md` para contexto da sprint atual
+3. Consulte documento específico conforme área:
+   - **Visual/Frontend** → `DESIGN_SYSTEM.md`
+   - **CMS/Admin** → `CMS_ADMIN_SPEC.md`
+   - **Banco de dados** → `CMS_ADMIN_SPEC.md` + rules `25-supabase-mcp-safety.mdc`
+   - **SEO** → `SPEC.md` seção RF-01 + rule `30-seo.mdc`
+
+### Índice de navegação:
+- `cataldo_sdd_pack/00_GUIA_DOCUMENTOS.md` — Guia rápido de todos os docs
+
+---
+
+## ⚠️ DOCUMENTOS DE SUPORTE (Não são fonte de verdade)
+
+Estes documentos são **auxiliares** — use para detalhes, mas sempre confirme com os canônicos:
+
+- `CMS_RASTREAMENTO_COMPLETO.md` — Mapa de campos
+- `CMS_GUIA_IMPLEMENTACAO_UX.md` — Guia de UX
+- `CMS_VISUALIZACAO_UX.md` — Diagramas
+- `README_CMS_COMPLETO.md` — Overview
+
+---
+
+## 🗑️ IGNORAR (Histórico)
+
+A pasta `cataldo_sdd_pack/archive/` contém documentos históricos.
+**NÃO USE** para guiar implementação — são apenas registro.
+
+---
+
+## 🚫 PROIBIÇÕES
+
+1. **NUNCA** implemente algo que contradiga `SPEC.md`
+2. **NUNCA** altere visual sem consultar `DESIGN_SYSTEM.md`
+3. **NUNCA** altere CMS sem consultar `CMS_ADMIN_SPEC.md`
+4. **NUNCA** finalize sprint sem executar `TEST_PLAN.md`
+5. **NUNCA** tome decisão arquitetural sem registrar em `DECISIONS.md`

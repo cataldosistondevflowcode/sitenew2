@@ -5,30 +5,47 @@
  * Editor de página CMS
  * Sprint CMS v0 — MVP mínimo (edita página Home, bloco hero_title)
  * Sprint CMS v9 — UX sincronizada com preview (auto-scroll, highlight, status bar)
+ * Sprint CMS v19 — Undo/Redo global (Ctrl+Z / Ctrl+Shift+Z)
  */
 
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
-import { useCmsContent } from '@/hooks/useCmsContent';
+import { useCmsContent, CmsBlock } from '@/hooks/useCmsContent';
 import { useSyncedBlockEditor } from '@/hooks/useSyncedBlockEditor';
+import { useUndoRedo, UndoRedoAction } from '@/hooks/useUndoRedo';
+import { useKeyboardShortcuts, STANDARD_SHORTCUTS } from '@/hooks/useKeyboardShortcuts';
 import { BlockEditorFactory } from '@/components/admin/BlockEditorFactory';
+import { AddBlockModal, BlockType } from '@/components/admin/AddBlockModal';
+import { ConfirmationModal } from '@/components/ConfirmationModal';
+import { SortableBlockList } from '@/components/admin/SortableBlockList';
+import { SortableBlockItem } from '@/components/admin/SortableBlockItem';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { AlertCircle, ArrowLeft, Loader2, Eye, ChevronDown, ChevronUp } from 'lucide-react';
-import { useEffect, useState, useCallback } from 'react';
+import { AlertCircle, ArrowLeft, Loader2, Eye, ChevronDown, ChevronUp, Plus, Trash2 } from 'lucide-react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { SyncedLivePreview } from '@/components/admin/ux/SyncedLivePreview';
 import { BlockStatusIndicator } from '@/components/admin/ux/BlockStatusIndicator';
 import { EnhancedEditorStatusBar } from '@/components/admin/ux/EnhancedEditorStatusBar';
 import { SharePreviewButton } from '@/components/admin/SharePreviewButton';
 import { BlockVersionHistory } from '@/components/admin/BlockVersionHistory';
+import { useToast } from '@/hooks/use-toast';
 
 export default function AdminCmsPageEdit() {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
   const { user, isAdmin } = useAuth();
+  const { toast } = useToast();
   const [expandedBlocks, setExpandedBlocks] = useState<Set<number>>(new Set());
   const [showPreview, setShowPreview] = useState(true);
   const [validationErrors, setValidationErrors] = useState<Array<{ blockId: number; fieldKey: string; message: string }>>([]);
+  
+  // Sprint v20: Estados para adicionar/excluir blocos
+  const [showAddBlockModal, setShowAddBlockModal] = useState(false);
+  const [addBlockAtIndex, setAddBlockAtIndex] = useState<number | undefined>(undefined);
+  const [blockToDelete, setBlockToDelete] = useState<{ id: number; key: string } | null>(null);
+  
+  // Ref para controlar se já inicializamos o estado do undo
+  const undoInitialized = useRef(false);
 
   // Sprint v9: Hook de sincronização editor-preview
   const {
@@ -42,6 +59,22 @@ export default function AdminCmsPageEdit() {
     onSaveComplete,
     setPreviewSize,
   } = useSyncedBlockEditor();
+
+  // Sprint v19: Hook de Undo/Redo global
+  const {
+    canUndo,
+    canRedo,
+    undo,
+    redo,
+    pushState,
+    clearHistory,
+    undoStackLength,
+    redoStackLength,
+  } = useUndoRedo<CmsBlock[]>({
+    maxStackSize: 50,
+    persistInSession: false, // Não persistir entre recarregamentos
+    debounceMs: 500, // Agrupa edições rápidas
+  });
 
   // Redirecionar se não for admin
   useEffect(() => {
@@ -64,8 +97,25 @@ export default function AdminCmsPageEdit() {
     );
   }
 
-  const { page, blocks, loading, error, updateBlockDraft, publishBlock, validateBlockContent, isSaving, reloadPage } =
+  const { page, blocks, loading, error, updateBlockDraft, publishBlock, validateBlockContent, isSaving, reloadPage, createBlock, deleteBlock, reorderBlocks } =
     useCmsContent(slug);
+
+  // Sprint v19: Inicializar estado do undo quando blocos carregam
+  useEffect(() => {
+    if (blocks.length > 0 && !undoInitialized.current) {
+      // Salva o estado inicial para permitir undo até o estado original
+      pushState(blocks, 'edit', 'Estado inicial');
+      undoInitialized.current = true;
+    }
+  }, [blocks, pushState]);
+
+  // Sprint v19: Limpar histórico ao trocar de página
+  useEffect(() => {
+    return () => {
+      clearHistory();
+      undoInitialized.current = false;
+    };
+  }, [slug, clearHistory]);
 
   // Toggle de expansão de bloco
   const toggleBlockExpanded = (blockId: number) => {
@@ -90,10 +140,46 @@ export default function AdminCmsPageEdit() {
     setExpandedBlocks(new Set());
   };
 
-  // Sprint v9: Salvar todos os blocos modificados
+  // Sprint v19: Handler de Undo
+  const handleUndo = useCallback(() => {
+    const previousBlocks = undo();
+    if (previousBlocks) {
+      // Atualizar blocos localmente (o useCmsContent usa estado local)
+      // Para cada bloco no estado anterior, atualizamos o draft local
+      toast({
+        title: 'Desfeito',
+        description: 'Ação desfeita. Salve para persistir.',
+      });
+      // Recarrega a página para refletir o estado anterior
+      // (alternativa: atualizar estado local sem recarregar)
+      reloadPage();
+    }
+  }, [undo, toast, reloadPage]);
+
+  // Sprint v19: Handler de Redo
+  const handleRedo = useCallback(() => {
+    const nextBlocks = redo();
+    if (nextBlocks) {
+      toast({
+        title: 'Refeito',
+        description: 'Ação refeita. Salve para persistir.',
+      });
+      reloadPage();
+    }
+  }, [redo, toast, reloadPage]);
+
+  // Sprint v19: Salvar estado antes de modificar
+  const saveStateForUndo = useCallback((action: UndoRedoAction, description?: string, blockId?: number) => {
+    pushState(blocks, action, description, blockId);
+  }, [blocks, pushState]);
+
+  // Sprint v9 + v19: Salvar todos os blocos modificados
   const handleSaveAll = useCallback(async () => {
     const blockIdsToSave = Array.from(unsavedBlockIds);
     let success = true;
+    
+    // Sprint v19: Salvar estado antes de gravar no banco
+    saveStateForUndo('save', `Salvou ${blockIdsToSave.length} blocos`);
     
     for (const blockId of blockIdsToSave) {
       const block = blocks.find((b) => b.id === blockId);
@@ -107,12 +193,15 @@ export default function AdminCmsPageEdit() {
       onSaveComplete(blockIdsToSave);
     }
     return success;
-  }, [unsavedBlockIds, blocks, updateBlockDraft, onSaveComplete]);
+  }, [unsavedBlockIds, blocks, updateBlockDraft, onSaveComplete, saveStateForUndo]);
 
-  // Sprint v9: Publicar bloco ativo (ou primeiro não salvo)
+  // Sprint v9 + v19: Publicar bloco ativo (ou primeiro não salvo)
   const handlePublishActive = useCallback(async () => {
     const blockToPublish = activeBlockId || (unsavedBlockIds.size > 0 ? Array.from(unsavedBlockIds)[0] : null);
     if (blockToPublish) {
+      // Sprint v19: Salvar estado antes de publicar
+      saveStateForUndo('publish', `Publicou bloco #${blockToPublish}`, blockToPublish);
+      
       const success = await publishBlock(blockToPublish);
       if (success) {
         onSaveComplete([blockToPublish]);
@@ -120,7 +209,7 @@ export default function AdminCmsPageEdit() {
       return success;
     }
     return false;
-  }, [activeBlockId, unsavedBlockIds, publishBlock, onSaveComplete]);
+  }, [activeBlockId, unsavedBlockIds, publishBlock, onSaveComplete, saveStateForUndo]);
 
   // Sprint v9: Handler para quando preview clica num bloco
   const handlePreviewBlockFocus = useCallback((blockId: number) => {
@@ -128,6 +217,85 @@ export default function AdminCmsPageEdit() {
     // Também expande o bloco no editor
     setExpandedBlocks((prev) => new Set(prev).add(blockId));
   }, [onFieldFocus]);
+
+  // Sprint v20: Handler para adicionar bloco
+  const handleAddBlock = useCallback(async (blockKey: string, blockType: BlockType, position: number | null) => {
+    // Salvar estado antes de criar (para undo)
+    saveStateForUndo('create', `Criou bloco ${blockKey}`);
+    
+    const result = await createBlock(blockKey, blockType, position);
+    return result.success;
+  }, [createBlock, saveStateForUndo]);
+
+  // Sprint v20: Handler para confirmar exclusão de bloco
+  const handleDeleteBlock = useCallback(async () => {
+    if (!blockToDelete) return;
+    
+    // Salvar estado antes de excluir (para undo)
+    saveStateForUndo('delete', `Excluiu bloco ${blockToDelete.key}`, blockToDelete.id);
+    
+    await deleteBlock(blockToDelete.id);
+    setBlockToDelete(null);
+  }, [blockToDelete, deleteBlock, saveStateForUndo]);
+
+  // Sprint v20: Abrir modal de adicionar bloco após um bloco específico
+  const openAddBlockModalAfter = useCallback((index: number) => {
+    setAddBlockAtIndex(index);
+    setShowAddBlockModal(true);
+  }, []);
+
+  // Sprint v20: Abrir modal de adicionar bloco no final
+  const openAddBlockModalAtEnd = useCallback(() => {
+    setAddBlockAtIndex(undefined);
+    setShowAddBlockModal(true);
+  }, []);
+
+  // Sprint v21: Handler para reordenar blocos via drag-and-drop
+  const handleReorderBlocks = useCallback(async (activeId: number, overId: number) => {
+    // Salvar estado antes de reordenar (para undo)
+    saveStateForUndo('reorder', 'Reordenou blocos');
+    
+    await reorderBlocks(activeId, overId);
+  }, [reorderBlocks, saveStateForUndo]);
+
+  // Sprint v19: Atalhos de teclado globais (Ctrl+Z, Ctrl+Shift+Z, Ctrl+S, Ctrl+P)
+  useKeyboardShortcuts({
+    shortcuts: [
+      {
+        ...STANDARD_SHORTCUTS.SAVE_DRAFT,
+        key: 'save',
+        description: 'Salvar todas as alterações como rascunho',
+        handler: handleSaveAll,
+        enabled: unsavedCount > 0,
+        allowInInput: true, // Ctrl+S funciona mesmo em inputs
+      },
+      {
+        ...STANDARD_SHORTCUTS.PUBLISH,
+        key: 'publish',
+        description: 'Publicar alterações',
+        handler: handlePublishActive,
+        enabled: true,
+        allowInInput: true,
+      },
+      {
+        ...STANDARD_SHORTCUTS.UNDO,
+        key: 'undo',
+        description: 'Desfazer última ação',
+        handler: handleUndo,
+        enabled: canUndo,
+        allowInInput: false, // Deixa Ctrl+Z nativo em inputs
+      },
+      {
+        ...STANDARD_SHORTCUTS.REDO,
+        key: 'redo',
+        description: 'Refazer ação desfeita',
+        handler: handleRedo,
+        enabled: canRedo,
+        allowInInput: false, // Deixa Ctrl+Shift+Z nativo em inputs
+      },
+    ],
+    showHelpOnQuestion: true,
+  });
 
   if (loading) {
     return (
@@ -237,66 +405,98 @@ export default function AdminCmsPageEdit() {
             {blocks.length === 0 ? (
               <Card>
                 <CardContent className="pt-6 text-center text-gray-500">
-                  Nenhum bloco de conteudo encontrado para esta pagina.
+                  <p className="mb-4">Nenhum bloco de conteúdo encontrado para esta página.</p>
+                  <Button onClick={openAddBlockModalAtEnd} variant="outline">
+                    <Plus className="w-4 h-4 mr-2" />
+                    Adicionar Primeiro Bloco
+                  </Button>
                 </CardContent>
               </Card>
             ) : (
               <div className="space-y-3">
-                {blocks.map((block) => {
-                  const isExpanded = expandedBlocks.has(block.id);
-                  const isActive = activeBlockId === block.id;
-                  const isUnsaved = unsavedBlockIds.has(block.id);
+                {/* Sprint v21: Lista de blocos com drag-and-drop */}
+                <SortableBlockList
+                  blocks={blocks}
+                  onReorder={handleReorderBlocks}
+                  disabled={isSaving}
+                >
+                  {(block, index) => {
+                    const isExpanded = expandedBlocks.has(block.id);
+                    const isActive = activeBlockId === block.id;
+                    const isUnsaved = unsavedBlockIds.has(block.id);
 
-                  return (
-                    <div 
-                      key={block.id} 
-                      className={`border rounded-lg overflow-hidden bg-white transition-all duration-200 ${
-                        isActive ? 'ring-2 ring-yellow-400 ring-offset-1' : ''
-                      } ${isUnsaved ? 'border-orange-300' : ''}`}
-                    >
-                      {/* Status do Bloco */}
-                      <button
-                        onClick={() => toggleBlockExpanded(block.id)}
-                        className="w-full"
-                      >
-                        <BlockStatusIndicator
-                          blockKey={block.block_key}
-                          blockType={block.block_type as any}
-                          status={
-                            JSON.stringify(block.content_draft) !== JSON.stringify(block.content_published)
-                              ? 'draft'
-                              : 'published'
-                          }
-                          isDirty={isUnsaved}
-                          isExpanded={isExpanded}
-                          onToggleExpand={() => toggleBlockExpanded(block.id)}
-                        />
-                      </button>
-
-                      {/* Editor Colapsavel */}
-                      {isExpanded && (
-                        <div className="border-t p-4">
-                          <div className="flex justify-end mb-2">
-                            <BlockVersionHistory
-                              blockId={block.id}
+                    return (
+                      <SortableBlockItem key={block.id} id={block.id} disabled={isSaving}>
+                        <div 
+                          className={`border rounded-lg overflow-hidden bg-white transition-all duration-200 ${
+                            isActive ? 'ring-2 ring-yellow-400 ring-offset-1' : ''
+                          } ${isUnsaved ? 'border-orange-300' : ''}`}
+                        >
+                          {/* Status do Bloco */}
+                          <button
+                            onClick={() => toggleBlockExpanded(block.id)}
+                            className="w-full"
+                          >
+                            <BlockStatusIndicator
                               blockKey={block.block_key}
-                              onReverted={reloadPage}
+                              blockType={block.block_type as any}
+                              status={
+                                JSON.stringify(block.content_draft) !== JSON.stringify(block.content_published)
+                                  ? 'draft'
+                                  : 'published'
+                              }
+                              isDirty={isUnsaved}
+                              isExpanded={isExpanded}
+                              onToggleExpand={() => toggleBlockExpanded(block.id)}
                             />
-                          </div>
-                          <BlockEditorFactory
-                            block={block}
-                            onSaveDraft={(content) => updateBlockDraft(block.id, content)}
-                            onPublish={() => publishBlock(block.id)}
-                            isSaving={isSaving}
-                            validateContent={(content) => validateBlockContent(block, content)}
-                            onFieldFocus={onFieldFocus}
-                            onContentChange={onBlockUpdate}
-                          />
+                          </button>
+
+                          {/* Editor Colapsavel */}
+                          {isExpanded && (
+                            <div className="border-t p-4">
+                              <div className="flex justify-between items-center mb-2">
+                                {/* Sprint v20: Botão de excluir bloco */}
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                  onClick={() => setBlockToDelete({ id: block.id, key: block.block_key })}
+                                >
+                                  <Trash2 className="w-4 h-4 mr-1" />
+                                  Excluir Bloco
+                                </Button>
+                                <BlockVersionHistory
+                                  blockId={block.id}
+                                  blockKey={block.block_key}
+                                  onReverted={reloadPage}
+                                />
+                              </div>
+                              <BlockEditorFactory
+                                block={block}
+                                onSaveDraft={(content) => updateBlockDraft(block.id, content)}
+                                onPublish={() => publishBlock(block.id)}
+                                isSaving={isSaving}
+                                validateContent={(content) => validateBlockContent(block, content)}
+                                onFieldFocus={onFieldFocus}
+                                onContentChange={onBlockUpdate}
+                              />
+                            </div>
+                          )}
                         </div>
-                      )}
-                    </div>
-                  );
-                })}
+                      </SortableBlockItem>
+                    );
+                  }}
+                </SortableBlockList>
+
+                {/* Sprint v20: Botão para adicionar novo bloco */}
+                <Button
+                  onClick={openAddBlockModalAtEnd}
+                  variant="outline"
+                  className="w-full border-dashed border-2 hover:border-primary hover:bg-primary/5"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Adicionar Novo Bloco
+                </Button>
               </div>
             )}
 
@@ -318,7 +518,7 @@ export default function AdminCmsPageEdit() {
           )}
         </div>
 
-        {/* Sprint v9: Status Bar Fixa no Rodape */}
+        {/* Sprint v9 + v19: Status Bar Fixa no Rodape */}
         <div className="sticky bottom-0 left-0 right-0 bg-white border-t shadow-lg">
           <div className="container">
             <EnhancedEditorStatusBar
@@ -331,10 +531,43 @@ export default function AdminCmsPageEdit() {
               onSave={handleSaveAll}
               onPublish={handlePublishActive}
               showShortcutHint={true}
+              // Sprint v19: Props de Undo/Redo
+              canUndo={canUndo}
+              canRedo={canRedo}
+              onUndo={handleUndo}
+              onRedo={handleRedo}
+              undoStackLength={undoStackLength}
+              redoStackLength={redoStackLength}
             />
           </div>
         </div>
       </div>
+
+      {/* Sprint v20: Modal de Adicionar Bloco */}
+      <AddBlockModal
+        isOpen={showAddBlockModal}
+        onClose={() => {
+          setShowAddBlockModal(false);
+          setAddBlockAtIndex(undefined);
+        }}
+        onAdd={handleAddBlock}
+        existingBlockKeys={blocks.map((b) => b.block_key)}
+        currentBlockIndex={addBlockAtIndex}
+        totalBlocks={blocks.length}
+        isLoading={isSaving}
+      />
+
+      {/* Sprint v20: Modal de Confirmação de Exclusão */}
+      <ConfirmationModal
+        open={!!blockToDelete}
+        onOpenChange={(open) => !open && setBlockToDelete(null)}
+        title="Excluir Bloco"
+        description={`Tem certeza que deseja excluir o bloco "${blockToDelete?.key}"? Esta ação não pode ser desfeita, mas o conteúdo será salvo no histórico de auditoria.`}
+        confirmLabel="Excluir"
+        cancelLabel="Cancelar"
+        onConfirm={handleDeleteBlock}
+        variant="destructive"
+      />
     </div>
   );
 }

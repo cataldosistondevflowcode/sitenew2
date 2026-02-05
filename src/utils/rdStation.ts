@@ -4,8 +4,18 @@
  * Este módulo fornece funções para rastrear eventos e interações
  * que devem ser enviadas para o RD Station.
  * 
- * IMPORTANTE: Algumas configurações específicas (como token, identificador da conta)
- * precisam ser fornecidas pelo cliente e configuradas via variáveis de ambiente.
+ * CONFIGURAÇÕES RD STATION (Cataldo Siston - Coletadas em 05/02/2026):
+ * - Account ID: 6c080696-d8cd-4a58-a778-f5d664a27c6e
+ * - Form ID (ShortCode3): shortcode3-e67a38fad5973ddb16a8
+ * - Form ID (Newsletter): newsletter-site
+ * - UA Google Analytics: UA-150032078-1
+ * - Token Newsletter: de34ae318d19588a9ae8
+ * 
+ * Recursos ativos no RD Station:
+ * - Lead Tracking: ✅ Ativo (94.870 páginas rastreadas)
+ * - Pop-up Newsletter: ✅ Publicado (exit intent)
+ * - Botão WhatsApp: ✅ Publicado (flutuante)
+ * - Formulários: 7 disponíveis
  */
 
 // Tipos de eventos que podem ser rastreados

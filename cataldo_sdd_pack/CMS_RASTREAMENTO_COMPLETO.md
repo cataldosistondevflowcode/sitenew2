@@ -1,8 +1,21 @@
 # CMS — Rastreamento Completo de Campos Editáveis e UX
 
-**Versão:** 1.0  
+**Versão:** 1.1  
 **Data:** 2026-02-04  
+**Atualizado:** 2026-02-05 (DEC-ADM-003: slugs = URLs)  
 **Objetivo:** Mapear TODOS os campos editáveis do site que devem estar no CMS e verificar implementação + melhorar UX com split-view lado a lado com sincronização
+
+---
+
+## IMPORTANTE: Convenção de Slugs (DEC-ADM-003)
+
+> **Slugs CMS = URLs públicas**
+> 
+> | Slug CMS | URL Pública |
+> |----------|-------------|
+> | `leilao-rj` | `/leilao-rj` |
+> | `quem-somos` | `/quem-somos` |
+> | `catalogo-{bairro}` | `/catalogo/{bairro}` |
 
 ---
 
@@ -66,7 +79,7 @@
 
 ## 2. Mapa Canônico de Campos Editáveis por Página
 
-### 2.1 Página HOME (`/`)
+### 2.1 Página HOME (`/leilao-rj`) — CMS Slug: `leilao-rj`
 
 | Campo | Block Key | Tipo | Status | Observações |
 |-------|-----------|------|--------|------------|
@@ -256,7 +269,7 @@
 
 ---
 
-### 2.8 Páginas Regionais (ex: `/imoveis/rj`, `/imoveis/sp/bairro-x`)
+### 2.8 Páginas Regionais (ex: `/catalogo/copacabana`) — CMS Slug: `catalogo-{bairro}`
 
 | Campo | Block Key | Tipo | Status | Observações |
 |-------|-----------|------|--------|------------|

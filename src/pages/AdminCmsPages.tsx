@@ -5,17 +5,19 @@
  * Lista de páginas editáveis do CMS
  * Sprint CMS v0 — MVP mínimo
  * Sprint CMS v17 — Filtro por status
+ * Sprint CMS v22 — Criar novas páginas pelo Admin
  */
 
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowLeft, Edit2, AlertCircle, Loader2 } from 'lucide-react';
+import { ArrowLeft, Edit2, AlertCircle, Loader2, Plus } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { CreatePageModal, CreatePageData } from '@/components/admin/CreatePageModal';
 
 interface CmsPage {
   id: number;
@@ -38,6 +40,10 @@ export default function AdminCmsPages() {
   
   // Sprint CMS v17: Filtro por status
   const [statusFilter, setStatusFilter] = useState<'all' | 'draft' | 'published'>('all');
+  
+  // Sprint CMS v22: Modal de criar página
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
 
   // Calcular contadores e filtrar páginas
   const { filteredPages, draftCount, publishedCount } = useMemo(() => {
@@ -100,6 +106,62 @@ export default function AdminCmsPages() {
     return status === 'published' ? '✓ Publicada' : '⚠ Rascunho';
   };
 
+  // Sprint CMS v22: Handler para criar página
+  const handleCreatePage = useCallback(async (data: CreatePageData) => {
+    try {
+      setIsCreating(true);
+
+      // Chamar RPC
+      const { data: rpcResult, error: rpcError } = await supabase.rpc('create_page_safe', {
+        p_title: data.title,
+        p_slug: data.slug,
+        p_description: data.description,
+        p_create_default_blocks: data.createDefaultBlocks,
+      });
+
+      if (rpcError) {
+        throw new Error(`Erro ao criar página: ${rpcError.message}`);
+      }
+
+      if (!rpcResult?.success) {
+        return { success: false, error: rpcResult?.error || 'Erro desconhecido' };
+      }
+
+      toast({
+        title: 'Sucesso',
+        description: `Página "${data.title}" criada com sucesso`,
+      });
+
+      // Recarregar lista de páginas
+      const { data: pagesData, error: pagesError } = await supabase
+        .from('cms_pages')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (!pagesError && pagesData) {
+        setPages(pagesData);
+      }
+
+      // Navegar para edição da nova página
+      navigate(`/admin/cms/pages/${data.slug}/edit`);
+
+      return { success: true, slug: data.slug };
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Erro ao criar página';
+      toast({
+        title: 'Erro',
+        description: message,
+        variant: 'destructive',
+      });
+      return { success: false, error: message };
+    } finally {
+      setIsCreating(false);
+    }
+  }, [navigate, toast]);
+
+  // Lista de slugs existentes para validação
+  const existingSlugs = useMemo(() => pages.map(p => p.slug), [pages]);
+
   return (
     <div className="container py-8">
       {/* Header */}
@@ -115,6 +177,14 @@ export default function AdminCmsPages() {
           </Button>
 
           <div className="flex gap-2">
+            {/* Sprint CMS v22: Botão Nova Página */}
+            <Button
+              onClick={() => setShowCreateModal(true)}
+              size="sm"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Nova Página
+            </Button>
             <Button
               onClick={() => navigate('/admin/cms/audit-log')}
               variant="outline"
@@ -186,7 +256,11 @@ export default function AdminCmsPages() {
           {pages.length === 0 ? (
             <Card>
               <CardContent className="pt-6 text-center text-gray-500">
-                Nenhuma página de CMS encontrada. Contate o administrador.
+                <p className="mb-4">Nenhuma página CMS encontrada.</p>
+                <Button onClick={() => setShowCreateModal(true)} variant="outline">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Criar Primeira Página
+                </Button>
               </CardContent>
             </Card>
           ) : filteredPages.length === 0 ? (
@@ -244,6 +318,15 @@ export default function AdminCmsPages() {
           )}
         </div>
       )}
+
+      {/* Sprint CMS v22: Modal de criar página */}
+      <CreatePageModal
+        isOpen={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        onCreate={handleCreatePage}
+        existingSlugs={existingSlugs}
+        isLoading={isCreating}
+      />
     </div>
   );
 }

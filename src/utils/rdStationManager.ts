@@ -1,6 +1,11 @@
 /**
  * Gerenciador global do RD Station para evitar múltiplas instâncias
  * do mesmo formulário shortcode3 sendo carregadas simultaneamente
+ * 
+ * CONFIGURAÇÕES RD STATION (Cataldo Siston):
+ * - Account ID: 6c080696-d8cd-4a58-a778-f5d664a27c6e
+ * - Form ID (ShortCode3): shortcode3-e67a38fad5973ddb16a8
+ * - UA Google Analytics: UA-150032078-1
  */
 
 declare global {
@@ -9,6 +14,13 @@ declare global {
     rdStationManager: RDStationManager;
   }
 }
+
+// IDs oficiais do RD Station (coletados do painel em 05/02/2026)
+const RD_STATION_CONFIG = {
+  FORM_ID: 'shortcode3-e67a38fad5973ddb16a8',
+  UA_ID: 'UA-150032078-1',
+  ACCOUNT_ID: '6c080696-d8cd-4a58-a778-f5d664a27c6e',
+} as const;
 
 class RDStationManager {
   private static instance: RDStationManager;
@@ -70,14 +82,19 @@ class RDStationManager {
 
   /**
    * Inicializa o formulário RD Station em um container específico
+   * Usa o ID oficial do formulário ShortCode3 do RD Station
    */
   async initializeForm(containerElement: HTMLElement): Promise<boolean> {
     try {
-      // Gerar ID único para este container
+      // Usar o ID oficial do RD Station (não gerar IDs dinâmicos)
       this.formCounter++;
-      const uniqueId = `shortcode3-container-${this.formCounter}`;
+      const formId = RD_STATION_CONFIG.FORM_ID;
+      const containerId = `${formId}-container-${this.formCounter}`;
 
-      console.log(`Inicializando formulário com ID: ${uniqueId}`);
+      console.log(`Inicializando formulário RD Station:`);
+      console.log(`  - Form ID: ${formId}`);
+      console.log(`  - Container ID: ${containerId}`);
+      console.log(`  - UA ID: ${RD_STATION_CONFIG.UA_ID}`);
 
       // Carrega o script se necessário
       await this.loadScript();
@@ -85,21 +102,22 @@ class RDStationManager {
       // Limpa o container
       containerElement.innerHTML = '';
 
-      // Cria o HTML do formulário com ID único
+      // Cria o HTML do formulário usando o ID oficial do RD Station
       const formHTML = `
-        <div role="main" id="${uniqueId}" style="display: none;"></div>
+        <div role="main" id="${formId}"></div>
       `;
 
       containerElement.innerHTML = formHTML;
-      this.activeContainers.set(containerElement, uniqueId);
+      this.activeContainers.set(containerElement, formId);
 
       // Aguarda um pouco para garantir que o DOM foi atualizado
       await new Promise(resolve => setTimeout(resolve, 500));
 
-      // Inicializa o formulário RD Station
+      // Inicializa o formulário RD Station com os IDs oficiais
       if (window.RDStationForms) {
-        new window.RDStationForms(uniqueId, 'UA-150032078-1').createForm();
-        console.log(`RDStation Form criado com sucesso para ID: ${uniqueId}`);
+        new window.RDStationForms(formId, RD_STATION_CONFIG.UA_ID).createForm();
+        console.log(`✅ RDStation Form criado com sucesso!`);
+        console.log(`   Form ID: ${formId}`);
         return true;
       } else {
         console.error('RDStationForms não disponível');

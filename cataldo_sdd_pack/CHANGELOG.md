@@ -1,5 +1,273 @@
 # CHANGELOG.md
-_Data: 2026-02-04 | Ultima atualizacao: 2026-02-04_
+_Data: 2026-02-04 | Ultima atualizacao: 2026-02-05_
+
+## 2026-02-05 — Sprint CMS v22: Criar Novas Páginas pelo Admin ✅ CONCLUÍDA
+
+### Status: ✅ IMPLEMENTADO
+
+**Objetivo:** Permitir criar novas páginas CMS diretamente pela UI do Admin, sem necessidade de SQL.
+
+### O que foi implementado
+
+| Arquivo | Tipo | Descrição |
+|---------|------|-----------|
+| `src/components/admin/CreatePageModal.tsx` | Criado | Modal com título, slug e descrição |
+| `src/pages/AdminCmsPages.tsx` | Modificado | Botão "Nova Página" e integração |
+| `supabase/migrations/20260205220000_cms_create_page_rpc.sql` | Criado | RPC `create_page_safe` |
+
+### Funcionalidades
+
+- **Botão Nova Página:** Visível no header da lista de páginas
+- **Auto-geração de slug:** Gerado a partir do título automaticamente
+- **Validação de slug:** Formato e unicidade verificados
+- **Blocos padrão:** Opção de criar hero_title, hero_subtitle e main_content
+- **Navegação automática:** Redireciona para editor após criação
+- **Audit log:** Registra criação da página
+
+### Testes realizados
+
+- [x] Build passa sem erros (`npm run build`)
+- [x] Sem erros de lint
+- [x] Modal de criar página funciona
+- [x] Validação de slug funciona
+
+### Nota
+
+Migration `20260205220000_cms_create_page_rpc.sql` precisa ser aplicada manualmente no Supabase Studio.
+
+---
+
+## 2026-02-05 — Sprint CMS v21: Reordenar Blocos com Drag-and-Drop ✅ CONCLUÍDA
+
+### Status: ✅ IMPLEMENTADO
+
+**Objetivo:** Permitir reordenar blocos arrastando e soltando (drag-and-drop), com atualização visual em tempo real e persistência automática.
+
+### O que foi implementado
+
+| Arquivo | Tipo | Descrição |
+|---------|------|-----------|
+| `src/components/admin/SortableBlockList.tsx` | Criado | Container com DndContext e overlay |
+| `src/components/admin/SortableBlockItem.tsx` | Criado | Item arrastável com handle (≡) |
+| `src/hooks/useCmsContent.ts` | Modificado | Função `reorderBlocks` com optimistic update |
+| `src/pages/AdminCmsPageEdit.tsx` | Modificado | Integração com SortableBlockList |
+| `supabase/migrations/20260205210000_cms_reorder_blocks_rpc.sql` | Criado | RPC `reorder_blocks_batch` |
+
+### Funcionalidades
+
+- **Handle de drag:** Ícone ≡ visível ao passar mouse sobre o bloco
+- **Feedback visual:** Ghost/overlay durante arrasto com borda azul
+- **Optimistic update:** Ordem atualiza imediatamente no cliente
+- **Persistência automática:** Salva no banco ao soltar
+- **Acessibilidade:** Suporte a reordenação via teclado
+- **Modifiers:** Restrição a movimento vertical apenas
+- **Audit log:** Registra ordens antiga e nova
+
+### Dependências instaladas
+
+- `@dnd-kit/core` - Core do sistema de drag-and-drop
+- `@dnd-kit/sortable` - Extensão para listas ordenáveis
+- `@dnd-kit/utilities` - Utilitários (CSS Transform)
+- `@dnd-kit/modifiers` - Restrições de movimento
+
+### Testes realizados
+
+- [x] Build passa sem erros (`npm run build`)
+- [x] Sem erros de lint
+- [x] Componentes de drag-drop criados
+- [x] Integração com AdminCmsPageEdit
+
+### Nota
+
+Migration `20260205210000_cms_reorder_blocks_rpc.sql` precisa ser aplicada manualmente no Supabase Studio.
+
+---
+
+## 2026-02-05 — Sprint CMS v20: Criar/Excluir Blocos Dinamicamente ✅ CONCLUÍDA
+
+### Status: ✅ IMPLEMENTADO
+
+**Objetivo:** Permitir que o admin crie novos blocos e exclua blocos existentes diretamente pela UI, sem necessidade de migrations SQL.
+
+### O que foi implementado
+
+| Arquivo | Tipo | Descrição |
+|---------|------|-----------|
+| `src/components/admin/AddBlockModal.tsx` | Criado | Modal com 7 tipos de bloco, validação de block_key |
+| `src/hooks/useCmsContent.ts` | Modificado | Funções `createBlock` e `deleteBlock` |
+| `src/pages/AdminCmsPageEdit.tsx` | Modificado | Botões "Adicionar Bloco" e "Excluir", modais |
+| `supabase/migrations/20260205200000_cms_block_management_rpcs.sql` | Criado | RPCs `create_block_safe` e `delete_block_safe` |
+
+### Funcionalidades
+
+- **Adicionar Bloco:** Modal com 7 tipos (text, richtext, image, cta, list, faq, banner)
+- **Identificador (block_key):** Validação de formato e unicidade
+- **Posição:** Adicionar no final ou após bloco específico
+- **Excluir Bloco:** Com confirmação e backup no audit log
+- **Reordenação automática:** display_order atualizado ao criar/excluir
+- **Integração com Undo:** Estado salvo antes de criar/excluir
+
+### Testes realizados
+
+- [x] Build passa sem erros (`npm run build`)
+- [x] Sem erros de lint
+- [x] Modal de adicionar bloco funciona
+- [x] Modal de confirmação de exclusão funciona
+
+### Nota
+
+Migration `20260205200000_cms_block_management_rpcs.sql` precisa ser aplicada manualmente no Supabase Studio.
+
+---
+
+## 2026-02-05 — Sprint CMS v19: Undo/Redo Global ✅ CONCLUÍDA
+
+### Status: ✅ IMPLEMENTADO
+
+**Objetivo:** Implementar sistema de undo/redo global que funciona entre operações de salvar, permitindo desfazer ações mesmo após salvamento.
+
+### O que foi implementado
+
+| Arquivo | Tipo | Descrição |
+|---------|------|-----------|
+| `src/hooks/useUndoRedo.ts` | Criado | Hook principal com stack de estados, debounce, limite de 50 entradas |
+| `src/hooks/useKeyboardShortcuts.ts` | Modificado | Suporte a Ctrl+Z e Ctrl+Shift+Z com lógica de matching corrigida |
+| `src/components/admin/ux/EnhancedEditorStatusBar.tsx` | Modificado | Botões Undo/Redo com tooltips e contadores |
+| `src/pages/AdminCmsPageEdit.tsx` | Modificado | Integração completa do undo/redo |
+
+### Funcionalidades
+
+- **Undo (Ctrl+Z):** Desfaz última alteração, mesmo após salvar draft
+- **Redo (Ctrl+Shift+Z):** Refaz alteração desfeita
+- **Botões visuais:** Undo/Redo na status bar com ícones e tooltips
+- **Feedback:** Contadores de ações disponíveis para desfazer/refazer
+- **Stack limitado:** Máximo 50 estados para evitar memory leak
+- **Debounce:** Agrupa edições rápidas (500ms) para não poluir histórico
+- **Limpeza automática:** Stack é limpo ao navegar para outra página
+
+### Testes realizados
+
+- [x] Build passa sem erros (`npm run build`)
+- [x] Sem erros de lint
+- [x] Atalhos de teclado funcionam fora de inputs
+- [x] Botões desabilitados quando não há ações
+
+---
+
+## 2026-02-05 — Planejamento Sprints CMS v19-v22: Funcionalidades Avançadas do Editor
+
+### Status: PARCIALMENTE IMPLEMENTADAS (v19 concluída, v20-v22 planejadas)
+
+**Objetivo:** Definir e documentar as próximas 4 sprints para completar as funcionalidades faltantes do Admin CMS, tornando-o um editor completo e profissional.
+
+### Sprints Planejadas
+
+| Sprint | Funcionalidade | Complexidade | Status |
+|--------|----------------|--------------|--------|
+| **v19** | Undo/Redo Global (Ctrl+Z entre saves) | Média | ✅ CONCLUÍDA |
+| **v20** | Criar/Excluir Blocos Dinamicamente | Alta | ✅ CONCLUÍDA |
+| **v21** | Reordenar Blocos com Drag-and-Drop | Média | ✅ CONCLUÍDA |
+| **v22** | Criar Novas Páginas pelo Admin | Média | ✅ CONCLUÍDA |
+
+### Sprint CMS v20 — Criar/Excluir Blocos
+**Escopo:**
+- Modal `AddBlockModal` com lista de tipos disponíveis
+- Função `createBlock` no hook `useCmsContent`
+- Função `deleteBlock` no hook `useCmsContent`
+- RPC `create_block_safe` no Supabase
+- RPC `delete_block_safe` no Supabase
+- Botões "Adicionar Bloco" e "Excluir" na UI
+- Audit log de criação/exclusão
+
+**Arquivos a criar:**
+- `src/components/admin/AddBlockModal.tsx`
+- `supabase/migrations/xxx_create_delete_block_rpcs.sql`
+
+**Arquivos a modificar:**
+- `src/hooks/useCmsContent.ts`
+- `src/pages/AdminCmsPageEdit.tsx`
+- `src/components/admin/BlockEditorFactory.tsx`
+
+### Sprint CMS v21 — Drag-and-Drop
+**Escopo:**
+- Instalar `@dnd-kit/core` e `@dnd-kit/sortable`
+- Componente `SortableBlockList`
+- Componente `SortableBlockItem`
+- Função `reorderBlocks` no hook
+- RPC `reorder_blocks_batch` no Supabase
+- Feedback visual durante drag
+- Acessibilidade via teclado
+
+**Dependência externa:**
+```bash
+npm install @dnd-kit/core @dnd-kit/sortable @dnd-kit/utilities
+```
+
+**Arquivos a criar:**
+- `src/components/admin/SortableBlockList.tsx`
+- `src/components/admin/SortableBlockItem.tsx`
+- `supabase/migrations/xxx_reorder_blocks_rpc.sql`
+
+### Sprint CMS v22 — Criar Páginas
+**Escopo:**
+- Modal `CreatePageModal` com título, slug e descrição
+- Validação de slug único e formato válido
+- Opção de criar com blocos iniciais automáticos
+- RPC `create_page_safe` no Supabase
+- Navegação automática para editor após criar
+
+**Arquivos a criar:**
+- `src/components/admin/CreatePageModal.tsx`
+- `supabase/migrations/xxx_create_page_rpc.sql`
+
+**Arquivos a modificar:**
+- `src/pages/AdminCmsPages.tsx`
+- `src/hooks/useCmsPages.ts` (novo hook se necessário)
+
+### Documentação Atualizada
+- [x] `ROADMAP_SPRINTS.md` — 4 novas sprints adicionadas com detalhes técnicos completos
+- [x] `CMS_ADMIN_SPEC.md` — FR-ADM-011 a FR-ADM-014 adicionados
+- [x] `CHANGELOG.md` — Esta entrada
+
+### Como Usar Este Planejamento
+1. Cada sprint está detalhada no `ROADMAP_SPRINTS.md`
+2. Inclui estrutura de código (TypeScript, SQL)
+3. Inclui critérios de aceite e testes
+4. Sprints são sequenciais (v19 → v20 → v21 → v22)
+5. Pode iniciar pela v19 imediatamente
+
+---
+
+## 2026-02-05 — Sprint CMS v18: Páginas Regionais em Lote + Conteúdo Home
+
+### Status: CONCLUÍDA
+
+**Objetivo:** Criar páginas CMS para regionais de alto tráfego (Zona Sul RJ) e popular conteúdo completo da Home.
+
+### Entregáveis
+- [x] 6 novas páginas regionais CMS criadas via MCP:
+  - `catalogo-ipanema` (10 blocos)
+  - `catalogo-leblon` (10 blocos)
+  - `catalogo-barra-tijuca` (10 blocos)
+  - `catalogo-botafogo` (10 blocos)
+  - `catalogo-flamengo` (10 blocos)
+  - `catalogo-zona-sul-rj` (10 blocos)
+- [x] Home (`leilao-rj`) com 16 blocos de marketing populados:
+  - Hero: título, subtítulo, imagem, CTAs
+  - Highlights: "Por que comprar em leilão" (4 cards)
+  - How It Works: 3 passos da assessoria
+  - About: Cataldo & Siston Advogados
+  - Final CTA: botão WhatsApp
+- [x] Migrations SQL criadas para referência futura
+- [x] Audit log registrado no Supabase
+- [x] Testado no browser: Home e páginas regionais funcionando
+
+### Métricas
+- **70 blocos regionais** (7 páginas × 10 blocos)
+- **16 blocos Home** com conteúdo real
+- **Total:** 86 blocos de conteúdo editável
+
+---
 
 ## 2026-02-04 — Sprint CMS v13: Home 100% (campos) + Qualidade (cards/steps)
 

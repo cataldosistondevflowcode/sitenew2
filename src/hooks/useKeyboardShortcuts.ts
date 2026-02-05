@@ -4,15 +4,18 @@
  * Atalhos de teclado para fluxo rápido
  * - Ctrl+S = Salvar rascunho
  * - Ctrl+P = Publicar
+ * - Ctrl+Z = Desfazer (Undo)
+ * - Ctrl+Shift+Z = Refazer (Redo)
  * - Esc = Fechar modal
  * - ? = Mostrar atalhos
  * 
  * Sprint v8 — UX Zero Fricção
+ * Sprint v19 — Undo/Redo Global
  */
 
 import { useEffect, useCallback } from 'react';
 
-export type ShortcutKey = 'save' | 'publish' | 'close' | 'help';
+export type ShortcutKey = 'save' | 'publish' | 'close' | 'help' | 'undo' | 'redo';
 
 interface ShortcutConfig {
   key: ShortcutKey;
@@ -21,6 +24,8 @@ interface ShortcutConfig {
   combo: string[];
   handler: () => void | Promise<void>;
   enabled?: boolean;
+  /** Se true, permite funcionar mesmo em inputs/textareas */
+  allowInInput?: boolean;
 }
 
 interface UseKeyboardShortcutsProps {
@@ -42,11 +47,20 @@ interface UseKeyboardShortcutsProps {
  *       handler: () => saveDraft(),
  *     },
  *     {
- *       key: 'publish',
- *       label: 'Publicar',
- *       description: 'Publica todas as alterações',
- *       combo: ['ctrl', 'p'],
- *       handler: () => publish(),
+ *       key: 'undo',
+ *       label: 'Desfazer',
+ *       description: 'Desfaz a última ação',
+ *       combo: ['ctrl', 'z'],
+ *       handler: () => handleUndo(),
+ *       allowInInput: false, // Ctrl+Z nativo funciona em inputs
+ *     },
+ *     {
+ *       key: 'redo',
+ *       label: 'Refazer',
+ *       description: 'Refaz a ação desfeita',
+ *       combo: ['ctrl', 'shift', 'z'],
+ *       handler: () => handleRedo(),
+ *       allowInInput: false,
  *     },
  *   ]
  * });
@@ -59,47 +73,63 @@ export function useKeyboardShortcuts({
   const matchesCombo = useCallback((combo: string[], event: KeyboardEvent): boolean => {
     const { ctrlKey, shiftKey, altKey, metaKey, key } = event;
 
-    const hasCtrl = combo.includes('ctrl') && (ctrlKey || metaKey);
-    const hasShift = combo.includes('shift') && shiftKey;
-    const hasAlt = combo.includes('alt') && altKey;
-    const keyMatch = combo.includes(key.toLowerCase());
+    // Normalizar a tecla pressionada
+    const pressedKey = key.toLowerCase();
+    
+    // Verificar modificadores esperados vs pressionados
+    const expectsCtrl = combo.includes('ctrl');
+    const expectsShift = combo.includes('shift');
+    const expectsAlt = combo.includes('alt');
+    
+    const hasCtrl = ctrlKey || metaKey;
+    const hasShift = shiftKey;
+    const hasAlt = altKey;
+    
+    // A tecla principal é qualquer elemento do combo que não seja um modificador
+    const mainKey = combo.find(k => !['ctrl', 'shift', 'alt', 'meta'].includes(k));
+    const keyMatch = mainKey === pressedKey;
 
-    // Verifica se a combinação bate exatamente
-    if (combo.includes('ctrl')) {
-      return hasCtrl && !hasShift && !hasAlt && keyMatch;
-    }
+    // Verificar se todos os modificadores batem EXATAMENTE
+    // Isso evita que Ctrl+Z dispare quando Ctrl+Shift+Z é pressionado
+    const ctrlMatch = expectsCtrl === hasCtrl;
+    const shiftMatch = expectsShift === hasShift;
+    const altMatch = expectsAlt === hasAlt;
 
-    if (combo.includes('shift') && combo.includes('ctrl')) {
-      return hasCtrl && hasShift && !hasAlt && keyMatch;
-    }
-
-    return hasCtrl || hasShift || hasAlt ? true : keyMatch;
+    return ctrlMatch && shiftMatch && altMatch && keyMatch;
   }, []);
 
   // Listener de teclado
   const handleKeyDown = useCallback(
     async (event: KeyboardEvent) => {
-      // Se estiver digitando em input, ignora atalhos (exceto Esc)
       const target = event.target as HTMLElement;
       const isInput = ['INPUT', 'TEXTAREA'].includes(target.tagName);
-
-      if (isInput && event.key !== 'Escape') {
-        return;
-      }
+      const isContentEditable = target.isContentEditable;
+      const isInEditor = isInput || isContentEditable;
 
       // Procura por atalho que bate
       for (const shortcut of shortcuts) {
-        if (!shortcut.enabled && shortcut.enabled !== undefined) continue;
+        // Verificar se o atalho está habilitado
+        if (shortcut.enabled === false) continue;
 
         if (matchesCombo(shortcut.combo, event)) {
+          // Se estiver em input/textarea, só executa se allowInInput for true
+          // Exceção: Escape sempre funciona
+          if (isInEditor && !shortcut.allowInInput && event.key !== 'Escape') {
+            // Para undo/redo em inputs, deixa o comportamento nativo
+            if (shortcut.key === 'undo' || shortcut.key === 'redo') {
+              return; // Não previne default, deixa o browser fazer undo/redo nativo
+            }
+            continue;
+          }
+
           event.preventDefault();
           await shortcut.handler();
-          break;
+          return; // Sai após executar um atalho
         }
       }
 
-      // Help: ? abre modal de atalhos
-      if (showHelpOnQuestion && (event.key === '?' || event.key === '/')) {
+      // Help: ? abre modal de atalhos (apenas fora de inputs)
+      if (!isInEditor && showHelpOnQuestion && (event.key === '?' || event.key === '/')) {
         showShortcutHelp(shortcuts);
       }
     },

@@ -114,7 +114,7 @@ function extractContent(blocks: RegionalCmsBlock[]): RegionalCmsContent {
  * Hook para carregar conteúdo CMS de páginas regionais
  * 
  * @param regionSlug - Slug da página regional (ex: 'copacabana', 'zona-sul-rj')
- *                     O hook adiciona o prefixo 'regional-' automaticamente
+ *                     O hook adiciona o prefixo 'catalogo-' automaticamente
  * @returns Blocos CMS, conteúdo estruturado, estado de loading/erro
  * 
  * @example
@@ -131,8 +131,8 @@ export function useRegionalCmsContent(regionSlug: string): UseRegionalCmsContent
   const [error, setError] = useState<string | null>(null);
   const [hasCmsPage, setHasCmsPage] = useState(false);
 
-  // Slug completo com prefixo
-  const fullSlug = regionSlug.startsWith('regional-') ? regionSlug : `regional-${regionSlug}`;
+  // Slug completo com prefixo (alinhado com URL /catalogo/:pageId)
+  const fullSlug = regionSlug.startsWith('catalogo-') ? regionSlug : `catalogo-${regionSlug}`;
 
   useEffect(() => {
     const loadContent = async () => {

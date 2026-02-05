@@ -1,6 +1,91 @@
 # DECISIONS.md
 _Data: 2026-01-15_  
-_Atualizado: 2026-02-03 (Admin CMS)_
+_Atualizado: 2026-02-05 (DEC-ADM-003)_
+
+---
+
+## DEC-ADM-003 — Slugs CMS Alinhados com URLs Públicas
+
+**Data:** 2026-02-05  
+**Status:** ✅ Implementada
+
+### Contexto
+Os slugs do CMS usavam nomes internos (`home`, `regional-copacabana`) que não correspondiam às URLs públicas (`/leilao-rj`, `/catalogo/copacabana`), causando confusão.
+
+### Decisão
+**Renomear slugs CMS para corresponder exatamente aos caminhos das URLs públicas.**
+
+### Mapeamento Implementado
+| ID | Slug Anterior | Slug Novo | URL Pública |
+|----|---------------|-----------|-------------|
+| 1 | `home` | `leilao-rj` | `/leilao-rj` |
+| 10 | `regional-copacabana` | `catalogo-copacabana` | `/catalogo/copacabana` |
+| - | (demais) | (sem mudança) | (já alinhados) |
+
+### Arquivos Atualizados
+1. `src/components/HeroSectionWithCms.tsx` — `useCmsPublishedBlocks('leilao-rj', ...)`
+2. `src/components/HomeCmsMarketingSections.tsx` — `useCmsPublishedBlocks('leilao-rj', ...)`
+3. `src/hooks/useRegionalCmsContent.ts` — prefixo `catalogo-` (antes: `regional-`)
+4. `src/components/regional/RegionCmsContent.tsx` — comentário atualizado
+5. `src/components/regional/RegionContentWithFallback.tsx` — comentário atualizado
+
+### Rollback (se necessário)
+Arquivo de rollback: `supabase/migrations/20260205_backup_cms_slugs_ROLLBACK.sql`
+
+```sql
+-- Reverter para estado anterior:
+UPDATE cms_pages SET slug = 'home' WHERE id = 1;
+UPDATE cms_pages SET slug = 'regional-copacabana' WHERE id = 10;
+```
+
+### Participantes
+- Eduardo Sousa (dev)
+
+---
+
+## DEC-ADM-002 — CMS em Produção: Não Alterar Sem Confirmação ⭐ DECISÃO FIXA
+
+**Data:** 2026-02-05  
+**Status:** ✅ Aceita (regra do cliente)
+
+### Contexto
+O Admin CMS está **pronto para produção**. As páginas CMS já cadastradas (leilao-rj, quem-somos, assessoria, direito-imobiliario, casos-reais, blog, contato, catalogo-copacabana) possuem conteúdo validado e não devem ser alteradas sem autorização explícita.
+
+### Decisão
+**NENHUMA alteração definitiva no conteúdo CMS das páginas existentes pode ser feita sem perguntar ao cliente ANTES.**
+
+### Mandatos Técnicos (obrigatórios)
+
+1. **PROIBIDO** alterar `content_published` de blocos existentes sem confirmação
+2. **PROIBIDO** deletar ou modificar páginas CMS existentes
+3. **PERMITIDO** criar NOVAS páginas CMS (ex: regionais adicionais)
+4. **PERMITIDO** criar NOVOS blocos em páginas existentes (com content_draft vazio)
+5. **PERMITIDO** popular blocos que estejam com `content_published = {}` (vazios)
+6. **OBRIGATÓRIO** perguntar antes de:
+   - Alterar qualquer conteúdo já publicado
+   - Reabilitar código que consome CMS (ex: HeroSectionWithCms)
+   - Modificar estrutura de blocos existentes
+
+### Páginas Protegidas (em produção)
+| Slug | Status | Blocos | URL Pública |
+|------|--------|--------|-------------|
+| `leilao-rj` | published | 16 | `/leilao-rj` |
+| `quem-somos` | published | 15 | `/quem-somos` |
+| `assessoria` | published | 5 | `/assessoria` |
+| `direito-imobiliario` | published | 4 | `/direito-imobiliario` |
+| `casos-reais` | published | 4 | `/casos-reais` |
+| `blog` | published | 4 | `/blog` |
+| `contato` | published | 5 | `/contato` |
+| `catalogo-copacabana` | published | 10 | `/catalogo/copacabana` |
+
+### Consequências
+- Evita regressões em produção
+- Garante que cliente valide alterações
+- Permite evolução incremental segura
+
+### Participantes
+- Cliente (decisor)
+- Eduardo Sousa (dev)
 
 ---
 

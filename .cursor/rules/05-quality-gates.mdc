@@ -1,0 +1,194 @@
+---
+description: Gates de qualidade obrigatórios antes de finalizar tarefas. Previne regressões e garante consistência.
+globs: ["**/*"]
+alwaysApply: true
+---
+
+# Quality Gates — Verificações Obrigatórias
+
+## 1) Antes de QUALQUER Commit
+
+### Checklist mínimo:
+- [ ] Código compila sem erros (`npm run build`)
+- [ ] Sem erros de lint críticos
+- [ ] Tipagem TypeScript correta (sem `any` desnecessário)
+- [ ] Não há `console.log` de debug esquecido
+- [ ] Não há credenciais/tokens hardcoded
+- [ ] Imports não usados removidos
+
+---
+
+## 2) Antes de Finalizar uma Tarefa
+
+### Para tarefas de Frontend:
+- [ ] Testado em 3 viewports (desktop, tablet, mobile)
+- [ ] Visual consistente com `DESIGN_SYSTEM.md`
+- [ ] Loading states implementados
+- [ ] Error states implementados
+- [ ] Acessibilidade básica (contraste, alt text)
+
+### Para tarefas de Backend/DB:
+- [ ] RLS verificado (se aplicável)
+- [ ] Queries otimizadas (sem N+1)
+- [ ] Migrations são reversíveis ou idempotentes
+- [ ] Não altera tabela `imoveis` (regra de ouro)
+
+### Para tarefas de CMS:
+- [ ] Editor funciona (criar, editar, salvar)
+- [ ] Preview sincronizado
+- [ ] Publicação funciona
+- [ ] Validação impede dados inválidos
+- [ ] Audit log registra ação
+
+---
+
+## 3) Antes de Finalizar uma Sprint
+
+### Executar `TEST_PLAN.md`:
+- [ ] Seção relevante do TEST_PLAN executada
+- [ ] Todos os testes passando
+- [ ] Regressão verificada (funcionalidades existentes ainda funcionam)
+
+### Documentação:
+- [ ] `CHANGELOG.md` atualizado
+- [ ] `ROADMAP_SPRINTS.md` status atualizado (se sprint completa)
+- [ ] Decisões importantes registradas em `DECISIONS.md`
+
+---
+
+## 4) Testes de Regressão Críticos
+
+Após QUALQUER mudança, verificar que estas funcionalidades ainda funcionam:
+
+### Site Público:
+- [ ] Home carrega
+- [ ] Listagem de imóveis funciona
+- [ ] Filtros funcionam
+- [ ] Página de detalhes abre
+- [ ] Páginas regionais carregam
+- [ ] SEO meta tags presentes
+
+### Admin CMS:
+- [ ] Login funciona
+- [ ] Lista de páginas carrega
+- [ ] Editor abre
+- [ ] Salvar funciona
+- [ ] Publicar funciona
+
+---
+
+## 5) Smoke Test Rápido (2 minutos)
+
+Execute antes de qualquer deploy:
+
+```bash
+# 1. Build passa
+npm run build
+
+# 2. Preview local funciona
+npm run preview
+# Abrir http://localhost:4173
+
+# 3. Verificar no browser:
+# - Home carrega
+# - Console sem erros críticos
+# - Uma página regional carrega
+# - /admin/login carrega
+```
+
+---
+
+## 6) Verificação de Performance
+
+Para mudanças que afetam carregamento:
+
+- [ ] LCP < 2.5s em conexão média
+- [ ] Sem layout shift visível
+- [ ] Imagens otimizadas (WebP, lazy load)
+- [ ] Bundle size não aumentou significativamente
+
+---
+
+## 7) Verificação de Segurança
+
+Para mudanças em autenticação/autorização:
+
+- [ ] RLS policies corretas
+- [ ] Usuário anônimo não acessa dados privados
+- [ ] Tokens não expostos no frontend
+- [ ] Inputs sanitizados
+
+---
+
+## 8) Processo de Revisão
+
+### Antes de marcar como "pronto":
+1. Releia o requisito original
+2. Compare implementação com critérios de aceite
+3. Execute testes relevantes
+4. Documente qualquer desvio
+
+### Se encontrar problema:
+1. Documente o problema
+2. Proponha solução
+3. Implemente fix
+4. Re-teste
+
+---
+
+## 9) Gates por Tipo de Mudança
+
+| Tipo de Mudança | Gates Obrigatórios |
+|-----------------|-------------------|
+| UI/Visual | Design System, Responsivo, Loading/Error |
+| API/Backend | RLS, Tipagem, Sem N+1 |
+| Database | Não alterar `imoveis`, Migration reversível |
+| CMS | Editor, Preview, Publish, Audit |
+| SEO | Meta tags, Canonicals, Robots |
+| Segurança | RLS, Sanitização, Auth |
+
+---
+
+## 10) Quando Pular Gates (Exceções)
+
+Gates podem ser pulados APENAS se:
+1. É um hotfix crítico em produção
+2. Documentado o motivo
+3. Criado ticket para completar verificação depois
+4. Aprovado explicitamente pelo responsável
+
+**NUNCA** pular gates para "economizar tempo" — isso cria dívida técnica.
+
+---
+
+## 11) Automatização (Recomendado)
+
+### Pre-commit hook:
+```bash
+# .husky/pre-commit
+npm run lint
+npm run type-check
+```
+
+### CI Pipeline:
+```yaml
+# GitHub Actions
+- run: npm run build
+- run: npm run lint
+- run: npm run test
+```
+
+---
+
+## 12) Métricas de Qualidade
+
+### Acompanhar:
+- Bugs encontrados após deploy
+- Tempo médio para corrigir regressões
+- Cobertura de testes (se aplicável)
+- Dívida técnica acumulada
+
+### Meta:
+- Zero bugs críticos em produção
+- Regressões corrigidas em < 24h
+- Documentação sempre atualizada

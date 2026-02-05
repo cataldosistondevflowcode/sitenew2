@@ -3,11 +3,14 @@
  * 
  * Gerencia conteúdo do CMS (páginas, blocos, draft/publish)
  * Sprint CMS v0 — MVP mínimo
+ * Sprint CMS v20 — Criar/Excluir blocos dinamicamente
  * 
  * Funcionalidades:
  * - Carregar página e blocos do CMS
  * - Salvar alterações como draft
  * - Publicar conteúdo (draft → published)
+ * - Criar novos blocos (v20)
+ * - Excluir blocos existentes (v20)
  * - Registrar no audit log
  */
 
@@ -381,6 +384,182 @@ export const useCmsContent = (pageSlug: string) => {
     }
   };
 
+  // Sprint v20: Criar novo bloco
+  const createBlock = async (
+    blockKey: string,
+    blockType: CmsBlock['block_type'],
+    position: number | null = null
+  ): Promise<{ success: boolean; blockId?: number; error?: string }> => {
+    try {
+      setIsSaving(true);
+
+      if (!page) {
+        throw new Error('Página não carregada');
+      }
+
+      // Chamar RPC
+      const { data: rpcResult, error: rpcError } = await supabase.rpc('create_block_safe', {
+        p_page_id: page.id,
+        p_block_key: blockKey,
+        p_block_type: blockType,
+        p_position: position,
+      });
+
+      if (rpcError) {
+        throw new Error(`Erro ao criar bloco: ${rpcError.message}`);
+      }
+
+      // Verificar resultado da RPC
+      if (!rpcResult?.success) {
+        throw new Error(rpcResult?.error || 'Erro desconhecido ao criar bloco');
+      }
+
+      // Recarregar blocos para atualizar estado local
+      await loadPage();
+
+      toast({
+        title: 'Sucesso',
+        description: `Bloco "${blockKey}" criado com sucesso`,
+      });
+
+      return { success: true, blockId: rpcResult.block_id };
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Erro ao criar bloco';
+      setError(message);
+      toast({
+        title: 'Erro',
+        description: message,
+        variant: 'destructive',
+      });
+      return { success: false, error: message };
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  // Sprint v20: Excluir bloco
+  const deleteBlock = async (blockId: number): Promise<{ success: boolean; error?: string }> => {
+    try {
+      setIsSaving(true);
+
+      // Obter info do bloco para feedback
+      const block = blocks.find((b) => b.id === blockId);
+      const blockKey = block?.block_key || `#${blockId}`;
+
+      // Chamar RPC
+      const { data: rpcResult, error: rpcError } = await supabase.rpc('delete_block_safe', {
+        p_block_id: blockId,
+      });
+
+      if (rpcError) {
+        throw new Error(`Erro ao excluir bloco: ${rpcError.message}`);
+      }
+
+      // Verificar resultado da RPC
+      if (!rpcResult?.success) {
+        throw new Error(rpcResult?.error || 'Erro desconhecido ao excluir bloco');
+      }
+
+      // Atualizar estado local imediatamente
+      setBlocks((prev) => prev.filter((b) => b.id !== blockId));
+
+      toast({
+        title: 'Sucesso',
+        description: `Bloco "${blockKey}" excluído`,
+      });
+
+      return { success: true };
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Erro ao excluir bloco';
+      setError(message);
+      toast({
+        title: 'Erro',
+        description: message,
+        variant: 'destructive',
+      });
+      return { success: false, error: message };
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  // Sprint v21: Reordenar blocos
+  const reorderBlocks = async (
+    activeId: number,
+    overId: number
+  ): Promise<{ success: boolean; error?: string }> => {
+    try {
+      if (!page) {
+        throw new Error('Página não carregada');
+      }
+
+      // Encontrar índices
+      const oldIndex = blocks.findIndex((b) => b.id === activeId);
+      const newIndex = blocks.findIndex((b) => b.id === overId);
+
+      if (oldIndex === -1 || newIndex === -1) {
+        throw new Error('Bloco não encontrado');
+      }
+
+      if (oldIndex === newIndex) {
+        return { success: true }; // Sem mudança
+      }
+
+      // Reordenar localmente primeiro (otimistic update)
+      const newBlocks = [...blocks];
+      const [movedBlock] = newBlocks.splice(oldIndex, 1);
+      newBlocks.splice(newIndex, 0, movedBlock);
+
+      // Atualizar display_order localmente
+      const updatedBlocks = newBlocks.map((block, index) => ({
+        ...block,
+        display_order: index + 1,
+      }));
+
+      // Atualizar estado local imediatamente
+      setBlocks(updatedBlocks);
+
+      // Preparar dados para a RPC
+      const blockOrders = updatedBlocks.map((b) => ({
+        id: b.id,
+        order: b.display_order,
+      }));
+
+      // Chamar RPC para persistir
+      const { data: rpcResult, error: rpcError } = await supabase.rpc('reorder_blocks_batch', {
+        p_page_id: page.id,
+        p_block_orders: blockOrders,
+      });
+
+      if (rpcError) {
+        // Rollback local
+        await loadPage();
+        throw new Error(`Erro ao reordenar blocos: ${rpcError.message}`);
+      }
+
+      if (!rpcResult?.success) {
+        // Rollback local
+        await loadPage();
+        throw new Error(rpcResult?.error || 'Erro desconhecido ao reordenar blocos');
+      }
+
+      toast({
+        title: 'Blocos reordenados',
+        description: 'A nova ordem foi salva',
+      });
+
+      return { success: true };
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Erro ao reordenar blocos';
+      toast({
+        title: 'Erro',
+        description: message,
+        variant: 'destructive',
+      });
+      return { success: false, error: message };
+    }
+  };
+
   // Carregar página ao montar ou mudar slug
   useEffect(() => {
     if (pageSlug) {
@@ -398,5 +577,10 @@ export const useCmsContent = (pageSlug: string) => {
     publishBlock,
     validateBlockContent,
     reloadPage: loadPage,
+    // Sprint v20: Criar/Excluir blocos
+    createBlock,
+    deleteBlock,
+    // Sprint v21: Reordenar blocos
+    reorderBlocks,
   };
 };

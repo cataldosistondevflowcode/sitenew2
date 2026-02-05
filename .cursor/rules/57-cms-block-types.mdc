@@ -1,0 +1,299 @@
+---
+description: Definição dos tipos de bloco do CMS e suas estruturas de dados. Referência obrigatória para criar/editar blocos.
+globs: ["src/components/admin/**", "src/components/cms/**", "src/types/*"]
+alwaysApply: true
+---
+
+# Tipos de Bloco CMS — Estrutura de Dados
+
+## 1) Estrutura Base de Bloco
+
+Todo bloco no CMS segue esta estrutura:
+
+```typescript
+interface CmsBlock {
+  id: string;                    // UUID
+  page_id: string;               // FK para cms_pages
+  block_type: BlockType;         // Tipo do bloco
+  block_order: number;           // Ordem na página
+  content_draft: BlockContent;   // Conteúdo em edição
+  content_published: BlockContent | null; // Conteúdo publicado
+  created_at: string;
+  updated_at: string;
+}
+
+type BlockType = 
+  | 'hero'
+  | 'text'
+  | 'cta'
+  | 'image'
+  | 'card_list'
+  | 'faq'
+  | 'testimonial'
+  | 'steps'
+  | 'stats'
+  | 'contact_form'
+  | 'map'
+  | 'video';
+```
+
+---
+
+## 2) Estruturas por Tipo de Bloco
+
+### 2.1) Hero Block
+```typescript
+interface HeroContent {
+  title: string;           // Obrigatório
+  subtitle?: string;
+  backgroundImage: string; // URL da imagem
+  overlay?: boolean;       // Overlay escuro (default: true)
+  cta?: {
+    label: string;
+    url: string;
+    target: '_self' | '_blank';
+  };
+  alignment?: 'left' | 'center' | 'right';
+}
+```
+
+### 2.2) Text Block (RichText)
+```typescript
+interface TextContent {
+  html: string;            // HTML sanitizado
+  alignment?: 'left' | 'center' | 'right' | 'justify';
+}
+```
+
+### 2.3) CTA Block
+```typescript
+interface CtaContent {
+  label: string;           // Obrigatório
+  url: string;             // Obrigatório, validar formato
+  target: '_self' | '_blank';
+  style: 'primary' | 'secondary' | 'outline' | 'ghost';
+  icon?: string;           // Nome do ícone (lucide)
+  fullWidth?: boolean;
+}
+```
+
+### 2.4) Image Block
+```typescript
+interface ImageContent {
+  src: string;             // URL obrigatória
+  alt: string;             // Obrigatório para SEO
+  caption?: string;
+  width?: number;
+  height?: number;
+  objectFit?: 'cover' | 'contain' | 'fill';
+}
+```
+
+### 2.5) Card List Block
+```typescript
+interface CardListContent {
+  title?: string;          // Título da seção
+  columns: 2 | 3 | 4;      // Grid columns
+  cards: Array<{
+    id: string;
+    title: string;         // Obrigatório
+    description?: string;
+    icon?: string;         // Nome do ícone
+    image?: string;        // URL alternativa a ícone
+    link?: {
+      url: string;
+      label: string;
+    };
+  }>;
+}
+```
+
+### 2.6) FAQ Block
+```typescript
+interface FaqContent {
+  title?: string;
+  items: Array<{
+    id: string;
+    question: string;      // Obrigatório
+    answer: string;        // Obrigatório, pode ser HTML
+    isOpen?: boolean;      // Estado inicial
+  }>;
+}
+```
+
+### 2.7) Testimonial Block
+```typescript
+interface TestimonialContent {
+  title?: string;
+  layout: 'carousel' | 'grid';
+  items: Array<{
+    id: string;
+    quote: string;         // Obrigatório
+    author: string;        // Obrigatório
+    role?: string;
+    company?: string;
+    avatar?: string;       // URL da foto
+    rating?: number;       // 1-5 estrelas
+  }>;
+}
+```
+
+### 2.8) Steps Block
+```typescript
+interface StepsContent {
+  title?: string;
+  layout: 'horizontal' | 'vertical';
+  steps: Array<{
+    id: string;
+    number?: number;       // Auto-incrementa se não fornecido
+    title: string;         // Obrigatório
+    description?: string;
+    icon?: string;
+  }>;
+}
+```
+
+### 2.9) Stats Block
+```typescript
+interface StatsContent {
+  title?: string;
+  items: Array<{
+    id: string;
+    value: string;         // Ex: "500+", "98%"
+    label: string;         // Ex: "Clientes Atendidos"
+    icon?: string;
+  }>;
+}
+```
+
+### 2.10) Contact Form Block
+```typescript
+interface ContactFormContent {
+  title?: string;
+  subtitle?: string;
+  fields: Array<{
+    id: string;
+    type: 'text' | 'email' | 'phone' | 'textarea' | 'select';
+    label: string;
+    placeholder?: string;
+    required: boolean;
+    options?: string[];    // Para select
+  }>;
+  submitLabel: string;
+  successMessage: string;
+}
+```
+
+### 2.11) Map Block
+```typescript
+interface MapContent {
+  latitude: number;
+  longitude: number;
+  zoom: number;
+  marker?: boolean;
+  height?: number;         // Em pixels
+}
+```
+
+### 2.12) Video Block
+```typescript
+interface VideoContent {
+  url: string;             // YouTube, Vimeo, ou direto
+  title?: string;
+  autoplay?: boolean;
+  controls?: boolean;
+  aspectRatio?: '16:9' | '4:3' | '1:1';
+}
+```
+
+---
+
+## 3) Validação por Tipo
+
+### Função de validação:
+```typescript
+function validateBlock(block: CmsBlock): ValidationResult {
+  const errors: ValidationError[] = [];
+  const content = block.content_draft;
+  
+  switch (block.block_type) {
+    case 'hero':
+      if (!content.title) errors.push({ field: 'title', message: 'Título obrigatório' });
+      if (!content.backgroundImage) errors.push({ field: 'backgroundImage', message: 'Imagem obrigatória' });
+      break;
+      
+    case 'cta':
+      if (!content.label) errors.push({ field: 'label', message: 'Texto do botão obrigatório' });
+      if (!content.url) errors.push({ field: 'url', message: 'URL obrigatória' });
+      if (content.url && !isValidUrl(content.url)) errors.push({ field: 'url', message: 'URL inválida' });
+      break;
+      
+    case 'image':
+      if (!content.src) errors.push({ field: 'src', message: 'Imagem obrigatória' });
+      if (!content.alt) errors.push({ field: 'alt', message: 'Texto alternativo obrigatório para SEO' });
+      break;
+      
+    // ... outros tipos
+  }
+  
+  return { valid: errors.length === 0, errors };
+}
+```
+
+---
+
+## 4) Renderização no Frontend
+
+### Componente genérico:
+```tsx
+function BlockRenderer({ block }: { block: CmsBlock }) {
+  const content = block.content_published || block.content_draft;
+  
+  switch (block.block_type) {
+    case 'hero': return <HeroBlock content={content} />;
+    case 'text': return <TextBlock content={content} />;
+    case 'cta': return <CtaBlock content={content} />;
+    case 'image': return <ImageBlock content={content} />;
+    case 'card_list': return <CardListBlock content={content} />;
+    case 'faq': return <FaqBlock content={content} />;
+    case 'testimonial': return <TestimonialBlock content={content} />;
+    case 'steps': return <StepsBlock content={content} />;
+    case 'stats': return <StatsBlock content={content} />;
+    case 'contact_form': return <ContactFormBlock content={content} />;
+    case 'map': return <MapBlock content={content} />;
+    case 'video': return <VideoBlock content={content} />;
+    default: return null;
+  }
+}
+```
+
+---
+
+## 5) Regras de Criação de Novos Tipos
+
+Se precisar criar um novo tipo de bloco:
+
+1. **Adicionar ao enum** `BlockType` em `src/types/cms.ts`
+2. **Criar interface** de conteúdo seguindo padrão acima
+3. **Criar editor** em `src/components/admin/blocks/[Type]Editor.tsx`
+4. **Criar renderer** em `src/components/cms/blocks/[Type]Block.tsx`
+5. **Adicionar validação** em `src/utils/cmsValidation.ts`
+6. **Atualizar** `BlockRenderer` e `BlockEditor`
+7. **Documentar** neste arquivo
+
+---
+
+## 6) Anti-Padrões
+
+❌ **NUNCA:**
+- Criar tipo de bloco sem interface tipada
+- Armazenar dados em formato diferente do especificado
+- Omitir validação de campos obrigatórios
+- Usar `any` para conteúdo de bloco
+- Criar bloco sem editor correspondente
+
+✅ **SEMPRE:**
+- Seguir estruturas definidas acima
+- Validar antes de salvar
+- Tipar completamente o conteúdo
+- Criar par editor/renderer para cada tipo

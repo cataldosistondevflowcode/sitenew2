@@ -1,0 +1,1417 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sprint 4 - Integração RD Station | Cataldo Siston</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #ffffff;
+      --bg-secondary: #f7f6f3;
+      --bg-tertiary: #f1f1ef;
+      --text-primary: #37352f;
+      --text-secondary: #6b6b6b;
+      --text-muted: #9b9a97;
+      --border-color: #e9e9e7;
+      --accent-blue: #2383e2;
+      --accent-green: #0f7b6c;
+      --accent-red: #eb5757;
+      --accent-yellow: #dfab01;
+      --accent-purple: #9065b0;
+      --tag-green-bg: #dbeddb;
+      --tag-green-text: #1e5a1e;
+      --tag-blue-bg: #d3e5ef;
+      --tag-blue-text: #183b56;
+      --tag-yellow-bg: #fdecc8;
+      --tag-yellow-text: #7c5c00;
+      --callout-blue-bg: #e7f3ff;
+      --callout-green-bg: #e6f6e6;
+      --callout-yellow-bg: #fff8e6;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+      font-size: 16px;
+    }
+
+    .page-container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 60px 96px 120px;
+    }
+
+    @media (max-width: 768px) {
+      .page-container {
+        padding: 40px 24px 80px;
+      }
+    }
+
+    /* Header */
+    .page-header {
+      margin-bottom: 40px;
+    }
+
+    .page-icon {
+      font-size: 72px;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      font-size: 40px;
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 8px;
+    }
+
+    .page-subtitle {
+      font-size: 20px;
+      color: var(--text-secondary);
+      margin-bottom: 24px;
+    }
+
+    /* Properties */
+    .properties {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 32px;
+      padding: 16px 0;
+      border-top: 1px solid var(--border-color);
+      border-bottom: 1px solid var(--border-color);
+      margin-bottom: 32px;
+    }
+
+    .property {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+    }
+
+    .property-label {
+      color: var(--text-muted);
+      min-width: 100px;
+    }
+
+    .property-value {
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: 500;
+      background: var(--tag-green-bg);
+      color: var(--tag-green-text);
+    }
+
+    /* Headings */
+    h2 {
+      font-size: 24px;
+      font-weight: 600;
+      margin: 48px 0 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    h3 {
+      font-size: 20px;
+      font-weight: 600;
+      margin: 32px 0 12px;
+      color: var(--text-primary);
+    }
+
+    h4 {
+      font-size: 16px;
+      font-weight: 600;
+      margin: 24px 0 8px;
+      color: var(--text-primary);
+    }
+
+    /* Paragraphs */
+    p {
+      margin-bottom: 16px;
+      color: var(--text-primary);
+    }
+
+    strong {
+      font-weight: 600;
+    }
+
+    /* Lists */
+    ul, ol {
+      margin: 12px 0 16px 24px;
+    }
+
+    li {
+      margin-bottom: 6px;
+    }
+
+    /* Tables */
+    .table-wrapper {
+      overflow-x: auto;
+      margin: 16px 0 24px;
+      border-radius: 4px;
+      border: 1px solid var(--border-color);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    th {
+      background: var(--bg-secondary);
+      font-weight: 600;
+      text-align: left;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border-color);
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border-color);
+      vertical-align: top;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover {
+      background: var(--bg-tertiary);
+    }
+
+    /* Code */
+    code {
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 13px;
+      background: var(--bg-secondary);
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: var(--accent-red);
+    }
+
+    pre {
+      background: var(--bg-secondary);
+      border-radius: 4px;
+      padding: 16px;
+      overflow-x: auto;
+      margin: 16px 0;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    pre code {
+      background: none;
+      padding: 0;
+      color: var(--text-primary);
+    }
+
+    /* Callouts */
+    .callout {
+      display: flex;
+      gap: 12px;
+      padding: 16px;
+      border-radius: 4px;
+      margin: 16px 0;
+    }
+
+    .callout-blue {
+      background: var(--callout-blue-bg);
+    }
+
+    .callout-green {
+      background: var(--callout-green-bg);
+    }
+
+    .callout-yellow {
+      background: var(--callout-yellow-bg);
+    }
+
+    .callout-icon {
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .callout-content {
+      flex: 1;
+    }
+
+    /* Cards / Stats */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+      margin: 24px 0;
+    }
+
+    .stat-card {
+      background: var(--bg-secondary);
+      border-radius: 8px;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--accent-blue);
+      margin-bottom: 4px;
+    }
+
+    .stat-label {
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+
+    .stat-change {
+      font-size: 12px;
+      color: var(--accent-green);
+      margin-top: 4px;
+    }
+
+    /* Flow Diagram */
+    .flow-diagram {
+      background: var(--bg-secondary);
+      border-radius: 8px;
+      padding: 24px;
+      margin: 24px 0;
+    }
+
+    .flow-title {
+      font-size: 14px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .flow-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .flow-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+    }
+
+    .flow-number {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--accent-blue);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    .flow-content {
+      flex: 1;
+      padding-top: 4px;
+    }
+
+    .flow-step-title {
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .flow-step-items {
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+
+    .flow-arrow {
+      display: flex;
+      justify-content: center;
+      padding: 8px 0;
+      color: var(--text-muted);
+      font-size: 20px;
+    }
+
+    /* Checklist */
+    .checklist {
+      list-style: none;
+      margin-left: 0;
+    }
+
+    .checklist li {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 0;
+    }
+
+    .check-icon {
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+      background: var(--accent-green);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      flex-shrink: 0;
+    }
+
+    /* Timeline */
+    .timeline {
+      position: relative;
+      padding-left: 32px;
+      margin: 24px 0;
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 8px;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: var(--border-color);
+    }
+
+    .timeline-item {
+      position: relative;
+      padding-bottom: 20px;
+    }
+
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: -28px;
+      top: 4px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--accent-blue);
+      border: 2px solid var(--bg-primary);
+    }
+
+    .timeline-time {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .timeline-content {
+      font-size: 14px;
+    }
+
+    /* Tags */
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .tag-green {
+      background: var(--tag-green-bg);
+      color: var(--tag-green-text);
+    }
+
+    .tag-blue {
+      background: var(--tag-blue-bg);
+      color: var(--tag-blue-text);
+    }
+
+    .tag-yellow {
+      background: var(--tag-yellow-bg);
+      color: var(--tag-yellow-text);
+    }
+
+    /* Divider */
+    hr {
+      border: none;
+      border-top: 1px solid var(--border-color);
+      margin: 32px 0;
+    }
+
+    /* Footer */
+    .page-footer {
+      margin-top: 48px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border-color);
+      font-size: 14px;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    /* Toggle */
+    .toggle {
+      margin: 16px 0;
+    }
+
+    .toggle-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      padding: 8px 0;
+      user-select: none;
+    }
+
+    .toggle-icon {
+      transition: transform 0.2s;
+    }
+
+    .toggle.open .toggle-icon {
+      transform: rotate(90deg);
+    }
+
+    .toggle-content {
+      display: none;
+      padding-left: 24px;
+    }
+
+    .toggle.open .toggle-content {
+      display: block;
+    }
+
+    /* Lead Card */
+    .lead-card {
+      background: var(--bg-secondary);
+      border-radius: 8px;
+      padding: 20px;
+      margin: 16px 0;
+    }
+
+    .lead-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .lead-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--accent-purple);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 18px;
+    }
+
+    .lead-info h4 {
+      margin: 0 0 4px;
+      font-size: 16px;
+    }
+
+    .lead-info p {
+      margin: 0;
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .lead-details {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .lead-detail {
+      font-size: 14px;
+    }
+
+    .lead-detail-label {
+      color: var(--text-muted);
+      font-size: 12px;
+      margin-bottom: 2px;
+    }
+
+    /* Print styles */
+    @media print {
+      .page-container {
+        padding: 20px;
+      }
+      
+      .toggle-content {
+        display: block !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page-container">
+    <!-- Header -->
+    <header class="page-header">
+      <div class="page-icon">📊</div>
+      <h1>Sprint 4 - Integração RD Station</h1>
+      <p class="page-subtitle">Relatório Completo de Implementação e Validação</p>
+      
+      <div class="properties">
+        <div class="property">
+          <span class="property-label">Cliente</span>
+          <span class="property-value">Cataldo Siston Advogados</span>
+        </div>
+        <div class="property">
+          <span class="property-label">Projeto</span>
+          <span class="property-value">Portal de Imóveis em Leilão</span>
+        </div>
+        <div class="property">
+          <span class="property-label">Conclusão</span>
+          <span class="property-value">05/02/2026</span>
+        </div>
+        <div class="property">
+          <span class="property-label">Status</span>
+          <span class="status-badge">✅ Concluída e Validada</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Section 1: Resumo Executivo -->
+    <section>
+      <h2>📈 1. Resumo Executivo</h2>
+      
+      <p>A Sprint 4 teve como objetivo integrar completamente o site do portal de imóveis com o <strong>RD Station Marketing</strong>, garantindo o rastreamento de visitantes, captura de leads e automação de marketing.</p>
+
+      <h3>Resultados Alcançados</h3>
+      
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-value">3.281</div>
+          <div class="stat-label">Visitantes Rastreados</div>
+          <div class="stat-change">+37,92% em fevereiro</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">127</div>
+          <div class="stat-label">Leads Gerados</div>
+          <div class="stat-change">+130,91% de crescimento</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">10.321</div>
+          <div class="stat-label">Base Total de Leads</div>
+          <div class="stat-change">Acumulado</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">94.870</div>
+          <div class="stat-label">Páginas Rastreadas</div>
+          <div class="stat-change">Lead Tracking ativo</div>
+        </div>
+      </div>
+    </section>
+
+    <hr>
+
+    <!-- Section 2: O que foi Implementado -->
+    <section>
+      <h2>⚙️ 2. O que foi Implementado</h2>
+
+      <h3>2.1 Script de Monitoramento Principal</h3>
+      
+      <p>O script principal do RD Station foi instalado no site, permitindo:</p>
+      <ul>
+        <li>Rastreamento de todas as páginas visitadas</li>
+        <li>Identificação da origem do tráfego</li>
+        <li>Exibição de pop-ups e widgets</li>
+        <li>Integração com formulários</li>
+      </ul>
+
+      <div class="callout callout-blue">
+        <div class="callout-icon">💡</div>
+        <div class="callout-content">
+          <strong>Configurações utilizadas:</strong><br>
+          Account ID: <code>6c080696-d8cd-4a58-a778-f5d664a27c6e</code><br>
+          Form ID (ShortCode3): <code>shortcode3-e67a38fad5973ddb16a8</code><br>
+          Form ID (Newsletter): <code>newsletter-site</code><br>
+          Google Analytics UA: <code>UA-150032078-1</code>
+        </div>
+      </div>
+
+      <h3>2.2 Eventos de Rastreamento Implementados</h3>
+      
+      <p>Foram implementados <strong>9 tipos de eventos</strong> que são enviados automaticamente para o RD Station:</p>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Evento</th>
+              <th>Descrição</th>
+              <th>Quando dispara</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Page View</strong></td>
+              <td>Visualização de página</td>
+              <td>Ao acessar qualquer página</td>
+            </tr>
+            <tr>
+              <td><strong>Form Submit</strong></td>
+              <td>Envio de formulário</td>
+              <td>Ao preencher e enviar formulário</td>
+            </tr>
+            <tr>
+              <td><strong>CTA Click</strong></td>
+              <td>Clique em botão de ação</td>
+              <td>Ao clicar em "Quero receber oportunidades"</td>
+            </tr>
+            <tr>
+              <td><strong>Property View</strong></td>
+              <td>Visualização de imóvel</td>
+              <td>Ao abrir página de detalhes do imóvel</td>
+            </tr>
+            <tr>
+              <td><strong>Property Click</strong></td>
+              <td>Clique em imóvel</td>
+              <td>Ao clicar em um card de imóvel</td>
+            </tr>
+            <tr>
+              <td><strong>Filter Applied</strong></td>
+              <td>Filtro aplicado</td>
+              <td>Ao filtrar por cidade, bairro, tipo</td>
+            </tr>
+            <tr>
+              <td><strong>Search Performed</strong></td>
+              <td>Busca realizada</td>
+              <td>Ao fazer busca por palavra-chave</td>
+            </tr>
+            <tr>
+              <td><strong>WhatsApp Click</strong></td>
+              <td>Clique no WhatsApp</td>
+              <td>Ao clicar no botão de WhatsApp</td>
+            </tr>
+            <tr>
+              <td><strong>Contact Click</strong></td>
+              <td>Clique em contato</td>
+              <td>Ao clicar em telefone ou email</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>2.3 Recursos do RD Station Ativados</h3>
+
+      <div class="callout callout-green">
+        <div class="callout-icon">✅</div>
+        <div class="callout-content">
+          <strong>Pop-up de Newsletter (Exit Intent)</strong><br>
+          Aparece quando o visitante move o mouse para fechar a aba, capturando o email antes de sair.
+        </div>
+      </div>
+
+      <div class="callout callout-green">
+        <div class="callout-icon">✅</div>
+        <div class="callout-content">
+          <strong>Botão de WhatsApp Flutuante</strong><br>
+          Sempre visível no canto inferior direito, abre conversa com mensagem pré-definida.
+        </div>
+      </div>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Formulário</th>
+              <th>Uso</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>ShortCode3</td>
+              <td>Formulário de interesse em imóveis</td>
+              <td><span class="tag tag-green">✅ Ativo</span></td>
+            </tr>
+            <tr>
+              <td>Newsletter Site</td>
+              <td>Inscrição na newsletter</td>
+              <td><span class="tag tag-green">✅ Ativo</span></td>
+            </tr>
+            <tr>
+              <td>Contato</td>
+              <td>Formulário de contato</td>
+              <td><span class="tag tag-green">✅ Ativo</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <hr>
+
+    <!-- Section 3: Fluxo de Funcionamento -->
+    <section>
+      <h2>🔄 3. Fluxo de Funcionamento</h2>
+
+      <h3>3.1 Jornada do Visitante</h3>
+
+      <div class="flow-diagram">
+        <div class="flow-title">Como o visitante é rastreado</div>
+        <div class="flow-steps">
+          <div class="flow-step">
+            <div class="flow-number">1</div>
+            <div class="flow-content">
+              <div class="flow-step-title">🌐 Chegada no Site</div>
+              <div class="flow-step-items">
+                • Origem identificada (Google, Facebook, Direto)<br>
+                • Script RD Station carrega automaticamente<br>
+                • Lead Tracking inicia rastreamento
+              </div>
+            </div>
+          </div>
+          
+          <div class="flow-arrow">↓</div>
+          
+          <div class="flow-step">
+            <div class="flow-number">2</div>
+            <div class="flow-content">
+              <div class="flow-step-title">🔍 Navegação</div>
+              <div class="flow-step-items">
+                • Cada página visitada é registrada<br>
+                • Filtros aplicados são rastreados<br>
+                • Cliques em imóveis são registrados<br>
+                • Tempo na página é monitorado
+              </div>
+            </div>
+          </div>
+          
+          <div class="flow-arrow">↓</div>
+          
+          <div class="flow-step">
+            <div class="flow-number">3</div>
+            <div class="flow-content">
+              <div class="flow-step-title">🎯 Conversão</div>
+              <div class="flow-step-items">
+                • Preenche formulário de interesse<br>
+                • Clica no WhatsApp<br>
+                • Inscreve-se na newsletter<br>
+                • Preenche pop-up de saída
+              </div>
+            </div>
+          </div>
+          
+          <div class="flow-arrow">↓</div>
+          
+          <div class="flow-step">
+            <div class="flow-number">4</div>
+            <div class="flow-content">
+              <div class="flow-step-title">🤖 Pós-Conversão (automático)</div>
+              <div class="flow-step-items">
+                • Lead criado no RD Station<br>
+                • Email automático enviado<br>
+                • Lead entra no fluxo de relacionamento<br>
+                • Equipe comercial é notificada
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <h3>3.2 Fluxo de Automação de Leads</h3>
+
+      <div class="flow-diagram">
+        <div class="flow-title">O que acontece após a conversão</div>
+        <div class="flow-steps">
+          <div class="flow-step">
+            <div class="flow-number" style="background: var(--accent-green);">✓</div>
+            <div class="flow-content">
+              <div class="flow-step-title">Lead Criado no RD Station</div>
+              <div class="flow-step-items">
+                Nome, Email, Telefone capturados • Origem do tráfego identificada • Páginas visitadas registradas
+              </div>
+            </div>
+          </div>
+          
+          <div class="flow-arrow">↓</div>
+          
+          <div class="flow-step">
+            <div class="flow-number" style="background: var(--accent-purple);">✉</div>
+            <div class="flow-content">
+              <div class="flow-step-title">Email Automático Enviado</div>
+              <div class="flow-step-items">
+                "Conheça Cataldo Siston" — enviado imediatamente após conversão
+              </div>
+            </div>
+          </div>
+          
+          <div class="flow-arrow">↓</div>
+          
+          <div class="flow-step">
+            <div class="flow-number" style="background: var(--accent-yellow);">📧</div>
+            <div class="flow-content">
+              <div class="flow-step-title">Régua de Relacionamento</div>
+              <div class="flow-step-items">
+                Emails periódicos • Ofertas personalizadas • Conteúdo educativo
+              </div>
+            </div>
+          </div>
+          
+          <div class="flow-arrow">↓</div>
+          
+          <div class="flow-step">
+            <div class="flow-number" style="background: var(--accent-green);">★</div>
+            <div class="flow-content">
+              <div class="flow-step-title">Lead Qualificado para Vendas</div>
+              <div class="flow-step-items">
+                Pronto para contato comercial
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <hr>
+
+    <!-- Section 4: Validação e Testes -->
+    <section>
+      <h2>✅ 4. Validação e Testes</h2>
+
+      <h3>4.1 Testes em Ambiente de Desenvolvimento</h3>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Teste</th>
+              <th>Resultado</th>
+              <th>Descrição</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Script Principal</td>
+              <td><span class="tag tag-green">✅ Passou</span></td>
+              <td>Script carregado corretamente</td>
+            </tr>
+            <tr>
+              <td>Lead Tracking</td>
+              <td><span class="tag tag-green">✅ Passou</span></td>
+              <td>Módulo inicializado</td>
+            </tr>
+            <tr>
+              <td>Traffic Source</td>
+              <td><span class="tag tag-green">✅ Passou</span></td>
+              <td>Cookie de origem configurado</td>
+            </tr>
+            <tr>
+              <td>Widget WhatsApp</td>
+              <td><span class="tag tag-green">✅ Passou</span></td>
+              <td>Botão visível e funcional</td>
+            </tr>
+            <tr>
+              <td>Pop-ups</td>
+              <td><span class="tag tag-green">✅ Passou</span></td>
+              <td>Scripts carregados</td>
+            </tr>
+            <tr>
+              <td>Page View</td>
+              <td><span class="tag tag-green">✅ Passou</span></td>
+              <td>Evento enviado ao RD Station</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>4.2 Validação em Produção</h3>
+
+      <h4>Dashboard Principal (Fevereiro/2026)</h4>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Métrica</th>
+              <th>Valor</th>
+              <th>Variação</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Visitantes</td>
+              <td><strong>3.281</strong></td>
+              <td><span class="tag tag-green">+37,92%</span></td>
+            </tr>
+            <tr>
+              <td>Leads</td>
+              <td><strong>127</strong></td>
+              <td><span class="tag tag-green">+130,91%</span></td>
+            </tr>
+            <tr>
+              <td>Leads Qualificados</td>
+              <td>-</td>
+              <td><span class="tag tag-yellow">Em análise</span></td>
+            </tr>
+            <tr>
+              <td>Vendas</td>
+              <td>-</td>
+              <td><span class="tag tag-yellow">Em análise</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h4>Páginas Mais Acessadas (Lead Tracking)</h4>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Página</th>
+              <th>Visualizações</th>
+              <th>Crescimento</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>/</code> (Home)</td>
+              <td>2.795</td>
+              <td><span class="tag tag-green">+5,00%</span></td>
+            </tr>
+            <tr>
+              <td><code>/leilao-rj</code></td>
+              <td>1.329</td>
+              <td><span class="tag tag-green">+40,00%</span></td>
+            </tr>
+            <tr>
+              <td><code>/leilao-sp</code></td>
+              <td>805</td>
+              <td><span class="tag tag-green">+32,00%</span></td>
+            </tr>
+            <tr>
+              <td><code>/contato-advogados-imobiliarios/</code></td>
+              <td>361</td>
+              <td><span class="tag tag-green">+37,00%</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h4>Conversões Recentes (05/02/2026)</h4>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Lead</th>
+              <th>Conversão</th>
+              <th>Origem</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Silvio Antonio V.</td>
+              <td>há 1 hora</td>
+              <td><span class="tag tag-blue">Facebook Ads</span></td>
+            </tr>
+            <tr>
+              <td>Fernando de Fa.</td>
+              <td>há 1 hora</td>
+              <td><span class="tag tag-green">Orgânico</span></td>
+            </tr>
+            <tr>
+              <td>vickbezerra@h...</td>
+              <td>há 2 horas</td>
+              <td><span class="tag tag-blue">/leilao-rj</span></td>
+            </tr>
+            <tr>
+              <td>Hulda Ferrante...</td>
+              <td>há 2 horas</td>
+              <td><span class="tag tag-green">Orgânico</span></td>
+            </tr>
+            <tr>
+              <td>Mara Moreira</td>
+              <td>há 3 horas</td>
+              <td><span class="tag tag-green">WhatsApp</span></td>
+            </tr>
+            <tr>
+              <td>Carlos Roberto M.</td>
+              <td>há 5 horas</td>
+              <td><span class="tag tag-green">WhatsApp</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h4>Exemplo de Lead Rastreado: Sílvio Antonio Valejo</h4>
+
+      <div class="lead-card">
+        <div class="lead-header">
+          <div class="lead-avatar">SA</div>
+          <div class="lead-info">
+            <h4>Sílvio Antonio Valejo</h4>
+            <p>Lead • Converteu via Facebook Ads</p>
+          </div>
+        </div>
+        
+        <div class="lead-details">
+          <div class="lead-detail">
+            <div class="lead-detail-label">Email</div>
+            <div>silviovalejo@hotmail.com</div>
+          </div>
+          <div class="lead-detail">
+            <div class="lead-detail-label">Telefone</div>
+            <div>+55 18 99782-8757</div>
+          </div>
+          <div class="lead-detail">
+            <div class="lead-detail-label">Origem</div>
+            <div>Busca Paga | Facebook Ads</div>
+          </div>
+          <div class="lead-detail">
+            <div class="lead-detail-label">Estágio</div>
+            <div><span class="tag tag-blue">Lead</span></div>
+          </div>
+        </div>
+
+        <h4 style="font-size: 14px; margin-top: 16px;">Histórico de Atividades</h4>
+        
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="timeline-time">15:02</div>
+            <div class="timeline-content">Recebeu email "Conheça Cataldo Siston"</div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-time">15:02</div>
+            <div class="timeline-content">Completou fluxo de automação</div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-time">15:02</div>
+            <div class="timeline-content">Entrou na Régua de Relacionamento</div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-time">15:01</div>
+            <div class="timeline-content">Entrou no fluxo "Email E1 - Conheça o Cataldo Siston"</div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-time">15:00</div>
+            <div class="timeline-content"><strong>Converteu</strong> - Origem: Facebook Ads</div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-time">15:00</div>
+            <div class="timeline-content">Estágio alterado para "Lead"</div>
+          </div>
+        </div>
+
+        <div class="callout callout-green" style="margin-top: 16px;">
+          <div class="callout-icon">✅</div>
+          <div class="callout-content">
+            <strong>Este exemplo demonstra que:</strong><br>
+            • O formulário capturou os dados corretamente<br>
+            • A origem do tráfego foi identificada (Facebook Ads)<br>
+            • A automação de email disparou automaticamente<br>
+            • O lead entrou no fluxo de relacionamento<br>
+            • Todo o histórico está sendo registrado
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <hr>
+
+    <!-- Section 5: Recursos Ativos -->
+    <section>
+      <h2>🚀 5. Recursos Ativos no RD Station</h2>
+
+      <h3>5.1 Landing Pages</h3>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Landing Page</th>
+              <th>Visitantes</th>
+              <th>Leads</th>
+              <th>Taxa de Conversão</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Ofertas de Imóveis Específicos</td>
+              <td>1.297</td>
+              <td>556</td>
+              <td><strong>42,87%</strong></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>5.2 Email Marketing</h3>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Campanha</th>
+              <th>Enviados</th>
+              <th>Entregues</th>
+              <th>Abertos</th>
+              <th>Clicados</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>[Toda Base] 10 Imóveis - 30/01/2026</td>
+              <td>10.203</td>
+              <td>10.159 (100%)</td>
+              <td>2.782 (27%)</td>
+              <td>235 (8%)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>5.3 Formulários</h3>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Formulário</th>
+              <th>Status</th>
+              <th>Última Conversão</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>ShortCode3</td>
+              <td><span class="tag tag-green">✅ Ativo</span></td>
+              <td>Hoje</td>
+            </tr>
+            <tr>
+              <td>Newsletter Site</td>
+              <td><span class="tag tag-green">✅ Ativo</span></td>
+              <td>Hoje</td>
+            </tr>
+            <tr>
+              <td>Contato</td>
+              <td><span class="tag tag-green">✅ Ativo</span></td>
+              <td>Hoje</td>
+            </tr>
+            <tr>
+              <td>Segmentação de público</td>
+              <td><span class="tag tag-green">✅ Ativo</span></td>
+              <td>-</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <hr>
+
+    <!-- Section 6: Arquivos Modificados -->
+    <section>
+      <h2>📁 6. Arquivos Modificados</h2>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Arquivo</th>
+              <th>Alteração</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>index.html</code></td>
+              <td>Script principal do RD Station adicionado</td>
+            </tr>
+            <tr>
+              <td><code>src/utils/rdStation.ts</code></td>
+              <td>Funções de rastreamento de eventos</td>
+            </tr>
+            <tr>
+              <td><code>src/utils/rdStationManager.ts</code></td>
+              <td>Gerenciador de formulários com IDs corretos</td>
+            </tr>
+            <tr>
+              <td><code>src/utils/whatsappScript.ts</code></td>
+              <td>Integração com widget de WhatsApp</td>
+            </tr>
+            <tr>
+              <td><code>src/hooks/useRDStationTracking.tsx</code></td>
+              <td>Hooks para rastreamento automático</td>
+            </tr>
+            <tr>
+              <td><code>src/components/Newsletter.tsx</code></td>
+              <td>Integração com formulário de newsletter</td>
+            </tr>
+            <tr>
+              <td><code>src/components/PropertyCard.tsx</code></td>
+              <td>Rastreamento de cliques em imóveis</td>
+            </tr>
+            <tr>
+              <td><code>src/pages/Index.tsx</code></td>
+              <td>Rastreamento de página e filtros</td>
+            </tr>
+            <tr>
+              <td><code>src/pages/PropertyDetail.tsx</code></td>
+              <td>Rastreamento de visualização de imóvel</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <hr>
+
+    <!-- Section 7: Conclusão -->
+    <section>
+      <h2>🎯 7. Conclusão</h2>
+
+      <div class="callout callout-green">
+        <div class="callout-icon">🎉</div>
+        <div class="callout-content">
+          A integração do RD Station foi <strong>implementada com sucesso</strong> e está <strong>totalmente funcional em produção</strong>.
+        </div>
+      </div>
+
+      <h3>Checklist Final</h3>
+
+      <ul class="checklist">
+        <li><span class="check-icon">✓</span> Script de monitoramento instalado</li>
+        <li><span class="check-icon">✓</span> Lead Tracking ativo e rastreando páginas</li>
+        <li><span class="check-icon">✓</span> Formulários integrados e gerando leads</li>
+        <li><span class="check-icon">✓</span> Pop-up de newsletter configurado</li>
+        <li><span class="check-icon">✓</span> Botão de WhatsApp ativo</li>
+        <li><span class="check-icon">✓</span> Automações de email funcionando</li>
+        <li><span class="check-icon">✓</span> Fluxos de relacionamento ativos</li>
+        <li><span class="check-icon">✓</span> Origem do tráfego sendo identificada</li>
+        <li><span class="check-icon">✓</span> Histórico de leads sendo registrado</li>
+        <li><span class="check-icon">✓</span> Validação em produção concluída</li>
+      </ul>
+
+      <h3>Métricas de Sucesso</h3>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Objetivo</th>
+              <th>Meta</th>
+              <th>Resultado</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Rastrear páginas do site</td>
+              <td>100%</td>
+              <td><span class="tag tag-green">✅ 94.870 páginas</span></td>
+            </tr>
+            <tr>
+              <td>Capturar leads de formulários</td>
+              <td>Funcional</td>
+              <td><span class="tag tag-green">✅ 127 leads/mês</span></td>
+            </tr>
+            <tr>
+              <td>Identificar origem do tráfego</td>
+              <td>Funcional</td>
+              <td><span class="tag tag-green">✅ Facebook, Google, Direto</span></td>
+            </tr>
+            <tr>
+              <td>Automação de emails</td>
+              <td>Funcional</td>
+              <td><span class="tag tag-green">✅ Emails automáticos</span></td>
+            </tr>
+            <tr>
+              <td>Widget de WhatsApp</td>
+              <td>Visível</td>
+              <td><span class="tag tag-green">✅ Gerando conversões</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <hr>
+
+    <!-- Section 8: Próximos Passos -->
+    <section>
+      <h2>📋 8. Próximos Passos Recomendados</h2>
+
+      <div class="flow-diagram">
+        <div class="flow-steps">
+          <div class="flow-step">
+            <div class="flow-number">1</div>
+            <div class="flow-content">
+              <div class="flow-step-title">Monitorar métricas semanalmente</div>
+              <div class="flow-step-items">Acompanhar visitantes, leads e conversões no dashboard do RD Station</div>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-number">2</div>
+            <div class="flow-content">
+              <div class="flow-step-title">Analisar taxa de conversão por página</div>
+              <div class="flow-step-items">Otimizar as páginas com menor desempenho</div>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-number">3</div>
+            <div class="flow-content">
+              <div class="flow-step-title">Criar segmentações de leads</div>
+              <div class="flow-step-items">Por interesse (tipo de imóvel, região)</div>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-number">4</div>
+            <div class="flow-content">
+              <div class="flow-step-title">Configurar lead scoring</div>
+              <div class="flow-step-items">Priorizar leads mais qualificados para vendas</div>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-number">5</div>
+            <div class="flow-content">
+              <div class="flow-step-title">Expandir automações</div>
+              <div class="flow-step-items">Adicionar mais emails na régua de relacionamento</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="page-footer">
+      <p><strong>Documento preparado por:</strong> Equipe de Desenvolvimento</p>
+      <p><strong>Data:</strong> 05/02/2026 • <strong>Versão:</strong> 1.0</p>
+    </footer>
+  </div>
+
+  <script>
+    // Toggle functionality
+    document.querySelectorAll('.toggle-header').forEach(header => {
+      header.addEventListener('click', () => {
+        header.parentElement.classList.toggle('open');
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,356 @@
+---
+description: Regras de segurança específicas para o CMS Admin. Complementa 55-admin-cms.mdc com foco em segurança.
+globs: ["src/pages/admin/**", "src/components/admin/**", "supabase/**"]
+alwaysApply: true
+---
+
+# Segurança do CMS Admin — Regras Obrigatórias
+
+## 1) Princípio de Menor Privilégio
+
+> Todo acesso deve ser o mínimo necessário para a função.
+> Usuário anônimo = apenas leitura de conteúdo publicado.
+> Admin = CRUD completo, mas apenas nas tabelas cms_*.
+
+---
+
+## 2) Autenticação Obrigatória
+
+### Verificação em TODA rota /admin/*:
+```typescript
+// Hook obrigatório em páginas admin
+function useRequireAdmin() {
+  const { user, isLoading } = useAuth();
+  const navigate = useNavigate();
+  
+  useEffect(() => {
+    if (!isLoading && !user) {
+      navigate('/admin/login', { replace: true });
+    }
+  }, [user, isLoading, navigate]);
+  
+  return { user, isLoading };
+}
+```
+
+### Checklist de autenticação:
+- [ ] Sessão verificada no servidor (não apenas cliente)
+- [ ] Token JWT validado em cada request
+- [ ] Sessão expira após inatividade (30min recomendado)
+- [ ] Logout limpa todos os tokens/cookies
+
+---
+
+## 3) Autorização (Role-Based)
+
+### Função verificadora no Supabase:
+```sql
+-- Função para verificar se usuário é admin CMS
+CREATE OR REPLACE FUNCTION is_cms_admin()
+RETURNS BOOLEAN AS $$
+BEGIN
+  RETURN EXISTS (
+    SELECT 1 FROM admin_users
+    WHERE user_id = auth.uid()
+    AND role IN ('admin', 'editor')
+    AND active = true
+  );
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+```
+
+### Uso nas policies:
+```sql
+-- Exemplo de policy para cms_pages
+CREATE POLICY "Admins can do everything"
+ON cms_pages
+FOR ALL
+TO authenticated
+USING (is_cms_admin())
+WITH CHECK (is_cms_admin());
+```
+
+---
+
+## 4) RLS (Row Level Security) — CRÍTICO
+
+### Regras por tabela:
+
+#### cms_pages:
+```sql
+-- Público: apenas published
+CREATE POLICY "Public can read published pages"
+ON cms_pages FOR SELECT TO anon
+USING (status = 'published');
+
+-- Admin: tudo
+CREATE POLICY "Admins full access"
+ON cms_pages FOR ALL TO authenticated
+USING (is_cms_admin()) WITH CHECK (is_cms_admin());
+```
+
+#### cms_blocks:
+```sql
+-- Público: apenas de páginas published
+CREATE POLICY "Public can read published blocks"
+ON cms_blocks FOR SELECT TO anon
+USING (
+  EXISTS (
+    SELECT 1 FROM cms_pages
+    WHERE cms_pages.id = cms_blocks.page_id
+    AND cms_pages.status = 'published'
+  )
+);
+
+-- Admin: tudo
+CREATE POLICY "Admins full access"
+ON cms_blocks FOR ALL TO authenticated
+USING (is_cms_admin()) WITH CHECK (is_cms_admin());
+```
+
+#### cms_versions, cms_audit_log:
+```sql
+-- NENHUM acesso público
+-- Apenas admin pode ler, apenas INSERT (sem UPDATE/DELETE para audit)
+```
+
+---
+
+## 5) Sanitização de Conteúdo
+
+### HTML/RichText DEVE ser sanitizado:
+```typescript
+import DOMPurify from 'dompurify';
+
+function sanitizeHtml(dirty: string): string {
+  return DOMPurify.sanitize(dirty, {
+    ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'u', 'a', 'ul', 'ol', 'li', 'h1', 'h2', 'h3', 'h4', 'blockquote'],
+    ALLOWED_ATTR: ['href', 'target', 'rel'],
+    ALLOW_DATA_ATTR: false,
+  });
+}
+```
+
+### Antes de salvar qualquer bloco com HTML:
+```typescript
+const sanitizedContent = {
+  ...content,
+  html: sanitizeHtml(content.html),
+};
+```
+
+### PROIBIDO em conteúdo:
+- `<script>` tags
+- `onclick`, `onerror` e event handlers
+- `javascript:` URLs
+- `<iframe>` sem whitelist
+- `<object>`, `<embed>`
+
+---
+
+## 6) Validação de URLs
+
+```typescript
+function isValidUrl(url: string): boolean {
+  try {
+    const parsed = new URL(url);
+    // Apenas http(s) e caminhos relativos
+    return ['http:', 'https:'].includes(parsed.protocol) 
+           || url.startsWith('/');
+  } catch {
+    return url.startsWith('/'); // Caminho relativo
+  }
+}
+
+function sanitizeUrl(url: string): string {
+  // Remove javascript: e data:
+  if (url.toLowerCase().startsWith('javascript:')) return '#';
+  if (url.toLowerCase().startsWith('data:')) return '#';
+  return url;
+}
+```
+
+---
+
+## 7) Upload de Arquivos
+
+### Validações obrigatórias:
+```typescript
+const ALLOWED_MIME_TYPES = [
+  'image/jpeg',
+  'image/png',
+  'image/webp',
+  'image/gif',
+  'application/pdf',
+];
+
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+
+function validateUpload(file: File): ValidationResult {
+  const errors: string[] = [];
+  
+  if (!ALLOWED_MIME_TYPES.includes(file.type)) {
+    errors.push(`Tipo ${file.type} não permitido`);
+  }
+  
+  if (file.size > MAX_FILE_SIZE) {
+    errors.push(`Arquivo muito grande (máx: 5MB)`);
+  }
+  
+  // Verificar extensão vs MIME (evitar spoofing)
+  const ext = file.name.split('.').pop()?.toLowerCase();
+  const validExtensions = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'pdf'];
+  if (!ext || !validExtensions.includes(ext)) {
+    errors.push('Extensão de arquivo inválida');
+  }
+  
+  return { valid: errors.length === 0, errors };
+}
+```
+
+### Armazenamento:
+- Usar Supabase Storage com bucket privado para drafts
+- Mover para bucket público apenas após publicação
+- Nomear arquivos com hash (evitar colisão e info leak)
+
+---
+
+## 8) Preview Seguro
+
+### Opção A: Autenticação obrigatória
+```typescript
+// Preview só funciona para admin logado
+function PreviewPage() {
+  const { user } = useRequireAdmin();
+  if (!user) return null;
+  // ...renderiza preview
+}
+```
+
+### Opção B: Token temporário
+```typescript
+// Gerar token com expiração
+const token = await supabase
+  .from('cms_preview_tokens')
+  .insert({
+    page_id: pageId,
+    token: crypto.randomUUID(),
+    expires_at: new Date(Date.now() + 60 * 60 * 1000), // 1 hora
+  })
+  .select()
+  .single();
+
+// URL: /preview/[slug]?token=xxx
+```
+
+### Validação do token:
+```typescript
+async function validatePreviewToken(token: string, pageId: string) {
+  const { data } = await supabase
+    .from('cms_preview_tokens')
+    .select()
+    .eq('token', token)
+    .eq('page_id', pageId)
+    .gt('expires_at', new Date().toISOString())
+    .single();
+    
+  return !!data;
+}
+```
+
+---
+
+## 9) Audit Log — Não Deletável
+
+### Estrutura:
+```sql
+CREATE TABLE cms_audit_log (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  actor_id UUID REFERENCES auth.users(id),
+  actor_email TEXT NOT NULL,
+  action TEXT NOT NULL, -- create, update, publish, revert, delete
+  entity_type TEXT NOT NULL, -- page, block, asset
+  entity_id UUID NOT NULL,
+  old_value JSONB,
+  new_value JSONB,
+  ip_address INET,
+  user_agent TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- RLS: Apenas INSERT, nunca UPDATE ou DELETE
+CREATE POLICY "Insert only for admins"
+ON cms_audit_log FOR INSERT TO authenticated
+WITH CHECK (is_cms_admin());
+
+CREATE POLICY "Read only for admins"
+ON cms_audit_log FOR SELECT TO authenticated
+USING (is_cms_admin());
+
+-- NENHUMA policy para UPDATE ou DELETE
+```
+
+---
+
+## 10) Headers de Segurança
+
+### Para rotas /admin/*:
+```typescript
+// No servidor/edge function
+const securityHeaders = {
+  'X-Frame-Options': 'DENY',
+  'X-Content-Type-Options': 'nosniff',
+  'X-XSS-Protection': '1; mode=block',
+  'Referrer-Policy': 'strict-origin-when-cross-origin',
+  'Cache-Control': 'no-store, no-cache, must-revalidate',
+  'Pragma': 'no-cache',
+};
+```
+
+---
+
+## 11) Rate Limiting
+
+### Recomendado para:
+- Login: máx 5 tentativas por IP em 15min
+- API CMS: máx 100 requests por minuto por usuário
+- Upload: máx 10 uploads por minuto
+
+### Implementação via Supabase Edge ou middleware.
+
+---
+
+## 12) Checklist de Segurança (Obrigatório)
+
+Antes de deploy de qualquer mudança no CMS:
+
+- [ ] RLS habilitado em todas as tabelas cms_*
+- [ ] Testado: anon NÃO vê conteúdo draft
+- [ ] Testado: anon NÃO acessa /admin/*
+- [ ] HTML sanitizado antes de salvar
+- [ ] URLs validadas
+- [ ] Uploads validados (tipo, tamanho)
+- [ ] Audit log registrando ações
+- [ ] Tokens de preview com expiração
+- [ ] Sem console.log de dados sensíveis
+- [ ] Sem credenciais hardcoded
+
+---
+
+## 13) Anti-Padrões de Segurança
+
+❌ **PROIBIDO:**
+- Desabilitar RLS "temporariamente"
+- Confiar em validação apenas no frontend
+- Armazenar senhas em plain text
+- Logar dados sensíveis (senhas, tokens)
+- Usar `dangerouslySetInnerHTML` sem sanitizar
+- Permitir upload de qualquer tipo de arquivo
+- Preview público sem proteção
+
+✅ **SEMPRE:**
+- Validar no backend (Supabase RLS)
+- Sanitizar todo input do usuário
+- Usar tokens com expiração
+- Registrar ações no audit log
+- Testar como usuário anônimo

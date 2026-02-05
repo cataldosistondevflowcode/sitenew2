@@ -1,7 +1,7 @@
 import { CookieBar } from "@/components/CookieBar";
 import { SocialBar } from "@/components/SocialBar";
 import { Header } from "@/components/Header";
-import { HeroSection } from "@/components/HeroSection";
+import { HeroSectionWithCms } from "@/components/HeroSectionWithCms";
 import { PropertyCard } from "@/components/PropertyCard";
 import { PropertyPagination } from "@/components/PropertyPagination";
 import { FeaturedVideos } from "@/components/FeaturedVideos";
@@ -2165,7 +2165,7 @@ const LeilaoRJ = () => {
       <CookieBar />
       <SocialBar onWhatsAppClick={() => executeWhatsAppAction()} />
       <Header onContactClick={() => executeWhatsAppAction()} />
-      <HeroSection onOpportunityClick={() => window.open('https://leilaodeimoveis-cataldosiston.com/contato-advogados-imobiliarios/', '_blank')} />
+      <HeroSectionWithCms onOpportunityClick={() => window.open('https://leilaodeimoveis-cataldosiston.com/contato-advogados-imobiliarios/', '_blank')} />
       
       {/* Properties Section - Movida para cima */}
       <section className="py-16 bg-background opportunities">

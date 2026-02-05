@@ -26,7 +26,7 @@ interface RegionContent {
 interface RegionContentWithFallbackProps {
   /**
    * Slug da regional normalizado (ex: 'copacabana', 'zona-sul')
-   * Será usado para buscar página CMS 'regional-{slug}'
+   * Será usado para buscar página CMS 'catalogo-{slug}'
    */
   regionSlug: string;
   

@@ -17,7 +17,7 @@ function getValue(block: any): string | null {
 }
 
 export function HomeCmsMarketingSections() {
-  const { blocksByKey, loading, error } = useCmsPublishedBlocks('home', [
+  const { blocksByKey, loading, error } = useCmsPublishedBlocks('leilao-rj', [
     'highlight_section_title',
     'highlight_cards',
     'how_it_works_title',

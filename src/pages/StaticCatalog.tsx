@@ -26,6 +26,9 @@ import {
   SuccessCasesSection,
 } from '@/components/regional';
 
+// Sprint CMS v14 - Regional content from CMS with fallback
+import { RegionContentWithFallback, normalizeToSlug } from '@/components/regional';
+
 // Sprint 7 - NoScript fallback for SEO
 import { NoScriptFallback } from '@/components/NoScriptFallback';
 
@@ -196,6 +199,9 @@ export default function StaticCatalog() {
   const navigate = useNavigate();
   const { updateURL, clearFiltersFromURL, parseFiltersFromURL } = useFilterParams();
   
+  // Estado para armazenar mapeamentos de páginas SEO (para redirecionamento ao buscar)
+  const [seoMappings, setSeoMappings] = useState<Array<{page_id: string, filter_type: string, filter_value: string}>>([]);
+  
   // Estados básicos da página
   const [seoPage, setSeoPage] = useState<SEOPage | null>(null);
   const [properties, setProperties] = useState<Property[]>([]);
@@ -274,6 +280,26 @@ export default function StaticCatalog() {
     checkMobile();
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Carregar mapeamentos de páginas SEO para redirecionamento
+  useEffect(() => {
+    const loadSeoMappings = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('seo_pages')
+          .select('page_id, filter_type, filter_value')
+          .eq('is_active', true);
+        
+        if (!error && data) {
+          setSeoMappings(data);
+        }
+      } catch (err) {
+        console.error('Erro ao carregar mapeamentos SEO:', err);
+      }
+    };
+    
+    loadSeoMappings();
   }, []);
 
   // Carregar página SEO
@@ -940,6 +966,32 @@ export default function StaticCatalog() {
 
   // Aplicar filtros
   const applyFilters = () => {
+    // LÓGICA DE REDIRECIONAMENTO PARA PÁGINAS REGIONAIS
+    // Se APENAS um bairro está selecionado e existe uma página SEO correspondente, redirecionar
+    // Mas não redirecionar se já estamos na página desse bairro
+    if (selectedNeighborhoods.length === 1 && seoMappings.length > 0) {
+      const singleNeighborhood = selectedNeighborhoods[0];
+      
+      // Verificar se NÃO estamos já na página deste bairro
+      const currentBairro = seoPage?.filter_type === 'bairro' ? seoPage.filter_value : null;
+      const isDifferentBairro = !currentBairro || 
+        singleNeighborhood.toLowerCase() !== currentBairro.toLowerCase();
+      
+      if (isDifferentBairro) {
+        const bairroMapping = seoMappings.find(
+          m => m.filter_type === 'bairro' && 
+               m.filter_value.toLowerCase() === singleNeighborhood.toLowerCase()
+        );
+        
+        if (bairroMapping) {
+          // Redirecionar para página regional do bairro
+          toast.success(`Abrindo página de ${singleNeighborhood}...`);
+          navigate(`/catalogo/${bairroMapping.page_id}`);
+          return;
+        }
+      }
+    }
+    
     const newFilters: Filters = {};
 
     // Cidade
@@ -1873,13 +1925,22 @@ export default function StaticCatalog() {
         {/* CTA de Apoio */}
         <SupportCTA estado={seoPage.estado} />
 
-        {/* Conteúdo complementar (benefícios/atrações) — apenas em contexto de bairro */}
-        {pageContext === 'neighborhood' && seoPage.region_content && (
-          <RegionContentSection
+        {/* 
+          Sprint CMS v14 — Conteúdo complementar via CMS com fallback
+          Prioridade: CMS publicado > seo_pages.region_content
+          Componente gerencia automaticamente qual fonte usar
+        */}
+        {pageContext === 'neighborhood' && (
+          <RegionContentWithFallback
+            regionSlug={normalizeToSlug(seoPage.regiao)}
             regionName={singleNeighborhoodName ?? seoPage.regiao}
-            content={typeof seoPage.region_content === 'string' 
-              ? JSON.parse(seoPage.region_content) 
-              : seoPage.region_content}
+            fallbackContent={
+              seoPage.region_content
+                ? typeof seoPage.region_content === 'string'
+                  ? JSON.parse(seoPage.region_content)
+                  : seoPage.region_content
+                : null
+            }
           />
         )}
 

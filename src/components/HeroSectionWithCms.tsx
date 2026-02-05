@@ -4,17 +4,25 @@
  * Renderiza o HeroSection com conteudo carregado do CMS (publico)
  * Se o CMS falhar, usa fallback ao conteúdo padrão
  * Sprint CMS v11 — Home publica CMS-driven
+ * 
+ * TEMPORARIAMENTE DESABILITADO: CMS desabilitado para o Hero
+ * Motivo: Conteúdo incorreto no CMS ("Teste v8")
+ * Para reabilitar: remover o comentário e usar o código original
  */
 
 import React from 'react';
 import { HeroSection } from './HeroSection';
-import { useCmsPublishedBlocks } from '@/hooks/useCmsPublishedBlocks';
+// import { useCmsPublishedBlocks } from '@/hooks/useCmsPublishedBlocks';
 
 interface HeroSectionWithCmsProps {
   onOpportunityClick?: () => void;
 }
 
 export const HeroSectionWithCms = ({ onOpportunityClick }: HeroSectionWithCmsProps) => {
+  // CMS TEMPORARIAMENTE DESABILITADO - usando valores padrão hardcoded
+  // Para reabilitar, descomentar o código abaixo e remover os valores undefined
+  
+  /*
   const { blocksByKey } = useCmsPublishedBlocks('home', [
     'hero_title',
     'hero_subtitle',
@@ -33,19 +41,17 @@ export const HeroSectionWithCms = ({ onOpportunityClick }: HeroSectionWithCmsPro
   const secondaryCta = blocksByKey.hero_cta_secondary?.content_published as
     | { text?: string; url?: string }
     | undefined;
+  */
 
   return (
     <HeroSection
       onOpportunityClick={onOpportunityClick}
-      title={heroTitle}
-      subtitleHtml={heroSubtitleHtml}
-      backgroundImageUrl={heroImageUrl}
-      primaryCta={
-        primaryCta?.text && primaryCta?.url ? { text: primaryCta.text, url: primaryCta.url } : undefined
-      }
-      secondaryCta={
-        secondaryCta?.text && secondaryCta?.url ? { text: secondaryCta.text, url: secondaryCta.url } : undefined
-      }
+      // Usando valores padrão definidos no HeroSection.tsx
+      title={undefined}
+      subtitleHtml={undefined}
+      backgroundImageUrl={undefined}
+      primaryCta={undefined}
+      secondaryCta={{ text: 'Fale Conosco', url: 'https://wa.me/5521977294848' }}
     />
   );
 };

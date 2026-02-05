@@ -122,6 +122,16 @@
     
     <div id="root"></div>
     
+    <!-- CSS para esconder noscript quando JS está ativado - evita flash -->
+    <script>
+      // Adiciona classe ao body imediatamente para esconder noscript content
+      document.body.classList.add('js-enabled');
+    </script>
+    <style>
+      /* Esconde conteúdo noscript quando JS está ativado */
+      .js-enabled .noscript-content { display: none !important; }
+    </style>
+    
     <!-- Fallback para JavaScript desativado - SEO Sprint 7/8 -->
     <!-- IMPORTANTE: Cada link abaixo leva para uma página HTML estática com conteúdo único -->
     <noscript>

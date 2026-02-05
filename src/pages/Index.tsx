@@ -27,7 +27,7 @@ import { executeWhatsAppAction, initializeWhatsAppScript } from "@/utils/whatsap
 import { useRDStationTracking, useRDStationFilterTracking } from "@/hooks/useRDStationTracking";
 import { SEO } from "@/components/SEO";
 import { useSEORedirect } from "@/hooks/useSEORedirect";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useFilterCities, useFilterNeighborhoods } from "@/hooks/useFilterData";
 // import { useAnalytics } from "@/hooks/useAnalytics";
 
@@ -423,15 +423,40 @@ const Index = () => {
   // Hook para gerenciar sincronização com URL
   const { parseFiltersFromURL, updateURL, clearFiltersFromURL } = useFilterParams();
   const location = useLocation();
+  const navigate = useNavigate();
   
   // Hook para redirecionar para páginas SEO fixas quando região mapeada é selecionada
   // Desabilitar se já estiver em uma página de catálogo para evitar loops
   const isCatalogPage = location.pathname.startsWith('/catalogo/');
   useSEORedirect(filters, 'RJ', !isCatalogPage);
+  
+  // Estado para armazenar mapeamentos de páginas SEO (para redirecionamento ao buscar)
+  const [seoMappings, setSeoMappings] = useState<Array<{page_id: string, filter_type: string, filter_value: string}>>([]);
 
   // Carregar script do WhatsApp automaticamente
   useEffect(() => {
     initializeWhatsAppScript();
+  }, []);
+  
+  // Carregar mapeamentos de páginas SEO para redirecionamento ao buscar
+  useEffect(() => {
+    const loadSeoMappings = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('seo_pages')
+          .select('page_id, filter_type, filter_value')
+          .eq('is_active', true)
+          .eq('estado', 'RJ');
+        
+        if (!error && data) {
+          setSeoMappings(data);
+        }
+      } catch (err) {
+        console.error('Erro ao carregar mapeamentos SEO:', err);
+      }
+    };
+    
+    loadSeoMappings();
   }, []);
 
   // Popup de oportunidades desabilitado temporariamente
@@ -1041,6 +1066,49 @@ const Index = () => {
 
   // Função para aplicar filtros
   const applyFilters = () => {
+    // LÓGICA DE REDIRECIONAMENTO PARA PÁGINAS REGIONAIS
+    // Se APENAS um bairro está selecionado e existe uma página SEO correspondente, redirecionar
+    const singleNeighborhood = selectedNeighborhoods.length === 1 ? selectedNeighborhoods[0] : 
+      (selectedNeighborhood && selectedNeighborhood !== "Selecione o bairro" && !selectedNeighborhood.includes(" (todos)") 
+        ? selectedNeighborhood.split(" (")[0] 
+        : null);
+    
+    // Verificar se a zona está selecionada (não é um bairro individual)
+    const zoneIsSelected = selectedNeighborhood && selectedNeighborhood.includes(" (todos)");
+    const singleZone = zoneIsSelected ? selectedNeighborhood.replace(" (todos)", "") : null;
+    
+    if (seoMappings.length > 0) {
+      // Verificar se há página SEO para o bairro selecionado
+      if (singleNeighborhood && !zoneIsSelected) {
+        const bairroMapping = seoMappings.find(
+          m => m.filter_type === 'bairro' && 
+               m.filter_value.toLowerCase() === singleNeighborhood.toLowerCase()
+        );
+        
+        if (bairroMapping) {
+          // Redirecionar para página regional do bairro
+          toast.success(`Abrindo página de ${singleNeighborhood}...`);
+          navigate(`/catalogo/${bairroMapping.page_id}`);
+          return;
+        }
+      }
+      
+      // Verificar se há página SEO para a zona selecionada
+      if (singleZone) {
+        const zonaMapping = seoMappings.find(
+          m => m.filter_type === 'zona' && 
+               m.filter_value.toLowerCase() === singleZone.toLowerCase()
+        );
+        
+        if (zonaMapping) {
+          // Redirecionar para página regional da zona
+          toast.success(`Abrindo página de ${singleZone}...`);
+          navigate(`/catalogo/${zonaMapping.page_id}`);
+          return;
+        }
+      }
+    }
+    
     const newFilters: Filters = {};
     
     // Verificar se há cidade selecionada

@@ -52,6 +52,8 @@ Implementar lógica no componente de filtro:
 2. Ícones devem ter dimensões explícitas (width/height fixos)
 3. Estados de hover não podem alterar dimensões do container
 4. Não deve haver flicker/piscar ao interagir
+5. **Ícones sociais (Facebook, Instagram, YouTube) devem ser monocromáticos na cor dourada `#C9A227`** — NÃO usar cores originais das marcas
+6. Ícones devem ser SVG inline (não imagens externas) para evitar FOUC
 
 **Critérios de aceite**:
 - [ ] Interagir com ícones WhatsApp/Instagram NÃO altera altura do header

@@ -431,6 +431,42 @@ O logo tem duas partes:
 - **"SISTON"** — Cor dourada `#D68E08`
 - **"ADVOGADOS"** — Cor branca com linhas decorativas
 
+### 6.3 Ícones Sociais (Facebook, Instagram, YouTube) ⭐ OBRIGATÓRIO
+
+> **DECISÃO FIXA (v18):** Os ícones de redes sociais **NÃO devem usar as cores originais das marcas**.
+
+| Propriedade | Valor | Observação |
+|-------------|-------|------------|
+| **Cor** | `#C9A227` | Dourado monocromático |
+| **Formato** | SVG inline | Evita FOUC/layout shift |
+| **Tamanho** | 32x32px | Dimensões fixas |
+| **Container** | 32x32px com `flex-shrink-0` | Evita redimensionamento |
+
+**Implementação correta:**
+```tsx
+// ✅ CORRETO: SVG monocromático dourado
+<svg fill="#C9A227" ...>
+  <path d="..." />
+</svg>
+
+// ❌ ERRADO: Cores originais das marcas
+<svg>
+  <path fill="#1877F2" /> <!-- Facebook azul -->
+  <path fill="#E4405F" /> <!-- Instagram gradiente -->
+  <path fill="#FF0000" /> <!-- YouTube vermelho -->
+</svg>
+
+// ❌ ERRADO: Imagens externas
+<img src="https://cdn.builder.io/..." />
+```
+
+**Arquivos de referência:**
+- `src/components/icons/FacebookIcon.tsx`
+- `src/components/icons/InstagramIcon.tsx`
+- `src/components/icons/YouTubeIcon.tsx`
+
+**Motivo da decisão:** Manter consistência visual com o design system do site. Ícones coloridos quebram a harmonia da top bar grafite.
+
 ---
 
 ## 7. Footer
@@ -560,6 +596,8 @@ Antes de finalizar qualquer componente ou página, verificar:
 - Cores primárias diferentes de #D68E08
 - Tipografia toda sans-serif
 - Espaçamentos inconsistentes
+- **Ícones sociais coloridos** (Facebook azul, Instagram gradiente, YouTube vermelho) ⚠️ **DECISÃO v18**
+- Ícones sociais como imagens externas (causa layout shift)
 
 ### ✅ Preferir
 - Playfair Display para títulos
@@ -570,6 +608,7 @@ Antes de finalizar qualquer componente ou página, verificar:
 - Gradiente grafite para cards de destaque
 - Bege #EBE5DE para seções alternadas
 - Design sofisticado e profissional
+- **Ícones sociais monocromáticos em dourado #C9A227** (SVG inline)
 
 ---
 

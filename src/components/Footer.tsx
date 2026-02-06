@@ -1,6 +1,7 @@
 "use client";
 import * as React from "react";
 import { Link } from "react-router-dom";
+import { FacebookIcon, InstagramIcon, YouTubeIcon } from './icons';
 
 interface FooterProps {
   onWhatsAppClick?: () => void;
@@ -101,26 +102,14 @@ export const Footer: React.FC<FooterProps> = ({ onWhatsAppClick }) => {
             
             {/* Social Links */}
             <div className="flex gap-3 mt-4">
-              <a href="https://www.facebook.com/cataldosistonadvogados/" target="_blank" rel="noopener noreferrer" title="Facebook">
-                <img
-                  src="https://cdn.builder.io/api/v1/image/assets/ca38ae4db7a6428881f7c632440d043a/72d95d25980c13a7793be843a3be119eac9a23d4?placeholderIfAbsent=true"
-                  className="w-8 h-8 object-contain hover:opacity-80 cursor-pointer transition-opacity"
-                  alt="Facebook"
-                />
+              <a href="https://www.facebook.com/cataldosistonadvogados/" target="_blank" rel="noopener noreferrer" title="Facebook" className="hover:opacity-80 transition-opacity">
+                <FacebookIcon />
               </a>
-              <a href="https://www.instagram.com/cataldosiston.advogados/" target="_blank" rel="noopener noreferrer" title="Instagram">
-                <img
-                  src="https://cdn.builder.io/api/v1/image/assets/ca38ae4db7a6428881f7c632440d043a/244b9c45e595799dda32400ab0c739ab1dcf1e36?placeholderIfAbsent=true"
-                  className="w-8 h-8 object-contain hover:opacity-80 cursor-pointer transition-opacity"
-                  alt="Instagram"
-                />
+              <a href="https://www.instagram.com/cataldosiston.advogados/" target="_blank" rel="noopener noreferrer" title="Instagram" className="hover:opacity-80 transition-opacity">
+                <InstagramIcon />
               </a>
-              <a href="https://www.youtube.com/channel/UCldbgxJU1D9h3UAVUIRIRYg" target="_blank" rel="noopener noreferrer" title="YouTube">
-                <img
-                  src="https://cdn.builder.io/api/v1/image/assets/ca38ae4db7a6428881f7c632440d043a/e31888807ac0e2e4d00224790a076ac9216edea3?placeholderIfAbsent=true"
-                  className="w-8 h-8 object-contain hover:opacity-80 cursor-pointer transition-opacity"
-                  alt="YouTube"
-                />
+              <a href="https://www.youtube.com/channel/UCldbgxJU1D9h3UAVUIRIRYg" target="_blank" rel="noopener noreferrer" title="YouTube" className="hover:opacity-80 transition-opacity">
+                <YouTubeIcon />
               </a>
             </div>
           </div>

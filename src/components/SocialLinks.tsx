@@ -1,5 +1,6 @@
 "use client";
 import * as React from "react";
+import { FacebookIcon, InstagramIcon, YouTubeIcon } from './icons';
 
 interface SocialLinksProps {
   className?: string;
@@ -12,37 +13,31 @@ export const SocialLinks: React.FC<SocialLinksProps> = ({ className = "" }) => {
       aria-label="Social media links"
     >
       <a
-        href="#"
-        aria-label="Social media link 1"
+        href="https://www.facebook.com/cataldosistonadvogados/"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Facebook"
         className="hover:opacity-80 transition-opacity"
       >
-        <img
-          src="https://cdn.builder.io/api/v1/image/assets/TEMP/3184a957e3adf3afd7d1dbf7234f1d24816a5e18?placeholderIfAbsent=true&apiKey=ca38ae4db7a6428881f7c632440d043a"
-          alt="Social media icon"
-          className="object-contain shrink-0 w-9 bg-blend-normal aspect-square"
-        />
+        <FacebookIcon className="shrink-0 w-9 h-9" />
       </a>
       <a
-        href="#"
-        aria-label="Social media link 2"
+        href="https://www.instagram.com/cataldosiston.advogados/"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Instagram"
         className="hover:opacity-80 transition-opacity"
       >
-        <img
-          src="https://cdn.builder.io/api/v1/image/assets/TEMP/739b4f964e70b09896d6a0c04116737a34e70fe3?placeholderIfAbsent=true&apiKey=ca38ae4db7a6428881f7c632440d043a"
-          alt="Social media icon"
-          className="object-contain shrink-0 w-9 bg-blend-normal aspect-square"
-        />
+        <InstagramIcon className="shrink-0 w-9 h-9" />
       </a>
       <a
-        href="#"
-        aria-label="Social media link 3"
+        href="https://www.youtube.com/channel/UCldbgxJU1D9h3UAVUIRIRYg"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="YouTube"
         className="hover:opacity-80 transition-opacity"
       >
-        <img
-          src="https://cdn.builder.io/api/v1/image/assets/TEMP/4365d654c84abc0462c1a408d4c557a91358a3a7?placeholderIfAbsent=true&apiKey=ca38ae4db7a6428881f7c632440d043a"
-          alt="Social media icon"
-          className="object-contain shrink-0 w-9 bg-blend-normal aspect-square"
-        />
+        <YouTubeIcon className="shrink-0 w-9 h-9" />
       </a>
     </nav>
   );

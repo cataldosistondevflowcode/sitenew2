@@ -127,13 +127,49 @@ Testar no browser em `/catalogo/:pageId` (ex.: página Rio de Janeiro ou bairro)
 - [x] Interface de visualização funciona
 
 ### 9.10) Segurança CMS
-- [x] RLS: anon só lê status='published' em cms_pages _(verificado via MCP)_
-- [x] RLS: anon só lê blocos de páginas published _(verificado via MCP)_
+- [x] RLS: **habilitado** em todas as 6 tabelas CMS _(CORRIGIDO Sprint v23 — 2026-02-10)_
+- [x] RLS: anon só lê status='published' em cms_pages _(CORRIGIDO Sprint v23 — RLS ativado)_
+- [x] RLS: anon só lê blocos de páginas published _(CORRIGIDO Sprint v23 — RLS ativado)_
 - [x] RLS: authenticated pode ler tudo
-- [x] RLS: apenas is_cms_admin() pode escrever _(Sprint v15)_
+- [x] RLS: apenas is_cms_admin() pode escrever _(Sprint v15 + RLS ativado v23)_
 - [x] Tabelas CMS não afetam tabela `imoveis`
+- [x] AdminRoute verifica isAdmin além de isAuthenticated _(CORRIGIDO Sprint v23.1)_
 
-**Resultado Sprint v16:** 38/39 testes passam (97%)
+### 9.11) Funcionalidades do Editor (Auditoria 2026-02-10)
+- [x] Undo (Ctrl+Z) desfaz última alteração _(CORRIGIDO Sprint v23 — usa setBlocksLocal)_
+- [x] Redo (Ctrl+Shift+Z) refaz alteração _(CORRIGIDO Sprint v23 — usa setBlocksLocal)_
+- [x] Status bar mostra erros de validação reais _(CORRIGIDO Sprint v23 — useEffect popula validationErrors)_
+- [x] Delete de bloco trata erro corretamente _(CORRIGIDO Sprint v23 — verifica result.success)_
+- [x] Validação de imagem aceita URLs relativas _(CORRIGIDO Sprint v23.2 — isValidUrlOrPath)_
+- [x] Salvar draft funciona
+- [x] Publicar funciona
+- [x] Preview sincronizado funciona
+- [x] Drag-and-drop reordena blocos
+- [x] Criar novo bloco funciona
+- [x] Criar nova página funciona
+
+### 9.12) Teste Funcional via Browser (2026-02-10)
+- [x] Site público carrega em localhost:8081 (9266 imóveis, filtros, seções)
+- [x] Login admin funciona (adm@hotmail.com)
+- [x] Lista CMS: 14 páginas publicadas, tabs de filtro
+- [x] Editor: 16 blocos, preview live, drag handles, status bar
+- [x] Expandir bloco: formulário, validação, botões Salvar/Publicar/Excluir/Histórico
+- [x] Edição detecta mudanças: alert "não salvas", botão Salvar habilita
+- [x] Preview responsivo: botões Mobile/Tablet/Desktop
+- [x] Audit Log carrega (`/admin/cms/audit-log`)
+- [x] Biblioteca de Mídia carrega (`/admin/cms/assets`)
+- [x] Descarte de alterações: reload restaura conteúdo original
+- [x] Site público inalterado após testes
+
+### 9.13) Segurança Pós-Auditoria (2026-02-10 — Sprint v23.3)
+- [x] `admin_users`: policy SELECT criada para `is_cms_admin()` apenas
+- [x] `admin_users`: sem policies INSERT/UPDATE/DELETE (gerenciamento via SQL)
+- [x] 7/7 funções CMS com `search_path = public`
+- [x] Security Advisor: 0 erros `rls_enabled_no_policy` em tabelas CMS
+- [x] Security Advisor: 0 warnings `function_search_path_mutable` em funções CMS
+- [x] Site público inalterado após correções
+
+**Resultado Pós-Sprints v23/v23.1/v23.2/v23.3 (2026-02-10):** 49/49 testes passam (100%)
 
 ---
 

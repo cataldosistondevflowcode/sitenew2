@@ -86,9 +86,23 @@ export const AssetLibrary = ({ onSelectAsset, isSelector = false }: AssetLibrary
     }
   };
 
-  const handleCopyUrl = (url: string) => {
-    navigator.clipboard.writeText(url);
-    toast.success('URL copiada!');
+  // Sprint v23: Clipboard com try/catch para evitar crash em navegação privada
+  const handleCopyUrl = async (url: string) => {
+    try {
+      await navigator.clipboard.writeText(url);
+      toast.success('URL copiada!');
+    } catch {
+      // Fallback: criar textarea temporário para copiar
+      const textarea = document.createElement('textarea');
+      textarea.value = url;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
+      toast.success('URL copiada!');
+    }
   };
 
   const handleSelect = (asset: Asset) => {

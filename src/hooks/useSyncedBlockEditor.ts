@@ -33,16 +33,24 @@ interface UseSyncedBlockEditorReturn extends UseSyncedBlockEditorState {
 export function useSyncedBlockEditor(): UseSyncedBlockEditorReturn {
   const [activeBlockId, setActiveBlockId] = useState<number | null>(null);
   const [activeFieldKey, setActiveFieldKey] = useState<string | null>(null);
+  // Sprint v23: localStorage com try/catch para evitar crash em navegação privada
   const [previewSize, setPreviewSize] = useState<'mobile' | 'tablet' | 'desktop'>(() => {
-    // Recuperar preferência salva em localStorage
-    const saved = localStorage.getItem('cms-preview-size');
-    return (saved as 'mobile' | 'tablet' | 'desktop') || 'desktop';
+    try {
+      const saved = localStorage.getItem('cms-preview-size');
+      return (saved as 'mobile' | 'tablet' | 'desktop') || 'desktop';
+    } catch {
+      return 'desktop';
+    }
   });
   const [unsavedBlockIds, setUnsavedBlockIds] = useState<Set<number>>(new Set());
 
-  // Salvar preferência de tamanho
+  // Salvar preferência de tamanho (com try/catch)
   useEffect(() => {
-    localStorage.setItem('cms-preview-size', previewSize);
+    try {
+      localStorage.setItem('cms-preview-size', previewSize);
+    } catch {
+      // Ignora silenciosamente se localStorage não estiver disponível
+    }
   }, [previewSize]);
 
   const onFieldFocus = useCallback((blockId: number, fieldKey?: string) => {
@@ -65,6 +73,15 @@ export function useSyncedBlockEditor(): UseSyncedBlockEditorReturn {
 
   const clearUnsaved = useCallback(() => {
     setUnsavedBlockIds(new Set());
+  }, []);
+
+  // Sprint v23.1: Cleanup ao desmontar para evitar memory leak
+  useEffect(() => {
+    return () => {
+      setUnsavedBlockIds(new Set());
+      setActiveBlockId(null);
+      setActiveFieldKey(null);
+    };
   }, []);
 
   return {

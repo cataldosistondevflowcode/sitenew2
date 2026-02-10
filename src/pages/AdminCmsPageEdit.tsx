@@ -97,7 +97,7 @@ export default function AdminCmsPageEdit() {
     );
   }
 
-  const { page, blocks, loading, error, updateBlockDraft, publishBlock, validateBlockContent, isSaving, reloadPage, createBlock, deleteBlock, reorderBlocks } =
+  const { page, blocks, loading, error, updateBlockDraft, publishBlock, validateBlockContent, isSaving, reloadPage, createBlock, deleteBlock, reorderBlocks, setBlocksLocal } =
     useCmsContent(slug);
 
   // Sprint v19: Inicializar estado do undo quando blocos carregam
@@ -108,6 +108,24 @@ export default function AdminCmsPageEdit() {
       undoInitialized.current = true;
     }
   }, [blocks, pushState]);
+
+  // Sprint v23: Validar blocos e popular validationErrors em tempo real
+  useEffect(() => {
+    if (blocks.length === 0) {
+      setValidationErrors([]);
+      return;
+    }
+    const errors: Array<{ blockId: number; fieldKey: string; message: string }> = [];
+    for (const block of blocks) {
+      if (block.content_draft && Object.keys(block.content_draft).length > 0) {
+        const blockErrors = validateBlockContent(block, block.content_draft);
+        for (const msg of blockErrors) {
+          errors.push({ blockId: block.id, fieldKey: block.block_key, message: msg });
+        }
+      }
+    }
+    setValidationErrors(errors);
+  }, [blocks, validateBlockContent]);
 
   // Sprint v19: Limpar histórico ao trocar de página
   useEffect(() => {
@@ -140,33 +158,31 @@ export default function AdminCmsPageEdit() {
     setExpandedBlocks(new Set());
   };
 
-  // Sprint v19: Handler de Undo
+  // Sprint v19 + v23 fix: Handler de Undo — aplica state do stack em vez de recarregar
   const handleUndo = useCallback(() => {
     const previousBlocks = undo();
     if (previousBlocks) {
-      // Atualizar blocos localmente (o useCmsContent usa estado local)
-      // Para cada bloco no estado anterior, atualizamos o draft local
+      // Sprint v23: Aplicar o estado anterior diretamente no estado local
+      setBlocksLocal(previousBlocks);
       toast({
         title: 'Desfeito',
         description: 'Ação desfeita. Salve para persistir.',
       });
-      // Recarrega a página para refletir o estado anterior
-      // (alternativa: atualizar estado local sem recarregar)
-      reloadPage();
     }
-  }, [undo, toast, reloadPage]);
+  }, [undo, toast, setBlocksLocal]);
 
-  // Sprint v19: Handler de Redo
+  // Sprint v19 + v23 fix: Handler de Redo — aplica state do stack em vez de recarregar
   const handleRedo = useCallback(() => {
     const nextBlocks = redo();
     if (nextBlocks) {
+      // Sprint v23: Aplicar o próximo estado diretamente no estado local
+      setBlocksLocal(nextBlocks);
       toast({
         title: 'Refeito',
         description: 'Ação refeita. Salve para persistir.',
       });
-      reloadPage();
     }
-  }, [redo, toast, reloadPage]);
+  }, [redo, toast, setBlocksLocal]);
 
   // Sprint v19: Salvar estado antes de modificar
   const saveStateForUndo = useCallback((action: UndoRedoAction, description?: string, blockId?: number) => {
@@ -227,16 +243,25 @@ export default function AdminCmsPageEdit() {
     return result.success;
   }, [createBlock, saveStateForUndo]);
 
-  // Sprint v20: Handler para confirmar exclusão de bloco
+  // Sprint v20 + v23 fix: Handler para confirmar exclusão de bloco (com error handling)
   const handleDeleteBlock = useCallback(async () => {
     if (!blockToDelete) return;
     
     // Salvar estado antes de excluir (para undo)
     saveStateForUndo('delete', `Excluiu bloco ${blockToDelete.key}`, blockToDelete.id);
     
-    await deleteBlock(blockToDelete.id);
+    const result = await deleteBlock(blockToDelete.id);
+    if (!result.success) {
+      // Sprint v23: Se falhou, notificar o usuário e recarregar para restaurar estado
+      toast({
+        title: 'Erro ao excluir bloco',
+        description: result.error || 'Não foi possível excluir o bloco. Tente novamente.',
+        variant: 'destructive',
+      });
+      reloadPage();
+    }
     setBlockToDelete(null);
-  }, [blockToDelete, deleteBlock, saveStateForUndo]);
+  }, [blockToDelete, deleteBlock, saveStateForUndo, toast, reloadPage]);
 
   // Sprint v20: Abrir modal de adicionar bloco após um bloco específico
   const openAddBlockModalAfter = useCallback((index: number) => {

@@ -48,11 +48,23 @@ export const SharePreviewButton = ({ pageId, pageSlug }: SharePreviewButtonProps
     }
   };
 
+  // Sprint v23: Clipboard com try/catch para evitar crash em navegação privada
   const handleCopy = async () => {
     if (generatedUrl) {
-      const success = await navigator.clipboard.writeText(generatedUrl);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      try {
+        await navigator.clipboard.writeText(generatedUrl);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      } catch {
+        // Fallback: selecionar o texto do input para copiar manualmente
+        const input = document.querySelector<HTMLInputElement>('input[readonly]');
+        if (input) {
+          input.select();
+          document.execCommand('copy');
+          setCopied(true);
+          setTimeout(() => setCopied(false), 2000);
+        }
+      }
     }
   };
 

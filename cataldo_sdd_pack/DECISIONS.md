@@ -1,6 +1,108 @@
 # DECISIONS.md
 _Data: 2026-01-15_  
-_Atualizado: 2026-02-05 (DEC-ADM-003)_
+_Atualizado: 2026-02-10 (DEC-SEC-002, DEC-SEC-001, DEC-VAL-001)_
+
+---
+
+## DEC-SEC-002 — admin_users: Policy RLS + search_path em funções CMS
+
+**Data:** 2026-02-10  
+**Status:** ✅ CORRIGIDA — Sprint CMS v23.3 (2026-02-10)
+
+### Contexto
+Verificação pós-auditoria via Supabase Security Advisor revelou 2 achados de segurança CMS restantes após as sprints v23/v23.1/v23.2:
+
+1. **`admin_users`:** RLS habilitado mas 0 policies (INFO: `rls_enabled_no_policy`) — tabela usada por `is_cms_admin()` para verificar se usuário é admin
+2. **5 funções CMS SECURITY DEFINER:** Sem `search_path` definido (WARN: `function_search_path_mutable`) — risco teórico de search_path injection
+
+### Decisão
+
+1. **Criar policy SELECT** em `admin_users` usando `is_cms_admin()` — admins CMS podem ler a lista de admins. Nenhuma policy de escrita (INSERT/UPDATE/DELETE) — gerenciamento apenas via SQL/migrations.
+2. **Definir `search_path = public`** nas 5 funções CMS afetadas, consistente com `publish_block_atomic` e `revert_block_to_version` que já tinham essa configuração.
+
+### Justificativa
+- Com RLS ativo e 0 policies, `admin_users` já estava inacessível via REST API — seguro mas não explícito
+- A policy SELECT permite futura UI de gerenciamento de admins no painel
+- `search_path = public` elimina risco de search_path injection em funções SECURITY DEFINER
+- Padrão consistente: 7/7 funções CMS agora com `search_path = public`
+
+### Impacto
+- Nenhum efeito no site público
+- Nenhuma alteração em dados
+- Security Advisor: 0 erros/warnings em tabelas e funções CMS
+
+### Participantes
+- Eduardo Sousa (dev) — identificação e correção
+
+---
+
+## DEC-VAL-001 — Validação de URLs de Imagem deve aceitar caminhos relativos
+
+**Data:** 2026-02-10  
+**Status:** ✅ CORRIGIDA — Sprint CMS v23.2 (2026-02-10)
+
+### Contexto
+Teste funcional via browser revelou que a validação de blocos de imagem (`validateBlockContent`, case `image`) usava `new URL(content.url)` que rejeita caminhos relativos como `/imagem.jpg`. Os blocos `hero_image` e `about_section_image` da Página Inicial estavam populados com caminhos relativos válidos, causando **2 falsos positivos permanentes** ("erros de validação") na status bar do editor.
+
+### Decisão
+Substituir `new URL()` pela função `isValidUrlOrPath()` já existente no mesmo escopo da validação. Essa função aceita tanto URLs absolutas (`https://...`) quanto caminhos relativos (`/path`), e já era usada corretamente na validação de listas (cards/steps).
+
+### Justificativa
+- Caminhos relativos (`/img.jpg`) são válidos e resolvidos corretamente pelo browser
+- A função `isValidUrlOrPath` já existia e era consistente com o padrão do projeto
+- A correção elimina confusão para o usuário admin que via "erros" inexistentes
+
+### Impacto
+- Nenhum efeito no site público
+- Nenhuma mudança de dados no banco
+- Apenas 1 arquivo: `src/hooks/useCmsContent.ts`
+
+---
+
+## DEC-SEC-001 — RLS Desabilitado em Tabelas CMS (Vulnerabilidade Crítica)
+
+**Data:** 2026-02-10  
+**Status:** ✅ CORRIGIDA — Sprint CMS v23 (2026-02-10)
+
+### Contexto
+Auditoria completa do CMS realizada em 2026-02-10 (via Supabase MCP + Security Advisor) revelou que **5 de 6 tabelas CMS têm policies RLS definidas mas RLS não está habilitado**. As policies existem como metadados mas **não são aplicadas** pelo PostgreSQL.
+
+### Evidências
+```
+| Tabela             | RLS Habilitado | Policies | Status     |
+|--------------------|---------------|----------|------------|
+| cms_pages          | NÃO           | 3        | VULNERÁVEL |
+| cms_blocks         | NÃO           | 3        | VULNERÁVEL |
+| cms_assets         | NÃO           | 2        | VULNERÁVEL |
+| cms_audit_log      | NÃO           | 2        | VULNERÁVEL |
+| cms_versions       | NÃO           | 2        | VULNERÁVEL |
+| cms_preview_tokens | SIM           | 3        | OK         |
+```
+
+### Impacto
+- Qualquer usuário anônimo pode ler **todas** as linhas de `cms_pages`, `cms_blocks`, etc. (inclusive drafts)
+- Qualquer usuário pode potencialmente inserir/atualizar/deletar dados via API REST
+- As policies `is_cms_admin()`, `status = 'published'` etc. **não estão sendo aplicadas**
+
+### Decisão
+**Habilitar RLS imediatamente nas 5 tabelas afetadas.**
+
+```sql
+ALTER TABLE cms_pages ENABLE ROW LEVEL SECURITY;
+ALTER TABLE cms_blocks ENABLE ROW LEVEL SECURITY;
+ALTER TABLE cms_assets ENABLE ROW LEVEL SECURITY;
+ALTER TABLE cms_audit_log ENABLE ROW LEVEL SECURITY;
+ALTER TABLE cms_versions ENABLE ROW LEVEL SECURITY;
+```
+
+### Causa Raiz
+A migration original (`20260203000000_create_cms_tables.sql`) habilitou RLS, mas migrations subsequentes (provavelmente durante sprint v15 hardening) podem ter recriado/alterado tabelas sem manter o `ENABLE ROW LEVEL SECURITY`.
+
+### Correção
+Sprint CMS v23 — TASK-001 (prioridade máxima)
+
+### Participantes
+- Eduardo Sousa (dev) — auditoria e correção
 
 ---
 

@@ -5,8 +5,9 @@ interface AdminRouteProps {
   children: React.ReactNode;
 }
 
+// Sprint v23.1: Verificar isAdmin além de isAuthenticated (fix de segurança)
 const AdminRoute = ({ children }: AdminRouteProps) => {
-  const { isAuthenticated, loading } = useAuth();
+  const { isAuthenticated, isAdmin, loading } = useAuth();
 
   // Aguardar o carregamento da verificação de autenticação
   if (loading) {
@@ -15,6 +16,11 @@ const AdminRoute = ({ children }: AdminRouteProps) => {
 
   if (!isAuthenticated) {
     return <Navigate to="/admin/login" replace />;
+  }
+
+  // Sprint v23.1: Barrar usuário autenticado sem role admin
+  if (!isAdmin) {
+    return <Navigate to="/" replace />;
   }
 
   return <>{children}</>;

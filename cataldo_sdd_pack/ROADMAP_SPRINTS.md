@@ -1,6 +1,6 @@
 # ROADMAP_SPRINTS.md — Cataldo Siston | Execução em Sprints
 _Data: 2026-01-15_  
-_Atualizado: 2026-02-05 (Planejamento Sprints CMS v19-v22)_  
+_Atualizado: 2026-02-10 (Sprint CMS v23.3 — Segurança admin_users + search_path)_  
 _Base: prazo estimado ~2 semanas (com dependências externas)._
 
 ## Workstreams
@@ -742,8 +742,8 @@ _Base: prazo estimado ~2 semanas (com dependências externas)._
 | Migration: Páginas regionais em lote | `20260205100000_cms_regional_pages_batch.sql` | ✅ Criada |
 | Migration: Conteúdo completo da Home | `20260205110000_cms_home_content_complete.sql` | ✅ Criada |
 | Corrigir slug Copacabana | `regional-copacabana` → `catalogo-copacabana` | ✅ Incluído |
-| Aplicar migrations no Supabase | Manual via Studio | ⏳ Pendente |
-| Testar páginas no browser | `/leilao-rj`, `/catalogo/*` | ⏳ Pendente |
+| Aplicar migrations no Supabase | Aplicado via MCP (SQL direto) | ✅ Concluído |
+| Testar páginas no browser | `/leilao-rj`, `/catalogo/*` | ✅ Testado |
 
 **Páginas CMS criadas:**
 | Slug CMS | URL Pública | Blocos |
@@ -1334,6 +1334,132 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 - `supabase/migrations/20260205220000_cms_create_page_rpc.sql` — RPC create_page_safe
 
 **Nota:** Migration precisa ser aplicada manualmente no Supabase Studio.
+
+---
+
+### Sprint CMS v23 — Correções de Segurança e Bugs do Editor ✅ CONCLUÍDA
+**Status:** ✅ CONCLUÍDA  
+**Prioridade:** Crítica  
+**Dependências:** Sprint CMS v22 (concluída)  
+**Início:** 2026-02-10  
+**Conclusão:** 2026-02-10  
+**Origem:** Auditoria completa do CMS (Supabase MCP + análise de código)
+
+**Objetivo:** Corrigir vulnerabilidade crítica de RLS e bugs funcionais do editor CMS identificados em auditoria.
+
+**Escopo:**
+
+| Tarefa | Prioridade | Descrição | Arquivo(s) | Status |
+|--------|-----------|-----------|------------|--------|
+| TASK-001 | CRÍTICO | Habilitar RLS em 5 tabelas CMS | Migration SQL | ✅ |
+| TASK-002 | CRÍTICO | Corrigir Undo/Redo (aplicar state do stack) | `AdminCmsPageEdit.tsx` | ✅ |
+| TASK-003 | ALTO | Popular validationErrors no editor | `AdminCmsPageEdit.tsx` | ✅ |
+| TASK-004 | ALTO | Error handling no deleteBlock | `AdminCmsPageEdit.tsx` | ✅ |
+| TASK-005 | MÉDIO | Clipboard error handling | `SharePreviewButton.tsx`, `AssetLibrary.tsx` | ✅ |
+| TASK-006 | MÉDIO | localStorage error handling | `useSyncedBlockEditor.ts` | ✅ |
+| TASK-007 | OBRIG. | Verificação pós-correção | - | ✅ |
+
+**Achados da auditoria (2026-02-10):**
+- **15 páginas CMS** (14 published + 1 draft) — integridade OK
+- **124 blocos** (108 published, 124 draft) — sem órfãos
+- **RLS DESABILITADO** em 5/6 tabelas CMS — policies existem mas não aplicadas (DEC-SEC-001)
+- **Undo/Redo QUEBRADO** — reloadPage() em vez de aplicar state
+- **Validação INATIVA** — validationErrors nunca populado
+- **Checksum baseline:** `6d40e606811b3161e3e0a4ff134511cc`
+
+**Critérios de aceite:**
+- [x] RLS habilitado e verificado em todas as 6 tabelas CMS
+- [x] Supabase Security Advisor sem erros de `policy_exists_rls_disabled` em tabelas CMS
+- [x] Ctrl+Z desfaz última alteração no editor
+- [x] Ctrl+Shift+Z refaz alteração desfeita
+- [x] Status bar mostra número real de erros de validação
+- [x] Delete de bloco com falha mostra mensagem de erro
+- [x] Sem crash em navegação privada (clipboard/localStorage)
+- [x] Checksum published permanece inalterado
+- [x] `npm run build` sem erros
+
+**Docs SDD:** `docs/sdd/features/cms-v23-security-bugfixes/`
+
+---
+
+### Sprint CMS v23.1 — Hotfix: AdminRoute + publishBlock + Cleanup ✅ CONCLUÍDA
+**Status:** ✅ CONCLUÍDA  
+**Prioridade:** Alta  
+**Dependências:** Sprint CMS v23 (concluída)  
+**Início:** 2026-02-10  
+**Conclusão:** 2026-02-10  
+
+**Objetivo:** Corrigir 3 pontos residuais da auditoria fora do escopo da v23 original.
+
+**Escopo:**
+
+| # | Prioridade | Correção | Arquivo |
+|---|-----------|----------|---------|
+| 1 | **ALTO** | `AdminRoute` verifica `isAdmin` além de `isAuthenticated` | `src/components/AdminRoute.tsx` |
+| 2 | **MÉDIO** | `publishBlock` não faz fallback para `content_published` — exige draft com conteúdo | `src/hooks/useCmsContent.ts` |
+| 3 | **BAIXO** | Cleanup de `unsavedBlockIds`, `activeBlockId`, `activeFieldKey` no unmount | `src/hooks/useSyncedBlockEditor.ts` |
+
+**Critérios de aceite:**
+- [x] AdminRoute bloqueia usuários autenticados sem role admin
+- [x] publishBlock exige draft válido, sem fallback inseguro
+- [x] Hook useSyncedBlockEditor limpa estados ao desmontar
+- [x] Build sem erros
+- [x] Lint limpo (0 erros)
+
+---
+
+### Sprint CMS v23.2 — Hotfix: Validação de Imagem com URLs Relativas ✅ CONCLUÍDA
+**Status:** ✅ CONCLUÍDA  
+**Prioridade:** Média  
+**Dependências:** Sprint CMS v23.1 (concluída)  
+**Início:** 2026-02-10  
+**Conclusão:** 2026-02-10  
+
+**Problema:**  
+A validação de blocos de imagem usava `new URL(content.url)` que rejeita caminhos relativos como `/imagem.jpg`. Isso causava "2 erros de validação" falsos positivos permanentes na status bar do editor, afetando `hero_image` e `about_section_image` da Página Inicial.
+
+**Correção:**  
+Substituir `new URL()` pela função `isValidUrlOrPath()` já existente no mesmo escopo, que aceita tanto URLs absolutas (`https://...`) quanto caminhos relativos (`/path`).
+
+**Arquivo:** `src/hooks/useCmsContent.ts` (função `validateBlockContent`, case `image`)
+
+**Verificação:**  
+- [x] Build sem erros
+- [x] Status bar do editor mostra 0 erros de validação
+- [x] Teste via browser confirma correção
+- [x] Site público inalterado
+
+---
+
+### Sprint CMS v23.3 — Segurança: admin_users policies + search_path ✅ CONCLUÍDA
+**Status:** ✅ CONCLUÍDA  
+**Prioridade:** Alta  
+**Dependências:** Sprint CMS v23.2 (concluída)  
+**Início:** 2026-02-10  
+**Conclusão:** 2026-02-10  
+**Origem:** Verificação pós-auditoria via Supabase Security Advisor
+
+**Objetivo:** Corrigir 2 achados de segurança restantes: tabela `admin_users` sem policies e 5 funções CMS sem `search_path` definido.
+
+**Escopo:**
+
+| # | Tipo | Correção | Nível Advisor |
+|---|------|----------|---------------|
+| 1 | Policy RLS | Criar policy SELECT em `admin_users` para admins CMS | INFO → resolvido |
+| 2 | search_path | `is_cms_admin()` — SET search_path = public | WARN → resolvido |
+| 3 | search_path | `create_block_safe()` — SET search_path = public | WARN → resolvido |
+| 4 | search_path | `delete_block_safe()` — SET search_path = public | WARN → resolvido |
+| 5 | search_path | `reorder_blocks_batch()` — SET search_path = public | WARN → resolvido |
+| 6 | search_path | `create_page_safe()` — SET search_path = public | WARN → resolvido |
+
+**Migration:** `cms_admin_users_policies_and_search_path` (aplicada via Supabase MCP)
+
+**Critérios de aceite:**
+- [x] Policy SELECT criada para `admin_users` (somente `is_cms_admin()`)
+- [x] 7/7 funções CMS com `search_path = public`
+- [x] Security Advisor: 0 erros/warnings CMS
+- [x] Nenhuma alteração em conteúdo publicado
+- [x] Site público inalterado
 
 ---
 

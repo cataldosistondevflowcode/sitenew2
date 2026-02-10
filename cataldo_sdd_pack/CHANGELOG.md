@@ -1,5 +1,172 @@
 # CHANGELOG.md
-_Data: 2026-02-04 | Ultima atualizacao: 2026-02-05_
+_Data: 2026-02-04 | Ultima atualizacao: 2026-02-10_
+
+## 2026-02-10 — Sprint CMS v23.3: Segurança — admin_users policies + search_path ✅ CONCLUÍDA
+
+### Status: ✅ IMPLEMENTADO
+
+**Objetivo:** Corrigir 2 achados de segurança restantes identificados via Supabase Security Advisor após as sprints v23/v23.1/v23.2.
+
+**Origem:** Verificação pós-auditoria completa via Supabase MCP + Security Advisor.
+
+### Correções
+
+#### 1. Policy RLS para tabela `admin_users`
+- **Problema:** Tabela tinha RLS habilitado mas 0 policies — Security Advisor: `rls_enabled_no_policy`
+- **Risco:** Nenhum acesso via REST API (seguro), mas sem controle explícito
+- **Correção:** Criada policy SELECT para `is_cms_admin()` — admins podem ler lista de admins
+- **Sem INSERT/UPDATE/DELETE** — gerenciamento apenas via SQL direto/migrations
+
+#### 2. search_path em 5 funções CMS
+- **Problema:** 5 funções SECURITY DEFINER sem `search_path` definido — Security Advisor: `function_search_path_mutable` (WARN)
+- **Risco:** Potencial search_path injection em funções privilegiadas
+- **Correção:** `SET search_path = public` (consistente com `publish_block_atomic` e `revert_block_to_version`)
+- **Funções corrigidas:** `is_cms_admin`, `create_block_safe`, `delete_block_safe`, `reorder_blocks_batch`, `create_page_safe`
+
+### Migration aplicada
+
+`cms_admin_users_policies_and_search_path` — via Supabase MCP
+
+### Verificações
+
+- [x] Policy criada e verificada: `admin_users` → SELECT com `is_cms_admin()`
+- [x] 7/7 funções CMS com `search_path = public`
+- [x] Security Advisor: 0 erros/warnings em tabelas e funções CMS
+- [x] Nenhuma alteração em conteúdo publicado
+- [x] Site público inalterado
+
+### Documentação atualizada
+
+- [x] `ROADMAP_SPRINTS.md` — Sprint v23.3 adicionada, critérios v23 marcados, v23.1 adicionada, v18 corrigido
+- [x] `CHANGELOG.md` — Esta entrada
+- [x] `DECISIONS.md` — DEC-SEC-002
+
+---
+
+## 2026-02-10 — Sprint CMS v23.2: Hotfix — Validação de Imagem com URLs Relativas ✅ CONCLUÍDA
+
+### Status: ✅ IMPLEMENTADO
+
+**Problema:** A validação de blocos de imagem no editor CMS usava `new URL(content.url)` que rejeita caminhos relativos (`/imagem.jpg`). Isso causava **"2 erros de validação" falsos positivos permanentes** na status bar do editor para os blocos `hero_image` e `about_section_image` da Página Inicial (leilao-rj).
+
+**Causa raiz:** Os blocos de imagem foram populados com caminhos relativos (`/visao-panoramica-rio-janeiro.jpg`, `/team-cataldo-siston.jpg`) no seed, que são válidos no browser mas rejeitados pelo construtor `URL()`.
+
+**Correção:** Substituir validação com `new URL()` pela função `isValidUrlOrPath()` já existente no mesmo escopo, que aceita URLs absolutas e caminhos relativos.
+
+**Identificado por:** Teste funcional via browser (Browser MCP) em 2026-02-10.
+
+### Arquivo Modificado
+
+| Arquivo | Mudança |
+|---------|---------|
+| `src/hooks/useCmsContent.ts` | `validateBlockContent` case `image`: `new URL()` → `isValidUrlOrPath()` |
+
+### Verificações
+
+- [x] Build sem erros (`npm run build`)
+- [x] Status bar do editor mostra 0 erros de validação
+- [x] Teste via browser confirma correção em tempo real
+- [x] Site público inalterado
+
+---
+
+## 2026-02-10 — Sprint CMS v23: Correções de Segurança e Bugs do Editor ✅ CONCLUÍDA
+
+### Status: ✅ IMPLEMENTADO
+
+**Objetivo:** Corrigir vulnerabilidade crítica de RLS e bugs funcionais identificados em auditoria completa do CMS.
+
+**Origem:** Auditoria do CMS Admin (Supabase MCP + análise de código) em 2026-02-10.
+
+### Correções Críticas
+
+#### 1. RLS habilitado em 5 tabelas CMS (SEGURANÇA)
+- **Problema:** Policies de segurança existiam mas RLS não estava habilitado — dados expostos
+- **Correção:** Migration `enable_rls_cms_tables` aplicada via Supabase MCP
+- **Tabelas:** `cms_pages`, `cms_blocks`, `cms_assets`, `cms_audit_log`, `cms_versions`
+- **Verificação:** 6/6 tabelas CMS com RLS ativo, Security Advisor sem erros CMS
+
+#### 2. Undo/Redo corrigido (FUNCIONALIDADE)
+- **Problema:** `handleUndo`/`handleRedo` chamavam `reloadPage()` em vez de aplicar state do stack
+- **Correção:** Aplica `previousBlocks`/`nextBlocks` diretamente via `setBlocksLocal()`
+- **Arquivo:** `src/pages/AdminCmsPageEdit.tsx`
+
+### Correções de Alta Prioridade
+
+#### 3. Validação de blocos implementada
+- **Problema:** `validationErrors` era `[]` e nunca populado — status bar sempre mostrava "0 erros"
+- **Correção:** `useEffect` que valida blocos em tempo real e popula `validationErrors`
+- **Arquivo:** `src/pages/AdminCmsPageEdit.tsx`
+
+#### 4. Error handling no deleteBlock
+- **Problema:** `handleDeleteBlock` não verificava retorno de `deleteBlock()`
+- **Correção:** Verifica `result.success`, toast de erro e reload se falhar
+- **Arquivo:** `src/pages/AdminCmsPageEdit.tsx`
+
+### Correções de Média Prioridade
+
+#### 5. Clipboard error handling
+- **Problema:** `navigator.clipboard.writeText()` sem try/catch — crash em navegação privada
+- **Correção:** try/catch com fallback para `document.execCommand('copy')`
+- **Arquivos:** `SharePreviewButton.tsx`, `AssetLibrary.tsx`
+
+#### 6. localStorage error handling
+- **Problema:** `localStorage` sem try/catch — crash em navegação privada
+- **Correção:** try/catch com fallback silencioso
+- **Arquivo:** `useSyncedBlockEditor.ts`
+
+#### 7. Exportar setBlocksLocal do useCmsContent
+- **Problema:** Undo/redo não podia aplicar state porque `setBlocks` não era exportado
+- **Correção:** Adicionada função `setBlocksLocal` no retorno do hook
+- **Arquivo:** `src/hooks/useCmsContent.ts`
+
+### Arquivos Modificados
+
+| Arquivo | Tipo | Mudança |
+|---------|------|---------|
+| `src/pages/AdminCmsPageEdit.tsx` | Modificado | Undo/Redo fix + validação + deleteBlock |
+| `src/hooks/useCmsContent.ts` | Modificado | Exportar `setBlocksLocal` |
+| `src/components/admin/SharePreviewButton.tsx` | Modificado | Clipboard try/catch |
+| `src/components/admin/AssetLibrary.tsx` | Modificado | Clipboard try/catch |
+| `src/hooks/useSyncedBlockEditor.ts` | Modificado | localStorage try/catch |
+
+### Verificações Pós-Correção
+
+- [x] Build passa sem erros (`npm run build`)
+- [x] Checksum published inalterado: `6d40e606811b3161e3e0a4ff134511cc`
+- [x] RLS habilitado em 6/6 tabelas CMS
+- [x] Security Advisor: 0 erros `policy_exists_rls_disabled` em tabelas CMS
+- [x] Nenhuma alteração no conteúdo das páginas existentes
+
+### Documentação
+
+- **SDD:** `docs/sdd/features/cms-v23-security-bugfixes/` (SPEC, PLAN, TASKS)
+- **Decisão:** `DECISIONS.md` — DEC-SEC-001
+- **Roadmap:** `ROADMAP_SPRINTS.md` — Sprint CMS v23
+- **Testes:** `TEST_PLAN.md` — Seções 9.10 e 9.11 atualizadas
+
+---
+
+## 2026-02-10 — Sprint CMS v23.1: Hotfix — AdminRoute + publishBlock + Cleanup ✅ CONCLUÍDA
+
+### Status: ✅ IMPLEMENTADO
+
+**Objetivo:** Corrigir 3 pontos residuais da auditoria (fora do escopo da v23 original).
+
+### Correções
+
+| # | Prioridade | Correção | Arquivo |
+|---|-----------|----------|---------|
+| 1 | **ALTO** | `AdminRoute` agora verifica `isAdmin` além de `isAuthenticated` | `src/components/AdminRoute.tsx` |
+| 2 | **MÉDIO** | `publishBlock` não faz fallback para `content_published` — exige draft com conteúdo | `src/hooks/useCmsContent.ts` |
+| 3 | **BAIXO** | Cleanup de `unsavedBlockIds`, `activeBlockId`, `activeFieldKey` no unmount | `src/hooks/useSyncedBlockEditor.ts` |
+
+### Verificações
+
+- [x] Build sem erros
+- [x] Lint limpo (0 erros)
+
+---
 
 ## 2026-02-05 — Sprint CMS v22: Criar Novas Páginas pelo Admin ✅ CONCLUÍDA
 

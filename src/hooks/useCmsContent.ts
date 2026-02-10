@@ -142,12 +142,8 @@ export const useCmsContent = (pageSlug: string) => {
       case 'image':
         if (!content.url || !content.url.trim()) {
           errors.push('URL da imagem é obrigatória');
-        } else {
-          try {
-            new URL(content.url);
-          } catch {
-            errors.push('URL da imagem inválida');
-          }
+        } else if (!isValidUrlOrPath(content.url)) {
+          errors.push('URL da imagem inválida');
         }
         break;
 
@@ -283,10 +279,11 @@ export const useCmsContent = (pageSlug: string) => {
       const block = blocks.find((b) => b.id === blockId);
       if (!block) throw new Error('Bloco não encontrado');
 
-      // Usar content_draft se existir, senão usar content_published
-      const contentToPublish = block.content_draft || block.content_published;
-      if (!contentToPublish) {
-        throw new Error('Nenhum conteúdo para publicar');
+      // Sprint v23.1: Publicar APENAS content_draft — nunca usar fallback para content_published
+      // (evita publicar conteúdo antigo/stale acidentalmente)
+      const contentToPublish = block.content_draft;
+      if (!contentToPublish || Object.keys(contentToPublish).length === 0) {
+        throw new Error('Nenhum conteúdo draft para publicar. Edite o bloco antes de publicar.');
       }
 
       // Validar antes de publicar
@@ -567,6 +564,11 @@ export const useCmsContent = (pageSlug: string) => {
     }
   }, [pageSlug]);
 
+  // Sprint v23: Permitir undo/redo aplicar estado local sem recarregar do banco
+  const setBlocksLocal = (newBlocks: CmsBlock[]) => {
+    setBlocks(newBlocks);
+  };
+
   return {
     page,
     blocks,
@@ -582,5 +584,7 @@ export const useCmsContent = (pageSlug: string) => {
     deleteBlock,
     // Sprint v21: Reordenar blocos
     reorderBlocks,
+    // Sprint v23: Permitir undo/redo sem reload
+    setBlocksLocal,
   };
 };
